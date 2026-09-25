@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3.1 Programski jezici i alati za programiranje industrijskih robota — Osnove programiranja industrijskih robotskih sustava | FORTRONIQ</title>
+<meta name="description" content="Svaki veliki proizvođač robota razvio je vlastiti programski jezik, pa se na prvi pogled čini da svaki robot traži novo učenje. U stvarnosti su razlike najvećim dijelom u zapisu, a">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/industrijske-robotske-ruke/3-1-programski-jezici.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/industrijske-robotske-ruke/3-1-programski-jezici.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/industrijske-robotske-ruke/3-1-programski-jezici.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/industrijske-robotske-ruke/3-1-programski-jezici.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="3.1 Programski jezici i alati za programiranje industrijskih robota">
+<meta property="og:description" content="Svaki veliki proizvođač robota razvio je vlastiti programski jezik, pa se na prvi pogled čini da svaki robot traži novo učenje. U stvarnosti su razlike najvećim dijelom u zapisu, a">
+<meta property="og:url" content="https://dos.fortroniq.hr/industrijske-robotske-ruke/3-1-programski-jezici.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://www.fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://www.fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Osnove programiranja industrijskih robotskih sustava</a><i aria-hidden="true">/</i><a href="m3-programiranje-robota.html">3. Programiranje industrijskog robota</a><i aria-hidden="true">/</i><span aria-current="page">3.1 Programski jezici i alati za programiranje industrijskih robota</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 3 &middot; PROGRAMIRANJE INDUSTRIJSKOG ROBOTA</p><p class="nadnaslov">Nastavna jedinica 3.1</p><h1>Programski jezici i alati za programiranje industrijskih robota</h1><p>Svaki veliki proizvođač robota razvio je vlastiti programski jezik, pa se na prvi pogled čini da svaki robot traži novo učenje. U stvarnosti su razlike najvećim dijelom u zapisu, a ne u zamisli: sve jezike drži isti kostur od deklaracija, glavnog programa, potprograma i naredbi gibanja s istim skupom parametara.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>navesti programske jezike vodećih proizvođača industrijskih robota i pridružiti ih upravljačkim sustavima</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>prepoznati zajedničku građu robotskog programa: deklaracije, glavni program, potprograme i komentare</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>razlikovati osnovne tipove podataka i objasniti zapis položaja alata i zglobnog položaja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pročitati naredbu gibanja i protumačiti njezine parametre</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>prepisati jednostavnu naredbu gibanja iz jednog jezika u drugi</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>obrazložiti zašto poznavanje jednog jezika znatno olakšava prijelaz na drugi</span></li></ul></div></div></header><div class="omot"><section><h2>Zašto svaki proizvođač ima svoj jezik</h2><div class="crta"></div><p>Programski jezici robota nisu nastali dogovorom nego usporedno, u poduzećima koja su svoja upravljačka računala razvijala samostalno i u razmaku od nekoliko godina. Svako je rješenje odgovaralo na iste zahtjeve: treba zadati gibanje, treba upravljati alatom, treba čekati signal i treba ponoviti niz koraka. Odgovori su bili slični, ali su nazivi naredbi i pravila zapisa ostali različiti, a s vremenom su se učvrstili jer je iza svakog jezika stajala velika količina već napisanih programa.</p><p>Pokušaji ujednačavanja postojali su i postoje. Posljedica je da se u pogonu s robotima triju proizvođača i dalje radi u trima okruženjima, ali da je prelazak s jednoga na drugi mnogo lakši nego što izgleda. Naredba koja u jednom jeziku glasi <code>MoveL</code>, u drugom <code>LIN</code>, u trećem <code>L</code>, a u četvrtom <code>MOVL</code>, u svima znači isto: idi pravocrtno do zadane točke.</p><p>Zato je pametno jezike učiti kao obitelj, a ne svaki iz početka. Najprije se usvoji građa programa i značenje parametara, a zatim se za pojedini sustav nauči rječnik. Upravo je to redoslijed kojim ide ova jedinica.</p></section><section><h2>Jezici vodećih proizvođača</h2><div class="crta"></div><p>Šest jezika pokriva veliku većinu industrijskih robota koji se u Europi susreću u proizvodnji. Uz svaki ide i vlastito programsko okruženje na računalu, kojim se programi pišu, provjeravaju i prenose na upravljački sustav.</p><div class="tablica-omot"><table><thead><tr><th>Proizvođač</th><th>Jezik</th><th>Kratka oznaka</th><th>Obilježje zapisa</th></tr></thead><tbody><tr><td>ABB</td><td>RAPID</td><td>MoveL, MoveJ, MoveC</td><td>tekstualni jezik s modulima i procedurama; podaci i gibanja odvojeni</td></tr><tr><td>KUKA</td><td>KRL</td><td>LIN, PTP, CIRC</td><td>sličan strukturiranom Pascalu; datoteka programa i datoteka podataka odvojene</td></tr><tr><td>FANUC</td><td>TP i KAREL</td><td>L, J, C</td><td>TP program u numeriranim redcima, unosi se s privjeska; KAREL za složeniju logiku</td></tr><tr><td>YASKAWA</td><td>INFORM</td><td>MOVL, MOVJ, MOVC</td><td>redak po redak, s naredbom i parametrima iza nje</td></tr><tr><td>KAWASAKI</td><td>AS</td><td>LMOVE, JMOVE, C1MOVE</td><td>kratke naredbe, odvojen popis točaka i popis programa</td></tr><tr><td>Stäubli</td><td>VAL3</td><td>movel, movej, movec</td><td>zapis nalik jezicima opće namjene, s programima i knjižnicama</td></tr></tbody></table></div><p>Popis nije potpun. Uz njega postoje jezici manjih proizvođača, jezici kolaborativnih robota u kojima se program slaže grafički iz blokova te sučelja kojima se robot vodi iz nadređenog programa. Ono što je zajedničko svima jest da se na kraju izvodi niz naredbi gibanja s parametrima brzine i točnosti dolaska.</p><figure class="crtez"><svg viewBox="0 0 640 400" role="img" aria-label="Slika 3.1: Isti zadatak u trima jezicima: nazivi naredbi se razlikuju, a dijelovi naredbe gibanja isti su u svima.">
+<text x="320" y="62" text-anchor="middle">&#352;to sadr&#382;i svaka naredba gibanja</text><rect class="cf" x="240" y="88" width="160" height="36" rx="8"/><rect class="l" fill="none" x="240" y="88" width="160" height="36" rx="8"/><text class="mali" x="320" y="111" text-anchor="middle">odredi&#353;na to&#269;ka</text><rect class="cf" x="240" y="134" width="160" height="36" rx="8"/><rect class="l" fill="none" x="240" y="134" width="160" height="36" rx="8"/><text class="mali" x="320" y="157" text-anchor="middle">vrsta gibanja</text><rect class="cf" x="240" y="180" width="160" height="36" rx="8"/><rect class="l" fill="none" x="240" y="180" width="160" height="36" rx="8"/><text class="mali" x="320" y="203" text-anchor="middle">brzina</text><rect class="cf" x="240" y="226" width="160" height="36" rx="8"/><rect class="l" fill="none" x="240" y="226" width="160" height="36" rx="8"/><text class="mali" x="320" y="249" text-anchor="middle">zona zaobljenja</text><rect class="pf" x="16" y="140" width="204" height="72" rx="10"/><rect class="l" fill="none" x="16" y="140" width="204" height="72" rx="10"/><text class="mali" x="28" y="168" text-anchor="start">RAPID (ABB)</text><text class="mali" x="28" y="194" text-anchor="start">MoveJ p10,v1000,z50</text><rect class="pf" x="420" y="140" width="204" height="72" rx="10"/><rect class="l" fill="none" x="420" y="140" width="204" height="72" rx="10"/><text class="mali" x="432" y="168" text-anchor="start">KRL (KUKA)</text><text class="mali" x="432" y="194" text-anchor="start">PTP P10 Vel=100 %</text><rect class="pf" x="218" y="302" width="204" height="72" rx="10"/><rect class="l" fill="none" x="218" y="302" width="204" height="72" rx="10"/><text class="mali" x="230" y="330" text-anchor="start">TP (FANUC)</text><text class="mali" x="230" y="356" text-anchor="start">J P[10] 100% CNT50</text><line class="t" x1="220" y1="176" x2="230" y2="177.1"/><path class="tf" d="M238,178 L227.6,181.5 L228.6,172.3 Z"/><line class="t" x1="420" y1="176" x2="410" y2="177.1"/><path class="tf" d="M402,178 L411.4,172.3 L412.4,181.5 Z"/><line class="t" x1="320" y1="302" x2="320" y2="280"/><path class="tf" d="M320,272 L324.6,282 L315.4,282 Z"/>
+</svg><figcaption><b>Slika 3.1</b> &mdash; Isti zadatak u trima jezicima: nazivi naredbi se razlikuju, a dijelovi naredbe gibanja isti su u svima.</figcaption></figure></section><section><h2>Zajednička građa programa</h2><div class="crta"></div><p>Bez obzira na jezik, program ima četiri dijela. <strong>Deklaracije</strong> uvode podatke: točke, brojila, zastavice, alat i radni predmet. <strong>Glavni program</strong> određuje redoslijed i obično je kratak, jer samo poziva ono što se stvarno radi. <strong>Potprogrami</strong> sadrže pojedine radnje, svaku za sebe. <strong>Komentari</strong> objašnjavaju namjeru onome tko program čita poslije, a to je najčešće netko drugi.</p><p>Evo iste zamisli u jeziku RAPID. Uočite da su podaci na početku, da glavni program samo poziva potprograme i da je stvaran posao u potprogramu.</p><pre><code>MODULE GlavniModul
+    ! --- deklaracije podataka ---
+    CONST robtarget pSigurna  := [[600,0,900],[0,0,1,0],[0,0,0,0],[9E9,9E9,9E9,9E9,9E9,9E9]];
+    CONST robtarget pUzimanje := [[750,-320,410],[0,0,1,0],[0,0,0,0],[9E9,9E9,9E9,9E9,9E9,9E9]];
+    VAR num  nBrojac  := 0;
+    VAR bool bStegnuto := FALSE;
+
+    ! --- glavni program ---
+    PROC main()
+        Pripremi;
+        WHILE TRUE DO
+            UzmiKomad;
+            OdloziKomad;
+            nBrojac := nBrojac + 1;
+        ENDWHILE
+    ENDPROC
+
+    ! --- potprogram ---
+    PROC UzmiKomad()
+        MoveJ pSigurna, v1000, z50, tPrihvatnica;
+        MoveL Offs(pUzimanje,0,0,100), v500, z20, tPrihvatnica;
+        MoveL pUzimanje, v100, fine, tPrihvatnica;
+        SetDO doStegni, 1;
+        WaitDI diStegnuto, 1;
+        MoveL Offs(pUzimanje,0,0,100), v250, z20, tPrihvatnica;
+    ENDPROC
+ENDMODULE</code></pre><p>Isti postupak u jeziku KRL izgleda drukčije, a radi isto. Točke se u KUKA sustavu drže u zasebnoj datoteci podataka, pa se u programu pojavljuju samo njihova imena.</p><pre><code>DEF uzmi_komad ( )
+  DECL INT brojac
+  DECL BOOL stegnuto
+
+  brojac = 0
+  stegnuto = FALSE
+
+  PTP XP_sigurna  Vel=100 % PDAT1     ; brzi prilaz
+  PTP XP_iznad    Vel=50 %  PDAT2
+  LIN XP_uzimanje Vel=0.1 m/s CPDAT1  ; sporo prema obratku
+  $OUT[12] = TRUE                     ; stegni prihvatnicu
+  WAIT FOR $IN[5]                     ; potvrda stezanja
+  WAIT SEC 0.3
+  LIN XP_iznad    Vel=0.25 m/s CPDAT2
+END</code></pre><div class="okvir"><h4>Zapamtite</h4><p>Komentar nije ukras. U programu koji se mjesecima ne otvara, jedna rečenica uz naredbu &mdash; primjerice zašto je brzina prilaza baš 100 mm/s &mdash; štedi sat traženja i sprječava da netko vrijednost promijeni bez razloga.</p></div></section><section><h2>Tipovi podataka</h2><div class="crta"></div><p>Podaci u robotskom programu dijele se u nekoliko skupina. Najvažnija je razlika između <strong>položaja alata</strong> i <strong>zglobnog položaja</strong>. Položaj alata zapisuje se koordinatama <em>x</em>, <em>y</em>, <em>z</em> i orijentacijom, pa ga robot mora preračunati u kutove zglobova. Zglobni položaj izravno zadaje kut svake osi, pa je uvijek jednoznačan i uvijek dostižan.</p><div class="tablica-omot"><table><thead><tr><th>Skupina</th><th>Što sadrži</th><th>Primjer zapisa</th><th>Kada se koristi</th></tr></thead><tbody><tr><td>Položaj alata</td><td>koordinate i orijentacija vrha alata</td><td>robtarget, POS, XYZWPR</td><td>radne točke koje se zadaju u prostoru</td></tr><tr><td>Zglobni položaj</td><td>kut svake osi</td><td>jointtarget, AXIS, J1..J6</td><td>početni i sigurnosni položaj, izbjegavanje singularnosti</td></tr><tr><td>Broj</td><td>cijeli ili decimalni broj</td><td>num, INT, REAL, R[1]</td><td>brojila, razmaci, izračunati odmaci</td></tr><tr><td>Logička vrijednost</td><td>istina ili laž</td><td>bool, BOOL, F[1]</td><td>zastavice stanja, rezultati provjera</td></tr><tr><td>Alat i radni predmet</td><td>geometrija alata i položaj radne ravnine</td><td>tooldata, wobjdata, UTOOL, UFRAME</td><td>svaka naredba gibanja, kalibracija</td></tr><tr><td>Znakovni niz</td><td>tekst</td><td>string, CHAR</td><td>poruke operateru, nazivi programa</td></tr></tbody></table></div><p>Zapis položaja alata gotovo uvijek nosi i podatak o <strong>konfiguraciji</strong>, dakle o tome s kojom je kombinacijom položaja zglobova točka naučena. Bez tog podatka robot bi istu koordinatu mogao dosegnuti s laktom gore ili dolje, pa bi pri sljedećem prelasku napravio neočekivan zamah. U jeziku RAPID to je treći dio zapisa, u KRL-u se vodi kao status i turn.</p><p>Brojevni i logički podaci nose drugi dio posla: brojila komada, položaj u sloju palete, zastavice koje pamte je li prihvatnica stegnuta. Kod nekih sustava oni nemaju ime nego broj registra, pa je posebno važno voditi popis: registar 12 ne govori ništa, a komentar <em>broj komada u redu</em> govori sve.</p><div class="okvir pazi"><h4>Pažnja</h4><p>Točka naučena kao položaj alata vrijedi samo uz onaj alat i onaj radni predmet uz koje je naučena. Promijeni li se geometrija prihvatnice, a točke ostanu iste, robot će promašiti za iznos promjene. Zato se pri izmjeni alata uvijek prvo provjerava koordinatni sustav alata, a tek onda program.</p></div></section><section><h2>Naredbe gibanja i njihovi parametri</h2><div class="crta"></div><p>Naredba gibanja u svim jezicima ima isti skup podataka: <strong>vrstu gibanja</strong>, <strong>odredišnu točku</strong>, <strong>brzinu</strong>, <strong>točnost dolaska</strong> i <strong>alat</strong> na koji se sve odnosi. Vrsta gibanja bira se između gibanja od točke do točke, pravocrtnog i kružnog. Brzina se zadaje u milimetrima u sekundi za vrh alata ili u postotku najveće brzine za zglobno gibanje.</p><p>Najviše zabune izaziva <strong>točnost dolaska</strong>. Ako se zada točan dolazak, robot će se u točki zaustaviti i tek zatim krenuti dalje; putanja je vjerna, ali ciklus dulji. Ako se zada zona zaobljenja, robot će u blizini točke skrenuti prema sljedećoj i točku neće dodirnuti; ciklus je kraći, a putanja zaobljena. Zona se zadaje u milimetrima, kao polumjer područja unutar kojeg je skretanje dopušteno.</p><p>U praksi vrijedi jednostavno pravilo: točan dolazak samo ondje gdje se nešto uzima, odlaže ili obrađuje, zaobljenje svugdje drugdje. Program u kojem je svaka točka zadana kao točan dolazak radi ispravno, ali nepotrebno dugo i s trzajima.</p><div class="racun" id="r31"><div class="racun-h"><b>Ista naredba gibanja u četirima jezicima</b><em>Računski prikaz</em></div><p>Odaberite vrstu gibanja, brzinu i zonu zaobljenja. Prikaz ispisuje odgovarajuću naredbu u četirima jezicima. Zapisi su pojednostavljeni i služe za usporedbu, ne za izravno prepisivanje u program.</p><div class="polja"><div class="polje"><label for="r31-t">Vrsta gibanja</label><select id="r31-t" data-ulaz="t"><option value="ptp">od točke do točke</option><option value="lin" selected>pravocrtno</option><option value="circ">kružno</option></select></div><div class="polje"><label for="r31-v">Brzina vrha alata<output id="r31-v-out" for="r31-v" data-jed=" mm/s">500 mm/s</output></label><input type="range" id="r31-v" data-ulaz="v" min="20" max="2000" step="10" value="500"></div><div class="polje"><label for="r31-z">Zona zaobljenja<output id="r31-z-out" for="r31-z" data-jed=" mm">20 mm</output></label><input type="range" id="r31-z" data-ulaz="z" min="0" max="100" step="5" value="20"></div></div><div class="ishod"><div class="ish"><span>RAPID (ABB)</span><b id="r31-rap">&mdash;</b></div><div class="ish"><span>KRL (KUKA)</span><b id="r31-krl">&mdash;</b></div><div class="ish"><span>TP (FANUC)</span><b id="r31-tp">&mdash;</b></div><div class="ish"><span>INFORM (YASKAWA)</span><b id="r31-inf">&mdash;</b></div></div><p class="poruka" id="r31-poruka"></p></div><p>Uz ova tri parametra svaki jezik nudi i dodatke: ograničenje ubrzanja, praćenje vanjske osi, istodobno postavljanje izlaza u trenutku prolaska kroz točku i slično. Oni se uče kasnije, kada osnovna četiri postanu očita.</p></section><section><h2>Prijelaz s jednog jezika na drugi</h2><div class="crta"></div><p>Kada se jednom razumije građa programa, prijelaz na novi sustav svodi se na tri koraka. Prvo se nauči kako se u novom okruženju otvara program i gdje su podaci. Drugo, izradi se mala tablica prijevoda za najčešće naredbe. Treće, napiše se isti jednostavan program koji je već napisan u poznatom jeziku, i usporedi ponašanje.</p><div class="tablica-omot"><table><thead><tr><th>Radnja</th><th>RAPID</th><th>KRL</th><th>TP (FANUC)</th><th>INFORM</th></tr></thead><tbody><tr><td>Gibanje od točke do točke</td><td>MoveJ p10, v1000, z50, tAlat;</td><td>PTP P10 Vel=100 % PDAT1</td><td>J P[10] 100% CNT50</td><td>MOVJ VJ=100.00</td></tr><tr><td>Pravocrtno gibanje</td><td>MoveL p10, v500, fine, tAlat;</td><td>LIN P10 Vel=0.5 m/s CPDAT1</td><td>L P[10] 500mm/sec FINE</td><td>MOVL V=500.0 PL=0</td></tr><tr><td>Postavljanje izlaza</td><td>SetDO doStegni, 1;</td><td>$OUT[12] = TRUE</td><td>DO[12]=ON</td><td>DOUT OT#(12) ON</td></tr><tr><td>Čekanje ulaza</td><td>WaitDI diStegnuto, 1;</td><td>WAIT FOR $IN[5]</td><td>WAIT DI[5]=ON</td><td>WAIT IN#(5)=ON</td></tr><tr><td>Čekanje vremena</td><td>WaitTime 0.3;</td><td>WAIT SEC 0.3</td><td>WAIT 0.30(sec)</td><td>TIMER T=0.30</td></tr><tr><td>Poziv potprograma</td><td>UzmiKomad;</td><td>uzmi_komad ( )</td><td>CALL UZMI</td><td>CALL JOB:UZMI</td></tr></tbody></table></div><p>Tablica je korisna, ali nije dovoljna. Razlike ostaju u onome što se ne vidi iz jednog retka: kako se vode koordinatni sustavi, kako se program pokreće iz sredine, što se događa pri zaustavljanju u nuždi i kako se obrađuju pogreške. Zato se novi sustav nikada ne uvodi izravno u proizvodnju nego najprije na probnom zadatku.</p><div class="okvir primjer"><h4>Primjer</h4><p>Tehničar koji je tri godine radio na sustavu jednog proizvođača dobiva robot drugog proizvođača. Prvi dan izgubi na traženje izbornika i na to gdje se spremaju točke. Drugi dan napiše program uzimanja i odlaganja. Treći dan ga ispituje i dorađuje. Nije naučio novi način razmišljanja nego novi rječnik.</p></div><figure class="crtez"><svg viewBox="0 0 640 380" role="img" aria-label="Slika 3.2: Programsko okruženje: stablo projekta, program, prikaz ćelije i popis točaka u zasebnome prozoru.">
+<rect class="pf" x="16" y="40" width="608" height="316"/><rect class="l" fill="none" x="16" y="40" width="608" height="316"/><rect class="rf" x="16" y="40" width="608" height="32"/><line class="l2" x1="16" y1="72" x2="624" y2="72"/><text class="mali" x="30" y="62" text-anchor="start">Programsko okru&#382;enje &#8211; &#263;elija_01</text><rect class="pf" x="28" y="80" width="22" height="16" rx="4"/><rect class="pf" x="58" y="80" width="22" height="16" rx="4"/><rect class="pf" x="88" y="80" width="22" height="16" rx="4"/><rect class="pf" x="118" y="80" width="22" height="16" rx="4"/><rect class="pf" x="160" y="80" width="22" height="16" rx="4"/><rect class="pf" x="190" y="80" width="22" height="16" rx="4"/><line class="l2" x1="16" y1="104" x2="624" y2="104"/><line class="l2" x1="176" y1="104" x2="176" y2="356"/><line class="l2" x1="452" y1="104" x2="452" y2="356"/><line class="l2" x1="176" y1="232" x2="452" y2="232"/><text class="mali" x="26" y="128" text-anchor="start">Stablo projekta</text><text class="mali" x="38" y="160" text-anchor="start">&#263;elija</text><line class="l2" x1="28" y1="155" x2="34" y2="155"/><text class="mali" x="38" y="188" text-anchor="start">robot</text><line class="l2" x1="28" y1="183" x2="34" y2="183"/><text class="mali" x="38" y="216" text-anchor="start">alat</text><line class="l2" x1="28" y1="211" x2="34" y2="211"/><text class="mali" x="38" y="244" text-anchor="start">programi</text><line class="l2" x1="28" y1="239" x2="34" y2="239"/><text class="mali" x="38" y="272" text-anchor="start">to&#269;ke</text><line class="l2" x1="28" y1="267" x2="34" y2="267"/><text class="mali" x="186" y="134" text-anchor="start">PROC ciklus()</text><text class="mali" x="186" y="158" text-anchor="start">  MoveJ p40,v800,z20;</text><rect class="cf" x="182" y="165" width="264" height="22"/><text class="mali" x="186" y="182" text-anchor="start">  MoveL p10,v200,fine;</text><text class="mali" x="186" y="206" text-anchor="start">ENDPROC</text><line class="l2" x1="190" y1="332" x2="438" y2="332"/><rect class="pf" x="206" y="310" width="24" height="22"/><rect class="l" fill="none" x="206" y="310" width="24" height="22"/><path class="l" fill="none" d="M218,310 L218,296 L238,260 L272,272"/><path class="t dash" fill="none" d="M272,272 L282,252 L344,252 L344,300"/><circle class="tf" cx="272" cy="272" r="5"/><circle class="tf" cx="282" cy="252" r="5"/><circle class="tf" cx="344" cy="252" r="5"/><circle class="tf" cx="344" cy="300" r="5"/><circle class="t" fill="none" cx="272" cy="272" r="10"/><text class="mali" x="272" y="296" text-anchor="middle">p10</text><text class="mali" x="336" y="352" text-anchor="middle">3D prikaz &#263;elije</text><text class="mali" x="462" y="128" text-anchor="start">Popis to&#269;aka</text><rect class="cf" x="456" y="142" width="164" height="28"/><text class="mali" x="468" y="162" text-anchor="start">p10  uzmi</text><line class="l2" x1="456" y1="172" x2="620" y2="172"/><text class="mali" x="468" y="194" text-anchor="start">p20  iznad</text><line class="l2" x1="456" y1="204" x2="620" y2="204"/><text class="mali" x="468" y="226" text-anchor="start">p30  odlo&#382;i</text><line class="l2" x1="456" y1="236" x2="620" y2="236"/><text class="mali" x="468" y="258" text-anchor="start">p40  sigurno</text><line class="l2" x1="456" y1="268" x2="620" y2="268"/>
+</svg><figcaption><b>Slika 3.2</b> &mdash; Programsko okruženje: stablo projekta, program, prikaz ćelije i popis točaka u zasebnome prozoru.</figcaption></figure></section><section><h2>Ključni pojmovi</h2><div class="crta"></div><div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody><tr><td>Deklaracija</td><td>Uvođenje podatka u program: naziv, tip i početna vrijednost.</td></tr><tr><td>Potprogram</td><td>Zaokružen dio programa s vlastitim nazivom, pozvan iz glavnog programa.</td></tr><tr><td>Položaj alata</td><td>Zapis točke koordinatama i orijentacijom vrha alata u prostoru.</td></tr><tr><td>Zglobni položaj</td><td>Zapis točke kutovima pojedinih osi robota.</td></tr><tr><td>Zona zaobljenja</td><td>Polumjer područja oko točke unutar kojega robot smije skrenuti prema sljedećoj točki.</td></tr><tr><td>Točan dolazak</td><td>Zahtjev da se robot u točki zaustavi prije nastavka gibanja.</td></tr><tr><td>Konfiguracija</td><td>Podatak o tome kojim je položajem zglobova točka naučena.</td></tr></tbody></table></div></section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="3" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 1 od 3</p><p class="pit">Koji je zajednički dio građe programa u svim navedenim jezicima?</p><div class="odg"><button type="button">grafički uređivač putanje</button><button type="button">deklaracije, glavni program i potprogrami</button><button type="button">obvezna uporaba registara</button><button type="button">isti naziv naredbe gibanja</button></div><p class="obraz">Nazivi naredbi se razlikuju, ali građa od deklaracija, glavnog programa i potprograma je zajednička.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 2 od 3</p><p class="pit">Što znači parametar fine, odnosno FINE, u naredbi gibanja?</p><div class="odg"><button type="button">najveću dopuštenu brzinu</button><button type="button">točan dolazak uz zaustavljanje u točki</button><button type="button">najmanji dopušteni razmak točaka</button><button type="button">najfiniju razlučivost zaslona</button></div><p class="obraz">Točan dolazak znači da se robot u točki zaustavi prije nastavka, za razliku od zone zaobljenja.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 3 od 3</p><p class="pit">Zašto se sigurnosni i početni položaj najčešće zapisuju kao zglobni položaj?</p><div class="odg"><button type="button">jer se brže izvodi</button><button type="button">jer je jednoznačan i uvijek dostižan</button><button type="button">jer zauzima manje memorije</button><button type="button">jer ne treba alat</button></div><p class="obraz">Zglobni položaj izravno zadaje kutove osi, pa nema dvojbe o konfiguraciji ni o dostižnosti.</p></div><p class="rezultat">Odgovoreno 0 od 3.</p></div></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="m3-programiranje-robota.html">&#8592; 3. Programiranje industrijskog robota</a><a class="gumb" href="3-2-oprema-za-programiranje.html">3.2 Oprema za programiranje industrijskih robota <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-industrijske-robotske-ruke-3-1-programski-jezici-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+(function(){
+  var k = document.getElementById('r31'); if(!k) return;
+  var jedinice = {'rap':'','krl':'','tp':'','inf':''};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){ 
+          var tocno = (v.z === 0);
+          var rap, krl, tp, inf;
+          var zr = tocno ? 'fine' : ('z' + v.z);
+          var cnt = tocno ? 'FINE' : ('CNT' + Math.min(100, Math.round(v.z)));
+          var pl  = tocno ? 'PL=0' : ('PL=' + Math.min(8, Math.max(1, Math.round(v.z / 12))));
+          var kz  = tocno ? '' : ' C_DIS';
+          var ms  = (v.v / 1000).toFixed(2);
+          if (v.t === 'ptp') {
+            var post = Math.min(100, Math.round(v.v / 20));
+            rap = 'MoveJ p20, v' + v.v + ', ' + zr + ', tAlat;';
+            krl = 'PTP P20 Vel=' + post + ' % PDAT1' + kz;
+            tp  = 'J P[20] ' + post + '% ' + cnt;
+            inf = 'MOVJ VJ=' + post.toFixed(2);
+          } else if (v.t === 'lin') {
+            rap = 'MoveL p20, v' + v.v + ', ' + zr + ', tAlat;';
+            krl = 'LIN P20 Vel=' + ms + ' m/s CPDAT1' + kz;
+            tp  = 'L P[20] ' + v.v + 'mm/sec ' + cnt;
+            inf = 'MOVL V=' + v.v.toFixed(1) + ' ' + pl;
+          } else {
+            rap = 'MoveC p20, p30, v' + v.v + ', ' + zr + ', tAlat;';
+            krl = 'CIRC P20, P30 Vel=' + ms + ' m/s CPDAT1' + kz;
+            tp  = 'C P[20] P[30] ' + v.v + 'mm/sec ' + cnt;
+            inf = 'MOVC V=' + v.v.toFixed(1) + ' ' + pl;
+          }
+          return { rap: rap, krl: krl, tp: tp, inf: inf,
+            _poruka: tocno ? 'Zona 0 znači točan dolazak: robot se u točki zaustavlja. Koristi se ondje gdje se obradak uzima, odlaže ili obrađuje.'
+                   : (v.z >= 60 ? 'Velika zona znatno skraćuje ciklus, ali putanja odstupa od naučene točke i do nekoliko centimetara. Provjerite ima li prepreka.'
+                                : 'Zona zaobljenja skraćuje ciklus i uklanja trzaje na prijelazu među točkama.') };
+         }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = racunaj(v) || {};
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r31-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small>' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r31-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3.3 Programiranje jednostavnog zadatka industrijskog robota — Osnove programiranja industrijskih robotskih sustava | FORTRONIQ</title>
+<meta name="description" content="Uzimanje predmeta s jednog mjesta i odlaganje na drugo najjednostavniji je robotski zadatak i ujedno kostur gotovo svakog složenijeg. Ako se on napravi uredno &amp;mdash; s promišljeni">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/industrijske-robotske-ruke/3-3-jednostavan-zadatak.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/industrijske-robotske-ruke/3-3-jednostavan-zadatak.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/industrijske-robotske-ruke/3-3-jednostavan-zadatak.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/industrijske-robotske-ruke/3-3-jednostavan-zadatak.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="3.3 Programiranje jednostavnog zadatka industrijskog robota">
+<meta property="og:description" content="Uzimanje predmeta s jednog mjesta i odlaganje na drugo najjednostavniji je robotski zadatak i ujedno kostur gotovo svakog složenijeg. Ako se on napravi uredno &amp;mdash; s promišljeni">
+<meta property="og:url" content="https://dos.fortroniq.hr/industrijske-robotske-ruke/3-3-jednostavan-zadatak.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://www.fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://www.fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Osnove programiranja industrijskih robotskih sustava</a><i aria-hidden="true">/</i><a href="m3-programiranje-robota.html">3. Programiranje industrijskog robota</a><i aria-hidden="true">/</i><span aria-current="page">3.3 Programiranje jednostavnog zadatka industrijskog robota</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 3 &middot; PROGRAMIRANJE INDUSTRIJSKOG ROBOTA</p><p class="nadnaslov">Nastavna jedinica 3.3</p><h1>Programiranje jednostavnog zadatka industrijskog robota</h1><p>Uzimanje predmeta s jednog mjesta i odlaganje na drugo najjednostavniji je robotski zadatak i ujedno kostur gotovo svakog složenijeg. Ako se on napravi uredno &mdash; s promišljenim redoslijedom točaka, provjerom signala i ispitivanjem korak po korak &mdash; sve ostalo je nadogradnja.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>provesti analizu zadatka i popisati ulazne podatke, signale i ograničenja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izraditi dijagram toka programa prije pisanja koda</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>sastaviti popis točaka s njihovom ulogom i međusobnim odnosom</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>naučiti točke na robotu i zapisati ih uz odgovarajući alat i radni predmet</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>napisati program s naredbama gibanja, upravljanjem prihvatnicom i provjerom ulaza</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ispitati program korak po korak u ručnom radu i sigurno prijeći u automatski rad</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>prepoznati i izbjeći česte pogreške pri prvom programu</span></li></ul></div></div></header><div class="omot"><section><h2>Analiza zadatka</h2><div class="crta"></div><p>Zadatak glasi: robot uzima obradak sa stola za uzimanje i odlaže ga na traku. Prije nego što se napiše ijedna naredba, treba odgovoriti na nekoliko pitanja, jer svaki odgovor mijenja program.</p><ul class="tekst"><li>Kako je obradak postavljen? Leži li uvijek u istom položaju ili se položaj mijenja?</li><li>Čime se hvata? Prihvatnicom s dvama prstima, vakuumskom prihvatnicom ili magnetom?</li><li>S koje strane robot smije prići? Postoji li naprava ili stijenka koja smeta?</li><li>Koji signali postoje? Ima li senzor prisutnosti obratka i ima li prihvatnica potvrdu stezanja?</li><li>Što se događa kada obratka nema? Robot čeka, javlja poruku ili preskače ciklus?</li><li>Koliko traje ciklus i koliko komada treba u satu?</li></ul><p>Odgovori se zapisuju, jer čine dokumentaciju zadatka. Iz njih slijedi popis signala, a iz popisa signala izravno naredbe za postavljanje izlaza i čekanje ulaza. Pretpostavimo za nastavak: obradak je kvadar, leži u napravi s gnijezdom pa je položaj uvijek isti, hvata se prihvatnicom s dvama prstima odozgo, senzor u gnijezdu javlja prisutnost, a prihvatnica ima sklopku koja potvrđuje stegnuto stanje.</p><div class="tablica-omot"><table><thead><tr><th>Signal</th><th>Vrsta</th><th>Oznaka</th><th>Značenje</th></tr></thead><tbody><tr><td>Prisutnost obratka</td><td>digitalni ulaz</td><td>diObradak</td><td>1 kada je obradak u gnijezdu</td></tr><tr><td>Potvrda stezanja</td><td>digitalni ulaz</td><td>diStegnuto</td><td>1 kada su prsti zatvoreni na obratku</td></tr><tr><td>Potvrda otpuštanja</td><td>digitalni ulaz</td><td>diOtpusteno</td><td>1 kada su prsti otvoreni</td></tr><tr><td>Stezanje prihvatnice</td><td>digitalni izlaz</td><td>doStegni</td><td>1 zatvara prste</td></tr><tr><td>Traka slobodna</td><td>digitalni ulaz</td><td>diTrakaSlobodna</td><td>1 kada je mjesto odlaganja prazno</td></tr><tr><td>Ciklus u tijeku</td><td>digitalni izlaz</td><td>doURadu</td><td>1 dok robot izvodi ciklus</td></tr></tbody></table></div></section><section><h2>Dijagram toka</h2><div class="crta"></div><p><strong>Dijagram toka</strong> crta se prije programa i rješava ono što se u kodu teško vidi: redoslijed, mjesta odluke i što se događa kada uvjet nije ispunjen. Nije ga potrebno crtati programom; olovka i papir dovoljni su, a korist je ista.</p><p>Za naš zadatak tijek je sljedeći, zapisan kao pseudokod:</p><pre><code>POCETAK
+  otpusti prihvatnicu
+  idi u sigurnosnu tocku
+  PONAVLJAJ
+    AKO nema obratka u gnijezdu ONDA
+        cekaj 0,5 s
+        nastavi od pocetka petlje
+    KRAJ AKO
+    idi iznad mjesta uzimanja
+    spusti se na mjesto uzimanja
+    stegni prihvatnicu
+    cekaj potvrdu stezanja
+    podigni se iznad mjesta uzimanja
+    AKO traka nije slobodna ONDA cekaj KRAJ AKO
+    idi iznad mjesta odlaganja
+    spusti se na mjesto odlaganja
+    otpusti prihvatnicu
+    cekaj potvrdu otpustanja
+    podigni se iznad mjesta odlaganja
+    povecaj brojilo za 1
+  DOK je pogon ukljucen
+KRAJ</code></pre><p>Dijagram odmah otkriva dvije stvari koje se u žurbi zaboravljaju. Prvo, prihvatnicu treba otpustiti na početku, jer nitko ne zna u kakvom je stanju ostala nakon prethodnog zaustavljanja. Drugo, između uzimanja i odlaganja postoji provjera je li mjesto odlaganja slobodno; bez nje robot odlaže na zauzeto mjesto.</p><div class="okvir"><h4>Zapamtite</h4><p>Vrijeme uloženo u dijagram toka vraća se pri ispitivanju. Program napisan bez dijagrama obično radi, ali se pri prvoj izmjeni pokaže da nitko ne zna zašto je neki korak ondje gdje jest.</p></div><figure class="crtez"><svg viewBox="0 0 640 420" role="img" aria-label="Slika 3.5: Dijagram toka uzimanja i odlaganja s dvjema odlukama: ima li obratka i je li mjesto odlaganja slobodno.">
+<rect class="pf" x="70" y="40" width="200" height="36" rx="18"/><rect class="l" fill="none" x="70" y="40" width="200" height="36" rx="18"/><text class="mali" x="170" y="63" text-anchor="middle">Po&#269;etak</text><rect class="pf" x="70" y="90" width="200" height="36"/><rect class="l" fill="none" x="70" y="90" width="200" height="36"/><text class="mali" x="170" y="113" text-anchor="middle">otpusti prihvatnicu</text><rect class="pf" x="70" y="140" width="200" height="36"/><rect class="l" fill="none" x="70" y="140" width="200" height="36"/><text class="mali" x="170" y="163" text-anchor="middle">u sigurnosnu to&#269;ku</text><path class="pf" d="M170,194 L285,229 L170,264 L55,229 Z"/><path class="l" fill="none" d="M170,194 L285,229 L170,264 L55,229 Z"/><text class="mali" x="170" y="234" text-anchor="middle">ima obratka?</text><rect class="pf" x="70" y="286" width="200" height="36"/><rect class="l" fill="none" x="70" y="286" width="200" height="36"/><text class="mali" x="170" y="309" text-anchor="middle">prilaz i uzimanje</text><line class="l" x1="170" y1="76" x2="170" y2="81.2"/><path class="if" d="M170,90 L164.9,79 L175.1,79 Z"/><line class="l" x1="170" y1="126" x2="170" y2="131.2"/><path class="if" d="M170,140 L164.9,129 L175.1,129 Z"/><line class="l" x1="170" y1="176" x2="170" y2="186"/><line class="l" x1="170" y1="186" x2="170" y2="186.8"/><path class="if" d="M170,194 L165.9,185 L174.1,185 Z"/><line class="l" x1="170" y1="264" x2="170" y2="277.2"/><path class="if" d="M170,286 L164.9,275 L175.1,275 Z"/><text class="mali" x="184" y="282" text-anchor="start">da</text><path class="l2" fill="none" d="M55,229 L36,229 L36,186 L170,186"/><text class="mali" x="42" y="220" text-anchor="start">ne</text><rect class="pf" x="370" y="40" width="200" height="36"/><rect class="l" fill="none" x="370" y="40" width="200" height="36"/><text class="mali" x="470" y="63" text-anchor="middle">odmak od uzimanja</text><path class="pf" d="M470,92 L585,127 L470,162 L355,127 Z"/><path class="l" fill="none" d="M470,92 L585,127 L470,162 L355,127 Z"/><text class="mali" x="470" y="132" text-anchor="middle">mjesto prazno?</text><rect class="pf" x="370" y="178" width="200" height="36"/><rect class="l" fill="none" x="370" y="178" width="200" height="36"/><text class="mali" x="470" y="201" text-anchor="middle">odlo&#382;i i otpusti</text><rect class="pf" x="370" y="246" width="200" height="36"/><rect class="l" fill="none" x="370" y="246" width="200" height="36"/><text class="mali" x="470" y="269" text-anchor="middle">pove&#263;aj brojilo</text><path class="pf" d="M470,300 L585,335 L470,370 L355,335 Z"/><path class="l" fill="none" d="M470,300 L585,335 L470,370 L355,335 Z"/><text class="mali" x="470" y="340" text-anchor="middle">pogon radi?</text><line class="l" x1="470" y1="76" x2="470" y2="83.2"/><path class="if" d="M470,92 L464.9,81 L475.1,81 Z"/><line class="l" x1="470" y1="162" x2="470" y2="169.2"/><path class="if" d="M470,178 L464.9,167 L475.1,167 Z"/><text class="mali" x="484" y="176" text-anchor="start">da</text><line class="l" x1="470" y1="214" x2="470" y2="237.2"/><path class="if" d="M470,246 L464.9,235 L475.1,235 Z"/><line class="l" x1="470" y1="282" x2="470" y2="291.2"/><path class="if" d="M470,300 L464.9,289 L475.1,289 Z"/><path class="l2" fill="none" d="M585,127 L608,127 L608,84 L470,84 L470,86"/><path class="if" d="M470,92 L464.9,81 L475.1,81 Z"/><text class="mali" x="604" y="76" text-anchor="end">ne, &#269;ekaj</text><path class="l2" fill="none" d="M270,304 L310,304 L310,58 L360,58"/><path class="if" d="M370,58 L359,63.1 L359,52.9 Z"/><path class="l2" fill="none" d="M355,335 L330,335 L330,404 L20,404 L20,186 L160,186"/><path class="if" d="M170,186 L159,191.1 L159,180.9 Z"/><text class="mali" x="336" y="326" text-anchor="start">da</text><rect class="pf" x="370" y="380" width="200" height="34" rx="17"/><rect class="l" fill="none" x="370" y="380" width="200" height="34" rx="17"/><text class="mali" x="470" y="402" text-anchor="middle">Kraj</text><line class="l" x1="470" y1="370" x2="470" y2="372.8"/><path class="if" d="M470,380 L465.9,371 L474.1,371 Z"/><text class="mali" x="484" y="376" text-anchor="start">ne</text>
+</svg><figcaption><b>Slika 3.5</b> &mdash; Dijagram toka uzimanja i odlaganja s dvjema odlukama: ima li obratka i je li mjesto odlaganja slobodno.</figcaption></figure></section><section><h2>Popis točaka</h2><div class="crta"></div><p>Pet točaka dovoljno je za cijeli zadatak. Njihov raspored nije stvar ukusa: svaka ima razlog postojanja i svaka se uči na određen način.</p><div class="tablica-omot"><table><thead><tr><th>Točka</th><th>Uloga</th><th>Način dolaska</th><th>Točnost</th></tr></thead><tbody><tr><td>pSigurna</td><td>početni i završni položaj, slobodan od svih prepreka</td><td>zglobno gibanje</td><td>zona zaobljenja</td></tr><tr><td>pIznadUzimanja</td><td>točka iznad obratka, okomito nad mjestom uzimanja</td><td>zglobno gibanje</td><td>zona zaobljenja</td></tr><tr><td>pUzimanje</td><td>položaj u kojem prsti obuhvaćaju obradak</td><td>pravocrtno gibanje, okomito prema dolje</td><td>točan dolazak</td></tr><tr><td>pIznadOdlaganja</td><td>točka iznad mjesta odlaganja</td><td>zglobno gibanje</td><td>zona zaobljenja</td></tr><tr><td>pOdlaganje</td><td>položaj u kojem se obradak spušta na traku</td><td>pravocrtno gibanje, okomito prema dolje</td><td>točan dolazak</td></tr></tbody></table></div><p>Točke iznad uzimanja i odlaganja postoje zbog jednog razloga: prilaz obratku uvijek mora biti okomit i pravocrtan. Ako robot prilazi koso, prsti zapinju za rub gnijezda ili guraju obradak prije nego što ga obuhvate. Visina tih točaka bira se tako da prihvatnica sigurno prelazi preko svih prepreka, obično 80 do 150 mm iznad radne točke.</p><p>Sigurnosna točka uči se kao zglobni položaj, jer mora biti dostižna iz svakog stanja i ne smije ovisiti o konfiguraciji. Preostale četiri uče se kao položaji alata, uz određen alat i određen radni predmet, jer se pri pomaku naprave ili trake mijenja samo radni predmet, a točke ostaju.</p><div class="okvir pazi"><h4>Pažnja</h4><p>Točke iznad uzimanja i odlaganja ne uče se posebno. Nauči se radna točka, a točka iznad nje dobiva se pomakom po osi alata, primjerice naredbom koja zadanoj točki dodaje odmak. Time se osigurava da su dvije točke doista jedna iznad druge i da se pri izmjeni radne točke pomiču zajedno.</p></div></section><section><h2>Učenje točaka i pisanje programa</h2><div class="crta"></div><p>Točke se uče u ručnom radu sa smanjenom brzinom, s privjeskom u ruci i sklopkom mrtvog čovjeka u srednjem položaju. Postupak je za svaku točku isti: odabere se koordinatni sustav u kojem je primicanje najjednostavnije, robot se dovede u položaj najprije grubo pa sve sporije, provjeri se položaj iz dvaju pogleda i tek se onda točka sprema.</p><p>Pri primicanju obratku smanjuje se postotak brzine. Uobičajen je slijed 50 % dok je robot daleko, 10 % na posljednjih nekoliko centimetara i 2 do 5 % na posljednjih nekoliko milimetara. Ako se prsti moraju smjestiti u uski prostor, korisno je gibati se u alatnom koordinatnom sustavu, jer se tada pomak po osi alata poklapa sa smjerom prilaza.</p><p>Kada su točke naučene, program se piše iz dijagrama toka gotovo doslovno.</p><pre><code>PROC main()
+    ! priprema
+    SetDO doStegni, 0;                ! otpusti prihvatnicu
+    WaitDI diOtpusteno, 1;
+    MoveAbsJ jpSigurna, v500, fine, tPrihvatnica;
+
+    WHILE TRUE DO
+        IF diObradak = 0 THEN
+            WaitTime 0.5;
+        ELSE
+            UzmiKomad;
+            OdloziKomad;
+            nBrojac := nBrojac + 1;
+        ENDIF
+    ENDWHILE
+ENDPROC
+
+PROC UzmiKomad()
+    MoveJ Offs(pUzimanje,0,0,120), v1000, z30, tPrihvatnica;
+    MoveL pUzimanje, v80, fine, tPrihvatnica;
+    SetDO doStegni, 1;
+    WaitDI diStegnuto, 1\MaxTime:=2;
+    MoveL Offs(pUzimanje,0,0,120), v200, z30, tPrihvatnica;
+ENDPROC
+
+PROC OdloziKomad()
+    WaitDI diTrakaSlobodna, 1;
+    MoveJ Offs(pOdlaganje,0,0,120), v1000, z30, tPrihvatnica;
+    MoveL pOdlaganje, v100, fine, tPrihvatnica;
+    SetDO doStegni, 0;
+    WaitDI diOtpusteno, 1;
+    MoveL Offs(pOdlaganje,0,0,120), v300, z30, tPrihvatnica;
+ENDPROC</code></pre><p>Uočite tri pojedinosti. Brzina prilaza obratku manja je od brzine povratka, jer se pri prilazu traži točnost, a pri povratku brzina. Naredbe stezanja i otpuštanja uvijek su praćene čekanjem na potvrdu, a ne slijepim čekanjem na vrijeme. I sve točke iznad radnih dobivene su odmakom od radne točke, pa se pri pomicanju naprave mijenja jedna vrijednost, a ne dvije.</p><div class="racun" id="r33"><div class="racun-h"><b>Vrijeme ciklusa uzimanja i odlaganja</b><em>Računski prikaz</em></div><p>Procjena trajanja jednog ciklusa iz duljina segmenata, brzina gibanja i vremena rada prihvatnice. Dodatak na ubrzanje i usporavanje uzet je kao stalna vrijednost po segmentu, pa je rezultat orijentacijski.</p><div class="polja"><div class="polje"><label for="r33-h">Visina prilaza i odmaka<output id="r33-h-out" for="r33-h" data-jed=" mm">120 mm</output></label><input type="range" id="r33-h" data-ulaz="h" min="30" max="300" step="10" value="120"></div><div class="polje"><label for="r33-l">Razmak uzimanja i odlaganja<output id="r33-l-out" for="r33-l" data-jed=" mm">900 mm</output></label><input type="range" id="r33-l" data-ulaz="l" min="200" max="3000" step="50" value="900"></div><div class="polje"><label for="r33-vp">Brzina prilaza obratku<output id="r33-vp-out" for="r33-vp" data-jed=" mm/s">100 mm/s</output></label><input type="range" id="r33-vp" data-ulaz="vp" min="30" max="400" step="10" value="100"></div><div class="polje"><label for="r33-vb">Brzina prijenosa<output id="r33-vb-out" for="r33-vb" data-jed=" mm/s">1200 mm/s</output></label><input type="range" id="r33-vb" data-ulaz="vb" min="200" max="3000" step="50" value="1200"></div><div class="polje"><label for="r33-ts">Vrijeme stezanja<output id="r33-ts-out" for="r33-ts" data-jed=" s">0,35 s</output></label><input type="range" id="r33-ts" data-ulaz="ts" min="0.05" max="1.5" step="0.05" value="0.35"></div><div class="polje"><label for="r33-to">Vrijeme otpuštanja<output id="r33-to-out" for="r33-to" data-jed=" s">0,25 s</output></label><input type="range" id="r33-to" data-ulaz="to" min="0.05" max="1.5" step="0.05" value="0.25"></div><div class="polje"><label for="r33-d">Dodatak na ubrzanje po segmentu<output id="r33-d-out" for="r33-d" data-jed=" s">0,12 s</output></label><input type="range" id="r33-d" data-ulaz="d" min="0" max="0.4" step="0.02" value="0.12"></div></div><div class="ishod"><div class="ish"><span>Vrijeme gibanja</span><b id="r33-tg">&mdash;<small>s</small></b></div><div class="ish"><span>Vrijeme prihvatnice</span><b id="r33-tp">&mdash;<small>s</small></b></div><div class="ish"><span>Vrijeme ciklusa</span><b id="r33-tc">&mdash;<small>s</small></b></div><div class="ish"><span>Komada na sat</span><b id="r33-kh">&mdash;</b></div></div><p class="poruka" id="r33-poruka"></p></div></section><section><h2>Ispitivanje programa</h2><div class="crta"></div><p>Program se nikada ne pokreće prvi put u automatskom radu. Ispitivanje ima tri stupnja i svaki od njih otkriva drugu vrstu pogreške.</p><p><strong>Prvi stupanj: korak po korak pri najmanjoj brzini.</strong> Sustav se postavi u ručni rad sa smanjenom brzinom, postotak se spusti na 10 %, a program se izvodi jedan redak po jedan, uz držanje sklopke mrtvog čovjeka. Prati se ide li robot ondje kamo je zamišljeno, postoji li opasnost od sudara i reagiraju li prihvatnica i signali. Ovo je jedini stupanj u kojem je čovjek unutar ograde.</p><p><strong>Drugi stupanj: neprekidno izvođenje smanjenom brzinom.</strong> Program se pusti da teče, i dalje u ručnom radu, uz postotak 25 do 50 %. Sada se vide stvari koje se u koraku po korak ne primijete: prijelazi između točaka, učinak zona zaobljenja i ponašanje u petlji. Uobičajeno je pustiti nekoliko ciklusa zaredom, jer se pogreške u povratku u početni položaj vide tek u drugom prolazu.</p><p><strong>Treći stupanj: automatski rad.</strong> Čovjek izlazi iz ćelije, vrata se zatvore, provjeri se da su sve zaštitne funkcije djelatne i program se pokrene izvana. Prvih nekoliko ciklusa prati se kroz zaštitnu ogradu, uz ruku na tipki za zaustavljanje. Tek nakon toga se mjeri vrijeme ciklusa i prilagođavaju brzine i zone zaobljenja.</p><div class="tablica-omot"><table><thead><tr><th>Stupanj</th><th>Način rada</th><th>Brzina</th><th>Što se otkriva</th></tr></thead><tbody><tr><td>Korak po korak</td><td>ručni, smanjena brzina</td><td>10 %</td><td>pogrešno naučene točke, sudar, neispravan signal</td></tr><tr><td>Neprekidno, smanjeno</td><td>ručni, smanjena brzina</td><td>25 do 50 %</td><td>prijelazi među točkama, učinak zona, ponašanje petlje</td></tr><tr><td>Automatski rad</td><td>automatski</td><td>programirana</td><td>stvarno vrijeme ciklusa, ponašanje pri punoj brzini, suradnja sa strojem</td></tr></tbody></table></div><div class="okvir pazi"><h4>Pažnja</h4><p>Prije prvog pokretanja provjerite da je prihvatnica prazna i da je put do sigurnosne točke slobodan. Prva naredba u programu često je gibanje u sigurnosnu točku, a robot do nje ide najkraćim putem &mdash; ne onim kojim ste ga doveli ručno.</p></div></section><section><h2>Česte pogreške početnika</h2><div class="crta"></div><p>Pogreške pri prvom programu ponavljaju se iz generacije u generaciju i gotovo su uvijek iste. Popis koji slijedi nastao je iz onoga što se u radionici najčešće vidi.</p><div class="tablica-omot"><table><thead><tr><th>Pogreška</th><th>Što se dogodi</th><th>Kako se izbjegava</th></tr></thead><tbody><tr><td>Kosi prilaz obratku</td><td>prsti zapinju, obradak se pomiče prije stezanja</td><td>uvijek pravocrtan prilaz iz točke iznad radne točke</td></tr><tr><td>Čekanje na vrijeme umjesto na signal</td><td>program radi dok je sve u redu, zakaže pri sporijem ventilu</td><td>čekanje na potvrdu ulaza, uz ograničenje najduljeg čekanja</td></tr><tr><td>Točan dolazak u svakoj točki</td><td>ciklus je dulji, gibanje trzavo</td><td>točan dolazak samo u radnim točkama</td></tr><tr><td>Zona zaobljenja u radnoj točki</td><td>robot ne dođe do obratka nego ga zaobiđe</td><td>u točki uzimanja i odlaganja uvijek točan dolazak</td></tr><tr><td>Prihvatnica u neodređenom stanju na početku</td><td>pri pokretanju ispusti ili stisne obradak</td><td>prva naredba programa postavlja poznato stanje izlaza</td></tr><tr><td>Nema provjere prisutnosti obratka</td><td>robot steže prazan prostor i nastavlja ciklus</td><td>uvjet na ulazu prisutnosti prije uzimanja</td></tr><tr><td>Točke naučene s pogrešnim alatom</td><td>svi položaji pomaknuti za iznos razlike</td><td>prije učenja provjeriti odabrani alat i radni predmet</td></tr><tr><td>Prvo pokretanje u automatskom radu</td><td>sudar pri punoj brzini</td><td>obvezan slijed od triju stupnjeva ispitivanja</td></tr></tbody></table></div><p>Dvije pogreške zaslužuju poseban osvrt. Prva je zamjena čekanja na signal čekanjem na vrijeme. Program u kojem piše da se nakon stezanja čeka 0,3 sekunde radit će mjesecima, a zatajit će onog dana kada tlak u mreži padne i ventil zakasni. Druga je nedostatak poznatog početnog stanja. Robot koji se nakon zaustavljanja u nuždi pokreće s obratkom u prihvatnici, a program počinje naredbom otpuštanja, ispustit će taj obradak na pod &mdash; ili obrnuto, pokušat će uzeti nov obradak s već punom prihvatnicom.</p><p>Rješenje za oboje isto je: program mora početi <strong>pripremom</strong> u kojoj se utvrđuje i uspostavlja poznato stanje, a ne pretpostavlja. Ta priprema obično je najkraći potprogram u cijelom programu i najviše puta spašava ciklus.</p><figure class="crtez"><svg viewBox="0 0 640 380" role="img" aria-label="Slika 3.6: Ćelija s napravom i trakom te pet točaka koje su dovoljne za cijeli ciklus uzimanja i odlaganja.">
+<line class="l2" x1="20" y1="330" x2="620" y2="330"/><rect class="pf" x="84" y="296" width="52" height="34"/><rect class="l" fill="none" x="84" y="296" width="52" height="34"/><path class="pf" d="M90,296 L130,296 L126,272 L94,272 Z"/><path class="l" fill="none" d="M90,296 L130,296 L126,272 L94,272 Z"/><path class="l" fill="none" d="M110,276 L160,190 L272,204"/><circle class="tf" cx="110" cy="276" r="5"/><circle class="tf" cx="160" cy="190" r="5"/><rect class="pf" x="230" y="278" width="100" height="28"/><rect class="l" fill="none" x="230" y="278" width="100" height="28"/><rect class="rf" x="262" y="262" width="36" height="16"/><rect class="l2" fill="none" x="262" y="262" width="36" height="16"/><text class="mali" x="280" y="352" text-anchor="middle">naprava za uzimanje</text><rect class="pf" x="420" y="276" width="190" height="24"/><rect class="l" fill="none" x="420" y="276" width="190" height="24"/><circle class="l2" fill="none" cx="434" cy="288" r="7"/><circle class="l2" fill="none" cx="468" cy="288" r="7"/><circle class="l2" fill="none" cx="502" cy="288" r="7"/><circle class="l2" fill="none" cx="536" cy="288" r="7"/><circle class="l2" fill="none" cx="570" cy="288" r="7"/><circle class="l2" fill="none" cx="604" cy="288" r="7"/><line class="l2" x1="536" y1="242" x2="591.2" y2="242"/><path class="if" d="M600,242 L589,247.1 L589,236.9 Z"/><text class="mali" x="515" y="352" text-anchor="middle">traka za odlaganje</text><path class="t dash" fill="none" d="M250,90 L280,196 L280,256"/><path class="t dash" fill="none" d="M280,196 L500,196 L500,262"/><line class="l2" x1="238" y1="166" x2="272" y2="188"/><circle class="tf" cx="250" cy="90" r="6"/><circle class="l" fill="none" cx="250" cy="90" r="6"/><text class="mali" x="250" y="72" text-anchor="middle">pSigurna</text><circle class="tf" cx="280" cy="196" r="6"/><circle class="l" fill="none" cx="280" cy="196" r="6"/><text class="mali" x="200" y="160" text-anchor="middle">pIznadUzimanja</text><circle class="tf" cx="280" cy="256" r="6"/><circle class="l" fill="none" cx="280" cy="256" r="6"/><text class="mali" x="268" y="250" text-anchor="end">pUzimanje</text><circle class="tf" cx="500" cy="196" r="6"/><circle class="l" fill="none" cx="500" cy="196" r="6"/><text class="mali" x="488" y="186" text-anchor="end">pIznadOdlaganja</text><circle class="tf" cx="500" cy="262" r="6"/><circle class="l" fill="none" cx="500" cy="262" r="6"/><text class="mali" x="488" y="256" text-anchor="end">pOdlaganje</text>
+</svg><figcaption><b>Slika 3.6</b> &mdash; Ćelija s napravom i trakom te pet točaka koje su dovoljne za cijeli ciklus uzimanja i odlaganja.</figcaption></figure></section><section><h2>Ključni pojmovi</h2><div class="crta"></div><div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody><tr><td>Sigurnosna točka</td><td>Položaj slobodan od svih prepreka, iz kojega program počinje i u koji se vraća.</td></tr><tr><td>Točka iznad radne točke</td><td>Točka dobivena odmakom od radne točke po osi alata, radi okomitog prilaza.</td></tr><tr><td>Priprema</td><td>Uvodni dio programa koji uspostavlja poznato stanje izlaza i položaja.</td></tr><tr><td>Čekanje na signal</td><td>Zadržavanje izvođenja dok ulaz ne poprimi zadanu vrijednost.</td></tr><tr><td>Izvođenje korak po korak</td><td>Ispitivanje u kojem se izvodi jedan redak programa po pritisku tipke.</td></tr><tr><td>Vrijeme ciklusa</td><td>Vrijeme od početka do povratka u početni položaj za jedan komad.</td></tr></tbody></table></div></section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="3" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 1 od 3</p><p class="pit">Zašto se radnoj točki uzimanja uvijek prilazi iz točke točno iznad nje?</p><div class="odg"><button type="button">radi kraćeg ciklusa</button><button type="button">da prilaz bude okomit i pravocrtan, bez zapinjanja prstiju</button><button type="button">da se smanji potrošnja energije</button><button type="button">zato što to traži sigurnosni krug</button></div><p class="obraz">Kosi prilaz gura obradak ili zapinje za rub gnijezda; okomit pravocrtan prilaz to isključuje.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 2 od 3</p><p class="pit">Nakon naredbe stezanja prihvatnice ispravnije je:</p><div class="odg"><button type="button">pričekati zadano vrijeme</button><button type="button">pričekati potvrdu ulaza o stegnutom stanju</button><button type="button">odmah nastaviti gibanje</button><button type="button">smanjiti brzinu</button></div><p class="obraz">Čekanje na potvrdu radi i onda kada ventil zakasni, a slijepo čekanje na vrijeme ne.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 3 od 3</p><p class="pit">Kojim redoslijedom se program ispituje?</p><div class="odg"><button type="button">odmah u automatskom radu</button><button type="button">korak po korak, pa neprekidno smanjenom brzinom, pa automatski</button><button type="button">neprekidno punom brzinom, pa korak po korak</button><button type="button">samo u simulaciji</button></div><p class="obraz">Svaki stupanj otkriva drugu vrstu pogreške, a čovjek je unutar ograde samo u prvom.</p></div><p class="rezultat">Odgovoreno 0 od 3.</p></div></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="3-2-oprema-za-programiranje.html">&#8592; 3.2 Oprema za programiranje industrijskih robota</a><a class="gumb" href="m3-aktivnosti-za-samostalno-ucenje.html">Aktivnosti &mdash; modul 3 <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-industrijske-robotske-ruke-3-3-jednostavan-zadatak-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+(function(){
+  var k = document.getElementById('r33'); if(!k) return;
+  var jedinice = {'tg':'s','tp':'s','tc':'s','kh':''};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){ 
+          var tOkomito = 4 * (v.h / v.vp);
+          var tVodoravno = 2 * (v.l / v.vb);
+          var segmenata = 6;
+          var tg = tOkomito + tVodoravno + segmenata * v.d;
+          var tp = v.ts + v.to;
+          var tc = tg + tp;
+          var kh = tc > 0 ? Math.floor(3600 / tc) : 0;
+          var udio = tc > 0 ? (tp / tc) * 100 : 0;
+          var por;
+          if (udio > 30) {
+            por = 'Prihvatnica trosi vise od tridesetine ciklusa. Brza prihvatnica ili raniji nalog za stezanje donijeli bi vise od povecanja brzine gibanja.';
+          } else if (v.h > 200) {
+            por = 'Visina prilaza veca je od 200 mm. Provjerite je li stvarno potrebna, jer se cetiri puta po ciklusu prelazi sporom brzinom.';
+          } else if (v.vp < 60) {
+            por = 'Brzina prilaza je vrlo mala. Sigurna je, ali cetiri okomita segmenta postaju najduzi dio ciklusa.';
+          } else {
+            por = 'Odnos vremena gibanja i vremena prihvatnice je uravnotezen. Daljnje skracivanje trazi izmjenu rasporeda celije.';
+          }
+          return { tg: tg.toFixed(2), tp: tp.toFixed(2), tc: tc.toFixed(2),
+                   kh: kh, _poruka: por };
+         }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = racunaj(v) || {};
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r33-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small>' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r33-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+</script>
+</body>
+</html>
