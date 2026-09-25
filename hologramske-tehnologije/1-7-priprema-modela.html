@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1.7 Priprema modela za hologramski prikaz — Hologramske tehnologije | FORTRONIQ</title>
+<meta name="description" content="Gotov model još nije spreman za naočale. Ova jedinica obrađuje posljednji korak: prorjeđivanje mreže, izradu razina detalja, pečenje tekstura, postavljanje svjetlećih i prozirnih m">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/hologramske-tehnologije/1-7-priprema-modela.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/hologramske-tehnologije/1-7-priprema-modela.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/hologramske-tehnologije/1-7-priprema-modela.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/hologramske-tehnologije/1-7-priprema-modela.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="1.7 Priprema modela za hologramski prikaz">
+<meta property="og:description" content="Gotov model još nije spreman za naočale. Ova jedinica obrađuje posljednji korak: prorjeđivanje mreže, izradu razina detalja, pečenje tekstura, postavljanje svjetlećih i prozirnih m">
+<meta property="og:url" content="https://dos.fortroniq.hr/hologramske-tehnologije/1-7-priprema-modela.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://www.fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://www.fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Hologramske tehnologije</a><i aria-hidden="true">/</i><a href="m1-modeliranje-digitalnih-objekata.html">1. Modeliranje digitalnih objekata</a><i aria-hidden="true">/</i><span aria-current="page">1.7 Priprema modela za hologramski prikaz</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 1 &middot; MODELIRANJE DIGITALNIH OBJEKATA</p><p class="nadnaslov">Nastavna jedinica 1.7</p><h1>Priprema modela za hologramski prikaz</h1><p>Gotov model još nije spreman za naočale. Ova jedinica obrađuje posljednji korak: prorjeđivanje mreže, izradu razina detalja, pečenje tekstura, postavljanje svjetlećih i prozirnih materijala te izvoz modela koji se mora iscrtati šezdeset puta u sekundi.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti što sve obuhvaća priprema modela za hologramski prikaz</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>prorijediti mrežu prema zadanom proračunu uz očuvanje obrisa</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izraditi razine detalja i odrediti udaljenosti prijelaza</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ispeći teksture i odabrati njihovu veličinu prema udaljenosti gledanja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>procijeniti brzinu prikaza i zauzeće memorije iz broja trokuta i tekstura</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izvesti model u format za naočale i zapisati postavke izvoza</span></li></ul></div></div></header><div class="omot"><section><h2>Što znači pripremiti model</h2><div class="crta"></div><p>Priprema je niz zahvata kojima model prelazi iz stanja u kojem je točan u stanje u kojem je brz. Točnost se pritom namjerno žrtvuje, ali samo ondje gdje se gubitak ne vidi. Cijela je vještina u tome da se zna gdje je ta granica, a ona je u jedinici 1.3 izračunata: na dva metra jedna točka zaslona pokriva oko milimetar.</p><p>Priprema ima četiri koraka. Prorjeđuje se mreža, izrađuju razine detalja, peku teksture i postavljaju materijali, a zatim se model izvozi. Nakon svakog koraka mjeri se isto: broj trokuta, veličina datoteke i izgled modela iz triju smjerova. Bez tog mjerenja priprema postaje nizanje zahvata bez povratne informacije.</p><div class="tablica-omot"><table><thead><tr><th>Pokazatelj</th><th>Cilj u HT-1</th><th>Izmjereno</th><th>Ocjena</th></tr></thead><tbody><tr><td>Broj trokuta</td><td>najviše 90 000</td><td>88 400</td><td>zadovoljeno</td></tr><tr><td>Brzina prikaza</td><td>najmanje 60 sličica u sekundi</td><td>58 prosječno, najmanje 44</td><td>nije zadovoljeno</td></tr><tr><td>Radna memorija</td><td>najviše 900 MB</td><td>720 MB</td><td>zadovoljeno</td></tr><tr><td>Pomak sidra</td><td>do 5 mm na 2 m</td><td>6 mm nakon 20 min</td><td>nije zadovoljeno</td></tr><tr><td>Veličina datoteke</td><td>što manja</td><td>3,6 MB</td><td>zadovoljeno</td></tr><tr><td>Mapiranje prostora</td><td>ispod 5 min</td><td>3 min 20 s</td><td>zadovoljeno</td></tr></tbody></table></div><p>Tablica pokazuje stvarno stanje projekta nakon prve isporuke. Dva pokazatelja nisu zadovoljena, i oba se rješavaju u drugom krugu: brzina prikaza dodatnim prorjeđivanjem i razinama detalja, a pomak sidra postupcima iz trećeg modula. Takav ishod je normalan &mdash; prva isporuka rijetko zadovoljava sve pokazatelje.</p></section><section><h2>Prorjeđivanje mreže</h2><div class="crta"></div><p>Prorjeđivanje uklanja vrhove i spaja poligone dok se ne postigne zadani broj trokuta. Postupak je uspješan dok uklanja trokute koji ne nose oblik. Čim krene u obrise i rubove, model izgleda izgriženo, a u hologramu se to vidi jače nego na zaslonu jer promatrač obilazi objekt i gleda ga s mnogo strana.</p><p>Zato se ne prorjeđuje cijeli sklop odjednom. Svaka skupina dobiva svoj postotak, u skladu s raspodjelom proračuna iz jedinice 1.6. U projektu HT-1 ruka robota prorijeđena je s 260&nbsp;000 na 26&nbsp;000 trokuta, dakle na desetinu, dok je ograda s 42&nbsp;000 svedena na 8000. Ukupno je mreža pala s <strong>640&nbsp;000</strong> na <strong>88&nbsp;400</strong> trokuta.</p><div class="tablica-omot"><table><thead><tr><th>Skupina</th><th>Prije</th><th>Poslije</th><th>Postupak</th></tr></thead><tbody><tr><td>Ruka robota</td><td>260 000</td><td>26 000</td><td>prorjeđivanje uz zaštitu obrisa</td></tr><tr><td>Postolje</td><td>48 000</td><td>8 000</td><td>uklanjanje zaobljenja i navoja</td></tr><tr><td>Transporter</td><td>180 000</td><td>16 000</td><td>zamjena valjaka jednostavnim tijelima</td></tr><tr><td>Ograda</td><td>42 000</td><td>8 000</td><td>ploče kao jedna ploha bez debljine</td></tr><tr><td>Ormar</td><td>36 000</td><td>4 000</td><td>uklanjanje unutrašnjosti</td></tr><tr><td>Vijci i sitni dijelovi</td><td>74 000</td><td>1 400</td><td>prikaz pojednostavljenim tijelima</td></tr></tbody></table></div><p>Nekoliko pravila olakšava posao. Rubovi koji čine obris zaključaju se prije prorjeđivanja kako bi ostali netaknuti. Plohe s natpisima također, jer se pri prorjeđivanju iskrivi tekstura. Simetrični dijelovi prorjeđuju se na jednoj polovici, a druga se zrcali, čime se izbjegava nesimetričan rezultat koji oko odmah primijeti.</p><p>Neka se geometrija ne prorjeđuje nego zamjenjuje. Valjci transportera zamijenjeni su jednostavnim tijelima s malim brojem ploha, a vijci i matice pojednostavljenim glavama bez navoja. Takva zamjena daje veću uštedu od bilo kojeg automatskog postupka i, za razliku od prorjeđivanja, ne ostavlja nepravilne trokute koji poslije smetaju pri teksturiranju.</p><p>Nakon svakog kruga prorjeđivanja model se pogleda iz triju smjerova i usporedi sa slikom prije zahvata. Traži se troje: je li se obris promijenio, jesu li se pojavile rupe i je li koja ploha preokrenuta. Sve troje se u naočalama vidi odmah, a na zaslonu pri punom zumu lako promakne.</p></section><section><h2>Razine detalja</h2><div class="crta"></div><p>Nakon prorjeđivanja izrađuju se razine detalja. To su dodatne, još grublje inačice istog modela koje uređaj koristi kad je objekt dalje. U projektu HT-1 postoje tri razine: <strong>90&nbsp;000</strong> trokuta do četiri metra, <strong>45&nbsp;000</strong> od četiri do šest i oko 18&nbsp;000 iznad šest metara.</p><figure class="crtez"><svg viewBox="0 0 640 314" role="img" aria-label="Slika 1.13: Tri razine detalja i udaljenosti na kojima se izmjenjuju; brojevi vrijede za cijelu ćeliju zajedno.">
+<path class="l" d="M46,150 L82,150 L82,174 L46,174 Z"/>
+<path class="l2" d="M54,158 L74,158 M54,166 L74,166"/>
+<text class="mali" x="64" y="132" text-anchor="middle">promatrač</text>
+<path class="cf" d="M100,60 L250,60 L250,240 L100,240 Z"/>
+<path class="cf" d="M256,90 L386,90 L386,240 L256,240 Z"/>
+<path class="cf" d="M392,120 L600,120 L600,240 L392,240 Z"/>
+<path class="l2" d="M100,60 L250,60 L250,240 L100,240 Z M256,90 L386,90 L386,240 L256,240 Z M392,120 L600,120 L600,240 L392,240 Z"/>
+<text class="mali" x="175" y="94" text-anchor="middle">bliska razina</text>
+<text class="mali" x="175" y="114" text-anchor="middle">90 000 trokuta</text>
+<text class="mali" x="321" y="124" text-anchor="middle">srednja razina</text>
+<text class="mali" x="321" y="144" text-anchor="middle">45 000 trokuta</text>
+<text class="mali" x="496" y="154" text-anchor="middle">daleka razina</text>
+<text class="mali" x="496" y="174" text-anchor="middle">18 000 trokuta</text>
+<path class="l" d="M64,250 L610,250"/>
+<path class="l2" d="M100,250 L100,258 M253,250 L253,258 M389,250 L389,258 M600,250 L600,258"/>
+<text class="mali" x="253" y="276" text-anchor="middle">4 m</text>
+<text class="mali" x="389" y="276" text-anchor="middle">6 m</text>
+<text class="mali" x="600" y="276" text-anchor="middle">10 m</text>
+<text class="mali" x="335" y="300" text-anchor="middle">udaljenost promatrača od ćelije</text>
+</svg><figcaption><b>Slika 1.13</b> &mdash; Tri razine detalja i udaljenosti na kojima se izmjenjuju; brojevi vrijede za cijelu ćeliju zajedno.</figcaption></figure><p>Razine se ne rade na oko. Svaka sljedeća ima otprilike upola manje trokuta, a udaljenost prijelaza bira se tako da razlika bude ispod granice razaznavanja. Na četiri metra jedna točka zaslona pokriva približno dva milimetra, pa sve što je u bliskoj razini sitnije od toga u srednjoj razini može nestati bez vidljive posljedice.</p><p>Postoji i mogućnost da se razine izmjenjuju po skupinama, a ne za cijelu ćeliju odjednom. To je bolje jer tehnolog često stoji uz transporter, a ogradu na suprotnoj strani gleda sa sedam metara. U tom trenutku transporter treba blisku razinu, a ograda daleku. Cijena je nešto složenija scena i više datoteka.</p></section><section><h2>Pečenje tekstura i materijali</h2><div class="crta"></div><p>Prorjeđivanjem se gubi sitan reljef: utori, natpisi, rubovi ploča. Dio toga može se vratiti <strong>pečenjem</strong> (<em>baking</em>): detalj se s guste mreže prenese na sliku koja se zatim nanosi na prorijeđenu mrežu. Oblik ostaje jednostavan, a površina izgleda bogatije.</p><p>Pečenje se radi prije smanjenja tekstura, a nikad poslije. U projektu HT-1 detalji su ispečeni na teksture stranice <strong>2048</strong> piksela, a zatim je gotova tekstura smanjena na <strong>1024</strong>. Redoslijed je važan: pečenje na malu teksturu daje mutnu sliku koju kasnije povećanje ne može popraviti.</p><p>Materijali se za hologram postavljaju drukčije nego za zaslon. Osnovni materijal ćelije je blago sjenčan i svijetao, jer tamne plohe na prozirnom zaslonu nestaju. Vrpce, obrisi i oznake dobivaju <strong>emisijski</strong> materijal koji svijetli sam. Prozirnost se koristi samo ondje gdje nosi podatak &mdash; na ljusci dosega i na pločama ograde kroz koje se mora vidjeti unutrašnjost.</p><div class="tablica-omot"><table><thead><tr><th>Dio</th><th>Materijal</th><th>Prozirnost</th><th>Napomena</th></tr></thead><tbody><tr><td>Ruka i postolje</td><td>blago sjenčan, svijetao</td><td>nema</td><td>oblik se čita po sjenčanju</td></tr><tr><td>Transporter</td><td>blago sjenčan</td><td>nema</td><td>traka nešto tamnija</td></tr><tr><td>Ploče ograde</td><td>svijetle plohe</td><td>oko 30 %</td><td>vidi se unutrašnjost</td></tr><tr><td>Ljuska dosega</td><td>emisijski</td><td>oko 20 %</td><td>jedna ploha bez debljine</td></tr><tr><td>Obrisi i vrpce</td><td>emisijski</td><td>nema</td><td>glavni nositelj čitljivosti</td></tr><tr><td>Natpisi</td><td>emisijski</td><td>nema</td><td>okreću se prema promatraču</td></tr></tbody></table></div></section><section><h2>Prozirnost, redoslijed i broj poziva</h2><div class="crta"></div><p>Tri stvari u pripremi troše više nego što se očekuje, a nijedna se ne vidi u broju trokuta. Prva je <strong>prozirnost</strong>. Neprozirne plohe uređaj iscrtava bilo kojim redom i za svaku točku zadržava najbližu. Prozirne ne može: one se moraju iscrtati nakon svih neprozirnih i to od najdaljih prema najbližima. Svaka prozirna ploha u vidnom polju znači dodatni posao, a dvije prozirne plohe jedna iza druge udvostručuju ga.</p><p>Druga je <strong>broj zasebnih poziva</strong> iscrtavanja. Uređaj svaku skupinu s vlastitim materijalom obrađuje odvojeno, i svaka takva skupina nosi svoj fiksni trošak neovisan o broju trokuta. Scena od dvjesto sitnih objekata s dvjesto materijala može biti sporija od jednog objekta s jednakim zbrojem trokuta. Zato se pri pripremi dijelovi s istim materijalom spajaju, a broj različitih materijala drži se malim.</p><p>Treća je <strong>propusnost prema teksturama</strong>. Svaka tekstura mora doći do grafičkog sklopa, pa velike teksture usporavaju prikaz i onda kad memorije ima dovoljno. U projektu HT-1 cijela ćelija koristi šest materijala i četiri teksture stranice 1024, a natpisi jednu zajedničku sliku sa svim znakovima.</p><div class="tablica-omot"><table><thead><tr><th>Trošak</th><th>Zašto nastaje</th><th>Mjera u pripremi</th></tr></thead><tbody><tr><td>Prozirne plohe</td><td>dodatni prolaz i sortiranje</td><td>prikaz na zahtjev, jedna ploha bez debljine</td></tr><tr><td>Mnogo materijala</td><td>svaki nosi fiksni trošak</td><td>spajanje dijelova s istim materijalom</td></tr><tr><td>Velike teksture</td><td>propusnost prema grafičkom sklopu</td><td>stranica 1024 umjesto 2048</td></tr><tr><td>Mnogo sitnih objekata</td><td>mnogo zasebnih poziva</td><td>spajanje u skupine</td></tr><tr><td>Animacije</td><td>proračun u svakoj sličici</td><td>samo na dijelovima koji se doista gibaju</td></tr></tbody></table></div></section><section><h2>Proračun sličice</h2><div class="crta"></div><p>Naočale u projektu osvježavaju prikaz <strong>60</strong> puta u sekundi, što znači da za jednu sličicu imaju oko <strong>16,7&nbsp;ms</strong>. U to vrijeme mora stati sve: obrada podataka senzora, održavanje prostorne karte, proračun položaja glave i tek na kraju iscrtavanje. Na samo iscrtavanje ostaje znatno manje od cijele sličice.</p><p>Zato broj trokuta nije jedini trošak. Svaka zasebna skupina koju uređaj mora iscrtati odvojeno nosi svoj fiksni trošak, pa sto malih objekata može biti skuplje od jednog velikog s jednakim brojem trokuta. Prozirne plohe traže dodatni prolaz. Teksture troše memoriju i propusnost prema grafičkom sklopu.</p><div class="racun" id="r17"><div class="racun-h"><b>Brzina prikaza i zauzeće memorije</b><em>Računski prikaz</em></div><p>Prikaz procjenjuje vrijeme jedne sličice, brzinu prikaza i zauzeće radne memorije iz broja trokuta, razina detalja i veličine tekstura. Ciljevi projekta HT-1 su najmanje 60 sličica u sekundi i najviše 900 MB.</p><div class="polja"><div class="polje"><label for="r17-n">Broj trokuta u sceni<output id="r17-n-out" for="r17-n" data-jed="">90 000</output></label><input type="range" id="r17-n" data-ulaz="n" min="10000" max="700000" step="5000" value="90000"></div><div class="polje"><label for="r17-l">Razine detalja</label><select id="r17-l" data-ulaz="l"><option value="bez" selected>bez razina detalja</option><option value="dvije">dvije razine</option><option value="tri">tri razine</option></select></div><div class="polje"><label for="r17-t">Stranica teksture <span style="color:var(--body);font-weight:400">(px)</span></label><input type="number" id="r17-t" data-ulaz="t" min="128" max="4096" step="128" value="1024"></div></div><div class="ishod"><div class="ish"><span>Trokuta u prosječnoj sličici</span><b id="r17-ne">&mdash;</b></div><div class="ish"><span>Vrijeme sličice</span><b id="r17-ms">&mdash;<small>ms</small></b></div><div class="ish"><span>Brzina prikaza</span><b id="r17-sl">&mdash;<small>sl/s</small></b></div><div class="ish"><span>Radna memorija</span><b id="r17-mem">&mdash;<small>MB</small></b></div></div><p class="poruka" id="r17-poruka"></p></div><p>Izmjereno stanje projekta HT-1 bilo je <strong>58 sličica u sekundi</strong> u prosjeku, uz najniži izmjereni iznos od <strong>44</strong>, i <strong>720&nbsp;MB</strong> radne memorije uz dopuštenih 900. Pad na 44 sličice javljao se na jednom mjestu &mdash; kad je tehnolog stao tako da su u vidnom polju bile i ljuska dosega i ploče ograde, dakle dvije prozirne površine jedna iza druge.</p><p>Ispravak nije tražio novo prorjeđivanje. Ljuska dosega postavljena je tako da se prikazuje samo na zahtjev, a ne stalno, čime je najniža brzina podignuta iznad pedeset. To je tipično: najveći dobitak češće dolazi iz odluke što se prikazuje nego iz dodatnog skidanja trokuta.</p></section><section><h2>Izvoz i sažimanje</h2><div class="crta"></div><p>Posljednji korak je izvoz. Model se zapisuje u format koji razvojno okruženje čita, s postavkama koje se zapisuju uz datoteku. U projektu HT-1 lanac ide od STEP-a iz konstrukcije preko FBX-a kao međukoraka do glTF-a koji ide na uređaj.</p><figure class="crtez"><svg viewBox="0 0 640 284" role="img" aria-label="Slika 1.14: Veličina datoteke kroz lanac pripreme: točan zapis iz konstrukcije, međukorak s mrežom i materijalima te konačna datoteka za naočale.">
+<text x="320" y="28" text-anchor="middle">veličina datoteke kroz lanac pripreme</text>
+<path class="cf" d="M180,52 L560,52 L560,84 L180,84 Z"/>
+<path class="l" d="M180,52 L560,52 L560,84 L180,84 Z"/>
+<text x="170" y="74" text-anchor="end">STEP</text>
+<text class="mali" x="574" y="74">86 MB</text>
+<path class="cf" d="M180,112 L243,112 L243,144 L180,144 Z"/>
+<path class="l" d="M180,112 L243,112 L243,144 L180,144 Z"/>
+<text x="170" y="134" text-anchor="end">FBX</text>
+<text class="mali" x="574" y="134">14,2 MB</text>
+<path class="tf" d="M180,172 L196,172 L196,204 L180,204 Z"/>
+<path class="l" d="M180,172 L196,172 L196,204 L180,204 Z"/>
+<text x="170" y="194" text-anchor="end">glTF</text>
+<text class="mali" x="574" y="194">3,6 MB</text>
+<text class="mali" x="180" y="228">točne plohe i cijeli sklop</text>
+<text class="mali" x="180" y="248">mreža, hijerarhija, materijali</text>
+<text class="mali" x="180" y="268">sažeta mreža i teksture za naočale</text>
+</svg><figcaption><b>Slika 1.14</b> &mdash; Veličina datoteke kroz lanac pripreme: točan zapis iz konstrukcije, međukorak s mrežom i materijalima te konačna datoteka za naočale.</figcaption></figure><p>Sažimanje u glTF-u djeluje na dvije strane. Geometrija se zapisuje s manjom preciznošću koordinata, što je za prikaz posve dovoljno, a teksture se spremaju u obliku koji grafički sklop čita izravno, bez raspakiravanja u memoriju. Zahvaljujući tome datoteka pada s 14,2 na <strong>3,6&nbsp;MB</strong>, a učitavanje na naočalama traje manje od dvije sekunde.</p><p>Uz datoteku se zapisuju postavke: mjerna jedinica, uspravna os, popis izostavljenih skupina, stranica tekstura, razine detalja i njihove udaljenosti. Taj zapis omogućuje da se sljedeći izvoz napravi jednako, pa se rezultati mjerenja mogu uspoređivati kroz inačice.</p><div class="okvir pazi"><h4>Zapamtite</h4><p>Sve što se mijenja u pripremi mijenja i rezultat mjerenja. Ako se istodobno promijene broj trokuta, veličina tekstura i razine detalja, neće se znati što je pomoglo. Mijenja se jedno po jedno, a poslije svake izmjene se mjeri.</p></div></section><section><h2>Mjerenje na uređaju i drugi krug</h2><div class="crta"></div><p>Priprema završava mjerenjem na samim naočalama, a ne na razvojnom računalu. Razlika je velika: računalo scenu iscrtava desetke puta brže i nikad ne pokazuje pravo stanje. Mjeri se u radionici, u uvjetima u kojima će se prikaz koristiti, i to uvijek po istom postupku da bi rezultati bili usporedivi.</p><p>Mjeri se petero. Brzina prikaza bilježi se kroz cijelu sesiju, uz najniži izmjereni iznos i mjesto na kojem se dogodio. Zauzeće memorije bilježi se nakon učitavanja i nakon dvadeset minuta rada. Pomak sidra mjeri se usporedbom holograma s trakom na podu. Vrijeme mapiranja mjeri se od pokretanja do trenutka kad prikaz postane stabilan. Na kraju se bilježi trajanje baterije, koje u projektu iznosi <strong>2 sata i 40 minuta</strong> pri masi uređaja od <strong>566&nbsp;g</strong>.</p><p>Iz mjerenja slijedi plan drugog kruga. U projektu HT-1 on je sadržavao tri stavke: ljuska dosega prikazuje se na zahtjev, uvodi se druga razina detalja za ogradu i transporter, a sidrenje se premješta na dvije točke umjesto jedne. Prve dvije stavke pripadaju ovom modulu, a treća se rješava postupcima iz trećeg modula.</p><div class="tablica-omot"><table><thead><tr><th>Mjerenje</th><th>Kada se provodi</th><th>Što se bilježi</th></tr></thead><tbody><tr><td>Brzina prikaza</td><td>kroz cijelu sesiju</td><td>prosjek, najmanja vrijednost i mjesto</td></tr><tr><td>Radna memorija</td><td>nakon učitavanja i nakon 20 min</td><td>dvije vrijednosti u MB</td></tr><tr><td>Pomak sidra</td><td>na početku i nakon 20 min</td><td>odstupanje u mm na 2 m</td></tr><tr><td>Mapiranje prostora</td><td>pri pokretanju</td><td>vrijeme do stabilnog prikaza</td></tr><tr><td>Baterija</td><td>do isključenja</td><td>trajanje pri punoj svjetlini</td></tr></tbody></table></div><p>Zapisano mjerenje ima i drugu vrijednost: ono je dokaz. Kad se za pola godine netko zapita zašto ćelija ima baš 90&nbsp;000 trokuta i teksture od 1024 piksela, odgovor nije stvar sjećanja nego zapisa. Bez njega se svaka rasprava o pripremi vraća na početak.</p></section><section><h2>Ključni pojmovi</h2><div class="crta"></div><div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody><tr><td>Prorjeđivanje</td><td>Smanjenje broja trokuta uz očuvanje prepoznatljivog obrisa.</td></tr><tr><td>Razina detalja</td><td>Grublja inačica modela koja se koristi na većoj udaljenosti.</td></tr><tr><td>Pečenje tekstura</td><td>Prenošenje detalja s guste mreže na sliku za prorijeđenu mrežu.</td></tr><tr><td>Emisijski materijal</td><td>Materijal koji svijetli sam, neovisno o svjetlu u sceni.</td></tr><tr><td>Vrijeme sličice</td><td>Vrijeme raspoloživo za izradu jedne slike; pri 60 Hz oko 16,7 ms.</td></tr><tr><td>Sažimanje geometrije</td><td>Zapis koordinata s manjom preciznošću radi manje datoteke.</td></tr><tr><td>Postavke izvoza</td><td>Zapisane vrijednosti jedinice, osi, tekstura i razina detalja uz model.</td></tr></tbody></table></div></section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="6" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 1 od 6</p><p class="pit">Koliko vremena naočale imaju za jednu sličicu pri 60 Hz?</p><div class="odg"><button type="button">oko 33 ms</button><button type="button">oko 16,7 ms</button><button type="button">oko 8 ms</button><button type="button">oko 60 ms</button></div><p class="obraz">Jedna sekunda podijeljena sa šezdeset daje približno 16,7 milisekunde.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 2 od 6</p><p class="pit">Kojim je redom ispravno pripremiti teksture?</p><div class="odg"><button type="button">smanjiti pa ispeći</button><button type="button">ispeći na veću pa smanjiti</button><button type="button">ispeći i ne smanjivati</button><button type="button">smanjiti i ne peći</button></div><p class="obraz">Pečenje na malu teksturu daje mutnu sliku koju kasnije povećanje ne popravlja.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 3 od 6</p><p class="pit">Zašto se rubovi obrisa zaključavaju prije prorjeđivanja?</p><div class="odg"><button type="button">da bi datoteka bila manja</button><button type="button">da bi se sačuvao prepoznatljiv oblik iz svih smjerova</button><button type="button">da bi se ubrzao izvoz</button><button type="button">da bi teksture ostale oštre</button></div><p class="obraz">Promatrač obilazi hologram, pa se gubitak obrisa vidi jače nego na zaslonu.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 4 od 6</p><p class="pit">Što je u projektu HT-1 uzrokovalo pad brzine prikaza na 44 sličice u sekundi?</p><div class="odg"><button type="button">prevelike teksture</button><button type="button">dvije prozirne površine jedna iza druge u vidnom polju</button><button type="button">gubitak sidra</button><button type="button">prazna baterija</button></div><p class="obraz">Prozirne plohe traže dodatni prolaz iscrtavanja, a dvije jedna iza druge udvostručuju trošak.</p></div><div class="kviz" data-tocno="2"><p class="brojac">Pitanje 5 od 6</p><p class="pit">Kako je taj pad ispravljen?</p><div class="odg"><button type="button">dodatnim prorjeđivanjem ruke robota</button><button type="button">smanjenjem tekstura na 512 piksela</button><button type="button">prikazivanjem ljuske dosega samo na zahtjev</button><button type="button">smanjenjem osvjetljenja radionice</button></div><p class="obraz">Odluka o tome što se prikazuje donijela je veći dobitak od dodatnog skidanja trokuta.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 6 od 6</p><p class="pit">Zašto se uz izvezeni model zapisuju postavke izvoza?</p><div class="odg"><button type="button">zbog zahtjeva formata glTF</button><button type="button">da bi se sljedeći izvoz napravio jednako i mjerenja bila usporediva</button><button type="button">da bi se smanjila datoteka</button><button type="button">da bi se sačuvale veze sklopa</button></div><p class="obraz">Bez zapisanih postavki svaki izvoz daje malo drukčiju mrežu i mjerenja se više ne mogu uspoređivati.</p></div><p class="rezultat">Odgovoreno 0 od 6.</p></div></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="1-6-izrada-objekata.html">&#8592; 1.6 Izrada digitalnih objekata korištenjem 3D modeliranja</a><a class="gumb" href="m1-aktivnosti-za-samostalno-ucenje.html">Aktivnosti &mdash; modul 1 <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-hologramske-tehnologije-1-7-priprema-modela-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+(function(){
+  var k = document.getElementById('r17'); if(!k) return;
+  var jedinice = {'ne':'','ms':'ms','sl':'sl/s','mem':'MB'};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){ 
+          var n = Number(v.n); if (!isFinite(n) || n < 1000) n = 1000;
+          var t = Number(v.t); if (!isFinite(t) || t < 64) t = 64;
+          if (t > 4096) t = 4096;
+          var f = 1;
+          if (v.l === 'dvije') f = 0.62;
+          if (v.l === 'tri') f = 0.48;
+          var ne = Math.round(n * f);
+          var sek = 0.0045 + ne * 0.00000014156;
+          var sl = 1 / sek;
+          if (sl > 60) sl = 60;
+          var tex = (t * t * 3 / 1048576) * 8 * 1.33;
+          var mem = 640 + ne * 0.00048 + tex;
+          var por;
+          if (sl >= 60 && mem <= 900) { por = 'Oba cilja su zadovoljena uz zalihu za dodatne objekte.'; }
+          else if (sl >= 50 && mem <= 900) { por = 'Brzina je ispod cilja od 60 slicica; pomoci ce razine detalja.'; }
+          else if (mem > 900) { por = 'Radna memorija premasuje 900 MB; smanjite teksture prije geometrije.'; }
+          else { por = 'Prikaz je prespor za udobno gledanje; potrebno je prorijediti scenu.'; }
+          return { ne: ne, ms: (sek * 1000).toFixed(1), sl: sl.toFixed(1),
+                   mem: Math.round(mem), _poruka: por };
+         }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = racunaj(v) || {};
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r17-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small>' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r17-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+</script>
+</body>
+</html>
