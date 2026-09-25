@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6.2 Osnove održavanja robota i robotskog sustava — Industrijska robotika | FORTRONIQ</title>
+<meta name="description" content="Robot je stroj s vrlo malo dijelova koje korisnik smije rastaviti, ali s mnogo mjesta koja treba redovito pogledati. Održavanje robotske ćelije zato nije velika radionica nego dosl">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/industrijska-robotika/6-2-odrzavanje.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/industrijska-robotika/6-2-odrzavanje.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/industrijska-robotika/6-2-odrzavanje.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/industrijska-robotika/6-2-odrzavanje.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="6.2 Osnove održavanja robota i robotskog sustava">
+<meta property="og:description" content="Robot je stroj s vrlo malo dijelova koje korisnik smije rastaviti, ali s mnogo mjesta koja treba redovito pogledati. Održavanje robotske ćelije zato nije velika radionica nego dosl">
+<meta property="og:url" content="https://dos.fortroniq.hr/industrijska-robotika/6-2-odrzavanje.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://www.fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://www.fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Industrijska robotika</a><i aria-hidden="true">/</i><a href="m6-pustanje-u-rad-i-odrzavanje.html">6. Puštanje u rad, održavanje i prilagođavanje robotskog sustava</a><i aria-hidden="true">/</i><span aria-current="page">6.2 Osnove održavanja robota i robotskog sustava</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 6 &middot; PUŠTANJE U RAD, ODRŽAVANJE I PRILAGOĐAVANJE ROBOTSKOG SUSTAVA</p><p class="nadnaslov">Nastavna jedinica 6.2</p><h1>Osnove održavanja robota i robotskog sustava</h1><p>Robot je stroj s vrlo malo dijelova koje korisnik smije rastaviti, ali s mnogo mjesta koja treba redovito pogledati. Održavanje robotske ćelije zato nije velika radionica nego dosljedan raspored malih radnji: pogledati, očistiti, izmjeriti, pritegnuti, zapisati. Jedinica pokazuje kako se taj raspored sastavlja i po čemu se prepoznaje da nešto odstupa.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>razlikovati korektivno, preventivno, prema stanju i prediktivno održavanje te obrazložiti kada koje ima smisla</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>sastaviti plan održavanja robotske ćelije s rokovima, odgovornostima i zapisima</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>navesti svakodnevne, tjedne, mjesečne i godišnje radnje na robotu i ćeliji</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti postupak podmazivanja i zamjene maziva u prijenosnicima</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>prepoznati znakove trošenja prema buci, vibracijama, porastu struje i odstupanju položaja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>provesti siguran postupak pripreme sustava prije zahvata održavanja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>procijeniti odnos troška preventivnog održavanja i troška zastoja</span></li></ul></div></div></header><div class="omot"><section><h2>Zašto se robot uopće održava</h2><div class="crta"></div><p>Kontroler robota nema pokretnih dijelova i u pravilu radi godinama bez zahvata. Mehanika ih ima mnogo: prijenosnike u svakom zglobu, kočnice, ležajeve, brtve, kabele koji se s rukom savijaju milijunima puta i cijevi kroz koje prolazi zrak. Svi ti dijelovi imaju vijek, a taj vijek ovisi koliko o kvaliteti toliko o uvjetima rada: opterećenju, ubrzanjima, temperaturi i čistoći.</p><p>Trošenje se ne događa naglo. Prijenosnik koji će otkazati mjesecima prije toga postaje bučniji, topliji i traži veću struju za isto gibanje. Kabel u energetskom lancu prvo dobije napukline na izolaciji, pa tek onda prekid. Upravo zato održavanje ima smisla: između prvog znaka i kvara obično postoji dovoljno vremena da se zahvat isplanira umjesto da se dogodi usred smjene.</p><p>Cijena tog planiranja mala je u odnosu na cijenu zastoja. Ako ćelija ZR-1 radi u dvije smjene s taktom od 96 s, jedan sat zastoja znači oko 37 neizrađenih komada, a uz to i zastoj CNC glodalice koju robot poslužuje. Održavanje se zato ne opravdava stanjem robota nego stanjem proizvodnje koja o njemu ovisi.</p></section><section><h2>Vrste održavanja</h2><div class="crta"></div><p>Četiri se pristupa razlikuju po tome što pokreće zahvat. Kod <strong>korektivnog</strong> održavanja zahvat pokreće kvar. Kod <strong>preventivnog</strong> ga pokreće protek roka ili broj sati rada. Kod održavanja <strong>prema stanju</strong> pokreće ga izmjerena vrijednost koja je prešla granicu. Kod <strong>prediktivnog</strong> ga pokreće procjena preostalog vijeka izvedena iz niza mjerenja.</p><div class="tablica-omot"><table><thead><tr><th>Vrsta</th><th>Što pokreće zahvat</th><th>Gdje ima smisla</th><th>Slabost</th></tr></thead><tbody><tr><td>Korektivno</td><td>kvar koji se već dogodio</td><td>jeftini dijelovi bez posljedica za proizvodnju, zamjenjive potrošne stavke</td><td>zastoj u nepredviđenom trenutku, često i šteta na drugim dijelovima</td></tr><tr><td>Preventivno</td><td>rok, broj sati rada ili broj ciklusa</td><td>podmazivanje, zamjena maziva, baterije, filtri, pregledi</td><td>dio se mijenja i kada je još ispravan</td></tr><tr><td>Prema stanju</td><td>izmjerena vrijednost iznad granice</td><td>prijenosnici, ležajevi, kabeli, tlak zraka</td><td>traži mjerenje, granice i nekoga tko ih prati</td></tr><tr><td>Prediktivno</td><td>procjena preostalog vijeka iz niza mjerenja</td><td>skupi sklopovi s dugim rokom nabave</td><td>traži povijest podataka i model trošenja</td></tr></tbody></table></div><p>U pogonu se pristupi ne biraju nego kombiniraju. Za bateriju davača ima smisla preventivna zamjena po roku jer je jeftina, a posljedica ispada velika. Za prijenosnik prve osi ima smisla praćenje stanja jer je skup i jer ga se ne mijenja preventivno. Za prigušivač zraka ima smisla korektivni pristup jer je jeftin, lako dostupan i njegov kvar ne zaustavlja ćeliju.</p><div class="okvir"><h4>Zapamtite</h4><p>Pravilo izbora glasi: što je posljedica kvara veća, a znak trošenja ranije vidljiv, to se više isplati mjeriti. Što je dio jeftiniji i njegova zamjena brža, to je prihvatljivije čekati kvar.</p></div></section><section><h2>Plan održavanja</h2><div class="crta"></div><p>Plan održavanja je tablica, a ne namjera. Za svaku radnju u njoj stoji što se radi, u kojem roku, tko je izvodi, koliko traje, koji je alat ili materijal potreban i gdje se upisuje ishod. Rokovi se preuzimaju iz uputa proizvođača, a zatim prilagođavaju stvarnim uvjetima: ćelija u prašini i pri visokoj temperaturi traži kraće rokove od one u čistoj montaži.</p><p>Odgovornost se dodjeljuje po razinama. Operater izvodi ono što se radi svakodnevno i ne traži ulazak u ćeliju s alatom. Održavatelj izvodi radnje koje traže zaustavljanje, otvaranje poklopaca i mjerenje. Ovlašteni servis izvodi zahvate u prijenosnike, zamjenu maziva i umjeravanje, jer o tome često ovisi i jamstvo.</p><div class="tablica-omot"><table><thead><tr><th>Razina</th><th>Tko izvodi</th><th>Tipične radnje</th><th>Zapis</th></tr></thead><tbody><tr><td>Svakodnevno</td><td>operater</td><td>vizualni pregled, čišćenje, provjera tlaka i dojava</td><td>dnevni list ćelije</td></tr><tr><td>Tjedno</td><td>operater i održavatelj</td><td>čišćenje prihvatnice, pregled kabela, provjera zavjese</td><td>tjedni obrazac</td></tr><tr><td>Mjesečno</td><td>održavatelj</td><td>pritezanje vijaka, provjera energetskog lanca, mjerenje struja</td><td>nalog o zahvatu</td></tr><tr><td>Polugodišnje</td><td>održavatelj</td><td>baterije davača, sigurnosna kopija, provjera kočnica</td><td>nalog o zahvatu</td></tr><tr><td>Godišnje</td><td>ovlašteni servis</td><td>zamjena maziva, umjeravanje, ispitivanje sigurnosnih funkcija</td><td>servisni izvještaj i zapisnik o ispitivanju</td></tr></tbody></table></div><div class="okvir pazi"><h4>Pažnja</h4><p>Plan koji nitko ne potpisuje pretvara se u popis dobrih namjera. Svaka izvedena radnja mora imati datum, ime i kratak nalaz, makar glasio <em>bez odstupanja</em>. Bez tih zapisa ne postoji povijest na temelju koje se poslije traži uzrok ponovljenog kvara.</p></div></section><section><h2>Svakodnevne i tjedne radnje</h2><div class="crta"></div><p>Svakodnevne radnje izvodi operater na početku smjene i ne traju dulje od nekoliko minuta. Njihova je svrha uočiti promjenu, a ne popraviti je. Promjena se prijavljuje održavatelju, a operater nastavlja rad samo ako promjena ne utječe na sigurnost.</p><ol class="tekst"><li>Pogled po ćeliji: ima li ulja ili masti na podu, ima li odvojenih dijelova, stoji li sve na svom mjestu.</li><li>Provjera tlaka zraka na regulatoru i pražnjenje odvajača vode ako nije samopražnjeći.</li><li>Pregled prihvatnice: čistoća hvataljki ili usisnih čašica, cjelovitost brtvi, pritegnutost vijaka koji su vidljivi bez rastavljanja.</li><li>Provjera da su tipke za zaustavljanje u nuždi dostupne i neoštećene te da su vrata ograde zatvorena i zabravljena.</li><li>Čitanje popisa dojava iz prethodne smjene; dojava koja se ponavlja prijavljuje se i kada je ćelija nastavila raditi.</li><li>Uklanjanje strugotine i emulzije s mjesta odlaganja i s palete, jer nečistoća pod obratkom mijenja njegov položaj.</li></ol><p>Tjedne radnje traže kratko zaustavljanje. Uz produženi pregled prihvatnice i njezinih senzora, provjerava se čistoća leća svjetlosne zavjese, stanje kabela na mjestima najvećeg savijanja, pričvršćenost naprava na stolu i rad izmjenjivača alata ako ga ćelija ima. Tjedno se uzima i sigurnosna kopija programa ako je u tjednu bilo izmjena.</p></section><section><h2>Mjesečne i godišnje radnje, podmazivanje</h2><div class="crta"></div><p>Mjesečne radnje obuhvaćaju ono što traži alat: provjeru momenta pritezanja vijaka postolja i prirubnice, pregled energetskog lanca po cijeloj duljini, provjeru pričvršćenja ograde i stupova zavjese te očitanje pokazatelja koje kontroler bilježi &mdash; struja osi, temperatura i broj zaustavljanja.</p><p><strong>Podmazivanje</strong> je najvažnija preventivna radnja na mehanici. Prijenosnici u zglobovima industrijskog robota rade u mastima ili uljima koje proizvođač propisuje poimence; miješanje dviju vrsta maziva može ih uništiti brže od nedostatka maziva. Rokovi se navode u satima rada, a ne u kalendarskim mjesecima, pa se očitavaju iz brojila u kontroleru. Robot u dvije smjene roku od 10 000 sati dođe za oko tri godine, a u tri smjene za dvije.</p><ol class="tekst"><li>Robot se dovede u položaj propisan uputom, jer se mazivo puni i ispušta samo u tom položaju.</li><li>Sustav se odvoji od energije i osigura od uključenja, a zaostali tlak zraka se ispusti.</li><li>Otvori se ispusni čep i pusti da staro mazivo isteče; prati se boja i prisutnost metalnih čestica.</li><li>Puni se propisana količina novog maziva, mjerena masom ili volumenom, nikada na oko.</li><li>Čepovi se zatvore propisanim momentom, a višak se obriše kako bi se kasnije propuštanje moglo prepoznati.</li><li>Brojilo sati u kontroleru se poništi ili se rok upiše u plan, a nalaz se zapiše zajedno s količinom i oznakom maziva.</li></ol><figure class="crtez"><svg viewBox="0 0 640 376" role="img" aria-label="Slika 6.2: Presjek zgloba s prijenosnikom, mjestom punjenja i ispusta maziva te brtvom, uz rokove u satima rada.">
+<text class="mali" x="110" y="64" text-anchor="middle">Presjek zgloba</text>
+<rect class="pf" x="60" y="90" width="240" height="180"/>
+<rect class="cf" x="66" y="200" width="228" height="64"/>
+<circle class="l" cx="180" cy="180" r="62"/>
+<circle class="l2" cx="180" cy="180" r="26"/>
+<path class="l2" d="M180 118 V132 M180 228 V242 M118 180 H132 M228 180 H242"/>
+
+<rect class="tf" x="168" y="80" width="24" height="12"/>
+<text class="mali" x="200" y="72">punjenje</text>
+<rect class="tf" x="168" y="268" width="24" height="12"/>
+<text class="mali" x="200" y="292">ispust</text>
+
+<rect class="if" x="300" y="160" width="10" height="40"/>
+<path class="l" d="M310 180 H360"/>
+<path class="l2" d="M330 152 L306 166"/>
+<text class="mali" x="330" y="146">brtva</text>
+
+<path class="l2" d="M120 282 V266"/>
+<text class="mali" x="72" y="300">razina maziva</text>
+
+<rect class="pf" x="380" y="80" width="240" height="192"/>
+<rect class="rf" x="380" y="80" width="240" height="32"/>
+<path class="l2" d="M380 112 H620 M380 152 H620 M380 192 H620 M380 232 H620"/>
+<text class="mali" x="394" y="102">Zahvat</text>
+<text class="mali" x="606" y="102" text-anchor="end">Sati rada</text>
+<text class="mali" x="394" y="138">provjera razine</text>
+<text class="mali" x="606" y="138" text-anchor="end">2 000</text>
+<text class="mali" x="394" y="178">provjera brtve</text>
+<text class="mali" x="606" y="178" text-anchor="end">5 000</text>
+<text class="mali" x="394" y="218">zamjena maziva</text>
+<text class="mali" x="606" y="218" text-anchor="end">10 000</text>
+<text class="mali" x="394" y="258">umjeravanje</text>
+<text class="mali" x="606" y="258" text-anchor="end">godišnje</text>
+
+<text class="mali" x="320" y="330" text-anchor="middle">Mazivo se ne miješa; vrsta i količina su propisane.</text>
+<text class="mali" x="320" y="356" text-anchor="middle">Rokovi se broje u satima rada, ne u mjesecima.</text>
+</svg><figcaption><b>Slika 6.2</b> &mdash; Presjek zgloba s prijenosnikom, mjestom punjenja i ispusta maziva te brtvom, uz rokove u satima rada.</figcaption></figure><p>Godišnje se, uz zamjenu maziva, izvodi i <strong>umjeravanje</strong>: provjera da robot stvarno dolazi u zadane točke unutar dopuštenog odstupanja. Umjeravanje se izvodi mjernim sustavom ili referentnim trnom, a rezultat je ili potvrda stanja ili nove vrijednosti korekcijskih parametara. Istodobno se ponavlja i ispitivanje sigurnosnih funkcija onako kako je provedeno pri puštanju u rad, a rezultati se uspoređuju s prvim mjerenjem.</p></section><section><h2>Baterije davača, kabeli i sigurnosne kopije</h2><div class="crta"></div><p>Davači položaja u većini izvedbi pamte broj okretaja pomoću baterije u robotskoj ruci ili u kontroleru. Kada baterija oslabi, kontroler javlja upozorenje &mdash; i to je trenutak za zamjenu. Ako se upozorenje zanemari, referentni se položaji gube i robot se mora ponovno referentirati, što traži mjerni postupak i zaustavlja proizvodnju za nekoliko sati.</p><p>Baterije se mijenjaju s uključenim napajanjem kontrolera kada to uputa dopušta, upravo zato da se podatak o položaju ne izgubi. Ako se mijenjaju bez napajanja, gubitak referentnih položaja je izvjestan i zamjena se planira zajedno s referentiranjem.</p><div class="okvir pazi"><h4>Pažnja</h4><p>Prije svakog zahvata koji može utjecati na podatke uzmite potpunu sigurnosnu kopiju: programe, točke, parametre robota, korekcije alata i sigurnosnu konfiguraciju. Kopija koja sadrži samo program, a ne i parametre, ne vraća ćeliju u prijašnje stanje.</p></div><p>Kabeli i energetski lanci troše se na mjestima najvećeg savijanja, obično na trećoj i petoj osi. Pregled se radi tako da se robot polako vodi kroz cijeli opseg gibanja te osi i promatra kreće li se lanac jednoliko, dodiruje li nešto i ima li na plaštu kabela svijetlih tragova trenja. Kabel s napuklinom mijenja se odmah, jer prekid u vodiču davača zaustavlja ćeliju bez najave.</p><div class="racun" id="r62"><div class="racun-h"><b>Plan održavanja: radnje, sati i trošak</b><em>Računski prikaz</em></div><p>Prikaz zbraja godišnji broj radnji i sate rada iz zadanih trajanja te uspoređuje trošak preventive s troškom zastoja koji bi se time izbjegao. Uzeto je 250 radnih dana, 50 tjedana i 12 mjeseci godišnje te trošak sata održavatelja 40 EUR.</p><div class="polja"><div class="polje"><label for="r62-d">Svakodnevna radnja<output id="r62-d-out" for="r62-d" data-jed=" min">8 min</output></label><input type="range" id="r62-d" data-ulaz="d" min="0" max="40" step="1" value="8"></div><div class="polje"><label for="r62-t">Tjedna radnja<output id="r62-t-out" for="r62-t" data-jed=" min">35 min</output></label><input type="range" id="r62-t" data-ulaz="t" min="0" max="180" step="5" value="35"></div><div class="polje"><label for="r62-m">Mjesečna radnja<output id="r62-m-out" for="r62-m" data-jed=" min">90 min</output></label><input type="range" id="r62-m" data-ulaz="m" min="0" max="300" step="10" value="90"></div><div class="polje"><label for="r62-g">Godišnji servis<output id="r62-g-out" for="r62-g" data-jed=" h">14 h</output></label><input type="range" id="r62-g" data-ulaz="g" min="0" max="40" step="1" value="14"></div><div class="polje"><label for="r62-zs">Zastoji bez preventive<output id="r62-zs-out" for="r62-zs" data-jed=" h">70 h</output></label><input type="range" id="r62-zs" data-ulaz="zs" min="0" max="200" step="5" value="70"></div><div class="polje"><label for="r62-us">Udio zastoja koji preventiva ukloni<output id="r62-us-out" for="r62-us" data-jed="%">60%</output></label><input type="range" id="r62-us" data-ulaz="us" min="0" max="90" step="5" value="60"></div><div class="polje"><label for="r62-cz">Trošak sata zastoja<output id="r62-cz-out" for="r62-cz" data-jed=" EUR">240 EUR</output></label><input type="range" id="r62-cz" data-ulaz="cz" min="40" max="800" step="10" value="240"></div></div><div class="ishod"><div class="ish"><span>Radnji godišnje</span><b id="r62-br">&mdash;</b></div><div class="ish"><span>Sati održavanja</span><b id="r62-sati">&mdash;<small>h</small></b></div><div class="ish"><span>Trošak preventive</span><b id="r62-tp">&mdash;<small>EUR</small></b></div><div class="ish"><span>Izbjegnuti trošak zastoja</span><b id="r62-ko">&mdash;<small>EUR</small></b></div><div class="ish"><span>Razlika</span><b id="r62-raz">&mdash;<small>EUR</small></b></div></div><p class="poruka" id="r62-poruka"></p></div></section><section><h2>Znakovi trošenja</h2><div class="crta"></div><p>Znakovi trošenja gotovo su uvijek postupni i mjerljivi. Njihova je korist u tome što se uspoređuju s vlastitom prošlom vrijednošću, a ne s katalogom: prijenosnik koji je oduvijek bio bučan nije nužno neispravan, ali onaj koji je postao bučniji u posljednja dva mjeseca jest sumnjiv.</p><div class="tablica-omot"><table><thead><tr><th>Znak</th><th>Što se mijenja</th><th>Vjerojatni uzrok</th><th>Postupak</th></tr></thead><tbody><tr><td>Buka u zglobu</td><td>ton postaje viši ili se javlja škripanje</td><td>manjak ili istrošenost maziva, oštećenje ležaja</td><td>provjeriti mazivo, uzeti uzorak, planirati zahvat servisa</td></tr><tr><td>Vibracije</td><td>podrhtavanje pri zaustavljanju i u ispruženom položaju</td><td>zračnost u prijenosniku, olabavljeni vijci postolja</td><td>provjeriti momente pritezanja, izmjeriti zračnost</td></tr><tr><td>Porast struje osi</td><td>veća struja pri istom programu i istom teretu</td><td>otpor u prijenosniku, previsoka viskoznost maziva, kočnica koja ne otpušta</td><td>usporediti s prijašnjim zapisom, provjeriti kočnicu</td></tr><tr><td>Odstupanje položaja</td><td>odlaganje na paleti pomiče se u jednom smjeru</td><td>zračnost, pomak naprave ili palete, istrošene hvataljke</td><td>izmjeriti, ponoviti umjeravanje, provjeriti pričvršćenja</td></tr><tr><td>Porast temperature</td><td>kućište zgloba toplije nego prije pri istom taktu</td><td>trenje, manjak maziva, začepljen ventilator kontrolera</td><td>očistiti, provjeriti mazivo, smanjiti opterećenje do zahvata</td></tr><tr><td>Propuštanje zraka</td><td>pad tlaka, čujan šum pri mirovanju</td><td>istrošene brtve prihvatnice, napuknuto crijevo</td><td>zamijeniti brtve ili crijevo, provjeriti stezaljke</td></tr></tbody></table></div><p>Vrijednosti koje kontroler bilježi tumače se u odnosu na isti program, isti teret i sličnu temperaturu. Usporedba struje pri punoj paleti s onom pri praznoj nema smisla. Zato se za praćenje stanja bira jedan referentni ciklus koji se izvodi u istim uvjetima, na primjer prvi ciklus nakon zagrijavanja, i njegove se vrijednosti bilježe u zapis.</p></section><section><h2>Sigurnost pri zahvatu i pričuvni dijelovi</h2><div class="crta"></div><p>Svaki zahvat na ćeliji počinje odvajanjem od energije i osiguranjem od ponovnog uključenja. To znači isključen i zabravljen glavni prekidač s vlastitom bravicom, zatvoren i ispušten dovod zraka te postavljenu oznaku s imenom osobe koja izvodi zahvat. Robot se prije toga dovede u položaj u kojem ruka ne može pasti kada se otpuste kočnice.</p><p>Zaostala energija postoji i nakon isključenja: uspravljena ruka drži se na kočnicama, prihvatnica može biti zatvorena zaostalim tlakom, a u kontroleru postoje kondenzatori koji se prazne s odgodom. Ako je potrebno raditi s uključenim napajanjem, primjerice pri zamjeni baterija davača, radi se u ručnom načinu rada s nadziranim usporenjem i uz drugu osobu izvan ćelije.</p><div class="tablica-omot"><table><thead><tr><th>Stavka</th><th>Preporučena zaliha</th><th>Rok nabave</th><th>Posljedica nedostatka</th></tr></thead><tbody><tr><td>Baterije davača</td><td>jedan komplet</td><td>kratak</td><td>gubitak referentnih položaja i višesatni zastoj</td></tr><tr><td>Brtve i hvataljke prihvatnice</td><td>dva kompleta</td><td>kratak</td><td>ispadanje obratka, škart</td></tr><tr><td>Crijeva i spojnice zraka</td><td>po duljini</td><td>kratak</td><td>pad tlaka, nesiguran prihvat</td></tr><tr><td>Kabel u energetskom lancu</td><td>jedan komad</td><td>srednji</td><td>zastoj do isporuke, nepredvidivo</td></tr><tr><td>Mazivo propisane oznake</td><td>količina za jednu zamjenu</td><td>srednji</td><td>odgoda zamjene i ubrzano trošenje</td></tr><tr><td>Filtar i uložak pripreme zraka</td><td>dva komada</td><td>kratak</td><td>vlaga u sustavu, korozija</td></tr></tbody></table></div><p>Popis pričuvnih dijelova sastavlja se prema posljedici nedostatka, a ne prema cijeni. Jeftin dio s dugim rokom nabave i velikom posljedicom uvijek se drži na zalihi; skup dio s kratkim rokom nabave i malom posljedicom ne mora se držati. Isti popis služi i pri sastavljanju godišnjeg proračuna održavanja.</p></section><section><h2>Ključni pojmovi</h2><div class="crta"></div><div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody><tr><td>Korektivno održavanje</td><td>Zahvat koji se izvodi nakon što se kvar dogodio.</td></tr><tr><td>Preventivno održavanje</td><td>Zahvat koji se izvodi po roku, satima rada ili broju ciklusa.</td></tr><tr><td>Održavanje prema stanju</td><td>Zahvat koji pokreće izmjerena vrijednost iznad zadane granice.</td></tr><tr><td>Prediktivno održavanje</td><td>Zahvat planiran prema procjeni preostalog vijeka iz niza mjerenja.</td></tr><tr><td>Energetski lanac</td><td>Vodilica koja nosi kabele uz pokretne članke i ograničava polumjer savijanja.</td></tr><tr><td>Baterija davača</td><td>Izvor koji čuva podatak o položaju osi dok je kontroler isključen.</td></tr><tr><td>Umjeravanje</td><td>Provjera i ispravak odstupanja stvarnog položaja robota od zadanog.</td></tr><tr><td>Odvajanje od energije</td><td>Isključenje i zabravljivanje izvora energije prije zahvata na sustavu.</td></tr></tbody></table></div></section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="3" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 1 od 3</p><p class="pit">Rokovi za zamjenu maziva u prijenosnicima robota navode se najčešće u:</p><div class="odg"><button type="button">kalendarskim mjesecima</button><button type="button">satima rada robota</button><button type="button">broju izrađenih komada</button><button type="button">kilometrima putanje</button></div><p class="obraz">Trošenje ovisi o stvarnom radu, pa proizvođači rokove navode u satima rada koji se očitavaju iz brojila u kontroleru.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 2 od 3</p><p class="pit">Upozorenje o slaboj bateriji davača znači da je potrebno:</p><div class="odg"><button type="button">zamijeniti prijenosnik</button><button type="button">zamijeniti bateriju prije gubitka referentnih položaja</button><button type="button">ponovno napisati program</button><button type="button">smanjiti brzinu robota</button></div><p class="obraz">Ako se upozorenje zanemari, referentni se položaji gube i robot se mora ponovno referentirati uz višesatni zastoj.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 3 od 3</p><p class="pit">Porast struje jedne osi pri istom programu i istom teretu najprije upućuje na:</p><div class="odg"><button type="button">prekratak program</button><button type="button">povećan otpor u prijenosniku ili kočnicu koja ne otpušta</button><button type="button">pogrešnu adresu u mreži</button><button type="button">istrošenu svjetlosnu zavjesu</button></div><p class="obraz">Ista zadaća uz veću struju znači da se pojavio dodatni otpor gibanju; najčešći su uzroci mazivo, ležaj i kočnica.</p></div><p class="rezultat">Odgovoreno 0 od 3.</p></div></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="6-1-pustanje-u-rad.html">&#8592; 6.1 Puštanje u rad robotskog sustava</a><a class="gumb" href="6-3-prilagodavanje.html">6.3 Prilagođavanje robotskog sustava za drugi zadatak <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-industrijska-robotika-6-2-odrzavanje-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+(function(){
+  var k = document.getElementById('r62'); if(!k) return;
+  var jedinice = {'br':'','sati':'h','tp':'EUR','ko':'EUR','raz':'EUR'};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){ 
+          var dana = 250, tjedana = 50, mjeseci = 12;
+          var br = dana + tjedana + mjeseci + 1;
+          var sati = (v.d * dana + v.t * tjedana + v.m * mjeseci) / 60 + v.g;
+          var tp = sati * 40;
+          var sprijeceno = v.zs * v.us / 100;
+          var ko = sprijeceno * v.cz;
+          var raz = ko - tp;
+          return {
+            br: br,
+            sati: sati.toFixed(0),
+            tp: Math.round(tp),
+            ko: Math.round(ko),
+            raz: Math.round(raz),
+            _poruka: raz <= 0 ? 'Preventiva u ovom obliku košta više nego što donosi. Provjerite jesu li rokovi prekratki i može li se dio radnji prenijeti na praćenje stanja.'
+                   : (raz < tp ? 'Dobitak postoji, ali je manji od troška preventive. Uobičajeno je da se plan tada suzi na radnje s najvećom posljedicom kvara.'
+                               : 'Preventiva se isplati s velikom rezervom; glavni je rizik da se radnje prestanu izvoditi jer se zastoji više ne pojavljuju.')
+          };
+         }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = racunaj(v) || {};
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r62-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small>' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r62-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+</script>
+</body>
+</html>
