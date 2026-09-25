@@ -1,0 +1,1222 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="ForTroniQ d.o.o.">
+<meta name="robots" content="index, follow">
+<meta name="description" content="Pretvorba točne geometrije u mrežu trokuta: građa zapisa STL u tekstovnome i binarnome obliku, odstupanje tetive i kutno odstupanje, odabir razlučivosti prema postupku, postupak izvoza te zapisi 3MF, AMF, OBJ i STEP.">
+<title>Konverzija 3D geometrije — datoteka STL — Modul 3</title>
+<link rel="canonical" href="https://dos.fortroniq.hr/aditivne-tehnologije/konverzija-3d-geometrije-stl.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/aditivne-tehnologije/konverzija-3d-geometrije-stl.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/aditivne-tehnologije/konverzija-3d-geometrije-stl.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/aditivne-tehnologije/konverzija-3d-geometrije-stl.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Konverzija 3D geometrije — datoteka STL">
+<meta property="og:description" content="Kako nastaje mreža trokuta, koliko se pritom gubi i kako se bira razlučivost pri izvozu.">
+<meta property="og:url" content="https://dos.fortroniq.hr/aditivne-tehnologije/konverzija-3d-geometrije-stl.html">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+
+<style>
+:root{
+  --paper:#FFFFFF;
+  --ink:#10394A;
+  --body:#5D7C90;
+  --rule:#DCE4E8;
+  --teal:#17656E;
+  --teal-d:#0F4A52;
+  --cyan:#2ECAD4;
+  --hero-a:#1B6A72;
+  --hero-b:#0C3F47;
+  --bar:#17181A;
+  --bar-t:#8A9499;
+  --soft:#F3F7F8;
+  --ok:#2E7D53;
+  --bad:#B24A2E;
+  --fs:1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+    --teal:#2A9AA6; --teal-d:#2ECAD4;
+    --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+    --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+  --teal:#2A9AA6; --teal-d:#2ECAD4;
+  --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+  --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  font-size:calc(16px * var(--fs)); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body.dys{letter-spacing:.012em;word-spacing:.09em;line-height:1.85}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+/* ============ GORNJA TRAKA ============ */
+.topbar{background:var(--bar);color:#fff;display:flex;align-items:stretch;overflow-x:auto;font-size:11.5px}
+.tbi{padding:6px 14px;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.tbi .lb{color:var(--bar-t);font-size:9.5px;letter-spacing:.03em}
+.tbi .vl{font-weight:500}
+.tbi.crumb .vl{color:var(--cyan)}
+.tbi .x{display:inline-block;margin-left:6px;opacity:.65}
+.tbi.menu{align-items:center;flex-direction:row;gap:8px}
+.tbi.menu svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.8}
+a.tbi{color:#fff;text-decoration:none}
+a.tbi:hover .vl{color:var(--cyan)}
+
+/* ============ HERO ============ */
+.hero{background:linear-gradient(160deg,var(--hero-a) 0%,var(--hero-b) 100%);position:relative;overflow:hidden}
+.hero-in{position:relative;z-index:3;max-width:1120px;margin:0 auto;padding:38px clamp(20px,6vw,120px) 30px}
+.hero-art{position:absolute;right:0;top:0;bottom:0;width:min(46%,520px);opacity:.5;pointer-events:none}
+.hero-art svg{width:100%;height:100%;display:block}
+.eyebrow{display:flex;flex-wrap:wrap;gap:.5em;align-items:center;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:#9FC9CE}
+.eyebrow b{color:#fff;font-weight:700;letter-spacing:.17em}
+.eyebrow b i{color:var(--cyan);font-style:normal}
+.eyebrow span::after{content:"·";margin-left:.5em;opacity:.6}
+.eyebrow span:last-child::after{content:""}
+.hero h1{
+  margin:.35em 0 0;color:#fff;font-weight:700;
+  font-size:clamp(29px,5vw,50px);letter-spacing:-.026em;line-height:1.06;
+  max-width:16ch;text-wrap:balance;text-shadow:0 2px 20px rgba(0,0,0,.28);
+}
+.lede{max-width:62ch;color:#D4E8EB;font-size:15.5px;line-height:1.62;margin:.9em 0 0}
+
+.goals{
+  position:relative;z-index:3;max-width:1120px;margin:0 auto;
+  padding:4px clamp(20px,6vw,120px) 40px;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:26px 40px;align-items:start;
+}
+.goals-h{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:6px}
+.goals-h svg{width:46px;height:32px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.goals-h span{color:#fff;font-weight:700;font-size:19px;letter-spacing:-.01em}
+.goals ul{margin:0;padding:0;list-style:none;columns:3;column-gap:34px}
+.goals li{break-inside:avoid;margin:0 0 13px;display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:start;color:#E6F5F7;font-size:12.6px;line-height:1.45}
+.goals li svg{width:11px;height:11px;margin-top:4px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){
+  .goals{grid-template-columns:1fr;gap:16px}
+  .goals-h{flex-direction:row;align-items:center;justify-content:flex-start}
+  .goals ul{columns:1}
+}
+.cyanline{height:5px;background:var(--cyan)}
+
+/* ============ SADRŽAJ ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(20px,6vw,120px) 10px}
+.col{max-width:74ch}
+section{padding-top:52px}
+.sh{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:8px}
+.sh .n{
+  flex:0 0 auto;width:27px;height:27px;border-radius:50%;
+  background:var(--teal);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;align-self:center;
+}
+.sh h2{margin:0;font-size:clamp(21px,2.6vw,27px);font-weight:700;letter-spacing:-.022em;line-height:1.15;text-wrap:balance}
+.sd{color:var(--body);font-size:14px;margin:0 0 20px;max-width:70ch}
+p{margin:0 0 1.05em;max-width:74ch;font-size:15.4px;line-height:1.72;color:var(--ink)}
+p.mut{color:var(--body)}
+h3.sub{font-size:17px;font-weight:600;letter-spacing:-.012em;margin:2em 0 .6em;color:var(--ink)}
+strong{font-weight:600}
+em{font-style:italic}
+.kv{color:var(--teal);font-weight:600}
+
+ul.plain{margin:0 0 1.2em;padding-left:1.15em;max-width:74ch}
+ul.plain li{margin-bottom:.45em;font-size:15.2px;line-height:1.66}
+
+/* ============ PLOČE ============ */
+.panel{background:var(--soft);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:26px 0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.panel-head .t{font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--teal)}
+.panel-head .s{font-size:11.5px;color:var(--body);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.chip{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);
+  padding:8px 12px;cursor:pointer;text-align:left;line-height:1.3;
+}
+.chip:hover{border-color:var(--cyan);color:var(--teal)}
+.chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.chip small{display:block;font-size:10.5px;font-weight:500;opacity:.75;margin-top:3px;letter-spacing:.02em}
+.chip.ac{font-size:13px;font-weight:700;letter-spacing:.04em;padding:7px 11px}
+.def{border-top:1px solid var(--rule);padding:18px 17px;background:var(--paper)}
+.def h3{font-size:19px;font-weight:700;letter-spacing:-.015em;margin:0 0 3px;color:var(--ink)}
+.def .en{font-size:12.5px;color:var(--body);margin:0 0 13px}
+.def dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 20px;margin:0}
+.def dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:4px}
+.def dd{margin:0;font-size:14.6px;line-height:1.55}
+@media (max-width:560px){.def dl{grid-template-columns:1fr;gap:2px 0}.def dt{padding-top:11px}}
+
+.norm{border:1px solid var(--rule);border-left:4px solid var(--cyan);border-radius:6px;background:var(--soft);padding:18px 20px;margin:24px 0;max-width:74ch}
+.norm .lbl{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:7px}
+.norm p{margin:0;font-size:17px;line-height:1.55;font-style:italic}
+.norm .src{margin-top:10px;font-size:12px;color:var(--body);font-style:normal}
+
+.note{border:1px solid var(--rule);border-radius:6px;background:var(--soft);padding:15px 17px;margin:22px 0;max-width:74ch}
+.note b{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.note p{margin:0;font-size:14.6px;line-height:1.6}
+
+.tscroll{overflow-x:auto;margin:24px 0}
+table.t{width:100%;border-collapse:collapse;font-size:14.2px;min-width:520px}
+table.t th,table.t td{text-align:left;padding:10px 14px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.5}
+table.t th{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+table.t td:first-child,table.t th:first-child{font-weight:600;padding-right:20px}
+table.t tr:last-child td{border-bottom:0}
+
+.fig{border:1px dashed var(--rule);border-radius:8px;background:var(--soft);padding:26px 18px;margin:26px 0;text-align:center;max-width:74ch}
+.fig .ph{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.fig .cap{font-size:13.6px;color:var(--body);margin:9px auto 0;max-width:58ch;line-height:1.55}
+
+/* ---- usporedba postupaka ---- */
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{
+  font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink);
+}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.cmp{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:10px 26px;padding:15px;align-items:center}
+@media (max-width:640px){.cmp{grid-template-columns:1fr}}
+.cmp svg{width:100%;height:auto;display:block;background:var(--paper);border:1px solid var(--rule);border-radius:6px}
+.cmp .ct h4{margin:0 0 6px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.cmp .ct p{margin:0 0 .7em;font-size:14.4px;line-height:1.6}
+.cmp .ct .ex{font-size:13px;color:var(--body);margin:0}
+
+/* ---- stepenasti učinak ---- */
+.step-bar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.step-bar input[type=range]{flex:1 1 190px;accent-color:var(--teal);min-width:150px}
+.step-bar .val{font-size:13px;font-weight:600;color:var(--teal);font-variant-numeric:tabular-nums;min-width:8.5em}
+.step-out{padding:14px 16px;border-top:1px solid var(--rule);font-size:14.2px;line-height:1.6;color:var(--ink);background:var(--paper)}
+.step-out b{color:var(--teal)}
+
+/* ---- vremenska crta ---- */
+.tl-wrap{background:var(--paper);padding:6px 0}
+svg.tl{display:block;width:100%;height:auto}
+.tlbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.tlbar input[type=range]{flex:1 1 180px;accent-color:var(--teal);min-width:140px}
+.btn{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;padding:7px 13px;cursor:pointer;
+}
+.btn:hover{border-color:var(--cyan);color:var(--teal)}
+.card{border-top:1px solid var(--rule);padding:18px 17px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 24px;background:var(--paper)}
+.card .yr{grid-row:1/span 3;font-size:34px;font-weight:700;color:var(--teal);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.card .era{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--body)}
+.card .ttl{font-size:18px;font-weight:700;letter-spacing:-.015em;line-height:1.3;margin:3px 0 6px}
+.card .txt{font-size:14.6px;line-height:1.6;margin:0;max-width:64ch;color:var(--ink)}
+@media (max-width:540px){.card{grid-template-columns:1fr}.card .yr{grid-row:auto;font-size:28px}}
+
+/* ---- primjene ---- */
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:26px 0}
+.app{border:1px solid var(--rule);border-radius:8px;padding:16px 17px;background:var(--soft)}
+.app h4{margin:0 0 7px;font-size:15.5px;font-weight:700;letter-spacing:-.012em;display:flex;align-items:center;gap:9px}
+.app h4 svg{width:19px;height:19px;stroke:var(--cyan);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.app p{margin:0;font-size:13.6px;line-height:1.6;color:var(--body)}
+
+/* ---- procjena znanja ---- */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:22px}
+.q{background:var(--soft);border:1px solid var(--rule);border-radius:8px;padding:17px;display:flex;flex-direction:column}
+.q .num{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--body)}
+.q .prompt{font-size:15.4px;line-height:1.45;margin:6px 0 13px;font-weight:600}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.opt{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rule);border-radius:5px;padding:9px 11px;cursor:pointer;font-size:14.4px;line-height:1.4;background:var(--paper)}
+.opt:hover{border-color:var(--cyan)}
+.opt input{margin:4px 0 0;accent-color:var(--teal);flex-shrink:0}
+.opt.correct{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.opt.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.opt.locked{cursor:default}
+.opt.locked:hover{border-color:var(--rule)}
+.opt.locked.correct:hover{border-color:var(--ok)}
+.opt.locked.wrong:hover{border-color:var(--bad)}
+.fb{font-size:13.8px;line-height:1.55;margin-top:auto;padding-top:11px;border-top:1px solid var(--rule);color:var(--body)}
+.fb b{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.fb.ok b{color:var(--ok)} .fb.no b{color:var(--bad)} .fb[hidden]{display:none}
+.score{font-size:12.5px;color:var(--body);font-variant-numeric:tabular-nums;margin-left:auto}
+
+/* ---- kretanje ---- */
+.nav{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;margin:54px 0 0;padding-top:24px;border-top:1px solid var(--rule)}
+.nav a,.nav span{
+  display:block;border:1px solid var(--rule);border-radius:8px;padding:13px 17px;
+  text-decoration:none;color:var(--ink);min-width:min(100%,250px);flex:1 1 250px;
+}
+.nav a:hover{border-color:var(--cyan)}
+.nav .lb{display:block;font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--body);margin-bottom:3px}
+.nav .tt{font-size:15px;font-weight:600;letter-spacing:-.012em;line-height:1.35}
+.nav .nx{text-align:right}
+.nav span.soon{opacity:.6}
+.nav span.soon .tt{color:var(--body)}
+
+/* ============ PODNOŽJE ============ */
+.sf{border-top:1px solid var(--rule);margin-top:50px}
+.sf-in{
+  max-width:1120px;margin:0 auto;padding:24px clamp(20px,6vw,120px);
+  display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between;
+  font-size:12.5px;color:var(--body);
+}
+.sf-in .brand{font-weight:700;letter-spacing:.17em;color:var(--teal)}
+.sf-in .brand i{color:var(--cyan);font-style:normal}
+
+/* ============ ALATNA TRAKA ============ */
+#ftq-canvas{position:fixed;inset:0;z-index:40;pointer-events:none;touch-action:none}
+#ftq-canvas.on{pointer-events:auto;cursor:crosshair}
+#ftq-bar{
+  position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:60;
+  display:flex;flex-direction:column;gap:3px;
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;
+  padding:5px;box-shadow:0 2px 16px rgba(16,57,74,.18);
+}
+#ftq-bar hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:auto}
+.tb{
+  width:38px;height:34px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;border-radius:4px;
+  color:var(--body);cursor:pointer;padding:0;
+  font-family:"IBM Plex Sans",sans-serif;font-size:12px;font-weight:700;
+}
+.tb:hover{color:var(--teal);border-color:var(--rule)}
+.tb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.tb svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#ftq-colors{display:none;flex-direction:column;gap:3px;padding-top:3px;border-top:1px solid var(--rule);margin-top:3px}
+#ftq-colors.show{display:flex}
+.sw{width:38px;height:20px;border:1px solid var(--rule);border-radius:4px;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:-4px}
+@media (max-width:680px){#ftq-bar{right:8px;padding:4px}.tb{width:33px;height:30px}.tb svg{width:17px;height:17px}.sw{width:33px;height:17px}}
+@media print{#ftq-bar,.topbar{display:none}}
+
+/* ============ POSEBNO ZA OVU STRANICU ============ */
+.shema{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:0}
+@media (max-width:820px){.shema{grid-template-columns:1fr}}
+.shema-l{padding:16px;background:var(--paper);border-right:1px solid var(--rule)}
+@media (max-width:820px){.shema-l{border-right:0;border-bottom:1px solid var(--rule)}}
+.shema-l svg{width:100%;height:auto;display:block}
+.hot{cursor:pointer}
+.hot circle.tocka{fill:var(--paper);stroke:var(--teal);stroke-width:2}
+.hot text{font-family:"IBM Plex Sans",sans-serif;font-size:11px;font-weight:700;fill:var(--teal);text-anchor:middle;dominant-baseline:central}
+.hot[aria-pressed="true"] circle.tocka{fill:var(--teal);stroke:var(--teal)}
+.hot[aria-pressed="true"] text{fill:#fff}
+.hot:hover circle.tocka{stroke:var(--cyan)}
+.shema-d{padding:18px 17px;background:var(--paper)}
+.shema-d .br{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
+.shema-d h4{margin:5px 0 8px;font-size:18px;font-weight:700;letter-spacing:-.015em}
+.shema-d p{margin:0 0 .8em;font-size:14.4px;line-height:1.6}
+.shema-d p:last-child{margin-bottom:0}
+.shema-d .uloga{font-size:13.4px;color:var(--body);border-top:1px solid var(--rule);padding-top:10px;margin-top:12px}
+
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink)}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.izv{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:12px 26px;padding:15px;align-items:center}
+@media (max-width:680px){.izv{grid-template-columns:1fr}}
+.izv svg{width:100%;height:auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:block}
+.izv .ct h4{margin:0 0 7px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.izv .ct p{margin:0 0 .8em;font-size:14.4px;line-height:1.6}
+.izv .ct dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 16px;margin:0}
+.izv .ct dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.izv .ct dd{margin:0;font-size:13.8px;line-height:1.5}
+
+.koraci{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.korak{flex:1 1 118px;min-width:112px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);
+  padding:11px 10px;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink)}
+.korak:hover{border-color:var(--cyan)}
+.korak[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.korak .br{font-size:10.5px;font-weight:700;letter-spacing:.12em;opacity:.7}
+.korak .im{display:block;font-size:13px;font-weight:600;line-height:1.28;margin-top:3px}
+
+.greske{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin:24px 0}
+.gr{border:1px solid var(--rule);border-radius:8px;background:var(--soft);padding:16px 17px}
+.gr h4{margin:0 0 8px;font-size:15.5px;font-weight:700;letter-spacing:-.012em}
+.gr dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-top:9px}
+.gr dd{margin:2px 0 0;font-size:13.8px;line-height:1.56;color:var(--body)}
+.gr dl{margin:0}
+
+.isp{display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:12px 26px;padding:16px;align-items:center}
+@media (max-width:660px){.isp{grid-template-columns:1fr}}
+.isp svg{width:100%;height:auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:block}
+.isp dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;margin:0 0 12px}
+.isp dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.isp dd{margin:0;font-size:15px;font-variant-numeric:tabular-nums}
+.isp p{margin:0;font-size:14.2px;line-height:1.6;color:var(--body)}
+.ibar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);background:var(--paper);flex-wrap:wrap}
+.ibar input[type=range]{flex:1 1 200px;accent-color:var(--teal);min-width:150px}
+.ibar .val{font-size:13px;font-weight:600;color:var(--teal);min-width:7em;font-variant-numeric:tabular-nums}
+
+.pop{border:1px solid var(--rule);border-radius:8px;background:var(--soft);overflow:hidden;margin:16px 0}
+.pop .st{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.pop .st:last-child{border-bottom:0}
+.pop .kv-box{flex:0 0 auto;width:21px;height:21px;border:2px solid var(--rule);border-radius:5px;background:var(--paper);
+  cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.pop .kv-box svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.pop .kv-box[aria-pressed="true"]{background:var(--teal);border-color:var(--teal)}
+.pop .kv-box[aria-pressed="true"] svg{opacity:1}
+.pop .tx{min-width:0}
+.pop .tx b{display:block;font-size:14.6px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.pop .tx span{font-size:13.6px;line-height:1.6;color:var(--body)}
+.pop .nog{display:flex;gap:13px;align-items:center;padding:12px 16px;background:var(--soft);flex-wrap:wrap}
+.pop .nog .os{flex:1 1 160px;height:8px;border-radius:99px;background:var(--rule);overflow:hidden;min-width:120px}
+.pop .nog .os i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:width .2s}
+.pop .nog .tx2{font-size:12.8px;font-weight:600;color:var(--teal);white-space:nowrap}
+.pop .nog button{font-family:inherit;font-size:12.3px;font-weight:600;color:var(--body);background:none;
+  border:1px solid var(--rule);border-radius:5px;padding:5px 12px;cursor:pointer}
+.pop .nog button:hover{border-color:var(--cyan);color:var(--teal)}
+
+.mjer{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:15px}
+.mjer .kar{border:1px solid var(--rule);border-radius:6px;background:var(--paper);padding:12px 13px}
+.mjer .kar .lb{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+.mjer .kar .vr{font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink);
+  font-variant-numeric:tabular-nums;margin-top:3px;line-height:1.15}
+.mjer .kar .np{font-size:12.4px;color:var(--body);line-height:1.5;margin-top:4px}
+
+.kod{margin:0;padding:15px 16px;background:var(--paper);border-top:1px solid var(--rule);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.4px;line-height:1.62;
+  color:var(--ink);white-space:pre;overflow-x:auto}
+.kod .c{color:var(--body)}
+.kod .t{color:var(--teal);font-weight:600}
+.zap{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;padding:15px}
+.zap .kar{border:1px solid var(--rule);border-radius:6px;background:var(--paper);padding:11px 12px}
+.zap .kar .lb{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+.zap .kar .vr{font-size:19px;font-weight:700;letter-spacing:-.02em;color:var(--ink);
+  font-variant-numeric:tabular-nums;margin-top:3px;line-height:1.15}
+.zap .kar .np{font-size:12.2px;color:var(--body);line-height:1.5;margin-top:3px}
+</style>
+</head>
+<body>
+
+<canvas id="ftq-canvas"></canvas>
+
+<div id="ftq-bar" role="toolbar" aria-label="Alati">
+  <button class="tb" id="t-pen"   type="button" aria-pressed="false" title="Olovka"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 10-10a2.1 2.1 0 0 0-3-3L5 16l-1 4z"/></svg></button>
+  <button class="tb" id="t-mark"  type="button" aria-pressed="false" title="Marker"><svg viewBox="0 0 24 24"><path d="M5 18h14"/><path d="M8 14l7-8a2 2 0 0 1 3 3l-7 8H8v-3z"/></svg></button>
+  <button class="tb" id="t-erase" type="button" aria-pressed="false" title="Gumica"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M14 4l6 6-8 8H7l-3-3z"/></svg></button>
+  <button class="tb" id="t-board" type="button" aria-pressed="false" title="Ploča"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M9 20l3-3 3 3"/></svg></button>
+  <button class="tb" id="t-color" type="button" aria-pressed="false" title="Boja"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg></button>
+  <button class="tb" id="t-undo"  type="button" title="Poništi"><svg viewBox="0 0 24 24"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 0 10h-3"/></svg></button>
+  <button class="tb" id="t-clear" type="button" title="Obriši sve"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></button>
+  <hr>
+  <button class="tb" id="t-minus" type="button" title="Smanji slova">A&minus;</button>
+  <button class="tb" id="t-plus"  type="button" title="Povećaj slova">A+</button>
+  <button class="tb" id="t-dys"   type="button" aria-pressed="false" title="Pomoć s disleksijom">Dy</button>
+  <button class="tb" id="t-theme" type="button" title="Svijetla / tamna tema"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 5a7 7 0 0 1 0 14z" fill="currentColor" stroke="none"/></svg></button>
+  <div id="ftq-colors"></div>
+</div>
+
+<nav class="topbar" aria-label="Putanja">
+  <a class="tbi menu" href="../index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Izbornik</span></a>
+  <a class="tbi" href="index.html"><span class="lb">Knjiga</span><span class="vl">Aditivne teh&hellip;</span></a>
+  <a class="tbi crumb" href="m3-modeliranje-prototipa.html"><span class="lb">Modul</span><span class="vl">Modeliranje prototipa<span class="x">&#10005;</span></span></a>
+  <div class="tbi crumb"><span class="lb">Odlomak</span><span class="vl">Konverzija 3D geometrije &mdash; STL<span class="x">&#10005;</span></span></div>
+</nav>
+
+<header class="hero">
+  <div class="hero-art" aria-hidden="true">
+    <svg viewBox="0 0 420 340" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="#6FD9E2" stroke-width="1.3" opacity=".5">
+        <circle cx="210" cy="170" r="86" stroke-dasharray="5 6"/>
+      </g>
+      <g fill="none" stroke="#6FD9E2" stroke-width="1.6" opacity=".8">
+        <path d="M210 84 L284 127 L284 213 L210 256 L136 213 L136 127 Z"/>
+      </g>
+      <g fill="none" stroke="#6FD9E2" stroke-width=".9" opacity=".35">
+        <path d="M210 84 L210 256 M136 127 L284 213 M284 127 L136 213"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-in">
+    <div class="eyebrow">
+      <b>FORTRONI<i>Q</i></b><span>Aditivne tehnologije</span><span>Modul 3</span><span>Jedinica 3.3</span>
+    </div>
+    <h1>Konverzija 3D geometrije &mdash; datoteka STL</h1>
+    <p class="lede">Program za oblikovanje zna točnu jednadžbu svake plohe. Stroj to ne može upotrijebiti, pa se
+    oblik prije ispisa pretvara u mrežu trokuta. Pretvorba je namjerna pogreška &mdash; ova jedinica pokazuje
+    koliko ona iznosi, kako se zadaje i gdje je granica ispod koje nema smisla ići.</p>
+  </div>
+
+  <div class="goals">
+    <div class="goals-h">
+      <svg viewBox="0 0 46 32" aria-hidden="true"><path d="M4 17l8 9L28 6"/><path d="M20 17l8 9L44 6"/></svg>
+      <span>Moći ću:</span>
+    </div>
+    <ul id="goals"></ul>
+  </div>
+</header>
+<div class="cyanline"></div>
+
+<div class="wrap">
+
+  <!-- ===================== 1 ===================== -->
+  <section id="s1">
+    <div class="sh"><span class="n">1</span><h2>Od točnoga oblika do mreže trokuta</h2></div>
+
+    <p>U programu za oblikovanje valjak nije skup ploha nego <em>jednadžba</em>. Zaobljeni prijelaz nije niz
+    sitnih ravnina nego krivulja zadana s nekoliko brojeva. Takav se zapis zove <strong>granični prikaz</strong>
+    (<span class="kv">B-rep</span>) i on je točan: ploha se može uvećati koliko god puta i ostat će glatka.</p>
+
+    <p>Stroj s tim ne može ništa. Njemu treba presjek na svakoj visini, a presijecanje matematičke plohe
+    ravninom nije posao koji bi program za rezanje radio brzo ni pouzdano za sve vrste ploha. Zato se između
+    njih ubacuje <strong>mreža trokuta</strong>: oblik se opiše plohicama koje su sve ravne i sve iste vrste, pa
+    je presijecanje svedeno na presijecanje ravnine s trokutom &mdash; račun koji se izvodi milijun puta u
+    sekundi.</p>
+
+    <p>Cijena je u tome što <strong>zaobljena ploha prestaje biti zaobljena</strong>. Valjak postaje mnogokutna
+    prizma, kugla postaje poliedar. Pitanje nije hoće li nastati odstupanje, nego <em>koliko</em> &mdash; i to
+    je jedina odluka koju oblikovatelj pri izvozu doista donosi.</p>
+
+    <h3 class="sub">Zašto baš trokut</h3>
+    <p>Tri točke uvijek leže u jednoj ravnini. Četiri ne moraju, pa bi četverokut mogao biti izvijen i ne bi se
+    znalo kako ga presjeći. Trokut je najmanji lik koji je uvijek ravan, pa je izbor bio praktičan, a ne
+    estetski.</p>
+
+    <p>Zapis je nastao 1987. godine u tvrtki 3D Systems, uz prvi komercijalni stroj za stereolitografiju, i po
+    njoj je i dobio ime &mdash; <span class="kv">STL</span> se čita kao kratica od <em>stereolithography</em>.
+    Trebao je biti privremeno rješenje za jedan stroj. Ostao je gotovo četrdeset godina, jer je bio dovoljno
+    jednostavan da ga svi podrže.</p>
+
+    <div class="fig">
+      <div class="ph">Mjesto za sliku 1.1</div>
+      <p class="cap">Isti zaobljeni prijelaz prikazan kao točna ploha u programu za oblikovanje i kao mreža
+      trokuta nakon izvoza, s uvećanim isječkom na kojem se vide bridovi između trokuta.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section id="s2">
+    <div class="sh"><span class="n">2</span><h2>Građa zapisa</h2></div>
+
+    <p>Datoteka STL je popis trokuta i ništa više. Za svaki trokut zapisane su <strong>tri točke</strong> i
+    <strong>normala</strong> &mdash; smjer koji pokazuje koja je strana vanjska. Nema podataka o tome kako su
+    trokuti povezani, kojem tijelu pripadaju ni kojim su redom nastali.</p>
+
+    <p>Postoje dva oblika istoga zapisa. <strong>Tekstovni</strong> je čitljiv u bilo kojem uređivaču teksta;
+    <strong>binarni</strong> je isti sadržaj zapisan brojevima, oko pet puta manji i brži za učitavanje. Osim
+    veličine, razlike nema &mdash; isti model u obama oblicima daje isti dio.</p>
+
+    <p class="sd">Odaberi oblik zapisa.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Jedan trokut u zapisu</div>
+        <div class="s" id="opos">&nbsp;</div>
+      </div>
+      <div class="seg" id="oseg"></div>
+      <pre class="kod" id="okod">&nbsp;</pre>
+      <div class="def" id="odef"></div>
+    </div>
+
+    <h3 class="sub">Pravilo vrhova</h3>
+    <p>Dva susjedna trokuta moraju dijeliti <strong>cijeli brid</strong>, to jest obje njegove krajnje točke.
+    Vrh jednoga trokuta ne smije ležati na sredini brida drugoga. Kad se to ipak dogodi &mdash; a događa se pri
+    spajanju mreža različite gustoće &mdash; nastaje pukotina koja se u pregledu ne vidi, a program za rezanje
+    je prijavljuje kao otvoren rub.</p>
+
+    <h3 class="sub">Koliko datoteka naraste</h3>
+    <p>Binarni zapis troši točno <strong>50 bajta po trokutu</strong>, uz 84 bajta zaglavlja. Tekstovni troši
+    između 250 i 300 bajta po trokutu, ovisno o broju znamenaka. Iz toga se veličina datoteke može predvidjeti
+    prije nego što se izveze.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Veličina datoteke</div>
+        <div class="s" id="vpos">&nbsp;</div>
+      </div>
+      <div class="zap">
+        <div class="kar">
+          <div class="lb">Broj trokuta</div>
+          <div class="vr"><input id="vtrok" type="number" min="1" step="1000" value="120000"
+             style="width:100%;font:inherit;color:inherit;background:transparent;border:0;border-bottom:1px solid var(--rule);padding:0 0 2px"
+             aria-label="Broj trokuta u modelu"></div>
+          <div class="np">upiši vlastiti broj</div>
+        </div>
+        <div class="kar">
+          <div class="lb">Binarno</div>
+          <div class="vr" id="vbin">&nbsp;</div>
+          <div class="np">84 B zaglavlje + 50 B po trokutu</div>
+        </div>
+        <div class="kar">
+          <div class="lb">Tekstovno</div>
+          <div class="vr" id="vasc">&nbsp;</div>
+          <div class="np">oko 270 B po trokutu</div>
+        </div>
+        <div class="kar">
+          <div class="lb">Omjer</div>
+          <div class="vr" id="vomj">&nbsp;</div>
+          <div class="np" id="vnap">&nbsp;</div>
+        </div>
+      </div>
+    </div>
+
+    <p>Zaključak je jednostavan i vrijedi bez iznimke: <strong>izvozi se binarno</strong>. Tekstovni oblik ima
+    smisla samo kad se datoteka doista mora otvoriti i pročitati &mdash; u nastavi, pri traženju greške ili kad
+    se zapis obrađuje vlastitom skriptom.</p>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section id="s3">
+    <div class="sh"><span class="n">3</span><h2>Odstupanje tetive i kutno odstupanje</h2></div>
+
+    <p>Pri izvozu se zadaju dvije veličine. <strong>Odstupanje tetive</strong> najveći je razmak između prave
+    plohe i trokuta koji je zamjenjuje &mdash; mjeri se u milimetrima i izravno govori koliko će dio biti
+    netočan. <strong>Kutno odstupanje</strong> ograničava koliko se smiju razlikovati normale dvaju susjednih
+    trokuta i djeluje ondje gdje je zakrivljenost velika, a mjera mala.</p>
+
+    <p>Prva veličina vodi računa o <em>točnosti</em>, druga o <em>izgledu</em>. Na velikome valjku prva će
+    sama dati dovoljno ploha; na sitnome zaobljenju tek ih druga umnoži toliko da rub ne izgleda izlomljeno.</p>
+
+    <p class="sd">Povuci klizač i prati broj ploha na valjku promjera 30 mm.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Valjak &#216;30 mm, visina 30 mm</div>
+        <div class="s" id="tpos">&nbsp;</div>
+      </div>
+      <div class="isp">
+        <svg id="tsvg" viewBox="0 0 280 210" role="img" aria-label="Presjek valjka s mnogokutom pri zadanome odstupanju"></svg>
+        <div>
+          <dl>
+            <dt>Odstupanje tetive</dt><dd id="todst">&nbsp;</dd>
+            <dt>Ploha po obodu</dt><dd id="tplo">&nbsp;</dd>
+            <dt>Trokuta u modelu</dt><dd id="ttro">&nbsp;</dd>
+            <dt>Datoteka, binarno</dt><dd id="tdat">&nbsp;</dd>
+          </dl>
+          <p id="tnap">&nbsp;</p>
+        </div>
+      </div>
+      <div class="ibar">
+        <span class="val" id="tval">&nbsp;</span>
+        <input type="range" id="trange" min="1" max="60" step="1" value="8"
+               aria-label="Odstupanje tetive u stotinkama milimetra">
+      </div>
+    </div>
+
+    <p>Račun je jednostavan. Ako je <em>R</em> polumjer, a <em>&delta;</em> dopušteno odstupanje, jedna ploha
+    obuhvaća kut <em>2&middot;arccos(1 &minus; &delta;/R)</em>, pa je broj ploha puni krug podijeljen tim kutom.
+    Odatle slijedi ono što se u praksi stalno zaboravlja: <strong>broj ploha ovisi o polumjeru</strong>. Isto
+    zadano odstupanje na provrtu od 3 mm daje mnogo manje ploha nego na valjku od 300 mm, jer je zakrivljenost
+    veća.</p>
+  </section>
+
+  <!-- ===================== 4 ===================== -->
+  <section id="s4">
+    <div class="sh"><span class="n">4</span><h2>Kako odabrati razlučivost</h2></div>
+
+    <p>Pravilo je jedno: <strong>odstupanje mora biti osjetno manje od onoga što stroj može razlučiti</strong>,
+    ali ne toliko manje da datoteka postane neupotrebljiva. Uobičajena mjera je petina do desetina točnosti
+    stroja.</p>
+
+    <div class="tscroll">
+    <table class="t">
+      <tr><th>Postupak</th><th>Točnost stroja</th><th>Razumno odstupanje tetive</th></tr>
+      <tr><td>Taložno srašćivanje (FDM)</td><td>&plusmn;0,2 mm</td><td>0,02 &ndash; 0,05 mm</td></tr>
+      <tr><td>Srašćivanje praha (SLS)</td><td>&plusmn;0,2 mm</td><td>0,02 &ndash; 0,05 mm</td></tr>
+      <tr><td>Stereolitografija (SLA)</td><td>&plusmn;0,05 mm</td><td>0,01 &ndash; 0,02 mm</td></tr>
+      <tr><td>Digitalno obrađeno svjetlo (DLP)</td><td>&plusmn;0,05 mm</td><td>0,01 &ndash; 0,02 mm</td></tr>
+      <tr><td>Mlaz fotopolimera (PolyJet)</td><td>&plusmn;0,05 mm</td><td>0,005 &ndash; 0,015 mm</td></tr>
+      <tr><td>Velik izgledni model</td><td>vidljivost, ne mjera</td><td>0,1 mm i više</td></tr>
+    </table>
+    </div>
+
+    <h3 class="sub">Zašto ne uvijek najfinije</h3>
+    <p>Skoro svi programi nude postavku <em>najviše kakvoće</em> i primamljivo je uvijek je odabrati. Cijena je
+    stvarna:</p>
+    <ul class="plain">
+      <li><strong>Datoteka naraste</strong> &mdash; stotine megabajta koje se teško šalju i sporo otvaraju.</li>
+      <li><strong>Rezanje traje dulje</strong> &mdash; program mora presjeći svaki trokut na svakoj visini.</li>
+      <li><strong>Množe se degenerirani trokuti</strong> &mdash; što je mreža gušća, to je više plohica blizu
+      nulte površine, a one su izvor grešaka iz jedinice 3.2.</li>
+      <li><strong>Dobitak je nula</strong> &mdash; odstupanje od tisućinke milimetra stroj s točnošću od dvije
+      desetinke ne može ni prikazati, a kamoli iskoristiti.</li>
+    </ul>
+
+    <div class="note">
+      <b>Donja granica koja ima smisla</b>
+      <p>Odstupanje nikada ne treba biti manje od <strong>polovice visine sloja</strong>. Ako se ispisuje slojem
+      od 0,2 mm, odstupanje od 0,01 mm već je deset puta finije nego što stroj može pokazati. Sve ispod toga
+      troši prostor i vrijeme, a ne mijenja ništa na dijelu.</p>
+    </div>
+
+    <h3 class="sub">Kad razlučivost ipak treba podići</h3>
+    <p>Tri su slučaja u kojima se ide finije nego što tablica kaže: <em>sitni zaobljeni detalji</em>, gdje kutno
+    odstupanje odlučuje o izgledu; <em>dosjedne plohe</em>, gdje mnogokut umjesto kruga mijenja stvarnu mjeru
+    provrta; i <em>izgledni modeli</em>, koji se gledaju izbliza pa se bridovi među trokutima primjećuju i kad
+    su unutar tolerancije.</p>
+
+    <p>Kod provrta postoji i pojava koju treba znati: mnogokut upisan u krug <strong>uvijek je manji od
+    kruga</strong>. Provrt izvezen s grubim odstupanjem izlazi uži od zadanoga i prije nego što je stroj išta
+    učinio. Zato se dosjedni provrti izvoze finije, a mjera im se ionako postiže naknadnom obradbom.</p>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section id="s5">
+    <div class="sh"><span class="n">5</span><h2>Postupak izvoza</h2></div>
+
+    <p class="sd">Klikni korak.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Od modela do datoteke</div>
+        <div class="s" id="kpos">&nbsp;</div>
+      </div>
+      <div class="koraci" id="koraci"></div>
+      <div class="def" id="kdef"></div>
+    </div>
+
+    <div class="note">
+      <b>Izvorna datoteka se čuva</b>
+      <p>Zapis STL je <em>jednosmjeran</em>. Iz mreže trokuta ne može se vratiti jednadžba plohe, pa se iz
+      njega ne da ni normalno uređivati. Izvorni model u zapisu programa za oblikovanje, ili barem u zapisu
+      STEP, čuva se uvijek &mdash; inače iduća izmjena znači crtanje ispočetka.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 6 ===================== -->
+  <section id="s6">
+    <div class="sh"><span class="n">6</span><h2>Što zapis ne nosi &mdash; i čime se zamjenjuje</h2></div>
+
+    <p>Datoteka STL ne zna gotovo ništa osim oblika. Nema mjerne jedinice, nema boje, nema materijala, ne
+    razlikuje dijelove sklopa i ne nosi ime autora ni inačicu. Sve što nije geometrija mora se dogovoriti izvan
+    datoteke &mdash; nazivom, popratnim dokumentom ili usmeno.</p>
+
+    <p class="sd">Klikni zapis i usporedi što nosi.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Zapisi za razmjenu geometrije</div>
+        <div class="s" id="zpos">&nbsp;</div>
+      </div>
+      <div class="chips" id="zchips"></div>
+      <div class="def" id="zdef"></div>
+    </div>
+
+    <p>Zašto se onda zapis STL i dalje koristi? Zato što ga podržava doslovno sve &mdash; svaki program za
+    oblikovanje, svaki program za rezanje, svaka usluga ispisa. Novi zapisi bolji su u svemu osim u tome, a u
+    razmjeni datoteka podrška odlučuje.</p>
+
+    <p>Praktičan naputak: <strong>za vlastiti stroj i vlastiti lanac</strong> koristiti zapis 3MF, jer nosi
+    jedinicu i time uklanja najskuplju grešku iz jedinice 3.2. <strong>Za slanje trećoj strani</strong> poslati
+    zapis STL, jer je siguran izbor, ali mjernu jedinicu upisati u naziv datoteke.</p>
+  </section>
+
+  <!-- ===================== 7 ===================== -->
+  <section id="s7">
+    <div class="sh"><span class="n">7</span><h2>Najčešće pogreške pri izvozu</h2></div>
+
+    <div class="greske">
+      <div class="gr">
+        <h4>Zaobljenje izgleda izlomljeno</h4>
+        <dl>
+          <dt>Uzrok</dt><dd>Preveliko odstupanje tetive, ili je postavljeno samo ono, bez kutnoga odstupanja, pa sitna zaobljenja ostaju s malo ploha.</dd>
+          <dt>Rješenje</dt><dd>Sniziti odstupanje tetive i zadati kutno odstupanje, uobičajeno oko 5 do 10 stupnjeva.</dd>
+        </dl>
+      </div>
+      <div class="gr">
+        <h4>Datoteka je stotinama megabajta velika</h4>
+        <dl>
+          <dt>Uzrok</dt><dd>Izvoz u tekstovnome obliku ili nepotrebno fina razlučivost, često postavka <em>najviše kakvoće</em>.</dd>
+          <dt>Rješenje</dt><dd>Izvesti binarno i postaviti odstupanje prema točnosti stroja, ne prema najmanjoj mogućoj vrijednosti.</dd>
+        </dl>
+      </div>
+      <div class="gr">
+        <h4>Provrt je uži od zadanoga</h4>
+        <dl>
+          <dt>Uzrok</dt><dd>Mnogokut upisan u krug manji je od kruga, pa gruba razlučivost sama po sebi sužava provrt.</dd>
+          <dt>Rješenje</dt><dd>Za dosjedne provrte izvoziti finije; za točnu mjeru ionako predvidjeti naknadno bušenje ili razvrtanje.</dd>
+        </dl>
+      </div>
+      <div class="gr">
+        <h4>Dio je 25,4 puta manji ili veći</h4>
+        <dl>
+          <dt>Uzrok</dt><dd>Zapis ne nosi mjernu jedinicu, a izvoz i uvoz nisu se složili oko toga jesu li brojevi milimetri ili palci.</dd>
+          <dt>Rješenje</dt><dd>Zadati jedinicu pri izvozu i upisati je u naziv datoteke; za vlastiti lanac prijeći na zapis 3MF.</dd>
+        </dl>
+      </div>
+      <div class="gr">
+        <h4>Sklop je izašao kao jedno tijelo</h4>
+        <dl>
+          <dt>Uzrok</dt><dd>Izvezen je cijeli sklop u jednu datoteku, pa se dijelovi više ne razlikuju ni po položaju ni po materijalu.</dd>
+          <dt>Rješenje</dt><dd>Izvesti svaki dio zasebno, u zajedničkome ishodištu, ili upotrijebiti zapis koji sklop nosi.</dd>
+        </dl>
+      </div>
+      <div class="gr">
+        <h4>Pukotine duž bridova</h4>
+        <dl>
+          <dt>Uzrok</dt><dd>Vrh jednoga trokuta leži na sredini brida drugoga; nastaje pri spajanju mreža različite gustoće ili pri izvozu iz nesašivenih ploha.</dd>
+          <dt>Rješenje</dt><dd>Sašiti plohe u izvornome modelu prije izvoza, ili popraviti mrežu prema redoslijedu iz jedinice 3.2.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Zaključak jedinice</b>
+      <p>Izvoz u mrežu nije administrativni korak nego odluka o točnosti. Zaobljena ploha pretvara se u niz
+      ravnih, a koliko će od oblika ostati, zadaje se dvama brojevima: odstupanjem tetive i kutnim odstupanjem.
+      Prevelika vrijednost daje izlomljen dio i uži provrt, premalena daje datoteku koja se ne da poslati, a
+      dobitka nema jer stroj razliku ne može prikazati.</p>
+      <p>Datoteka je time spremna. Sljedeća jedinica prati što se s njom događa u programu za rezanje: kako se
+      mreža pretvara u slojeve, koje se postavke pritom zadaju i kako nastaje G-kod koji stroj doista
+      izvodi.</p>
+    </div>
+  </section>
+
+  <!-- ===================== PROCJENA ===================== -->
+  <section id="s8">
+    <div class="sh"><span class="n">8</span><h2>Procjena znanja</h2><span class="score" id="score">&nbsp;</span></div>
+    <p class="sd">Odgovor se zaključava nakon prvoga klika, uz objašnjenje zašto je točan.</p>
+    <div class="qgrid" id="qgrid"></div>
+  </section>
+
+  <nav class="nav" aria-label="Kretanje po modulu">
+    <a href="greske-pri-modeliranju.html">
+      <span class="lb">&larr; Prethodna jedinica</span>
+      <span class="tt">3.2. Greške pri modeliranju</span>
+    </a>
+    <a class="nx" href="generiranje-g-koda-slicer.html">
+      <span class="lb">Sljedeća jedinica &rarr;</span>
+      <span class="tt">3.4. Generiranje G-koda &mdash; SLICER</span>
+    </a>
+  </nav>
+</div>
+
+<div class="sf">
+  <div class="sf-in">
+    <span class="brand">FORTRONI<i>Q</i></span>
+    <span>Aditivne tehnologije &middot; Modul 3 &middot; Jedinica 3.3</span>
+    <span>&copy; <span id="yr">2026</span> ForTroniQ d.o.o. &middot; Sva prava pridržana</span>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+var y = $("yr"); if (y) y.textContent = new Date().getFullYear();
+
+/* ---------- ishodi jedinice ---------- */
+var GOALS = [
+ "predložiti prikladnu razlučivost datoteke STL",
+ "generirati i prilagoditi standardizirani zapis STL"
+];
+var gul = $("goals");
+GOALS.forEach(function(g){
+  var li = document.createElement("li");
+  li.innerHTML = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.5l3.4 3.6L12 3.4"/></svg><span>' + g + '</span>';
+  gul.appendChild(li);
+});
+function zar(x, d){ return x.toFixed(d).replace(".", ","); }
+function bajti(n){
+  if (n < 1024) return n + " B";
+  if (n < 1048576) return zar(n / 1024, 1) + " kB";
+  if (n < 1073741824) return zar(n / 1048576, 1) + " MB";
+  return zar(n / 1073741824, 2) + " GB";
+}
+
+/* ---------- oblik zapisa ---------- */
+var OBLIK = [
+ {k:"Tekstovno", h:"Tekstovni zapis", en:"ASCII",
+  kod: '<span class="c">solid nosac</span>\n' +
+       '  <span class="t">facet normal</span>  0.000000e+00  0.000000e+00  1.000000e+00\n' +
+       '    <span class="t">outer loop</span>\n' +
+       '      <span class="t">vertex</span>   1.000000e+01  0.000000e+00  4.000000e+00\n' +
+       '      <span class="t">vertex</span>   1.000000e+01  1.000000e+01  4.000000e+00\n' +
+       '      <span class="t">vertex</span>   0.000000e+00  1.000000e+01  4.000000e+00\n' +
+       '    <span class="t">endloop</span>\n' +
+       '  <span class="t">endfacet</span>\n' +
+       '  <span class="c">… još 119 999 trokuta …</span>\n' +
+       '<span class="c">endsolid nosac</span>',
+  o:"Čist tekst. Svaki trokut zauzima sedam redaka: normalu, otvaranje petlje, tri točke i dva zatvaranja. Datoteka počinje riječju solid i imenom, a završava riječju endsolid.",
+  pl:"Može se otvoriti u uređivaču teksta, pročitati i po potrebi ispraviti ručno. Korisno u nastavi i pri traženju greške.",
+  og:"Oko pet puta veća datoteka i osjetno sporije učitavanje. Za model od sto tisuća trokuta razlika je desetci megabajta.",
+  kd:"kad se datoteka doista mora čitati ili obrađivati skriptom"},
+ {k:"Binarno", h:"Binarni zapis", en:"binary",
+  kod: '<span class="c">zaglavlje: 80 bajta slobodna teksta</span>\n' +
+       '<span class="c">broj trokuta: 4 bajta cijeloga broja</span>\n' +
+       '\n' +
+       '<span class="c">za svaki trokut, točno 50 bajta:</span>\n' +
+       '  <span class="t">normala</span>    3 × 4 B  <span class="c">(decimalni broj)</span>\n' +
+       '  <span class="t">vrh 1</span>      3 × 4 B\n' +
+       '  <span class="t">vrh 2</span>      3 × 4 B\n' +
+       '  <span class="t">vrh 3</span>      3 × 4 B\n' +
+       '  <span class="t">dodatak</span>    2 B      <span class="c">(najčešće nula)</span>',
+  o:"Isti sadržaj zapisan brojevima. Zaglavlje od 80 bajta, zatim broj trokuta, pa za svaki trokut točno 50 bajta: normala, tri vrha i dva bajta dodatka.",
+  pl:"Peterostruko manja datoteka i mnogo brže učitavanje. Veličina se može izračunati unaprijed jer je po trokutu uvijek ista.",
+  og:"Ne može se pročitati bez posebnoga alata. Dva bajta dodatka neki programi koriste za boju, ali to nije dio norme pa se prijenos boje ne može oslanjati na njih.",
+  kd:"uvijek, osim kad datoteku treba čitati"}
+];
+var oseg = $("oseg"), oEls = [];
+OBLIK.forEach(function(v, i){
+  var b = document.createElement("button");
+  b.className = "segb"; b.type = "button"; b.setAttribute("aria-pressed", "false");
+  b.textContent = v.k;
+  b.addEventListener("click", function(){ selO(i); });
+  oseg.appendChild(b); oEls.push(b);
+});
+var curO = -1;
+function selO(i){
+  if (i === curO) return;
+  curO = i;
+  oEls.forEach(function(b, k){ b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+  var v = OBLIK[i];
+  $("okod").innerHTML = v.kod;
+  $("odef").innerHTML = '<h3>' + v.h + '</h3><p class="en">' + v.en + '</p><dl>' +
+    '<dt>Građa</dt><dd>' + v.o + '</dd>' +
+    '<dt>Prednost</dt><dd>' + v.pl + '</dd>' +
+    '<dt>Ograničenje</dt><dd>' + v.og + '</dd>' +
+    '<dt>Kada</dt><dd>' + v.kd + '</dd></dl>';
+  $("opos").textContent = (i + 1) + " / " + OBLIK.length;
+}
+selO(1);
+
+/* ---------- veličina datoteke ---------- */
+function racunajVelicinu(){
+  var n = parseInt($("vtrok").value, 10);
+  if (!(n > 0)){
+    $("vbin").textContent = "—"; $("vasc").textContent = "—";
+    $("vomj").textContent = "—"; $("vnap").textContent = "upiši broj trokuta";
+    $("vpos").textContent = " ";
+    return;
+  }
+  var bin = 84 + 50 * n, asc = 270 * n;
+  $("vbin").textContent = bajti(bin);
+  $("vasc").textContent = bajti(asc);
+  $("vomj").textContent = "× " + zar(asc / bin, 1);
+  $("vpos").textContent = bajti(bin) + " binarno";
+  var t;
+  if (n < 20000) t = "Skroman model. U obama oblicima datoteka je sitna, pa izbor oblika ovdje ništa ne mijenja.";
+  else if (n < 300000) t = "Uobičajen model iz programa za oblikovanje. Binarno je nekoliko megabajta, tekstovno već desetci.";
+  else if (n < 3000000) t = "Vrlo gusta mreža, tipična za model iz skenera ili za postavku najviše kakvoće. Provjeri je li ta gustoća doista potrebna.";
+  else t = "Datoteka ove veličine sporo se otvara i teško šalje. Gotovo uvijek je razlučivost previsoka za točnost stroja.";
+  $("vnap").textContent = t;
+}
+$("vtrok").addEventListener("input", racunajVelicinu);
+racunajVelicinu();
+
+/* ---------- odstupanje tetive ---------- */
+function crtajValjak(){
+  var d = parseInt($("trange").value, 10) / 100;   /* mm */
+  var R = 15;                                      /* polumjer valjka, mm */
+  var kut = 2 * Math.acos(Math.max(-1, 1 - d / R));
+  var n = Math.max(3, Math.ceil(2 * Math.PI / kut));
+  var stvarno = R * (1 - Math.cos(Math.PI / n));
+  var trok = 4 * n - 4;                            /* plašt 2n, dva dna po n-2 */
+  var bin = 84 + 50 * trok;
+
+  var cx = 90, cy = 98, rp = 72, p = [];
+  p.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + rp + '" fill="none" stroke="var(--body)" stroke-width="1.3" stroke-dasharray="4 4"/>');
+  var t = [], i;
+  for (i = 0; i < n; i++){
+    var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+    t.push((cx + rp * Math.cos(a)).toFixed(2) + "," + (cy + rp * Math.sin(a)).toFixed(2));
+  }
+  p.push('<polygon points="' + t.join(" ") + '" fill="var(--cyan)" fill-opacity=".16" stroke="var(--teal)" stroke-width="1.8"/>');
+  if (n <= 40){
+    for (i = 0; i < n; i++){
+      var a2 = -Math.PI / 2 + i * 2 * Math.PI / n;
+      p.push('<circle cx="' + (cx + rp * Math.cos(a2)).toFixed(2) + '" cy="' + (cy + rp * Math.sin(a2)).toFixed(2) +
+             '" r="2" fill="var(--teal)"/>');
+    }
+  }
+  p.push('<text x="' + cx + '" y="' + (cy + 4) + '" text-anchor="middle" font-size="13" font-weight="700" fill="var(--teal)" font-family="IBM Plex Sans, sans-serif">' + n + '</text>');
+  p.push('<text x="' + cx + '" y="' + (cy + 20) + '" text-anchor="middle" font-size="10" fill="var(--body)" font-family="IBM Plex Sans, sans-serif">ploha</text>');
+  p.push('<text x="' + cx + '" y="190" text-anchor="middle" font-size="10.5" fill="var(--body)" font-family="IBM Plex Sans, sans-serif">isprekidano = točan krug</text>');
+  /* uvećan isječak: jedna tetiva i odstupanje */
+  p.push('<path d="M176 24 V178" stroke="var(--rule)" stroke-width="1"/>');
+  var sx = 228, sy = 128, pol = 42;
+  var pom = 8 + Math.min(d / 0.6, 1) * 54;
+  p.push('<path d="M' + (sx - pol) + ' ' + sy + ' H' + (sx + pol) + '" stroke="var(--teal)" stroke-width="2.4"/>');
+  p.push('<path d="M' + (sx - pol) + ' ' + sy + ' Q ' + sx + ' ' + (sy - 2 * pom).toFixed(1) + ' ' + (sx + pol) + ' ' + sy +
+         '" fill="none" stroke="var(--body)" stroke-width="1.4" stroke-dasharray="3 3"/>');
+  p.push('<path d="M' + sx + ' ' + sy + ' V' + (sy - pom).toFixed(1) + '" stroke="var(--cyan)" stroke-width="2.2"/>');
+  p.push('<path d="M' + (sx - 4) + ' ' + (sy - pom + 6).toFixed(1) + ' l4 -6 4 6" fill="none" stroke="var(--cyan)" stroke-width="1.6"/>');
+  p.push('<circle cx="' + (sx - pol) + '" cy="' + sy + '" r="2.6" fill="var(--teal)"/>');
+  p.push('<circle cx="' + (sx + pol) + '" cy="' + sy + '" r="2.6" fill="var(--teal)"/>');
+  p.push('<text x="' + (sx + 7) + '" y="' + (sy - pom / 2).toFixed(1) + '" font-size="12" font-weight="700" fill="var(--cyan)" font-family="IBM Plex Sans, sans-serif">&#948;</text>');
+  p.push('<text x="' + sx + '" y="' + (sy + 17) + '" text-anchor="middle" font-size="10.5" fill="var(--body)" font-family="IBM Plex Sans, sans-serif">tetiva jedne plohe</text>');
+  p.push('<text x="' + sx + '" y="190" text-anchor="middle" font-size="10.5" fill="var(--body)" font-family="IBM Plex Sans, sans-serif">shematski, uvećano</text>');
+  $("tsvg").innerHTML = p.join("");
+
+  $("todst").textContent = "zadano " + zar(d, 2) + " mm · stvarno " + zar(stvarno, 3) + " mm";
+  $("tplo").textContent = n;
+  $("ttro").textContent = trok.toLocaleString("hr-HR") + " (sam valjak)";
+  $("tdat").textContent = bajti(bin);
+  $("tval").textContent = "Odstupanje " + zar(d, 2) + " mm";
+  $("tpos").textContent = n + " ploha";
+  var nap;
+  if (d <= 0.02){
+    nap = "Fino područje, za smolaste postupke i dosjedne plohe. Ispod 0,01 mm nema dobitka jer nijedan stroj u modulu 2 tu razliku ne može prikazati.";
+  } else if (d <= 0.05){
+    nap = "Uobičajen izbor za taložno srašćivanje i srašćivanje praha. Odstupanje je četiri do deset puta manje od točnosti stroja, a datoteka ostaje razumna.";
+  } else if (d <= 0.2){
+    nap = "Grubo za mjerni dio, ali dovoljno za velik izgledni model koji se ne gleda izbliza. Provrti ovdje već mjerljivo sužavaju.";
+  } else {
+    nap = "Mnogokut se jasno vidi. Upotrebljivo samo za brzu provjeru gabarita; dio izrađen iz ovakve mreže ima vidljive bridove i netočne provrte.";
+  }
+  $("tnap").textContent = nap;
+}
+$("trange").addEventListener("input", crtajValjak);
+crtajValjak();
+
+/* ---------- postupak izvoza ---------- */
+var KOR = [
+ {n:"Provjeri model", o:"Prije izvoza model mora biti jedno zatvoreno tijelo, bez prožimanja i bez ploha nulte debljine. Greška izvezena u mrežu postaje teža za popravak nego što je bila u izvoru."},
+ {n:"Zadaj mjernu jedinicu", o:"Zapis STL jedinicu ne nosi, pa se ona mora postaviti pri izvozu i zabilježiti u nazivu datoteke. To je najjeftinija zaštita od greške koja košta cijeli ispis."},
+ {n:"Odaberi binarni oblik", o:"Peterostruko manja datoteka i brže učitavanje, uz isti sadržaj. Tekstovni oblik bira se samo kad se datoteka mora čitati."},
+ {n:"Postavi odstupanje tetive", o:"Petina do desetina točnosti stroja, i nikada manje od polovice visine sloja. Za taložno srašćivanje to je 0,02 do 0,05 mm."},
+ {n:"Postavi kutno odstupanje", o:"Uobičajeno 5 do 10 stupnjeva. Ono djeluje ondje gdje je zakrivljenost velika, a mjera mala — na sitnim zaobljenjima koja bi inače ostala s premalo ploha."},
+ {n:"Odluči o sklopu", o:"Svaki dio izvozi se u svoju datoteku, u zajedničkome ishodištu, da se poslije mogu složiti. Sklop izvezen u jednu datoteku više se ne da razdvojiti."},
+ {n:"Provjeri broj trokuta", o:"Broj koji program javi nakon izvoza govori je li razlučivost razumna. Nekoliko stotina tisuća trokuta za jednostavan dio znak je da je postavka prefina."},
+ {n:"Otvori izvezenu datoteku", o:"Datoteka se otvori u pregledniku mreža ili u programu za rezanje i pogleda izbliza na zaobljenjima. Provjerava se ono što je izašlo, ne ono što je zadano."},
+ {n:"Spremi izvor", o:"Izvorni model čuva se u zapisu programa za oblikovanje ili u zapisu STEP. Iz mreže trokuta nema povratka na jednadžbu plohe."}
+];
+var kbox = $("koraci"), kdef = $("kdef"), kEls = [];
+KOR.forEach(function(k, i){
+  var b = document.createElement("button");
+  b.className = "korak"; b.type = "button"; b.setAttribute("aria-pressed", "false");
+  b.innerHTML = '<span class="br">' + (i + 1) + '</span><span class="im">' + k.n + '</span>';
+  b.addEventListener("click", function(){ selK(i); });
+  kbox.appendChild(b); kEls.push(b);
+});
+var curK = -1;
+function selK(i){
+  if (i === curK) return;
+  curK = i;
+  kEls.forEach(function(b, k){ b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+  kdef.innerHTML = '<h3>' + (i + 1) + '. ' + KOR[i].n + '</h3><dl><dt>Što se radi</dt><dd>' + KOR[i].o + '</dd></dl>';
+  $("kpos").textContent = (i + 1) + " / " + KOR.length;
+}
+selK(0);
+
+/* ---------- zapisi za razmjenu ---------- */
+var ZAP = [
+ {k:"STL", en:"mreža trokuta, 1987.",
+  no:"samo geometriju — tri točke i normalu po trokutu",
+  ne:"mjernu jedinicu, boju, materijal, sklop, ime autora, inačicu",
+  pd:"potpuna: podržava ga svaki program i svaka usluga ispisa",
+  kd:"za slanje trećoj strani, uz mjernu jedinicu upisanu u naziv datoteke"},
+ {k:"3MF", en:"3D Manufacturing Format, 2015.",
+  no:"geometriju, mjernu jedinicu, boju, materijal, sklop s više dijelova, postavke ispisa i metapodatke",
+  ne:"točnu plohu — i dalje je riječ o mreži trokuta",
+  pd:"dobra i raste: većina novijih programa za oblikovanje i rezanje",
+  kd:"za vlastiti lanac; uklanja grešku s mjernom jedinicom jer je zapis nosi"},
+ {k:"AMF", en:"Additive Manufacturing File, 2011.",
+  no:"geometriju sa zakrivljenim trokutima, mjernu jedinicu, boju, materijal i promjenjiv sastav unutar dijela",
+  ne:"široku podršku — ostao je slabo prihvaćen",
+  pd:"slaba u praksi, iako je zapis norma",
+  kd:"rijetko; zanimljiv jer zakrivljeni trokut daje isti oblik s mnogo manje ploha"},
+ {k:"OBJ", en:"Wavefront OBJ",
+  no:"mrežu s poligonima bilo kojega broja stranica, teksturu i boju preko posebne datoteke",
+  ne:"mjernu jedinicu i postavke ispisa; pouzdanu zatvorenost ljuske",
+  pd:"dobra, osobito ondje gdje je važna boja",
+  kd:"za modele u boji i za razmjenu s programima za oblikovanje površina"},
+ {k:"STEP", en:"ISO 10303, granični prikaz",
+  no:"točne plohe, sklop, imena dijelova i povijest u nekim inačicama",
+  ne:"ništa bitno za oblik — ali ga program za rezanje ne može izravno upotrijebiti",
+  pd:"potpuna među programima za oblikovanje",
+  kd:"kao izvorna datoteka koja se čuva i iz koje se izvozi mreža"},
+ {k:"G-kod", en:"naredbe za stroj",
+  no:"putanje, brzine i temperature za jedan određeni stroj i jedan određeni ispis",
+  ne:"oblik — iz njega se model ne može vratiti",
+  pd:"vezan uz stroj; isti G-kod na drugome stroju najčešće ne radi",
+  kd:"krajnji rezultat lanca; obrađuje se u sljedećoj jedinici"}
+];
+var zchips = $("zchips"), zdef = $("zdef"), zEls = [];
+ZAP.forEach(function(m, i){
+  var b = document.createElement("button");
+  b.className = "chip"; b.type = "button"; b.setAttribute("aria-pressed", "false");
+  b.innerHTML = m.k + "<small>" + m.en + "</small>";
+  b.addEventListener("click", function(){ selZ(i); });
+  zchips.appendChild(b); zEls.push(b);
+});
+var curZ = -1;
+function selZ(i){
+  if (i === curZ) return;
+  curZ = i;
+  zEls.forEach(function(b, k){ b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+  var m = ZAP[i];
+  zdef.innerHTML = '<h3>' + m.k + '</h3><p class="en">' + m.en + '</p><dl>' +
+    '<dt>Nosi</dt><dd>' + m.no + '</dd>' +
+    '<dt>Ne nosi</dt><dd>' + m.ne + '</dd>' +
+    '<dt>Podrška</dt><dd>' + m.pd + '</dd>' +
+    '<dt>Kada ga birati</dt><dd>' + m.kd + '</dd></dl>';
+  $("zpos").textContent = (i + 1) + " / " + ZAP.length;
+}
+selZ(0);
+
+/* ---------- procjena znanja ---------- */
+var QS = [
+ {p:"Zašto se za mrežu biraju baš trokuti?",
+  o:["Jer se najbrže crtaju","Jer tri točke uvijek leže u jednoj ravnini","Jer tako propisuje norma ISO/ASTM 52900","Jer zauzimaju najmanje mjesta"],
+  c:1,
+  e:"Četverokut može biti izvijen, pa se ne bi znalo kako ga presjeći. Trokut je najmanji lik koji je uvijek ravan, što presijecanje svodi na jednostavan račun."},
+ {p:"Što zapisuje jedan zapis trokuta u datoteci STL?",
+  o:["Tri točke i normalu","Tri točke, boju i materijal","Samo tri točke","Jednadžbu plohe"],
+  c:0,
+  e:"Normala govori koja je strana vanjska. O povezanosti trokuta, pripadnosti tijelu ili redoslijedu nastanka zapis ne govori ništa."},
+ {p:"Koliko binarni zapis troši po trokutu?",
+  o:["12 bajta","50 bajta","270 bajta","ovisi o veličini modela"],
+  c:1,
+  e:"Normala i tri vrha po tri decimalna broja od 4 bajta daju 48 bajta, plus 2 bajta dodatka. Zato se veličina datoteke može izračunati unaprijed."},
+ {p:"Što je odstupanje tetive?",
+  o:["Kut između dvaju susjednih trokuta","Najveći razmak između prave plohe i trokuta koji je zamjenjuje","Debljina sloja pri ispisu","Razmak između dvaju vrhova"],
+  c:1,
+  e:"Mjeri se u milimetrima i izravno govori koliko će dio biti netočan. Kutno odstupanje je druga postavka i djeluje ondje gdje je zakrivljenost velika."},
+ {p:"Isto odstupanje tetive zadano je za provrt od 3 mm i za valjak od 300 mm. Gdje nastaje više ploha?",
+  o:["Na provrtu","Na valjku","Jednako na obama","Ovisi o obliku modela"],
+  c:1,
+  e:"Broj ploha ovisi o polumjeru: veći polumjer znači manju zakrivljenost, pa je za isto odstupanje potrebno više ploha da se obuhvati puni krug."},
+ {p:"Koja je donja granica odstupanja koja još ima smisla?",
+  o:["Tisućinka milimetra, uvijek","Otprilike polovica visine sloja","Jedna desetina promjera mlaznice","Nema donje granice"],
+  c:1,
+  e:"Odstupanje deset puta finije od onoga što stroj može prikazati ne mijenja ništa na dijelu, a datoteka i vrijeme rezanja rastu."},
+ {p:"Zašto provrt izvezen s grubom razlučivošću izlazi uži od zadanoga?",
+  o:["Jer se materijal steže","Jer je mnogokut upisan u krug uvijek manji od kruga","Jer program dodaje pripust","Jer se normala krivo računa"],
+  c:1,
+  e:"Sužavanje nastaje već pri izvozu, prije nego što je stroj išta učinio. Zato se dosjedni provrti izvoze finije, a točna mjera postiže naknadnom obradbom."},
+ {p:"Koja je glavna prednost zapisa 3MF pred zapisom STL?",
+  o:["Manja datoteka","Nosi mjernu jedinicu, boju, materijal i sklop","Točne plohe umjesto trokuta","Brže rezanje"],
+  c:1,
+  e:"I 3MF je mreža trokuta, ali uz geometriju nosi i sve ono što STL ne nosi — prije svega mjernu jedinicu, koja je izvor najskuplje greške pri izvozu."}
+];
+var answered = 0, correct = 0, grid = $("qgrid");
+$("score").textContent = "Riješeno 0 / " + QS.length + " · točnih 0";
+QS.forEach(function(q, i){
+  var card = document.createElement("div"); card.className = "q";
+  var num = document.createElement("div"); num.className = "num";
+  num.textContent = "Pitanje " + (i + 1) + " / " + QS.length; card.appendChild(num);
+  var pr = document.createElement("div"); pr.className = "prompt"; pr.textContent = q.p; card.appendChild(pr);
+  var opts = document.createElement("div"); opts.className = "opts"; card.appendChild(opts);
+  var fb = document.createElement("div"); fb.className = "fb"; fb.hidden = true; card.appendChild(fb);
+  q.o.forEach(function(txt, k){
+    var lab = document.createElement("label"); lab.className = "opt";
+    var inp = document.createElement("input");
+    inp.type = "radio"; inp.name = "q" + i; inp.id = "q" + i + "o" + k;
+    var sp = document.createElement("span"); sp.textContent = txt;
+    lab.appendChild(inp); lab.appendChild(sp); opts.appendChild(lab);
+    inp.addEventListener("change", function(){
+      if (card.dataset.done) return;
+      card.dataset.done = "1"; answered++;
+      var good = (k === q.c); if (good) correct++;
+      Array.prototype.forEach.call(opts.children, function(e2, idx){
+        e2.classList.add("locked"); e2.querySelector("input").disabled = true;
+        if (idx === q.c) e2.classList.add("correct");
+        else if (idx === k) e2.classList.add("wrong");
+      });
+      fb.className = "fb " + (good ? "ok" : "no");
+      fb.innerHTML = "<b>" + (good ? "Točno" : "Netočno") + "</b> &mdash; " + q.e;
+      fb.hidden = false;
+      $("score").textContent = "Riješeno " + answered + " / " + QS.length + " · točnih " + correct;
+    });
+  });
+  grid.appendChild(card);
+});
+
+/* ---------- alatna traka ---------- */
+var cv = $("ftq-canvas"), ctx = cv.getContext("2d");
+var strokes = [], drawing = null, tool = null, board = false;
+var COLORS = ["#17656E", "#2ECAD4", "#C0562A", "#3E7A46", "#10394A"];
+var color = COLORS[0];
+function store(k, v){ try{ localStorage.setItem("ftq-at-l33-" + k, v); }catch(e){} }
+function load(k){ try{ return localStorage.getItem("ftq-at-l33-" + k); }catch(e){ return null; } }
+function fit(){
+  var r = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.round(innerWidth * r); cv.height = Math.round(innerHeight * r);
+  cv.style.width = innerWidth + "px"; cv.style.height = innerHeight + "px";
+  ctx.setTransform(r, 0, 0, r, 0, 0); redraw();
+}
+function redraw(){
+  ctx.clearRect(0, 0, innerWidth, innerHeight);
+  if (board){
+    var cs = getComputedStyle(document.body);
+    ctx.fillStyle = cs.backgroundColor || "#fff";
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+  }
+  strokes.forEach(function(s){
+    if (!s.pts || s.pts.length < 2) return;
+    ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (s.tool === "erase"){ ctx.globalCompositeOperation = "destination-out"; ctx.lineWidth = 26; ctx.strokeStyle = "rgba(0,0,0,1)"; }
+    else if (s.tool === "mark"){ ctx.globalAlpha = .32; ctx.lineWidth = 17; ctx.strokeStyle = s.color; }
+    else { ctx.lineWidth = 2.6; ctx.strokeStyle = s.color; }
+    ctx.beginPath(); ctx.moveTo(s.pts[0][0], s.pts[0][1]);
+    for (var i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i][0], s.pts[i][1]);
+    ctx.stroke(); ctx.restore();
+  });
+}
+function setTool(t){
+  tool = (tool === t) ? null : t;
+  ["pen", "mark", "erase"].forEach(function(k){ $("t-" + k).setAttribute("aria-pressed", tool === k ? "true" : "false"); });
+  cv.classList.toggle("on", !!tool);
+}
+cv.addEventListener("pointerdown", function(e){
+  if (!tool) return;
+  cv.setPointerCapture(e.pointerId);
+  drawing = {tool:tool, color:color, pts:[[e.clientX, e.clientY]]};
+  strokes.push(drawing);
+});
+cv.addEventListener("pointermove", function(e){ if (!drawing) return; drawing.pts.push([e.clientX, e.clientY]); redraw(); });
+function endStroke(){ if (!drawing) return; drawing = null; try{ store("strokes", JSON.stringify(strokes.slice(-400))); }catch(e){} }
+cv.addEventListener("pointerup", endStroke);
+cv.addEventListener("pointercancel", endStroke);
+$("t-pen").addEventListener("click", function(){ setTool("pen"); });
+$("t-mark").addEventListener("click", function(){ setTool("mark"); });
+$("t-erase").addEventListener("click", function(){ setTool("erase"); });
+$("t-board").addEventListener("click", function(){
+  board = !board; this.setAttribute("aria-pressed", board ? "true" : "false");
+  if (board && !tool) setTool("pen");
+  store("board", board ? "1" : "0"); redraw();
+});
+$("t-undo").addEventListener("click", function(){ strokes.pop(); redraw(); try{ store("strokes", JSON.stringify(strokes)); }catch(e){} });
+$("t-clear").addEventListener("click", function(){ strokes = []; redraw(); store("strokes", "[]"); });
+var colBox = $("ftq-colors");
+COLORS.forEach(function(c, i){
+  var b = document.createElement("button");
+  b.className = "sw"; b.type = "button"; b.style.background = c;
+  b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+  b.setAttribute("title", "Boja " + (i + 1));
+  b.addEventListener("click", function(){
+    color = c;
+    Array.prototype.forEach.call(colBox.children, function(x){ x.setAttribute("aria-pressed", "false"); });
+    b.setAttribute("aria-pressed", "true");
+  });
+  colBox.appendChild(b);
+});
+$("t-color").addEventListener("click", function(){
+  var on = colBox.classList.toggle("show");
+  this.setAttribute("aria-pressed", on ? "true" : "false");
+});
+var fs = parseFloat(load("fs") || "1");
+function applyFs(){ fs = Math.min(1.5, Math.max(.85, fs)); document.documentElement.style.setProperty("--fs", fs.toFixed(2)); store("fs", fs); }
+applyFs();
+$("t-plus").addEventListener("click", function(){ fs += .1; applyFs(); });
+$("t-minus").addEventListener("click", function(){ fs -= .1; applyFs(); });
+if (load("dys") === "1"){ document.body.classList.add("dys"); $("t-dys").setAttribute("aria-pressed", "true"); }
+$("t-dys").addEventListener("click", function(){
+  var on = document.body.classList.toggle("dys");
+  this.setAttribute("aria-pressed", on ? "true" : "false"); store("dys", on ? "1" : "0");
+});
+$("t-theme").addEventListener("click", function(){
+  var r = document.documentElement, c = r.getAttribute("data-theme");
+  var next = c === "dark" ? "light" : (c === "light" ? null : "dark");
+  if (next) r.setAttribute("data-theme", next); else r.removeAttribute("data-theme");
+  store("theme", next || ""); redraw();
+});
+var st = load("theme"); if (st) document.documentElement.setAttribute("data-theme", st);
+try{
+  var sv = load("strokes"); if (sv) strokes = JSON.parse(sv) || [];
+  if (load("board") === "1"){ board = true; $("t-board").setAttribute("aria-pressed", "true"); }
+}catch(e){ strokes = []; }
+addEventListener("resize", fit);
+fit();
+})();
+</script>
+</body>
+</html>
