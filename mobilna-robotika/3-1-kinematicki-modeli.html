@@ -1,0 +1,1248 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="ForTroniQ d.o.o.">
+<meta name="robots" content="index, follow">
+<meta name="description" content="Zapis položaja vozila trojcem x, y i θ, neholonomno ograničenje standardnoga kotača, izravna kinematika diferencijalnoga pogona s računom putanje iz brzina kotača, obratna kinematika s provjerom izvedivosti, kinematički modeli ostalih konfiguracija i granice modela.">
+<title>Kinematički modeli — Modul 3</title>
+<link rel="canonical" href="https://dos.fortroniq.hr/mobilna-robotika/3-1-kinematicki-modeli.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/mobilna-robotika/3-1-kinematicki-modeli.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/mobilna-robotika/3-1-kinematicki-modeli.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/mobilna-robotika/3-1-kinematicki-modeli.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Kinematički modeli">
+<meta property="og:description" content="Izravna i obratna kinematika diferencijalnoga pogona, s računom putanje i brzina kotača.">
+<meta property="og:url" content="https://dos.fortroniq.hr/mobilna-robotika/3-1-kinematicki-modeli.html">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+
+<style>
+:root{
+  --paper:#FFFFFF;
+  --ink:#10394A;
+  --body:#5D7C90;
+  --rule:#DCE4E8;
+  --teal:#17656E;
+  --teal-d:#0F4A52;
+  --cyan:#2ECAD4;
+  --hero-a:#1B6A72;
+  --hero-b:#0C3F47;
+  --bar:#17181A;
+  --bar-t:#8A9499;
+  --soft:#F3F7F8;
+  --ok:#2E7D53;
+  --bad:#B24A2E;
+  --fs:1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+    --teal:#2A9AA6; --teal-d:#2ECAD4;
+    --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+    --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+  --teal:#2A9AA6; --teal-d:#2ECAD4;
+  --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+  --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  font-size:calc(16px * var(--fs)); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body.dys{letter-spacing:.012em;word-spacing:.09em;line-height:1.85}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+/* ============ GORNJA TRAKA ============ */
+.topbar{background:var(--bar);color:#fff;display:flex;align-items:stretch;overflow-x:auto;font-size:11.5px}
+.tbi{padding:6px 14px;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.tbi .lb{color:var(--bar-t);font-size:9.5px;letter-spacing:.03em}
+.tbi .vl{font-weight:500}
+.tbi.crumb .vl{color:var(--cyan)}
+.tbi .x{display:inline-block;margin-left:6px;opacity:.65}
+.tbi.menu{align-items:center;flex-direction:row;gap:8px}
+.tbi.menu svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.8}
+a.tbi{color:#fff;text-decoration:none}
+a.tbi:hover .vl{color:var(--cyan)}
+
+/* ============ HERO ============ */
+.hero{background:linear-gradient(160deg,var(--hero-a) 0%,var(--hero-b) 100%);position:relative;overflow:hidden}
+.hero-in{position:relative;z-index:3;max-width:1120px;margin:0 auto;padding:38px clamp(20px,6vw,120px) 30px}
+.hero-art{position:absolute;right:0;top:0;bottom:0;width:min(46%,520px);opacity:.5;pointer-events:none}
+.hero-art svg{width:100%;height:100%;display:block}
+.eyebrow{display:flex;flex-wrap:wrap;gap:.5em;align-items:center;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:#9FC9CE}
+.eyebrow b{color:#fff;font-weight:700;letter-spacing:.17em}
+.eyebrow b i{color:var(--cyan);font-style:normal}
+.eyebrow span::after{content:"·";margin-left:.5em;opacity:.6}
+.eyebrow span:last-child::after{content:""}
+.hero h1{
+  margin:.35em 0 0;color:#fff;font-weight:700;
+  font-size:clamp(29px,5vw,50px);letter-spacing:-.026em;line-height:1.06;
+  max-width:16ch;text-wrap:balance;text-shadow:0 2px 20px rgba(0,0,0,.28);
+}
+.lede{max-width:62ch;color:#D4E8EB;font-size:15.5px;line-height:1.62;margin:.9em 0 0}
+
+.goals{
+  position:relative;z-index:3;max-width:1120px;margin:0 auto;
+  padding:4px clamp(20px,6vw,120px) 40px;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:26px 40px;align-items:start;
+}
+.goals-h{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:6px}
+.goals-h svg{width:46px;height:32px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.goals-h span{color:#fff;font-weight:700;font-size:19px;letter-spacing:-.01em}
+.goals ul{margin:0;padding:0;list-style:none;columns:3;column-gap:34px}
+.goals li{break-inside:avoid;margin:0 0 13px;display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:start;color:#E6F5F7;font-size:12.6px;line-height:1.45}
+.goals li svg{width:11px;height:11px;margin-top:4px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){
+  .goals{grid-template-columns:1fr;gap:16px}
+  .goals-h{flex-direction:row;align-items:center;justify-content:flex-start}
+  .goals ul{columns:1}
+}
+.cyanline{height:5px;background:var(--cyan)}
+
+/* ============ SADRŽAJ ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(20px,6vw,120px) 10px}
+.col{max-width:74ch}
+section{padding-top:52px}
+.sh{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:8px}
+.sh .n{
+  flex:0 0 auto;width:27px;height:27px;border-radius:50%;
+  background:var(--teal);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;align-self:center;
+}
+.sh h2{margin:0;font-size:clamp(21px,2.6vw,27px);font-weight:700;letter-spacing:-.022em;line-height:1.15;text-wrap:balance}
+.sd{color:var(--body);font-size:14px;margin:0 0 20px;max-width:70ch}
+p{margin:0 0 1.05em;max-width:74ch;font-size:15.4px;line-height:1.72;color:var(--ink)}
+p.mut{color:var(--body)}
+h3.sub{font-size:17px;font-weight:600;letter-spacing:-.012em;margin:2em 0 .6em;color:var(--ink)}
+strong{font-weight:600}
+em{font-style:italic}
+.kv{color:var(--teal);font-weight:600}
+
+ul.plain{margin:0 0 1.2em;padding-left:1.15em;max-width:74ch}
+ul.plain li{margin-bottom:.45em;font-size:15.2px;line-height:1.66}
+
+/* ============ PLOČE ============ */
+.panel{background:var(--soft);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:26px 0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.panel-head .t{font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--teal)}
+.panel-head .s{font-size:11.5px;color:var(--body);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.chip{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);
+  padding:8px 12px;cursor:pointer;text-align:left;line-height:1.3;
+}
+.chip:hover{border-color:var(--cyan);color:var(--teal)}
+.chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.chip small{display:block;font-size:10.5px;font-weight:500;opacity:.75;margin-top:3px;letter-spacing:.02em}
+.chip.ac{font-size:13px;font-weight:700;letter-spacing:.04em;padding:7px 11px}
+.def{border-top:1px solid var(--rule);padding:18px 17px;background:var(--paper)}
+.def h3{font-size:19px;font-weight:700;letter-spacing:-.015em;margin:0 0 3px;color:var(--ink)}
+.def .en{font-size:12.5px;color:var(--body);margin:0 0 13px}
+.def dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 20px;margin:0}
+.def dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:4px}
+.def dd{margin:0;font-size:14.6px;line-height:1.55}
+@media (max-width:560px){.def dl{grid-template-columns:1fr;gap:2px 0}.def dt{padding-top:11px}}
+
+.norm{border:1px solid var(--rule);border-left:4px solid var(--cyan);border-radius:6px;background:var(--soft);padding:18px 20px;margin:24px 0;max-width:74ch}
+.norm .lbl{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:7px}
+.norm p{margin:0;font-size:17px;line-height:1.55;font-style:italic}
+.norm .src{margin-top:10px;font-size:12px;color:var(--body);font-style:normal}
+
+.note{border:1px solid var(--rule);border-radius:6px;background:var(--soft);padding:15px 17px;margin:22px 0;max-width:74ch}
+.note b{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.note p{margin:0;font-size:14.6px;line-height:1.6}
+
+.tscroll{overflow-x:auto;margin:24px 0}
+table.t{width:100%;border-collapse:collapse;font-size:14.2px;min-width:520px}
+table.t th,table.t td{text-align:left;padding:10px 14px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.5}
+table.t th{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+table.t td:first-child,table.t th:first-child{font-weight:600;padding-right:20px}
+table.t tr:last-child td{border-bottom:0}
+
+.fig{border:1px dashed var(--rule);border-radius:8px;background:var(--soft);padding:26px 18px;margin:26px 0;text-align:center;max-width:74ch}
+.fig .ph{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.fig .cap{font-size:13.6px;color:var(--body);margin:9px auto 0;max-width:58ch;line-height:1.55}
+
+/* ---- usporedba postupaka ---- */
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{
+  font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink);
+}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.cmp{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:10px 26px;padding:15px;align-items:center}
+@media (max-width:640px){.cmp{grid-template-columns:1fr}}
+.cmp svg{width:100%;height:auto;display:block;background:var(--paper);border:1px solid var(--rule);border-radius:6px}
+.cmp .ct h4{margin:0 0 6px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.cmp .ct p{margin:0 0 .7em;font-size:14.4px;line-height:1.6}
+.cmp .ct .ex{font-size:13px;color:var(--body);margin:0}
+
+/* ---- stepenasti učinak ---- */
+.step-bar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.step-bar input[type=range]{flex:1 1 190px;accent-color:var(--teal);min-width:150px}
+.step-bar .val{font-size:13px;font-weight:600;color:var(--teal);font-variant-numeric:tabular-nums;min-width:8.5em}
+.step-out{padding:14px 16px;border-top:1px solid var(--rule);font-size:14.2px;line-height:1.6;color:var(--ink);background:var(--paper)}
+.step-out b{color:var(--teal)}
+
+/* ---- vremenska crta ---- */
+.tl-wrap{background:var(--paper);padding:6px 0}
+svg.tl{display:block;width:100%;height:auto}
+.tlbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.tlbar input[type=range]{flex:1 1 180px;accent-color:var(--teal);min-width:140px}
+.btn{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;padding:7px 13px;cursor:pointer;
+}
+.btn:hover{border-color:var(--cyan);color:var(--teal)}
+.card{border-top:1px solid var(--rule);padding:18px 17px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 24px;background:var(--paper)}
+.card .yr{grid-row:1/span 3;font-size:34px;font-weight:700;color:var(--teal);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.card .era{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--body)}
+.card .ttl{font-size:18px;font-weight:700;letter-spacing:-.015em;line-height:1.3;margin:3px 0 6px}
+.card .txt{font-size:14.6px;line-height:1.6;margin:0;max-width:64ch;color:var(--ink)}
+@media (max-width:540px){.card{grid-template-columns:1fr}.card .yr{grid-row:auto;font-size:28px}}
+
+/* ---- primjene ---- */
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:26px 0}
+.app{border:1px solid var(--rule);border-radius:8px;padding:16px 17px;background:var(--soft)}
+.app h4{margin:0 0 7px;font-size:15.5px;font-weight:700;letter-spacing:-.012em;display:flex;align-items:center;gap:9px}
+.app h4 svg{width:19px;height:19px;stroke:var(--cyan);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.app p{margin:0;font-size:13.6px;line-height:1.6;color:var(--body)}
+
+/* ---- procjena znanja ---- */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:22px}
+.q{background:var(--soft);border:1px solid var(--rule);border-radius:8px;padding:17px;display:flex;flex-direction:column}
+.q .num{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--body)}
+.q .prompt{font-size:15.4px;line-height:1.45;margin:6px 0 13px;font-weight:600}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.opt{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rule);border-radius:5px;padding:9px 11px;cursor:pointer;font-size:14.4px;line-height:1.4;background:var(--paper)}
+.opt:hover{border-color:var(--cyan)}
+.opt input{margin:4px 0 0;accent-color:var(--teal);flex-shrink:0}
+.opt.correct{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.opt.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.opt.locked{cursor:default}
+.opt.locked:hover{border-color:var(--rule)}
+.opt.locked.correct:hover{border-color:var(--ok)}
+.opt.locked.wrong:hover{border-color:var(--bad)}
+.fb{font-size:13.8px;line-height:1.55;margin-top:auto;padding-top:11px;border-top:1px solid var(--rule);color:var(--body)}
+.fb b{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.fb.ok b{color:var(--ok)} .fb.no b{color:var(--bad)} .fb[hidden]{display:none}
+.score{font-size:12.5px;color:var(--body);font-variant-numeric:tabular-nums;margin-left:auto}
+
+/* ---- kretanje ---- */
+.nav{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;margin:54px 0 0;padding-top:24px;border-top:1px solid var(--rule)}
+.nav a,.nav span{
+  display:block;border:1px solid var(--rule);border-radius:8px;padding:13px 17px;
+  text-decoration:none;color:var(--ink);min-width:min(100%,250px);flex:1 1 250px;
+}
+.nav a:hover{border-color:var(--cyan)}
+.nav .lb{display:block;font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--body);margin-bottom:3px}
+.nav .tt{font-size:15px;font-weight:600;letter-spacing:-.012em;line-height:1.35}
+.nav .nx{text-align:right}
+.nav span.soon{opacity:.6}
+.nav span.soon .tt{color:var(--body)}
+
+/* ============ PODNOŽJE ============ */
+.sf{border-top:1px solid var(--rule);margin-top:50px}
+.sf-in{
+  max-width:1120px;margin:0 auto;padding:24px clamp(20px,6vw,120px);
+  display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between;
+  font-size:12.5px;color:var(--body);
+}
+.sf-in .brand{font-weight:700;letter-spacing:.17em;color:var(--teal)}
+.sf-in .brand i{color:var(--cyan);font-style:normal}
+
+/* ============ ALATNA TRAKA ============ */
+#ftq-canvas{position:fixed;inset:0;z-index:40;pointer-events:none;touch-action:none}
+#ftq-canvas.on{pointer-events:auto;cursor:crosshair}
+#ftq-bar{
+  position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:60;
+  display:flex;flex-direction:column;gap:3px;
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;
+  padding:5px;box-shadow:0 2px 16px rgba(16,57,74,.18);
+}
+#ftq-bar hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:auto}
+.tb{
+  width:38px;height:34px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;border-radius:4px;
+  color:var(--body);cursor:pointer;padding:0;
+  font-family:"IBM Plex Sans",sans-serif;font-size:12px;font-weight:700;
+}
+.tb:hover{color:var(--teal);border-color:var(--rule)}
+.tb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.tb svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#ftq-colors{display:none;flex-direction:column;gap:3px;padding-top:3px;border-top:1px solid var(--rule);margin-top:3px}
+#ftq-colors.show{display:flex}
+.sw{width:38px;height:20px;border:1px solid var(--rule);border-radius:4px;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:-4px}
+@media (max-width:680px){#ftq-bar{right:8px;padding:4px}.tb{width:33px;height:30px}.tb svg{width:17px;height:17px}.sw{width:33px;height:17px}}
+@media print{#ftq-bar,.topbar{display:none}}
+
+/* ============ POSEBNO ZA OVU STRANICU ============ */
+.shema{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:0}
+@media (max-width:820px){.shema{grid-template-columns:1fr}}
+.shema-l{padding:16px;background:var(--paper);border-right:1px solid var(--rule)}
+@media (max-width:820px){.shema-l{border-right:0;border-bottom:1px solid var(--rule)}}
+.shema-l svg{width:100%;height:auto;display:block}
+.hot{cursor:pointer}
+.hot circle.tocka{fill:var(--paper);stroke:var(--teal);stroke-width:2}
+.hot text{font-family:"IBM Plex Sans",sans-serif;font-size:11px;font-weight:700;fill:var(--teal);text-anchor:middle;dominant-baseline:central}
+.hot[aria-pressed="true"] circle.tocka{fill:var(--teal);stroke:var(--teal)}
+.hot[aria-pressed="true"] text{fill:#fff}
+.hot:hover circle.tocka{stroke:var(--cyan)}
+.shema-d{padding:18px 17px;background:var(--paper)}
+.shema-d .br{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
+.shema-d h4{margin:5px 0 8px;font-size:18px;font-weight:700;letter-spacing:-.015em}
+.shema-d p{margin:0 0 .8em;font-size:14.4px;line-height:1.6}
+.shema-d p:last-child{margin-bottom:0}
+.shema-d .uloga{font-size:13.4px;color:var(--body);border-top:1px solid var(--rule);padding-top:10px;margin-top:12px}
+
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink)}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.izv{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:12px 26px;padding:15px;align-items:center}
+@media (max-width:680px){.izv{grid-template-columns:1fr}}
+.izv svg{width:100%;height:auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:block}
+.izv .ct h4{margin:0 0 7px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.izv .ct p{margin:0 0 .8em;font-size:14.4px;line-height:1.6}
+.izv .ct dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 16px;margin:0}
+.izv .ct dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.izv .ct dd{margin:0;font-size:13.8px;line-height:1.5}
+
+.koraci{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.korak{flex:1 1 118px;min-width:112px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);
+  padding:11px 10px;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink)}
+.korak:hover{border-color:var(--cyan)}
+.korak[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.korak .br{font-size:10.5px;font-weight:700;letter-spacing:.12em;opacity:.7}
+.korak .im{display:block;font-size:13px;font-weight:600;line-height:1.28;margin-top:3px}
+
+.greske{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin:24px 0}
+.gr{border:1px solid var(--rule);border-radius:8px;background:var(--soft);padding:16px 17px}
+.gr h4{margin:0 0 8px;font-size:15.5px;font-weight:700;letter-spacing:-.012em}
+.gr dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-top:9px}
+.gr dd{margin:2px 0 0;font-size:13.8px;line-height:1.56;color:var(--body)}
+.gr dl{margin:0}
+
+.isp{display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:12px 26px;padding:16px;align-items:center}
+@media (max-width:660px){.isp{grid-template-columns:1fr}}
+.isp svg{width:100%;height:auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:block}
+.isp dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;margin:0 0 12px}
+.isp dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.isp dd{margin:0;font-size:15px;font-variant-numeric:tabular-nums}
+.isp p{margin:0;font-size:14.2px;line-height:1.6;color:var(--body)}
+.ibar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);background:var(--paper);flex-wrap:wrap}
+.ibar input[type=range]{flex:1 1 200px;accent-color:var(--teal);min-width:150px}
+.ibar .val{font-size:13px;font-weight:600;color:var(--teal);min-width:7em;font-variant-numeric:tabular-nums}
+
+.pop{border:1px solid var(--rule);border-radius:8px;background:var(--soft);overflow:hidden;margin:16px 0}
+.pop .st{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.pop .st:last-child{border-bottom:0}
+.pop .kv-box{flex:0 0 auto;width:21px;height:21px;border:2px solid var(--rule);border-radius:5px;background:var(--paper);
+  cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.pop .kv-box svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.pop .kv-box[aria-pressed="true"]{background:var(--teal);border-color:var(--teal)}
+.pop .kv-box[aria-pressed="true"] svg{opacity:1}
+.pop .tx{min-width:0}
+.pop .tx b{display:block;font-size:14.6px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.pop .tx span{font-size:13.6px;line-height:1.6;color:var(--body)}
+.pop .nog{display:flex;gap:13px;align-items:center;padding:12px 16px;background:var(--soft);flex-wrap:wrap}
+.pop .nog .os{flex:1 1 160px;height:8px;border-radius:99px;background:var(--rule);overflow:hidden;min-width:120px}
+.pop .nog .os i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:width .2s}
+.pop .nog .tx2{font-size:12.8px;font-weight:600;color:var(--teal);white-space:nowrap}
+.pop .nog button{font-family:inherit;font-size:12.3px;font-weight:600;color:var(--body);background:none;
+  border:1px solid var(--rule);border-radius:5px;padding:5px 12px;cursor:pointer}
+.pop .nog button:hover{border-color:var(--cyan);color:var(--teal)}
+
+.vaga{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:0}
+@media (max-width:820px){.vaga{grid-template-columns:1fr}}
+.vaga-l{padding:16px;background:var(--paper);border-right:1px solid var(--rule)}
+@media (max-width:820px){.vaga-l{border-right:0;border-bottom:1px solid var(--rule)}}
+.vaga-l svg{width:100%;height:auto;display:block}
+.vaga-d{padding:16px 18px;background:var(--soft);min-width:0}
+.vaga-d h4{margin:0 0 7px;font-size:16.5px;font-weight:700;color:var(--ink);letter-spacing:-.015em}
+.vaga-d p{margin:0 0 .75em;font-size:14.2px;line-height:1.62;color:var(--body)}
+.vaga-d dl{margin:0;display:grid;grid-template-columns:auto;gap:2px 0}
+.vaga-d dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-top:9px}
+.vaga-d dd{margin:0;font-size:13.6px;line-height:1.58;color:var(--body)}
+.mjerila{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:0;border-top:1px solid var(--rule)}
+.mj{padding:14px 16px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);background:var(--paper)}
+.mj:last-child{border-right:0}
+.mj b{display:block;font-size:14.2px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.mj span{display:block;font-size:13.2px;line-height:1.55;color:var(--body)}
+.mj i{display:block;font-style:normal;font-size:11.6px;font-weight:600;color:var(--teal);margin-top:6px;letter-spacing:.02em}
+
+.izraz{border:1px solid var(--rule);border-radius:8px;background:var(--soft);padding:16px 18px;margin:18px 0}
+.izraz .lb{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);
+  display:block;margin-bottom:8px}
+.izraz p{margin:0 0 .55em;font-size:15.4px;line-height:1.7;color:var(--ink)}
+.izraz p:last-child{margin-bottom:0}
+.izraz b{font-weight:700}
+.izraz .np{font-size:13.4px;color:var(--body);line-height:1.6;margin-top:10px}
+</style>
+</head>
+<body>
+
+<canvas id="ftq-canvas"></canvas>
+
+<div id="ftq-bar" role="toolbar" aria-label="Alati">
+  <button class="tb" id="t-pen"   type="button" aria-pressed="false" title="Olovka"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 10-10a2.1 2.1 0 0 0-3-3L5 16l-1 4z"/></svg></button>
+  <button class="tb" id="t-mark"  type="button" aria-pressed="false" title="Marker"><svg viewBox="0 0 24 24"><path d="M5 18h14"/><path d="M8 14l7-8a2 2 0 0 1 3 3l-7 8H8v-3z"/></svg></button>
+  <button class="tb" id="t-erase" type="button" aria-pressed="false" title="Gumica"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M14 4l6 6-8 8H7l-3-3z"/></svg></button>
+  <button class="tb" id="t-board" type="button" aria-pressed="false" title="Ploča"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M9 20l3-3 3 3"/></svg></button>
+  <button class="tb" id="t-color" type="button" aria-pressed="false" title="Boja"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg></button>
+  <button class="tb" id="t-undo"  type="button" title="Poništi"><svg viewBox="0 0 24 24"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 0 10h-3"/></svg></button>
+  <button class="tb" id="t-clear" type="button" title="Obriši sve"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></button>
+  <hr>
+  <button class="tb" id="t-minus" type="button" title="Smanji slova">A&minus;</button>
+  <button class="tb" id="t-plus"  type="button" title="Povećaj slova">A+</button>
+  <button class="tb" id="t-dys"   type="button" aria-pressed="false" title="Pomoć s disleksijom">Dy</button>
+  <button class="tb" id="t-theme" type="button" title="Svijetla / tamna tema"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 5a7 7 0 0 1 0 14z" fill="currentColor" stroke="none"/></svg></button>
+  <div id="ftq-colors"></div>
+</div>
+
+<nav class="topbar" aria-label="Putanja">
+  <a class="tbi menu" href="../index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Izbornik</span></a>
+  <a class="tbi" href="index.html"><span class="lb">Knjiga</span><span class="vl">Osnove mobilnih robota</span></a>
+  <a class="tbi crumb" href="m3-kinematika.html"><span class="lb">Modul</span><span class="vl">Kinematika<span class="x">&#10005;</span></span></a>
+  <div class="tbi crumb"><span class="lb">Odlomak</span><span class="vl">Kinematički modeli<span class="x">&#10005;</span></span></div>
+</nav>
+
+<header class="hero">
+  <div class="hero-art" aria-hidden="true">
+    <svg viewBox="0 0 420 340" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="#6FD9E2" stroke-width="1.5" opacity=".6">
+        <rect x="168" y="146" width="86" height="56" rx="9"/>
+        <rect x="156" y="158" width="14" height="34" rx="4"/>
+        <rect x="252" y="158" width="14" height="34" rx="4"/>
+        <path d="M211 146 V112"/>
+      </g>
+      <g fill="none" stroke="#6FD9E2" stroke-width="1.2" opacity=".4">
+        <path d="M156 176 H62" stroke-dasharray="5 5"/><circle cx="58" cy="176" r="8"/>
+        <path d="M58 176 m-38 0 a38 38 0 0 1 76 0" stroke-dasharray="4 6"/>
+      </g>
+      <g fill="none" stroke="#6FD9E2" stroke-width="1.1" opacity=".28">
+        <path d="M70 288 h280 M70 288 V196"/>
+        <path d="M70 288 q110 -52 180 -76 q70 -24 110 -6"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-in">
+    <div class="eyebrow">
+      <b>FORTRONI<i>Q</i></b><span>Osnove mobilnih robota</span><span>Modul 3</span><span>Jedinica 3.1</span>
+    </div>
+    <h1>Kinematički modeli</h1>
+    <p class="lede">Dva su računa koja mobilni robot radi neprekidno: iz brzina kotača zaključuje kamo ide, i
+    iz onoga kamo treba ići računa brzine kotača. Ova jedinica izvodi oba za diferencijalni pogon i pokazuje
+    gdje se svaki od njih lomi.</p>
+    </div>
+
+  <div class="goals">
+    <div class="goals-h">
+      <svg viewBox="0 0 46 32" aria-hidden="true"><path d="M4 17l8 9L28 6"/><path d="M20 17l8 9L44 6"/></svg>
+      <span>Moći ću:</span>
+    </div>
+    <ul id="goals"></ul>
+  </div>
+</header>
+<div class="cyanline"></div>
+
+<div class="wrap">
+
+  <!-- ===================== 1 ===================== -->
+  <section id="s1">
+    <div class="sh"><span class="n">1</span><h2>Gdje je robot: tri broja</h2></div>
+
+    <p>Da bi se o gibanju uopće moglo računati, treba dogovoriti kako se položaj zapisuje. Za vozilo koje se
+    giba po ravnoj podlozi dovoljna su <strong>tri broja</strong>: dvije koordinate mjesta i jedan kut.</p>
+
+    <p>Postavi se nepomičan <strong>koordinatni sustav prostora</strong> &mdash; ishodište u kutu prostorije,
+    os <em>x</em> uzduž jednoga zida, os <em>y</em> uzduž drugoga. Uz njega ide i
+    <strong>koordinatni sustav vozila</strong>, koji se giba s vozilom: ishodište mu je u sredini između
+    pogonskih kotača, os <em>x</em> gleda naprijed, os <em>y</em> ulijevo.</p>
+
+    <div class="izraz">
+      <span class="lb">Položaj vozila</span>
+      <p><b>q = ( x, y, θ )</b></p>
+      <p class="np">Par <em>x</em> i <em>y</em> govori gdje je ishodište vozila u prostoru, a kut
+      <em>θ</em> za koliko je vozilo zakrenuto u odnosu na os <em>x</em> prostora. Taj se trojac naziva
+      <strong>konfiguracija</strong> vozila, a sve njegove moguće vrijednosti <strong>prostor
+      konfiguracija</strong>.</p>
+    </div>
+
+    <p>Zašto baš tri broja, a ne šest kao za tijelo u prostoru? Zato što vozilo na podlozi ne može ni gore ni
+    dolje, ni se nagnuti &mdash; podloga mu tri stupnja slobode oduzima. Kod letjelice ih je šest, kod
+    nepomične ruke ih ima onoliko koliko ima zglobova.</p>
+
+    <p class="sd">Povuci klizače i gledaj kako se mijenja trojac.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Konfiguracija vozila u prostoru</div>
+        <div class="s" id="qpos">&nbsp;</div>
+      </div>
+      <div class="cmp">
+        <svg id="qsvg" viewBox="0 0 300 240" role="img" aria-label="Položaj i zakret vozila u koordinatnome sustavu"></svg>
+        <div class="ct">
+          <h4>Očitanje</h4>
+          <p id="qp">&nbsp;</p>
+          <p class="ex" id="qx">&nbsp;</p>
+        </div>
+      </div>
+      <div class="ibar">
+        <span class="val" id="qvx">x = 2,0 m</span>
+        <input type="range" id="qxrange" min="0" max="60" value="20" step="1" aria-label="Koordinata x">
+      </div>
+      <div class="ibar">
+        <span class="val" id="qvy">y = 1,5 m</span>
+        <input type="range" id="qyrange" min="0" max="45" value="15" step="1" aria-label="Koordinata y">
+      </div>
+      <div class="ibar">
+        <span class="val" id="qvt">θ = 0&deg;</span>
+        <input type="range" id="qtrange" min="-180" max="180" value="0" step="5" aria-label="Zakret vozila">
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section id="s2">
+    <div class="sh"><span class="n">2</span><h2>Ograničenje koje sve određuje</h2></div>
+
+    <p>Vozilo na standardnim kotačima ne može se pomaknuti postrance. To se u kinematici zapisuje kao
+    <strong>ograničenje</strong>, i ono je razlog zašto vozilo s tri stupnja slobode položaja ima samo dva
+    upravljana ulaza.</p>
+
+    <div class="izraz">
+      <span class="lb">Ograničenje bočnoga klizanja</span>
+      <p><b>&minus; ẋ &middot; sin θ + ẏ &middot; cos θ = 0</b></p>
+      <p class="np">Izraz kaže da je brzina u smjeru osi kotača jednaka nuli: vozilo se u svakome trenutku
+      giba samo naprijed ili natrag, u smjeru u koji je okrenuto. Ne kaže da vozilo ne može doći na položaj
+      lijevo od sebe &mdash; kaže da onamo ne može doći <em>izravno</em>.</p>
+    </div>
+
+    <p>Razlika je bitna i ilustrira je svako parkiranje automobila. Auto ne može bočno, ali može doći na
+    parkirno mjesto koje mu je uz bok &mdash; uz nekoliko naprijed-natrag poteza. Ograničenje ne smanjuje
+    <strong>dosežni prostor</strong>, nego <strong>put kojim se do njega dolazi</strong>.</p>
+
+    <p>Takvo se ograničenje naziva <strong>neholonomnim</strong>. Naziv znači da se ono ne može svesti na
+    ograničenje samih položaja &mdash; odnosi se na brzine, ne na mjesta do kojih se smije doći. Vozilo koje
+    ima takvo ograničenje je neholonomno; vozilo koje ga nema, poput svesmjernoga, je holonomno.</p>
+
+    <div class="note">
+      <b>Po čemu se prepoznaje u praksi</b>
+      <p>Ako vozilo iz mirovanja može krenuti u <em>bilo koji</em> smjer u ravnini, holonomno je. Ako prvo mora
+      zakrenuti pa tek onda krenuti, neholonomno je. Diferencijalni pogon, tricikl i Ackermannov pogon su
+      neholonomni; svesmjerni pogon sa švedskim kotačima je holonoman.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section id="s3">
+    <div class="sh"><span class="n">3</span><h2>Izravna kinematika diferencijalnoga pogona</h2></div>
+
+    <p>Sada se može izvesti prvi od dvaju računa. Zadano je: brzina lijevoga kotača <em>v</em><sub>L</sub>,
+    brzina desnoga <em>v</em><sub>D</sub> i razmak kotača <em>b</em>. Traži se brzina vozila <em>v</em> i
+    njegova kutna brzina <em>ω</em>.</p>
+
+    <p>Izvod je kratak. Ishodište vozila leži točno po sredini između kotača, pa je njegova brzina
+    <strong>srednja vrijednost</strong> brzina kotača. Kutna brzina slijedi iz toga da lijevi i desni kotač u
+    istome vremenu prijeđu različite putove: razlika putova podijeljena razmakom daje zakret.</p>
+
+    <div class="izraz">
+      <span class="lb">Izravna kinematika &mdash; iz kotača u vozilo</span>
+      <p><b>v = ( v<sub>D</sub> + v<sub>L</sub> ) / 2</b></p>
+      <p><b>&omega; = ( v<sub>D</sub> &minus; v<sub>L</sub> ) / b</b></p>
+      <p class="np">Brzina <em>v</em> je u metrima u sekundi, kutna brzina <em>&omega;</em> u radijanima u
+      sekundi, a razmak kotača <em>b</em> u metrima. Predznak kutne brzine: pozitivna znači zakret ulijevo, uz
+      dogovor da os <em>y</em> gleda ulijevo.</p>
+    </div>
+
+    <p>Ako se brzine kotača ne mjere izravno nego preko enkodera, prethodi im još jedan korak: iz broja koraka
+    enkodera dobiva se zakret kotača, a iz zakreta i polumjera put. Za kotač polumjera <em>r</em> koji se vrti
+    kutnom brzinom <em>φ̇</em> vrijedi <strong>v<sub>kotača</sub> = r &middot; φ̇</strong>.</p>
+
+    <p>Da bi se iz brzina dobio i <strong>položaj</strong>, treba ih zbrajati kroz vrijeme. To se radi u malim
+    koracima, svakih nekoliko milisekundi:</p>
+
+    <div class="izraz">
+      <span class="lb">Od brzine do položaja</span>
+      <p><b>x<sub>k+1</sub> = x<sub>k</sub> + v &middot; cos θ<sub>k</sub> &middot; Δt</b></p>
+      <p><b>y<sub>k+1</sub> = y<sub>k</sub> + v &middot; sin θ<sub>k</sub> &middot; Δt</b></p>
+      <p><b>θ<sub>k+1</sub> = θ<sub>k</sub> + &omega; &middot; Δt</b></p>
+      <p class="np">Taj se postupak zove <strong>odometrija</strong> i temelj je procjene položaja u svakome
+      mobilnom robotu. Njegova slaba točka &mdash; što se pogreška u svakome koraku zbraja &mdash; obrađuje se
+      u modulu o lokalizaciji.</p>
+    </div>
+
+    <p class="sd">Povuci brzine kotača i gledaj putanju kroz tri sekunde.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Izravna kinematika &mdash; putanja iz brzina kotača</div>
+        <div class="s" id="dpos">&nbsp;</div>
+      </div>
+      <div class="isp">
+        <svg id="dsvg" viewBox="0 0 300 230" role="img" aria-label="Putanja vozila iz zadanih brzina kotača"></svg>
+        <div>
+          <dl>
+            <dt>Brzina vozila v</dt><dd id="dv">&nbsp;</dd>
+            <dt>Kutna brzina &omega;</dt><dd id="dw">&nbsp;</dd>
+            <dt>Polumjer zavoja R</dt><dd id="dr">&nbsp;</dd>
+            <dt>Položaj nakon 3 s</dt><dd id="dq">&nbsp;</dd>
+            <dt>Vrsta gibanja</dt><dd id="dk">&nbsp;</dd>
+          </dl>
+          <p id="dx">&nbsp;</p>
+        </div>
+      </div>
+      <div class="ibar">
+        <span class="val" id="dvl">v<sub>L</sub> = 0,40 m/s</span>
+        <input type="range" id="dlrange" min="-60" max="60" step="5" value="40" aria-label="Brzina lijevoga kotača">
+      </div>
+      <div class="ibar">
+        <span class="val" id="dvd">v<sub>D</sub> = 0,40 m/s</span>
+        <input type="range" id="ddrange" min="-60" max="60" step="5" value="40" aria-label="Brzina desnoga kotača">
+      </div>
+      <div class="ibar">
+        <span class="val" id="dvb">b = 40 cm</span>
+        <input type="range" id="dbrange" min="20" max="90" step="5" value="40" aria-label="Razmak kotača">
+      </div>
+    </div>
+
+    <p>Tri slučaja koja se čitaju izravno iz izraza. Kad su brzine <strong>jednake</strong>, razlika je nula,
+    kutna brzina nula i vozilo ide ravno. Kad su <strong>suprotne po smjeru, a jednake po iznosu</strong>,
+    zbroj je nula, brzina vozila nula, a kutna brzina najveća &mdash; vozilo se okreće u mjestu. Kad jedan
+    kotač <strong>stoji</strong>, vozilo se okreće oko toga kotača, s polumjerom zavoja jednakim polovici
+    razmaka.</p>
+  </section>
+
+  <!-- ===================== 4 ===================== -->
+  <section id="s4">
+    <div class="sh"><span class="n">4</span><h2>Obratna kinematika: iz naredbe u brzine kotača</h2></div>
+
+    <p>Upravljački sustav ne zadaje brzine kotača nego gibanje vozila: <em>vozi 0,5 m/s i skreći 20 stupnjeva
+    u sekundi</em>. Netko to mora pretvoriti u dvije brzine kotača. Taj se korak zove obratna kinematika, i
+    kod diferencijalnoga pogona dobiva se preokretanjem istih dvaju izraza.</p>
+
+    <div class="izraz">
+      <span class="lb">Obratna kinematika &mdash; iz vozila u kotače</span>
+      <p><b>v<sub>D</sub> = v + &omega; &middot; b / 2</b></p>
+      <p><b>v<sub>L</sub> = v &minus; &omega; &middot; b / 2</b></p>
+      <p class="np">Izvod: zbroj dvaju izraza daje <em>v</em><sub>D</sub> + <em>v</em><sub>L</sub> = 2<em>v</em>,
+      a razlika <em>v</em><sub>D</sub> &minus; <em>v</em><sub>L</sub> = <em>&omega;b</em>. Rješavanjem toga
+      para po <em>v</em><sub>D</sub> i <em>v</em><sub>L</sub> dobivaju se gornji izrazi.</p>
+    </div>
+
+    <p>Kod diferencijalnoga pogona obratna kinematika ima <strong>točno jedno rješenje</strong>, i uvijek
+    postoji. To je iznimka, ne pravilo: kod robotskih ruku obratna kinematika često ima više rješenja ili
+    nijedno, pa se rješava numerički. Ovdje je dovoljan zbroj i umnožak.</p>
+
+    <p class="sd">Zadaj gibanje vozila; brzine kotača se računaju.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Obratna kinematika &mdash; brzine kotača iz naredbe</div>
+        <div class="s" id="opos">&nbsp;</div>
+      </div>
+      <div class="isp">
+        <svg id="osvg" viewBox="0 0 300 210" role="img" aria-label="Brzine kotača izračunate iz zadanoga gibanja"></svg>
+        <div>
+          <dl>
+            <dt>Lijevi kotač v<sub>L</sub></dt><dd id="ol">&nbsp;</dd>
+            <dt>Desni kotač v<sub>D</sub></dt><dd id="od">&nbsp;</dd>
+            <dt>Vrtnja lijevoga kotača</dt><dd id="onl">&nbsp;</dd>
+            <dt>Vrtnja desnoga kotača</dt><dd id="ond">&nbsp;</dd>
+            <dt>Izvedivost</dt><dd id="oi">&nbsp;</dd>
+          </dl>
+          <p id="ox">&nbsp;</p>
+        </div>
+      </div>
+      <div class="ibar">
+        <span class="val" id="ovv">v = 0,50 m/s</span>
+        <input type="range" id="ovrange" min="-100" max="100" step="5" value="50" aria-label="Zadana brzina vozila">
+      </div>
+      <div class="ibar">
+        <span class="val" id="ovw">&omega; = 20 &deg;/s</span>
+        <input type="range" id="owrange" min="-120" max="120" step="5" value="20" aria-label="Zadana kutna brzina">
+      </div>
+      <div class="ibar">
+        <span class="val" id="ovb">b = 40 cm</span>
+        <input type="range" id="obrange" min="20" max="90" step="5" value="40" aria-label="Razmak kotača">
+      </div>
+      <div class="ibar">
+        <span class="val" id="ovm">Najveća brzina kotača: 0,80 m/s</span>
+        <input type="range" id="omrange" min="20" max="200" step="10" value="80" aria-label="Najveća brzina kotača">
+      </div>
+    </div>
+
+    <p>Prikaz uvodi i jednu praktičnu stvar koja se u udžbeničkome izvodu ne vidi: <strong>svaki motor ima
+    gornju granicu</strong>. Zada li se brzina i zakret tako da izračunata brzina kotača prijeđe tu granicu,
+    naredba je <em>neizvediva</em>. Vozilo tada ne stane &mdash; ono izvede nešto drugo, najčešće tako da
+    proporcionalno smanji oba iznosa i zadrži omjer, čime se putanja sačuva, a brzina smanji.</p>
+
+    <div class="note">
+      <b>Dva izraza, cijeli modul</b>
+      <p>Izravna kinematika ulazi u <strong>procjenu položaja</strong>: iz izmjerenih okretaja kotača robot
+      računa gdje je. Obratna ulazi u <strong>izvođenje naredbe</strong>: iz željenoga gibanja računa što
+      poslati motorima. Prva se koristi u modulu o lokalizaciji, druga u modulu o slijeđenju putanje. Isti par
+      izraza, dva smjera.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section id="s5">
+    <div class="sh"><span class="n">5</span><h2>Druge konfiguracije</h2></div>
+
+    <p>Diferencijalni pogon nije jedina izvedba, a njegovi izrazi ne vrijede za druge. Evo kako izgledaju
+    kinematički modeli ostalih rasporeda iz jedinice 2.3.</p>
+
+    <div class="tscroll">
+      <table class="t">
+        <thead>
+          <tr><th>Konfiguracija</th><th>Upravljani ulazi</th><th>Izravna kinematika</th><th>Osobitost</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Diferencijalni</td>
+            <td>v<sub>L</sub>, v<sub>D</sub></td>
+            <td>v = (v<sub>D</sub> + v<sub>L</sub>)/2, ω = (v<sub>D</sub> − v<sub>L</sub>)/b</td>
+            <td>okret u mjestu; najjednostavniji model</td>
+          </tr>
+          <tr>
+            <td>Tricikl</td>
+            <td>brzina prednjega kotača v<sub>p</sub>, kut zakreta α</td>
+            <td>v = v<sub>p</sub> · cos α, ω = v<sub>p</sub> · sin α / L</td>
+            <td>pri v<sub>p</sub> = 0 zakret kotača ne pomiče vozilo</td>
+          </tr>
+          <tr>
+            <td>Ackermannov</td>
+            <td>brzina v, kut zakreta α</td>
+            <td>ω = v · tg α / L</td>
+            <td>L je razmak osovina; prednji kotači zakreću se za različite kutove</td>
+          </tr>
+          <tr>
+            <td>Sinkroni</td>
+            <td>brzina v, smjer kotača β</td>
+            <td>ẋ = v · cos β, ẏ = v · sin β, θ̇ = 0</td>
+            <td>tijelo zadržava orijentaciju; zakret je zaseban mehanizam</td>
+          </tr>
+          <tr>
+            <td>Svesmjerni</td>
+            <td>brzine triju ili četiriju kotača</td>
+            <td>ẋ, ẏ i ω neovisno, iz zbroja doprinosa svih kotača</td>
+            <td>holonoman: sva tri stupnja slobode upravljana su izravno</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Uočljivo je da samo posljednji redak ima tri neovisna izlaza. Kod svih ostalih iz dvaju ulaza izlaze
+    dvije veličine, a treća &mdash; bočni pomak &mdash; ostaje nedostupna. Upravo to je ograničenje iz drugoga
+    odjeljka, samo napisano drukčije.</p>
+  </section>
+
+  <!-- ===================== 6 ===================== -->
+  <section id="s6">
+    <div class="sh"><span class="n">6</span><h2>Gdje se model lomi</h2></div>
+
+    <p>Svi izrazi u ovoj jedinici počivaju na jednoj pretpostavci: <strong>kotač se kotrlja bez klizanja i
+    proklizavanja</strong>. Ta pretpostavka u stvarnosti nikad nije potpuno istinita, a katkad je posve
+    netočna. Vrijedi znati gdje.</p>
+
+    <div class="mjerila">
+      <div class="mj">
+        <b>Proklizavanje pri zakretu</b>
+        <span>Pri okretu u mjestu kotači nužno struže po podlozi. Model kaže da je vozilo zakrenulo za
+        određen kut; stvarno je zakrenulo manje, i to različito na različitim podlogama.</span>
+        <i>najveći izvor pogreške u zatvorenome prostoru</i>
+      </div>
+      <div class="mj">
+        <b>Istrošen ili slabo napuhan kotač</b>
+        <span>Polumjer kotača ulazi u svaki račun. Kotač manjega polumjera prelazi kraći put po okretaju, pa
+        vozilo misli da je prešlo više nego jest.</span>
+        <i>promjer se mjeri, ne uzima iz kataloga</i>
+      </div>
+      <div class="mj">
+        <b>Kriv razmak kotača</b>
+        <span>Razmak stoji u nazivniku obaju izraza za kutnu brzinu. Pogreška od 1 cm na razmaku od 40 cm
+        daje 2,5 % pogreške u svakome zakretu.</span>
+        <i>podešava se pokusnom vožnjom po kvadratu</i>
+      </div>
+      <div class="mj">
+        <b>Zračnost u prijenosniku</b>
+        <span>Pri promjeni smjera vrtnje prvih nekoliko stupnjeva zakreta motora ne dođe do kotača. Enkoder
+        na motoru to ne vidi.</span>
+        <i>rješava se enkoderom na kotaču</i>
+      </div>
+    </div>
+
+    <p>Zajednički im je učinak isti: <strong>izračunati položaj polako se odvaja od stvarnoga</strong>, i to
+    tim brže što se vozilo više zakreće. Nijedno mjerenje enkodera to ne može ispraviti, jer enkoder mjeri
+    zakret kotača, a ne prijeđeni put po podlozi. Ispravlja se tek usporedbom s nečim vanjskim &mdash; karti,
+    oznakom ili obrisom prostora &mdash; što je tema modula 5.</p>
+
+    <div class="note">
+      <b>Zaključak jedinice</b>
+      <p>Položaj vozila na podlozi opisuju tri broja: <em>x</em>, <em>y</em> i <em>θ</em>. Standardni kotač
+      unosi neholonomno ograničenje &mdash; brzina u smjeru osi kotača je nula &mdash; pa vozilo od tri
+      stupnja slobode upravlja samo dvama. Izravna kinematika diferencijalnoga pogona daje brzinu kao
+      polovicu zbroja i kutnu brzinu kao razliku brzina kotača podijeljenu njihovim razmakom; obratna se
+      dobiva preokretanjem istoga para i uvijek ima točno jedno rješenje. Zbrajanjem kroz vrijeme iz brzina
+      se dobiva položaj, i to je odometrija. Sve vrijedi dok se kotači kotrljaju bez proklizavanja.</p>
+      <p>Sljedeća jedinica pita koliko se slobodno vozilo s tim ograničenjima uopće može gibati.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 7 ===================== -->
+  <section id="s7">
+    <div class="sh"><span class="n">7</span><h2>Procjena znanja</h2><span class="score" id="score">&nbsp;</span></div>
+    <p class="sd">Odgovor se zaključava nakon prvoga klika, uz objašnjenje zašto je točan.</p>
+    <div class="qgrid" id="qgrid"></div>
+  </section>
+
+  <nav class="nav" aria-label="Kretanje po modulu">
+    <a href="m3-kinematika.html">
+      <span class="lb">&larr; Natrag na modul</span>
+      <span class="tt">Modul 3 &middot; Kinematika</span>
+    </a>
+    <a class="nx" href="3-2-manevrabilnost.html">
+      <span class="lb">Sljedeća jedinica &rarr;</span>
+      <span class="tt">3.2. Manevrabilnost</span>
+    </a>
+  </nav>
+</div>
+
+<div class="sf">
+  <div class="sf-in">
+    <span class="brand">FORTRONI<i>Q</i></span>
+    <span>Osnove mobilnih robota &middot; Modul 3 &middot; Jedinica 3.1</span>
+    <span>&copy; <span id="yr">2026</span> ForTroniQ d.o.o. &middot; Sva prava pridržana</span>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+var y = $("yr"); if (y) y.textContent = new Date().getFullYear();
+
+/* ---------- ishodi jedinice ---------- */
+var GOALS = [
+ "zapisati položaj i zakret vozila u koordinatnome sustavu",
+ "izračunati brzinu i kutnu brzinu vozila iz brzina kotača",
+ "izračunati brzine kotača iz zadanoga gibanja vozila"
+];
+var gul = $("goals");
+GOALS.forEach(function(g){
+  var li = document.createElement("li");
+  li.innerHTML = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.5l3.4 3.6L12 3.4"/></svg><span>' + g + '</span>';
+  gul.appendChild(li);
+});
+function zar(x, d){ return x.toFixed(d).replace(".", ","); }
+function br(x){ return zar(x, 1).replace(",", "."); }
+var F = 'font-family="IBM Plex Sans, sans-serif"';
+function nat(x, y, t, s, boja){
+  return '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-size="' + (s || 11.5) +
+         '" fill="' + (boja || "var(--body)") + '" ' + F + '>' + t + '</text>';
+}
+
+/* ---------- konfiguracija ---------- */
+function crtajQ(){
+  var x = parseInt($("qxrange").value, 10) / 10;
+  var y = parseInt($("qyrange").value, 10) / 10;
+  var t = parseInt($("qtrange").value, 10);
+  $("qvx").textContent = "x = " + zar(x, 1) + " m";
+  $("qvy").textContent = "y = " + zar(y, 1) + " m";
+  $("qvt").textContent = "θ = " + t + "°";
+
+  var mj = 36;                 /* px po metru */
+  var ox = 40, oy = 196;       /* ishodište prostora */
+  var px = ox + x * mj, py = oy - y * mj;
+
+  var s = '<rect x="' + ox + '" y="' + (oy - 5.5 * mj) + '" width="' + (6.5 * mj) + '" height="' + (5.5 * mj) +
+          '" fill="none" stroke="var(--rule)" stroke-width="1.4"/>';
+  /* mreža */
+  for (var i = 1; i < 7; i++){
+    s += '<path d="M' + (ox + i * mj) + ' ' + (oy - 5.5 * mj) + ' V' + oy +
+         '" stroke="var(--rule)" stroke-width=".6" opacity=".6"/>';
+  }
+  for (var k = 1; k < 6; k++){
+    s += '<path d="M' + ox + ' ' + (oy - k * mj) + ' H' + (ox + 6.5 * mj) +
+         '" stroke="var(--rule)" stroke-width=".6" opacity=".6"/>';
+  }
+  /* osi prostora */
+  s += '<path d="M' + ox + ' ' + oy + ' H' + (ox + 6.7 * mj) + '" stroke="var(--ink)" stroke-width="1.8"/>';
+  s += '<path d="M' + ox + ' ' + oy + ' V' + (oy - 5.7 * mj) + '" stroke="var(--ink)" stroke-width="1.8"/>';
+  s += nat(ox + 6.9 * mj, oy + 5, "x", 11, "var(--ink)");
+  s += nat(ox - 10, oy - 5.8 * mj, "y", 11, "var(--ink)");
+
+  /* vozilo */
+  s += '<g transform="translate(' + br(px) + ',' + br(py) + ') rotate(' + (-t) + ')">' +
+       '<rect x="-15" y="-11" width="30" height="22" rx="4" fill="var(--cyan)" fill-opacity=".18" stroke="var(--teal)" stroke-width="2"/>' +
+       '<rect x="-19" y="-9" width="5" height="18" rx="2" fill="var(--teal)"/>' +
+       '<rect x="14" y="-9" width="5" height="18" rx="2" fill="var(--teal)"/>' +
+       '<path d="M0 0 H26" stroke="var(--teal)" stroke-width="2"/>' +
+       '<path d="M22 -4 l6 4 -6 4" fill="none" stroke="var(--teal)" stroke-width="2"/>' +
+       '<path d="M0 0 V-24" stroke="var(--cyan)" stroke-width="1.6" stroke-dasharray="3 3"/>' +
+       '</g>';
+  s += '<circle cx="' + br(px) + '" cy="' + br(py) + '" r="3.4" fill="var(--ink)"/>';
+  /* projekcije */
+  s += '<path d="M' + br(px) + ' ' + br(py) + ' V' + oy + '" stroke="var(--body)" stroke-width="1" stroke-dasharray="3 3" opacity=".7"/>';
+  s += '<path d="M' + br(px) + ' ' + br(py) + ' H' + ox + '" stroke="var(--body)" stroke-width="1" stroke-dasharray="3 3" opacity=".7"/>';
+  s += nat(150, 228, "1 kvadratić = 1 m", 9.5);
+  $("qsvg").innerHTML = s;
+
+  $("qp").textContent = "q = ( " + zar(x, 1) + " m, " + zar(y, 1) + " m, " + t + "° ). Prva dva broja govore " +
+    "gdje je sredina između pogonskih kotača, treći u koju je stranu vozilo okrenuto.";
+  $("qx").textContent = "Isti trojac u radijanima: θ = " + zar(t * Math.PI / 180, 3) +
+    " rad. Računi u kinematici traže radijane, a prikaz korisniku stupnjeve.";
+  $("qpos").textContent = "( " + zar(x, 1) + " ; " + zar(y, 1) + " ; " + t + "° )";
+}
+["qxrange", "qyrange", "qtrange"].forEach(function(id){ $(id).addEventListener("input", crtajQ); });
+crtajQ();
+
+/* ---------- izravna kinematika ---------- */
+function crtajDif(){
+  var vl = parseInt($("dlrange").value, 10) / 100;
+  var vd = parseInt($("ddrange").value, 10) / 100;
+  var b = parseInt($("dbrange").value, 10) / 100;
+  $("dvl").innerHTML = "v<sub>L</sub> = " + zar(vl, 2) + " m/s";
+  $("dvd").innerHTML = "v<sub>D</sub> = " + zar(vd, 2) + " m/s";
+  $("dvb").textContent = "b = " + Math.round(b * 100) + " cm";
+
+  var v = (vl + vd) / 2;
+  var w = (vd - vl) / b;
+  var R = Math.abs(w) < 1e-9 ? Infinity : v / w;
+
+  $("dv").textContent = zar(v, 3) + " m/s";
+  $("dw").textContent = zar(w, 3) + " rad/s  (" + zar(w * 180 / Math.PI, 1) + " °/s)";
+
+  var vrsta, opis;
+  if (Math.abs(vd - vl) < 1e-9 && Math.abs(v) < 1e-9){
+    vrsta = "mirovanje"; opis = "Oba kotača stoje.";
+    $("dr").textContent = "—";
+  } else if (Math.abs(w) < 1e-9){
+    vrsta = "vožnja ravno";
+    opis = "Razlika brzina je nula, pa je i kutna brzina nula. Polumjer zavoja je beskonačan.";
+    $("dr").textContent = "∞ (ravno)";
+  } else if (Math.abs(v) < 1e-9){
+    vrsta = "okret u mjestu";
+    opis = "Zbroj brzina je nula, pa je brzina vozila nula. Središte zakretanja pada točno između kotača.";
+    $("dr").textContent = "0 m";
+  } else if (Math.abs(vl) < 1e-9 || Math.abs(vd) < 1e-9){
+    vrsta = "okret oko kotača";
+    opis = "Jedan kotač stoji, pa se vozilo okreće oko njega. Polumjer zavoja jednak je polovici razmaka kotača.";
+    $("dr").textContent = zar(Math.abs(R), 3) + " m  (b/2 = " + zar(b / 2, 3) + " m)";
+  } else {
+    vrsta = (w > 0 ? "zavoj ulijevo" : "zavoj udesno");
+    opis = "Središte zakretanja leži na produžetku zajedničke osi kotača, na udaljenosti " +
+           zar(Math.abs(R), 2) + " m od sredine vozila.";
+    $("dr").textContent = zar(Math.abs(R), 2) + " m";
+  }
+  $("dk").textContent = vrsta;
+
+  /* integracija kroz 3 s */
+  var x = 0, y = 0, th = 0, dt = 0.02;
+  var put = [];
+  for (var t = 0; t < 3; t += dt){
+    put.push([x, y]);
+    x += v * Math.cos(th) * dt;
+    y += v * Math.sin(th) * dt;
+    th += w * dt;
+  }
+  $("dq").textContent = "( " + zar(x, 2) + " m, " + zar(y, 2) + " m, " +
+    zar(((th * 180 / Math.PI) % 360 + 540) % 360 - 180, 0) + "° )";
+  $("dx").textContent = opis + " Položaj je dobiven zbrajanjem brzina kroz tri sekunde u koracima od 20 ms — " +
+    "upravo tako radi i odometrija u stvarnome vozilu.";
+  $("dpos").textContent = vrsta;
+
+  /* crtež: vozilo u ishodištu, x udesno, y prema gore */
+  var mj = 46, cx = 96, cy = 150;
+  var s = '<rect x="12" y="18" width="276" height="176" rx="6" fill="none" stroke="var(--rule)" stroke-width="1.4"/>';
+  var d = "";
+  put.forEach(function(p, k){
+    var px = cx + p[0] * mj, py = cy - p[1] * mj;
+    d += (k === 0 ? "M" : " L") + br(px) + " " + br(py);
+  });
+  if (Math.abs(v) > 1e-9 || Math.abs(w) > 1e-9){
+    s += '<path d="' + d + '" fill="none" stroke="var(--cyan)" stroke-width="2.6" stroke-linecap="round"/>';
+  }
+  /* središte zakretanja */
+  if (isFinite(R) && Math.abs(R) < 2.6 && Math.abs(w) > 1e-9){
+    var sy = cy - R * mj;
+    s += '<circle cx="' + cx + '" cy="' + br(sy) + '" r="5" fill="var(--teal)"/>';
+    s += '<path d="M' + cx + ' ' + cy + ' V' + br(sy) + '" stroke="var(--teal)" stroke-width="1.3" stroke-dasharray="4 4"/>';
+    s += nat(cx + 34, sy - 8, "središte", 9.5, "var(--teal)");
+  }
+  s += '<g transform="translate(' + cx + ',' + cy + ')">' +
+       '<rect x="-15" y="-11" width="30" height="22" rx="4" fill="var(--cyan)" fill-opacity=".18" stroke="var(--teal)" stroke-width="2"/>' +
+       '<rect x="-13" y="-16" width="26" height="5" rx="2" fill="' + (vl >= 0 ? "var(--teal)" : "#B4553F") + '"/>' +
+       '<rect x="-13" y="11" width="26" height="5" rx="2" fill="' + (vd >= 0 ? "var(--teal)" : "#B4553F") + '"/>' +
+       '<path d="M0 0 H24" stroke="var(--teal)" stroke-width="2"/>' +
+       '<path d="M20 -4 l5 4 -5 4" fill="none" stroke="var(--teal)" stroke-width="2"/>' +
+       '</g>';
+  s += nat(cx, cy - 26, "L", 9.5, "var(--body)");
+  s += nat(cx, cy + 32, "D", 9.5, "var(--body)");
+  s += nat(150, 212, "putanja kroz tri sekunde · 1 kvadrat = 1 m", 10);
+  $("dsvg").innerHTML = s;
+}
+["dlrange", "ddrange", "dbrange"].forEach(function(id){ $(id).addEventListener("input", crtajDif); });
+crtajDif();
+
+/* ---------- obratna kinematika ---------- */
+function crtajObr(){
+  var v = parseInt($("ovrange").value, 10) / 100;
+  var wd = parseInt($("owrange").value, 10);        /* °/s */
+  var b = parseInt($("obrange").value, 10) / 100;
+  var vmax = parseInt($("omrange").value, 10) / 100;
+  var w = wd * Math.PI / 180;
+
+  $("ovv").textContent = "v = " + zar(v, 2) + " m/s";
+  $("ovw").innerHTML = "ω = " + wd + " °/s";
+  $("ovb").textContent = "b = " + Math.round(b * 100) + " cm";
+  $("ovm").textContent = "Najveća brzina kotača: " + zar(vmax, 2) + " m/s";
+
+  var vd = v + w * b / 2;
+  var vl = v - w * b / 2;
+  var r = 0.10;                                     /* polumjer kotača 10 cm */
+  var nl = vl / (2 * Math.PI * r) * 60;
+  var nd = vd / (2 * Math.PI * r) * 60;
+  var naj = Math.max(Math.abs(vl), Math.abs(vd));
+  var ok = naj <= vmax + 1e-9;
+
+  $("ol").textContent = zar(vl, 3) + " m/s";
+  $("od").textContent = zar(vd, 3) + " m/s";
+  $("onl").textContent = zar(nl, 1) + " min⁻¹";
+  $("ond").textContent = zar(nd, 1) + " min⁻¹";
+  $("oi").textContent = ok ? "izvedivo" : "neizvedivo — traži " + zar(naj, 2) + " m/s";
+
+  var x;
+  if (!ok){
+    var f = vmax / naj;
+    x = "Naredba prelazi granicu motora. Uobičajeno se oba iznosa smanje istim faktorom " + zar(f, 2) +
+        ", čime se putanja zadrži, a brzina smanji na " + zar(v * f, 2) + " m/s i " +
+        zar(wd * f, 0) + " °/s.";
+  } else if (Math.abs(w) < 1e-9){
+    x = "Bez zakreta oba kotača dobivaju istu brzinu. Vrtnja je računata za kotač polumjera 10 cm.";
+  } else if (vl * vd < 0){
+    x = "Kotači se vrte u suprotnim smjerovima: zadani zakret je prevelik za zadanu brzinu, pa vozilo " +
+        "gotovo pivotira. Putanja je vrlo oštar zavoj.";
+  } else {
+    x = "Naredba je izvediva. Vrtnja je računata za kotač polumjera 10 cm; kod drugoga polumjera mijenja se " +
+        "samo posljednji korak, brzina kotača ostaje ista.";
+  }
+  $("ox").textContent = x;
+  $("opos").textContent = ok ? "izvedivo" : "preko granice";
+
+  /* stupci brzina kotača */
+  var s = '<path d="M150 168 V26" stroke="var(--rule)" stroke-width="1.2" stroke-dasharray="4 4"/>';
+  s += '<path d="M30 168 h240" stroke="var(--rule)" stroke-width="1.5"/>';
+  var skala = Math.max(vmax, Math.abs(vl), Math.abs(vd), 0.1);
+  [["vₗ", vl, 92], ["vₔ", vd, 178]].forEach(function(t){
+    var ime = t[0], val = t[1], x0 = t[2];
+    var h = Math.abs(val) / skala * 118;
+    var preko = Math.abs(val) > vmax + 1e-9;
+    s += '<rect x="' + (x0 - 22) + '" y="' + br(168 - h) + '" width="44" height="' + br(h) +
+         '" fill="' + (preko ? "#B4553F" : "var(--teal)") + '" fill-opacity="' + (preko ? "0.55" : "0.65") + '"/>';
+    s += nat(x0, 184, ime, 11);
+    s += nat(x0, 162 - h, zar(val, 2), 10.5, preko ? "#B4553F" : "var(--teal)");
+  });
+  var ym = 168 - vmax / skala * 118;
+  s += '<path d="M30 ' + br(ym) + ' H270" stroke="#B4553F" stroke-width="1.6" stroke-dasharray="5 4"/>';
+  s += '<text x="34" y="' + br(ym - 6) + '" font-size="9.5" fill="#B4553F" font-weight="600" ' + F +
+       '>granica motora</text>';
+  s += nat(150, 202, ok ? "obje brzine unutar granice" : "naredba se mora smanjiti", 10);
+  $("osvg").innerHTML = s;
+}
+["ovrange", "owrange", "obrange", "omrange"].forEach(function(id){ $(id).addEventListener("input", crtajObr); });
+crtajObr();
+
+/* ---------- procjena znanja ---------- */
+var QS = [
+ {p:"Kojim se trima brojevima opisuje položaj vozila na ravnoj podlozi?",
+  o:["Brzinom, ubrzanjem i vremenom","Dvjema koordinatama i kutom zakreta","Trima koordinatama","Brzinama dvaju kotača i razmakom"],
+  c:1,
+  e:"Trojac q = (x, y, θ) zove se konfiguracija vozila. Podloga mu oduzima tri od šest stupnjeva slobode koje ima tijelo u prostoru."},
+ {p:"Što kaže neholonomno ograničenje standardnoga kotača?",
+  o:["Da vozilo ne može doći lijevo od sebe","Da je brzina u smjeru osi kotača jednaka nuli","Da vozilo ne smije stati","Da kotač ne smije proklizati"],
+  c:1,
+  e:"Ograničenje se odnosi na brzine, ne na položaje. Vozilo do bočnoga položaja i dalje može doći — samo ne izravno, nego manevrom."},
+ {p:"Lijevi kotač vozi 0,6 m/s, desni 0,2 m/s, razmak je 0,4 m. Kolika je brzina vozila?",
+  o:["0,2 m/s","0,4 m/s","0,8 m/s","1,0 m/s"],
+  c:1,
+  e:"v = (v_D + v_L)/2 = (0,2 + 0,6)/2 = 0,4 m/s. Kutna brzina je (0,2 − 0,6)/0,4 = −1 rad/s, dakle zakret udesno."},
+ {p:"Za isto vozilo, kolika je kutna brzina?",
+  o:["−1 rad/s","−0,4 rad/s","0,4 rad/s","1 rad/s"],
+  c:0,
+  e:"ω = (v_D − v_L)/b = (0,2 − 0,6)/0,4 = −1 rad/s, odnosno oko −57 °/s. Negativan predznak znači zakret udesno."},
+ {p:"Traži se v = 0,5 m/s i ω = 1 rad/s uz razmak 0,4 m. Kolika je brzina desnoga kotača?",
+  o:["0,3 m/s","0,5 m/s","0,7 m/s","0,9 m/s"],
+  c:2,
+  e:"v_D = v + ω · b/2 = 0,5 + 1 · 0,2 = 0,7 m/s, a v_L = 0,5 − 0,2 = 0,3 m/s. To je obratna kinematika."},
+ {p:"Koliko rješenja ima obratna kinematika diferencijalnoga pogona?",
+  o:["Nijedno","Točno jedno","Dva","Beskonačno mnogo"],
+  c:1,
+  e:"Zbroj i razlika dvaju izraza jednoznačno daju obje brzine kotača. Kod robotskih ruku obratna kinematika često ima više rješenja ili nijedno."},
+ {p:"Što se događa kad izračunata brzina kotača prijeđe granicu motora?",
+  o:["Vozilo stane","Naredba je neizvediva; obično se oba iznosa smanje istim faktorom","Motor se pregrije","Kutna brzina postane nula"],
+  c:1,
+  e:"Smanjenjem obiju brzina istim faktorom zadržava se njihov omjer, pa se sačuva putanja, a smanji brzina."},
+ {p:"Kako se iz brzina dobiva položaj?",
+  o:["Množenjem s razmakom kotača","Zbrajanjem kroz vrijeme u malim koracima","Dijeljenjem s polumjerom kotača","Iz kuta zakreta kotača"],
+  c:1,
+  e:"Taj se postupak zove odometrija. Njegova je slabost što se pogreška u svakome koraku zbraja i nikad se sama ne ispravlja."},
+ {p:"Na kojoj pretpostavci počivaju svi izrazi u ovoj jedinici?",
+  o:["Da je podloga vodoravna","Da se kotači kotrljaju bez proklizavanja","Da vozilo ima dva kotača","Da je brzina stalna"],
+  c:1,
+  e:"Kad ta pretpostavka padne — a pri okretu u mjestu pada uvijek — izračunati se položaj odvaja od stvarnoga. Ispravlja se tek usporedbom s vanjskom referencijom."}
+];
+var grid = $("qgrid"), answered = 0, correct = 0;
+QS.forEach(function(q, i){
+  var card = document.createElement("div"); card.className = "q";
+  var num = document.createElement("div"); num.className = "num";
+  num.textContent = "Pitanje " + (i + 1) + " / " + QS.length; card.appendChild(num);
+  var pr = document.createElement("div"); pr.className = "prompt"; pr.textContent = q.p; card.appendChild(pr);
+  var opts = document.createElement("div"); opts.className = "opts"; card.appendChild(opts);
+  var fb = document.createElement("div"); fb.className = "fb"; fb.hidden = true; card.appendChild(fb);
+  q.o.forEach(function(txt, k){
+    var lab = document.createElement("label"); lab.className = "opt";
+    var inp = document.createElement("input");
+    inp.type = "radio"; inp.name = "q" + i; inp.id = "q" + i + "o" + k;
+    var sp = document.createElement("span"); sp.textContent = txt;
+    lab.appendChild(inp); lab.appendChild(sp); opts.appendChild(lab);
+    inp.addEventListener("change", function(){
+      if (card.dataset.done) return;
+      card.dataset.done = "1"; answered++;
+      var good = (k === q.c); if (good) correct++;
+      Array.prototype.forEach.call(opts.children, function(e2, idx){
+        e2.classList.add("locked"); e2.querySelector("input").disabled = true;
+        if (idx === q.c) e2.classList.add("correct");
+        else if (idx === k) e2.classList.add("wrong");
+      });
+      fb.className = "fb " + (good ? "ok" : "no");
+      fb.innerHTML = "<b>" + (good ? "Točno" : "Netočno") + "</b> &mdash; " + q.e;
+      fb.hidden = false;
+      $("score").textContent = "Riješeno " + answered + " / " + QS.length + " · točnih " + correct;
+    });
+  });
+  grid.appendChild(card);
+});
+
+/* ---------- alatna traka ---------- */
+var cv = $("ftq-canvas"), ctx = cv.getContext("2d");
+var strokes = [], drawing = null, tool = null, board = false;
+var COLORS = ["#17656E", "#2ECAD4", "#C0562A", "#3E7A46", "#10394A"];
+var color = COLORS[0];
+function store(k, v){ try{ localStorage.setItem("ftq-mr-l31-" + k, v); }catch(e){} }
+function load(k){ try{ return localStorage.getItem("ftq-mr-l31-" + k); }catch(e){ return null; } }
+function fit(){
+  var r = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.round(innerWidth * r); cv.height = Math.round(innerHeight * r);
+  cv.style.width = innerWidth + "px"; cv.style.height = innerHeight + "px";
+  ctx.setTransform(r, 0, 0, r, 0, 0); redraw();
+}
+function redraw(){
+  ctx.clearRect(0, 0, innerWidth, innerHeight);
+  if (board){
+    var cs = getComputedStyle(document.body);
+    ctx.fillStyle = cs.backgroundColor || "#fff";
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+  }
+  strokes.forEach(function(s){
+    if (!s.pts || s.pts.length < 2) return;
+    ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (s.tool === "erase"){ ctx.globalCompositeOperation = "destination-out"; ctx.lineWidth = 26; ctx.strokeStyle = "rgba(0,0,0,1)"; }
+    else if (s.tool === "mark"){ ctx.globalAlpha = .32; ctx.lineWidth = 17; ctx.strokeStyle = s.color; }
+    else { ctx.lineWidth = 2.6; ctx.strokeStyle = s.color; }
+    ctx.beginPath(); ctx.moveTo(s.pts[0][0], s.pts[0][1]);
+    for (var i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i][0], s.pts[i][1]);
+    ctx.stroke(); ctx.restore();
+  });
+}
+function setTool(t){
+  tool = (tool === t) ? null : t;
+  ["pen", "mark", "erase"].forEach(function(k){ $("t-" + k).setAttribute("aria-pressed", tool === k ? "true" : "false"); });
+  cv.classList.toggle("on", !!tool);
+}
+cv.addEventListener("pointerdown", function(e){
+  if (!tool) return;
+  cv.setPointerCapture(e.pointerId);
+  drawing = {tool:tool, color:color, pts:[[e.clientX, e.clientY]]};
+  strokes.push(drawing);
+});
+cv.addEventListener("pointermove", function(e){ if (!drawing) return; drawing.pts.push([e.clientX, e.clientY]); redraw(); });
+function endStroke(){ if (!drawing) return; drawing = null; try{ store("strokes", JSON.stringify(strokes.slice(-400))); }catch(e){} }
+cv.addEventListener("pointerup", endStroke);
+cv.addEventListener("pointercancel", endStroke);
+$("t-pen").addEventListener("click", function(){ setTool("pen"); });
+$("t-mark").addEventListener("click", function(){ setTool("mark"); });
+$("t-erase").addEventListener("click", function(){ setTool("erase"); });
+$("t-board").addEventListener("click", function(){
+  board = !board; this.setAttribute("aria-pressed", board ? "true" : "false");
+  if (board && !tool) setTool("pen");
+  store("board", board ? "1" : "0"); redraw();
+});
+$("t-undo").addEventListener("click", function(){ strokes.pop(); redraw(); try{ store("strokes", JSON.stringify(strokes)); }catch(e){} });
+$("t-clear").addEventListener("click", function(){ strokes = []; redraw(); store("strokes", "[]"); });
+var colBox = $("ftq-colors");
+COLORS.forEach(function(c, i){
+  var b = document.createElement("button");
+  b.className = "sw"; b.type = "button"; b.style.background = c;
+  b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+  b.setAttribute("title", "Boja " + (i + 1));
+  b.addEventListener("click", function(){
+    color = c;
+    Array.prototype.forEach.call(colBox.children, function(x){ x.setAttribute("aria-pressed", "false"); });
+    b.setAttribute("aria-pressed", "true");
+  });
+  colBox.appendChild(b);
+});
+$("t-color").addEventListener("click", function(){
+  var on = colBox.classList.toggle("show");
+  this.setAttribute("aria-pressed", on ? "true" : "false");
+});
+var fs = parseFloat(load("fs") || "1");
+function applyFs(){ fs = Math.min(1.5, Math.max(.85, fs)); document.documentElement.style.setProperty("--fs", fs.toFixed(2)); store("fs", fs); }
+applyFs();
+$("t-plus").addEventListener("click", function(){ fs += .1; applyFs(); });
+$("t-minus").addEventListener("click", function(){ fs -= .1; applyFs(); });
+if (load("dys") === "1"){ document.body.classList.add("dys"); $("t-dys").setAttribute("aria-pressed", "true"); }
+$("t-dys").addEventListener("click", function(){
+  var on = document.body.classList.toggle("dys");
+  this.setAttribute("aria-pressed", on ? "true" : "false"); store("dys", on ? "1" : "0");
+});
+$("t-theme").addEventListener("click", function(){
+  var r = document.documentElement, c = r.getAttribute("data-theme");
+  var next = c === "dark" ? "light" : (c === "light" ? null : "dark");
+  if (next) r.setAttribute("data-theme", next); else r.removeAttribute("data-theme");
+  store("theme", next || ""); redraw();
+});
+var st = load("theme"); if (st) document.documentElement.setAttribute("data-theme", st);
+try{
+  var sv = load("strokes"); if (sv) strokes = JSON.parse(sv) || [];
+  if (load("board") === "1"){ board = true; $("t-board").setAttribute("aria-pressed", "true"); }
+}catch(e){ strokes = []; }
+addEventListener("resize", fit);
+fit();
+})();
+</script>
+</body>
+</html>

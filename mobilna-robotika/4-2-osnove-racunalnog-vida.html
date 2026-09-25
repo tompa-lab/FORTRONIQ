@@ -1,0 +1,1153 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="ForTroniQ d.o.o.">
+<meta name="robots" content="index, follow">
+<meta name="description" content="Put od svjetla do polja brojeva, proračun vidnoga polja, veličine piksela i najmanjega pouzdano vidljivog detalja, postupci obrade slike od sive slike do prepoznavanja učenjem, oznake u prostoru kao izvor identiteta, udaljenosti i zakreta te uvjeti u kojima vid zakaže.">
+<title>Osnove računalnog vida — Modul 4</title>
+<link rel="canonical" href="https://dos.fortroniq.hr/mobilna-robotika/4-2-osnove-racunalnog-vida.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/mobilna-robotika/4-2-osnove-racunalnog-vida.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/mobilna-robotika/4-2-osnove-racunalnog-vida.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/mobilna-robotika/4-2-osnove-racunalnog-vida.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Osnove računalnog vida">
+<meta property="og:description" content="Vidno polje, veličina piksela, obrada slike i oznake u prostoru.">
+<meta property="og:url" content="https://dos.fortroniq.hr/mobilna-robotika/4-2-osnove-racunalnog-vida.html">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+
+<style>
+:root{
+  --paper:#FFFFFF;
+  --ink:#10394A;
+  --body:#5D7C90;
+  --rule:#DCE4E8;
+  --teal:#17656E;
+  --teal-d:#0F4A52;
+  --cyan:#2ECAD4;
+  --hero-a:#1B6A72;
+  --hero-b:#0C3F47;
+  --bar:#17181A;
+  --bar-t:#8A9499;
+  --soft:#F3F7F8;
+  --ok:#2E7D53;
+  --bad:#B24A2E;
+  --fs:1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+    --teal:#2A9AA6; --teal-d:#2ECAD4;
+    --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+    --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+  --teal:#2A9AA6; --teal-d:#2ECAD4;
+  --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+  --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  font-size:calc(16px * var(--fs)); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body.dys{letter-spacing:.012em;word-spacing:.09em;line-height:1.85}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+/* ============ GORNJA TRAKA ============ */
+.topbar{background:var(--bar);color:#fff;display:flex;align-items:stretch;overflow-x:auto;font-size:11.5px}
+.tbi{padding:6px 14px;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.tbi .lb{color:var(--bar-t);font-size:9.5px;letter-spacing:.03em}
+.tbi .vl{font-weight:500}
+.tbi.crumb .vl{color:var(--cyan)}
+.tbi .x{display:inline-block;margin-left:6px;opacity:.65}
+.tbi.menu{align-items:center;flex-direction:row;gap:8px}
+.tbi.menu svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.8}
+a.tbi{color:#fff;text-decoration:none}
+a.tbi:hover .vl{color:var(--cyan)}
+
+/* ============ HERO ============ */
+.hero{background:linear-gradient(160deg,var(--hero-a) 0%,var(--hero-b) 100%);position:relative;overflow:hidden}
+.hero-in{position:relative;z-index:3;max-width:1120px;margin:0 auto;padding:38px clamp(20px,6vw,120px) 30px}
+.hero-art{position:absolute;right:0;top:0;bottom:0;width:min(46%,520px);opacity:.5;pointer-events:none}
+.hero-art svg{width:100%;height:100%;display:block}
+.eyebrow{display:flex;flex-wrap:wrap;gap:.5em;align-items:center;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:#9FC9CE}
+.eyebrow b{color:#fff;font-weight:700;letter-spacing:.17em}
+.eyebrow b i{color:var(--cyan);font-style:normal}
+.eyebrow span::after{content:"·";margin-left:.5em;opacity:.6}
+.eyebrow span:last-child::after{content:""}
+.hero h1{
+  margin:.35em 0 0;color:#fff;font-weight:700;
+  font-size:clamp(29px,5vw,50px);letter-spacing:-.026em;line-height:1.06;
+  max-width:16ch;text-wrap:balance;text-shadow:0 2px 20px rgba(0,0,0,.28);
+}
+.lede{max-width:62ch;color:#D4E8EB;font-size:15.5px;line-height:1.62;margin:.9em 0 0}
+
+.goals{
+  position:relative;z-index:3;max-width:1120px;margin:0 auto;
+  padding:4px clamp(20px,6vw,120px) 40px;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:26px 40px;align-items:start;
+}
+.goals-h{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:6px}
+.goals-h svg{width:46px;height:32px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.goals-h span{color:#fff;font-weight:700;font-size:19px;letter-spacing:-.01em}
+.goals ul{margin:0;padding:0;list-style:none;columns:3;column-gap:34px}
+.goals li{break-inside:avoid;margin:0 0 13px;display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:start;color:#E6F5F7;font-size:12.6px;line-height:1.45}
+.goals li svg{width:11px;height:11px;margin-top:4px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){
+  .goals{grid-template-columns:1fr;gap:16px}
+  .goals-h{flex-direction:row;align-items:center;justify-content:flex-start}
+  .goals ul{columns:1}
+}
+.cyanline{height:5px;background:var(--cyan)}
+
+/* ============ SADRŽAJ ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(20px,6vw,120px) 10px}
+.col{max-width:74ch}
+section{padding-top:52px}
+.sh{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:8px}
+.sh .n{
+  flex:0 0 auto;width:27px;height:27px;border-radius:50%;
+  background:var(--teal);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;align-self:center;
+}
+.sh h2{margin:0;font-size:clamp(21px,2.6vw,27px);font-weight:700;letter-spacing:-.022em;line-height:1.15;text-wrap:balance}
+.sd{color:var(--body);font-size:14px;margin:0 0 20px;max-width:70ch}
+p{margin:0 0 1.05em;max-width:74ch;font-size:15.4px;line-height:1.72;color:var(--ink)}
+p.mut{color:var(--body)}
+h3.sub{font-size:17px;font-weight:600;letter-spacing:-.012em;margin:2em 0 .6em;color:var(--ink)}
+strong{font-weight:600}
+em{font-style:italic}
+.kv{color:var(--teal);font-weight:600}
+
+ul.plain{margin:0 0 1.2em;padding-left:1.15em;max-width:74ch}
+ul.plain li{margin-bottom:.45em;font-size:15.2px;line-height:1.66}
+
+/* ============ PLOČE ============ */
+.panel{background:var(--soft);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:26px 0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.panel-head .t{font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--teal)}
+.panel-head .s{font-size:11.5px;color:var(--body);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.chip{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);
+  padding:8px 12px;cursor:pointer;text-align:left;line-height:1.3;
+}
+.chip:hover{border-color:var(--cyan);color:var(--teal)}
+.chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.chip small{display:block;font-size:10.5px;font-weight:500;opacity:.75;margin-top:3px;letter-spacing:.02em}
+.chip.ac{font-size:13px;font-weight:700;letter-spacing:.04em;padding:7px 11px}
+.def{border-top:1px solid var(--rule);padding:18px 17px;background:var(--paper)}
+.def h3{font-size:19px;font-weight:700;letter-spacing:-.015em;margin:0 0 3px;color:var(--ink)}
+.def .en{font-size:12.5px;color:var(--body);margin:0 0 13px}
+.def dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 20px;margin:0}
+.def dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:4px}
+.def dd{margin:0;font-size:14.6px;line-height:1.55}
+@media (max-width:560px){.def dl{grid-template-columns:1fr;gap:2px 0}.def dt{padding-top:11px}}
+
+.norm{border:1px solid var(--rule);border-left:4px solid var(--cyan);border-radius:6px;background:var(--soft);padding:18px 20px;margin:24px 0;max-width:74ch}
+.norm .lbl{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:7px}
+.norm p{margin:0;font-size:17px;line-height:1.55;font-style:italic}
+.norm .src{margin-top:10px;font-size:12px;color:var(--body);font-style:normal}
+
+.note{border:1px solid var(--rule);border-radius:6px;background:var(--soft);padding:15px 17px;margin:22px 0;max-width:74ch}
+.note b{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.note p{margin:0;font-size:14.6px;line-height:1.6}
+
+.tscroll{overflow-x:auto;margin:24px 0}
+table.t{width:100%;border-collapse:collapse;font-size:14.2px;min-width:520px}
+table.t th,table.t td{text-align:left;padding:10px 14px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.5}
+table.t th{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+table.t td:first-child,table.t th:first-child{font-weight:600;padding-right:20px}
+table.t tr:last-child td{border-bottom:0}
+
+.fig{border:1px dashed var(--rule);border-radius:8px;background:var(--soft);padding:26px 18px;margin:26px 0;text-align:center;max-width:74ch}
+.fig .ph{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.fig .cap{font-size:13.6px;color:var(--body);margin:9px auto 0;max-width:58ch;line-height:1.55}
+
+/* ---- usporedba postupaka ---- */
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{
+  font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink);
+}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.cmp{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:10px 26px;padding:15px;align-items:center}
+@media (max-width:640px){.cmp{grid-template-columns:1fr}}
+.cmp svg{width:100%;height:auto;display:block;background:var(--paper);border:1px solid var(--rule);border-radius:6px}
+.cmp .ct h4{margin:0 0 6px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.cmp .ct p{margin:0 0 .7em;font-size:14.4px;line-height:1.6}
+.cmp .ct .ex{font-size:13px;color:var(--body);margin:0}
+
+/* ---- stepenasti učinak ---- */
+.step-bar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.step-bar input[type=range]{flex:1 1 190px;accent-color:var(--teal);min-width:150px}
+.step-bar .val{font-size:13px;font-weight:600;color:var(--teal);font-variant-numeric:tabular-nums;min-width:8.5em}
+.step-out{padding:14px 16px;border-top:1px solid var(--rule);font-size:14.2px;line-height:1.6;color:var(--ink);background:var(--paper)}
+.step-out b{color:var(--teal)}
+
+/* ---- vremenska crta ---- */
+.tl-wrap{background:var(--paper);padding:6px 0}
+svg.tl{display:block;width:100%;height:auto}
+.tlbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.tlbar input[type=range]{flex:1 1 180px;accent-color:var(--teal);min-width:140px}
+.btn{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;padding:7px 13px;cursor:pointer;
+}
+.btn:hover{border-color:var(--cyan);color:var(--teal)}
+.card{border-top:1px solid var(--rule);padding:18px 17px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 24px;background:var(--paper)}
+.card .yr{grid-row:1/span 3;font-size:34px;font-weight:700;color:var(--teal);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.card .era{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--body)}
+.card .ttl{font-size:18px;font-weight:700;letter-spacing:-.015em;line-height:1.3;margin:3px 0 6px}
+.card .txt{font-size:14.6px;line-height:1.6;margin:0;max-width:64ch;color:var(--ink)}
+@media (max-width:540px){.card{grid-template-columns:1fr}.card .yr{grid-row:auto;font-size:28px}}
+
+/* ---- primjene ---- */
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:26px 0}
+.app{border:1px solid var(--rule);border-radius:8px;padding:16px 17px;background:var(--soft)}
+.app h4{margin:0 0 7px;font-size:15.5px;font-weight:700;letter-spacing:-.012em;display:flex;align-items:center;gap:9px}
+.app h4 svg{width:19px;height:19px;stroke:var(--cyan);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.app p{margin:0;font-size:13.6px;line-height:1.6;color:var(--body)}
+
+/* ---- procjena znanja ---- */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:22px}
+.q{background:var(--soft);border:1px solid var(--rule);border-radius:8px;padding:17px;display:flex;flex-direction:column}
+.q .num{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--body)}
+.q .prompt{font-size:15.4px;line-height:1.45;margin:6px 0 13px;font-weight:600}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.opt{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rule);border-radius:5px;padding:9px 11px;cursor:pointer;font-size:14.4px;line-height:1.4;background:var(--paper)}
+.opt:hover{border-color:var(--cyan)}
+.opt input{margin:4px 0 0;accent-color:var(--teal);flex-shrink:0}
+.opt.correct{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.opt.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.opt.locked{cursor:default}
+.opt.locked:hover{border-color:var(--rule)}
+.opt.locked.correct:hover{border-color:var(--ok)}
+.opt.locked.wrong:hover{border-color:var(--bad)}
+.fb{font-size:13.8px;line-height:1.55;margin-top:auto;padding-top:11px;border-top:1px solid var(--rule);color:var(--body)}
+.fb b{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.fb.ok b{color:var(--ok)} .fb.no b{color:var(--bad)} .fb[hidden]{display:none}
+.score{font-size:12.5px;color:var(--body);font-variant-numeric:tabular-nums;margin-left:auto}
+
+/* ---- kretanje ---- */
+.nav{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;margin:54px 0 0;padding-top:24px;border-top:1px solid var(--rule)}
+.nav a,.nav span{
+  display:block;border:1px solid var(--rule);border-radius:8px;padding:13px 17px;
+  text-decoration:none;color:var(--ink);min-width:min(100%,250px);flex:1 1 250px;
+}
+.nav a:hover{border-color:var(--cyan)}
+.nav .lb{display:block;font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--body);margin-bottom:3px}
+.nav .tt{font-size:15px;font-weight:600;letter-spacing:-.012em;line-height:1.35}
+.nav .nx{text-align:right}
+.nav span.soon{opacity:.6}
+.nav span.soon .tt{color:var(--body)}
+
+/* ============ PODNOŽJE ============ */
+.sf{border-top:1px solid var(--rule);margin-top:50px}
+.sf-in{
+  max-width:1120px;margin:0 auto;padding:24px clamp(20px,6vw,120px);
+  display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between;
+  font-size:12.5px;color:var(--body);
+}
+.sf-in .brand{font-weight:700;letter-spacing:.17em;color:var(--teal)}
+.sf-in .brand i{color:var(--cyan);font-style:normal}
+
+/* ============ ALATNA TRAKA ============ */
+#ftq-canvas{position:fixed;inset:0;z-index:40;pointer-events:none;touch-action:none}
+#ftq-canvas.on{pointer-events:auto;cursor:crosshair}
+#ftq-bar{
+  position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:60;
+  display:flex;flex-direction:column;gap:3px;
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;
+  padding:5px;box-shadow:0 2px 16px rgba(16,57,74,.18);
+}
+#ftq-bar hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:auto}
+.tb{
+  width:38px;height:34px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;border-radius:4px;
+  color:var(--body);cursor:pointer;padding:0;
+  font-family:"IBM Plex Sans",sans-serif;font-size:12px;font-weight:700;
+}
+.tb:hover{color:var(--teal);border-color:var(--rule)}
+.tb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.tb svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#ftq-colors{display:none;flex-direction:column;gap:3px;padding-top:3px;border-top:1px solid var(--rule);margin-top:3px}
+#ftq-colors.show{display:flex}
+.sw{width:38px;height:20px;border:1px solid var(--rule);border-radius:4px;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:-4px}
+@media (max-width:680px){#ftq-bar{right:8px;padding:4px}.tb{width:33px;height:30px}.tb svg{width:17px;height:17px}.sw{width:33px;height:17px}}
+@media print{#ftq-bar,.topbar{display:none}}
+
+/* ============ POSEBNO ZA OVU STRANICU ============ */
+.shema{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:0}
+@media (max-width:820px){.shema{grid-template-columns:1fr}}
+.shema-l{padding:16px;background:var(--paper);border-right:1px solid var(--rule)}
+@media (max-width:820px){.shema-l{border-right:0;border-bottom:1px solid var(--rule)}}
+.shema-l svg{width:100%;height:auto;display:block}
+.hot{cursor:pointer}
+.hot circle.tocka{fill:var(--paper);stroke:var(--teal);stroke-width:2}
+.hot text{font-family:"IBM Plex Sans",sans-serif;font-size:11px;font-weight:700;fill:var(--teal);text-anchor:middle;dominant-baseline:central}
+.hot[aria-pressed="true"] circle.tocka{fill:var(--teal);stroke:var(--teal)}
+.hot[aria-pressed="true"] text{fill:#fff}
+.hot:hover circle.tocka{stroke:var(--cyan)}
+.shema-d{padding:18px 17px;background:var(--paper)}
+.shema-d .br{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
+.shema-d h4{margin:5px 0 8px;font-size:18px;font-weight:700;letter-spacing:-.015em}
+.shema-d p{margin:0 0 .8em;font-size:14.4px;line-height:1.6}
+.shema-d p:last-child{margin-bottom:0}
+.shema-d .uloga{font-size:13.4px;color:var(--body);border-top:1px solid var(--rule);padding-top:10px;margin-top:12px}
+
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink)}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.izv{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:12px 26px;padding:15px;align-items:center}
+@media (max-width:680px){.izv{grid-template-columns:1fr}}
+.izv svg{width:100%;height:auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:block}
+.izv .ct h4{margin:0 0 7px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.izv .ct p{margin:0 0 .8em;font-size:14.4px;line-height:1.6}
+.izv .ct dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 16px;margin:0}
+.izv .ct dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.izv .ct dd{margin:0;font-size:13.8px;line-height:1.5}
+
+.koraci{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.korak{flex:1 1 118px;min-width:112px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);
+  padding:11px 10px;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink)}
+.korak:hover{border-color:var(--cyan)}
+.korak[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.korak .br{font-size:10.5px;font-weight:700;letter-spacing:.12em;opacity:.7}
+.korak .im{display:block;font-size:13px;font-weight:600;line-height:1.28;margin-top:3px}
+
+.greske{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin:24px 0}
+.gr{border:1px solid var(--rule);border-radius:8px;background:var(--soft);padding:16px 17px}
+.gr h4{margin:0 0 8px;font-size:15.5px;font-weight:700;letter-spacing:-.012em}
+.gr dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-top:9px}
+.gr dd{margin:2px 0 0;font-size:13.8px;line-height:1.56;color:var(--body)}
+.gr dl{margin:0}
+
+.isp{display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:12px 26px;padding:16px;align-items:center}
+@media (max-width:660px){.isp{grid-template-columns:1fr}}
+.isp svg{width:100%;height:auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:block}
+.isp dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;margin:0 0 12px}
+.isp dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.isp dd{margin:0;font-size:15px;font-variant-numeric:tabular-nums}
+.isp p{margin:0;font-size:14.2px;line-height:1.6;color:var(--body)}
+.ibar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);background:var(--paper);flex-wrap:wrap}
+.ibar input[type=range]{flex:1 1 200px;accent-color:var(--teal);min-width:150px}
+.ibar .val{font-size:13px;font-weight:600;color:var(--teal);min-width:7em;font-variant-numeric:tabular-nums}
+
+.pop{border:1px solid var(--rule);border-radius:8px;background:var(--soft);overflow:hidden;margin:16px 0}
+.pop .st{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.pop .st:last-child{border-bottom:0}
+.pop .kv-box{flex:0 0 auto;width:21px;height:21px;border:2px solid var(--rule);border-radius:5px;background:var(--paper);
+  cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.pop .kv-box svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.pop .kv-box[aria-pressed="true"]{background:var(--teal);border-color:var(--teal)}
+.pop .kv-box[aria-pressed="true"] svg{opacity:1}
+.pop .tx{min-width:0}
+.pop .tx b{display:block;font-size:14.6px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.pop .tx span{font-size:13.6px;line-height:1.6;color:var(--body)}
+.pop .nog{display:flex;gap:13px;align-items:center;padding:12px 16px;background:var(--soft);flex-wrap:wrap}
+.pop .nog .os{flex:1 1 160px;height:8px;border-radius:99px;background:var(--rule);overflow:hidden;min-width:120px}
+.pop .nog .os i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:width .2s}
+.pop .nog .tx2{font-size:12.8px;font-weight:600;color:var(--teal);white-space:nowrap}
+.pop .nog button{font-family:inherit;font-size:12.3px;font-weight:600;color:var(--body);background:none;
+  border:1px solid var(--rule);border-radius:5px;padding:5px 12px;cursor:pointer}
+.pop .nog button:hover{border-color:var(--cyan);color:var(--teal)}
+
+.vaga{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:0}
+@media (max-width:820px){.vaga{grid-template-columns:1fr}}
+.vaga-l{padding:16px;background:var(--paper);border-right:1px solid var(--rule)}
+@media (max-width:820px){.vaga-l{border-right:0;border-bottom:1px solid var(--rule)}}
+.vaga-l svg{width:100%;height:auto;display:block}
+.vaga-d{padding:16px 18px;background:var(--soft);min-width:0}
+.vaga-d h4{margin:0 0 7px;font-size:16.5px;font-weight:700;color:var(--ink);letter-spacing:-.015em}
+.vaga-d p{margin:0 0 .75em;font-size:14.2px;line-height:1.62;color:var(--body)}
+.vaga-d dl{margin:0;display:grid;grid-template-columns:auto;gap:2px 0}
+.vaga-d dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-top:9px}
+.vaga-d dd{margin:0;font-size:13.6px;line-height:1.58;color:var(--body)}
+.mjerila{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:0;border-top:1px solid var(--rule)}
+.mj{padding:14px 16px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);background:var(--paper)}
+.mj:last-child{border-right:0}
+.mj b{display:block;font-size:14.2px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.mj span{display:block;font-size:13.2px;line-height:1.55;color:var(--body)}
+.mj i{display:block;font-style:normal;font-size:11.6px;font-weight:600;color:var(--teal);margin-top:6px;letter-spacing:.02em}
+
+.izraz{border:1px solid var(--rule);border-radius:8px;background:var(--soft);padding:16px 18px;margin:18px 0}
+.izraz .lb{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);
+  display:block;margin-bottom:8px}
+.izraz p{margin:0 0 .55em;font-size:15.4px;line-height:1.7;color:var(--ink)}
+.izraz p:last-child{margin-bottom:0}
+.izraz b{font-weight:700}
+.izraz .np{font-size:13.4px;color:var(--body);line-height:1.6;margin-top:10px}
+</style>
+</head>
+<body>
+
+<canvas id="ftq-canvas"></canvas>
+
+<div id="ftq-bar" role="toolbar" aria-label="Alati">
+  <button class="tb" id="t-pen"   type="button" aria-pressed="false" title="Olovka"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 10-10a2.1 2.1 0 0 0-3-3L5 16l-1 4z"/></svg></button>
+  <button class="tb" id="t-mark"  type="button" aria-pressed="false" title="Marker"><svg viewBox="0 0 24 24"><path d="M5 18h14"/><path d="M8 14l7-8a2 2 0 0 1 3 3l-7 8H8v-3z"/></svg></button>
+  <button class="tb" id="t-erase" type="button" aria-pressed="false" title="Gumica"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M14 4l6 6-8 8H7l-3-3z"/></svg></button>
+  <button class="tb" id="t-board" type="button" aria-pressed="false" title="Ploča"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M9 20l3-3 3 3"/></svg></button>
+  <button class="tb" id="t-color" type="button" aria-pressed="false" title="Boja"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg></button>
+  <button class="tb" id="t-undo"  type="button" title="Poništi"><svg viewBox="0 0 24 24"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 0 10h-3"/></svg></button>
+  <button class="tb" id="t-clear" type="button" title="Obriši sve"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></button>
+  <hr>
+  <button class="tb" id="t-minus" type="button" title="Smanji slova">A&minus;</button>
+  <button class="tb" id="t-plus"  type="button" title="Povećaj slova">A+</button>
+  <button class="tb" id="t-dys"   type="button" aria-pressed="false" title="Pomoć s disleksijom">Dy</button>
+  <button class="tb" id="t-theme" type="button" title="Svijetla / tamna tema"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 5a7 7 0 0 1 0 14z" fill="currentColor" stroke="none"/></svg></button>
+  <div id="ftq-colors"></div>
+</div>
+
+<nav class="topbar" aria-label="Putanja">
+  <a class="tbi menu" href="../index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Izbornik</span></a>
+  <a class="tbi" href="index.html"><span class="lb">Knjiga</span><span class="vl">Osnove mobilnih robota</span></a>
+  <a class="tbi crumb" href="m4-percepcija.html"><span class="lb">Modul</span><span class="vl">Percepcija<span class="x">&#10005;</span></span></a>
+  <div class="tbi crumb"><span class="lb">Odlomak</span><span class="vl">Osnove računalnog vida<span class="x">&#10005;</span></span></div>
+</nav>
+
+<header class="hero">
+  <div class="hero-art" aria-hidden="true">
+    <svg viewBox="0 0 420 340" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="#6FD9E2" stroke-width="1.6" opacity=".6">
+        <rect x="132" y="132" width="130" height="92" rx="9"/>
+        <circle cx="197" cy="178" r="30"/><circle cx="197" cy="178" r="12"/>
+        <path d="M162 132 l14 -22 h42 l14 22"/>
+      </g>
+      <g fill="none" stroke="#6FD9E2" stroke-width="1.2" opacity=".35">
+        <path d="M197 178 L52 84 M197 178 L342 84"/>
+        <path d="M52 84 h290" stroke-dasharray="5 6"/>
+      </g>
+      <g fill="none" stroke="#6FD9E2" stroke-width="1" opacity=".28">
+        <path d="M92 262 h210 M92 262 v26 M302 262 v26"/>
+        <path d="M120 288 h8 M150 288 h8 M180 288 h8 M210 288 h8 M240 288 h8 M270 288 h8"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-in">
+    <div class="eyebrow">
+      <b>FORTRONI<i>Q</i></b><span>Osnove mobilnih robota</span><span>Modul 4</span><span>Jedinica 4.2</span>
+    </div>
+    <h1>Osnove računalnog vida</h1>
+    <p class="lede">Kamera je jedino osjetilo koje ne daje broj nego polje brojeva. Iz njega tek treba izvući
+    odgovor &mdash; a prije toga izračunati hoće li ono što se traži uopće biti vidljivo.</p>
+    </div>
+
+  <div class="goals">
+    <div class="goals-h">
+      <svg viewBox="0 0 46 32" aria-hidden="true"><path d="M4 17l8 9L28 6"/><path d="M20 17l8 9L44 6"/></svg>
+      <span>Moći ću:</span>
+    </div>
+    <ul id="goals"></ul>
+  </div>
+</header>
+<div class="cyanline"></div>
+
+<div class="wrap">
+
+  <!-- ===================== 1 ===================== -->
+  <section id="s1">
+    <div class="sh"><span class="n">1</span><h2>Od svjetla do broja</h2></div>
+
+    <p>Svako drugo osjetilo daje jednu vrijednost: udaljenost, kut, ubrzanje. Kamera daje
+    <strong>polje</strong> &mdash; nekoliko stotina tisuća do nekoliko milijuna brojeva, i to nekoliko
+    desetaka puta u sekundi. U tome je i njezina snaga i njezina teškoća.</p>
+
+    <p>Put od prizora do polja ima četiri koraka. <strong>Objektiv</strong> sabire svjetlo i projicira sliku
+    na osjetnik. <strong>Osjetnik</strong> je mreža sićušnih elemenata, od kojih svaki tijekom osvjetljenja
+    skuplja naboj razmjeran količini svjetla koja je na njega pala. <strong>Pretvornik</strong> taj naboj
+    pretvara u broj, obično između 0 i 255. <strong>Obrada</strong> tu sirovu mrežu složi u sliku &mdash;
+    ispravi boje, izoštri, sažme.</p>
+
+    <p>Rezultat je <strong>matrica</strong>: kod crno-bijele slike jedan broj po slikovnome elementu, kod
+    slike u boji tri &mdash; za crvenu, zelenu i plavu. Slika od 1280 × 720 elemenata u boji zauzima gotovo
+    tri milijuna brojeva po snimci.</p>
+
+    <div class="note">
+      <b>Kamera ne vidi predmete</b>
+      <p>Ovo je najvažnija rečenica cijele jedinice. Kamera ne vidi paletu, čovjeka ni vrata &mdash; ona daje
+      polje brojeva koji opisuju svjetlinu. Da bi iz njega izašla riječ „paleta&ldquo;, netko mora napisati
+      postupak koji te brojeve pretvara u odluku. Sav je računalni vid u tome koraku, i zato je težak: prizor
+      koji čovjek prepozna u desetinki sekunde za računalo je tablica brojeva bez ikakva značenja.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section id="s2">
+    <div class="sh"><span class="n">2</span><h2>Vidno polje i veličina piksela</h2></div>
+
+    <p>Prije nego što se kupi ijedna kamera, radi se jedan račun: <strong>koliko je velik dio prizora koji
+    pada na jedan slikovni element</strong>. Iz njega izlazi odgovor na pitanje hoće li se ono što se traži
+    uopće vidjeti.</p>
+
+    <p>Kamera ima <strong>vidno polje</strong> &mdash; kut unutar kojega vidi. Na zadanoj udaljenosti taj se
+    kut pretvara u širinu prizora:</p>
+
+    <div class="izraz">
+      <span class="lb">Širina prizora na udaljenosti</span>
+      <p><b>&Scaron; = 2 &middot; d &middot; tg ( &phi; / 2 )</b></p>
+      <p class="np">Gdje je <em>&phi;</em> vodoravno vidno polje, a <em>d</em> udaljenost. Isti izraz kao za
+      snop ultrazvučnoga osjetila &mdash; jer je i ovo stožac.</p>
+    </div>
+
+    <div class="izraz">
+      <span class="lb">Veličina piksela na toj udaljenosti</span>
+      <p><b>p = &Scaron; / n</b></p>
+      <p class="np">Gdje je <em>n</em> broj slikovnih elemenata u retku. Rezultat govori koliki komad
+      stvarnosti pokriva jedan element slike &mdash; i time koliko sitno kamera uopće može razlikovati.</p>
+    </div>
+
+    <p>Za pouzdano prepoznavanje nekoga detalja pravilo je da preko njega mora pasti <strong>najmanje tri do
+    pet slikovnih elemenata</strong>. Jedan ili dva nisu dovoljni: šum, kompresija i pomak kamere progutaju
+    takav detalj.</p>
+
+    <p class="sd">Povuci klizače i gledaj što se još razlikuje.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Vidno polje, veličina piksela i najmanji detalj</div>
+        <div class="s" id="vpos">&nbsp;</div>
+      </div>
+      <div class="isp">
+        <svg id="vsvg" viewBox="0 0 300 220" role="img" aria-label="Vidno polje kamere i veličina piksela na udaljenosti"></svg>
+        <div>
+          <dl>
+            <dt>Širina prizora</dt><dd id="vs">&nbsp;</dd>
+            <dt>Visina prizora</dt><dd id="vv">&nbsp;</dd>
+            <dt>Veličina piksela</dt><dd id="vp">&nbsp;</dd>
+            <dt>Najmanji pouzdan detalj</dt><dd id="vd">&nbsp;</dd>
+            <dt>Vidi li se zadani detalj</dt><dd id="vz">&nbsp;</dd>
+          </dl>
+          <p id="vx">&nbsp;</p>
+        </div>
+      </div>
+      <div class="ibar">
+        <span class="val" id="vvd">Udaljenost: 3,0 m</span>
+        <input type="range" id="vdrange" min="2" max="200" step="2" value="30" aria-label="Udaljenost do prizora">
+      </div>
+      <div class="ibar">
+        <span class="val" id="vvf">Vodoravno vidno polje: 60&deg;</span>
+        <input type="range" id="vfrange" min="20" max="150" step="5" value="60" aria-label="Vodoravno vidno polje">
+      </div>
+      <div class="ibar">
+        <span class="val" id="vvn">Razlučivost: 1280 × 720</span>
+        <input type="range" id="vnrange" min="0" max="4" step="1" value="1" aria-label="Razlučivost kamere">
+      </div>
+      <div class="ibar">
+        <span class="val" id="vvo">Veličina detalja: 50 mm</span>
+        <input type="range" id="vorange" min="2" max="500" step="2" value="50" aria-label="Veličina detalja koji se traži">
+      </div>
+    </div>
+
+    <p>Račun otkriva dvije stvari koje se u katalozima ne vide. Prva: <strong>šire vidno polje znači lošiju
+    razlučivost</strong>. Ista kamera sa 120 stupnjeva vidi dvostruko širi prizor nego sa 60, ali svaki
+    slikovni element pokriva dvostruko veći komad stvarnosti. Za nadzor okoline šire je bolje, za
+    prepoznavanje uže.</p>
+
+    <p>Druga: <strong>broj slikovnih elemenata pomaže manje nego što se očekuje</strong>. Prelazak s
+    1280 × 720 na 3840 × 2160 utrostručuje razlučivost, ali i količinu podataka udevetorostručuje. Kod
+    vozila koje mora odlučivati dvadeset puta u sekundi to je često nedopustivo.</p>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section id="s3">
+    <div class="sh"><span class="n">3</span><h2>Što se sa slikom radi</h2></div>
+
+    <p>Obrada slike ide od jednostavnoga prema složenomu, i u robotici se rijetko ide dalje nego što zadatak
+    traži. Svaki korak smanjuje količinu podataka i povećava značenje.</p>
+
+    <p class="sd">Odaberi postupak.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Postupci obrade slike</div>
+        <div class="s" id="opos">&nbsp;</div>
+      </div>
+      <div class="seg" id="oseg"></div>
+      <div class="cmp">
+        <svg id="osvg" viewBox="0 0 300 210" role="img" aria-label="Prikaz odabranoga postupka obrade slike"></svg>
+        <div class="ct">
+          <h4 id="oh">&nbsp;</h4>
+          <p id="op">&nbsp;</p>
+          <p class="ex" id="ox">&nbsp;</p>
+        </div>
+      </div>
+    </div>
+
+    <p>U mobilnoj robotici najčešće se stane na <strong>trećemu ili četvrtome koraku</strong>. Praćenje crte na
+    podu, prepoznavanje obojene oznake ili čitanje kvadratne oznake na polici ne trebaju ništa složenije, a
+    rade pouzdano i na jeftinome računalu. Prepoznavanje predmeta učenjem dolazi tek kad se doista mora
+    razlikovati <em>što</em> je pred robotom, a ne samo da nešto jest.</p>
+  </section>
+
+  <!-- ===================== 4 ===================== -->
+  <section id="s4">
+    <div class="sh"><span class="n">4</span><h2>Oznake u prostoru</h2></div>
+
+    <p>Najkorisnija primjena vida u mobilnoj robotici nije prepoznavanje predmeta nego čitanje
+    <strong>oznaka koje je čovjek namjerno postavio</strong>. Kvadratna oznaka s crno-bijelim uzorkom, nalik
+    pojednostavnjenoj QR-oznaci, kameri daje odjednom tri stvari.</p>
+
+    <div class="mjerila">
+      <div class="mj">
+        <b>Identitet</b>
+        <span>Uzorak unutar oznake nosi broj. Robot iz slike očita da je pred oznakom broj 17, a iz tablice
+        zna gdje ta oznaka stoji u prostoru.</span>
+        <i>nekoliko stotina do tisuća različitih oznaka</i>
+      </div>
+      <div class="mj">
+        <b>Udaljenost</b>
+        <span>Stvarna veličina oznake je poznata. Iz toga koliko je velika na slici izravno izlazi udaljenost
+        &mdash; što je manja na slici, to je dalje.</span>
+        <i>točnost od nekoliko postotaka udaljenosti</i>
+      </div>
+      <div class="mj">
+        <b>Zakret</b>
+        <span>Kvadrat koji se gleda ukoso na slici je trapez. Iz oblika toga trapeza računa se pod kojim je
+        kutom kamera u odnosu na oznaku.</span>
+        <i>točnost od nekoliko stupnjeva</i>
+      </div>
+      <div class="mj">
+        <b>Cijena</b>
+        <span>Oznaka je list papira. Za prostor s pedeset oznaka trošak je zanemariv u odnosu na bilo koje
+        drugo osjetilo koje daje apsolutni položaj.</span>
+        <i>najpovoljniji izvor apsolutnoga položaja</i>
+      </div>
+    </div>
+
+    <p>Zato se oznake koriste posvuda gdje je prostor pod nadzorom: u skladištima, na proizvodnim linijama, u
+    zatvorenim ispitnim prostorima. Nedostatak im je što <strong>traže zahvat u prostor</strong> &mdash;
+    netko ih mora postaviti, izmjeriti i održavati čistima i neoštećenima.</p>
+
+    <p>Koliko daleko se oznaka može čitati, izlazi iz istoga računa iz drugoga odjeljka. Za pouzdano čitanje
+    uzorka unutar oznake treba oko <strong>deset slikovnih elemenata po polju uzorka</strong>, a uzorak ima
+    šest do osam polja po stranici &mdash; dakle oko šezdeset do osamdeset elemenata preko cijele oznake.</p>
+
+    <div class="note">
+      <b>Primjer</b>
+      <p>Oznaka stranice 15 cm, kamera 1280 × 720 s vidnim poljem od 60 stupnjeva. Na udaljenosti od 3 m širina
+      prizora je 3,46 m, pa je piksel velik 2,7 mm. Oznaka od 15 cm zauzima oko 55 slikovnih elemenata &mdash;
+      taman na granici pouzdanoga čitanja. Na 2 m zauzima 83 elementa i čita se sigurno; na 5 m samo 33 i
+      čitanje postaje nepouzdano. Ako se traži čitanje s pet metara, oznaka mora biti veća ili kamera uža.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 4b ===================== -->
+  <section id="s4b">
+    <div class="sh"><span class="n">5</span><h2>Dva zadatka koja vid rješava svaki dan</h2></div>
+
+    <p>U mobilnoj robotici vid najčešće radi dva posla, i oba se rješavaju postupcima s početka popisa iz
+    trećega odjeljka &mdash; bez učenja, bez velike računalne snage i posve pouzdano.</p>
+
+    <p><strong>Praćenje crte.</strong> Na podu je nacrtana ili zalijepljena crta. Kamera gleda pod ispred
+    vozila, slika se pretvori u sivu, postavi prag i u jednome se retku slike traži gdje crta leži. Razlika
+    između sredine crte i sredine slike je <strong>odstupanje</strong>, iz kojega regulator računa koliko
+    zakrenuti. Cijeli postupak stane u nekoliko desetaka redaka programa.</p>
+
+    <div class="izraz">
+      <span class="lb">Odstupanje od crte</span>
+      <p><b>e = ( x<sub>crte</sub> &minus; n / 2 ) &middot; p</b></p>
+      <p class="np">Gdje je <em>x</em><sub>crte</sub> položaj sredine crte u slikovnim elementima,
+      <em>n</em> broj elemenata u retku, a <em>p</em> veličina piksela na udaljenosti na kojoj kamera gleda
+      pod. Rezultat je odstupanje u milimetrima &mdash; podatak koji regulator iz jedinice 6.3 izravno
+      koristi.</p>
+    </div>
+
+    <p>Iz toga izraza vidi se i zašto se kamera za praćenje crte postavlja <strong>što bliže podu i što
+    okomitije</strong>: manja udaljenost znači manji piksel, a manji piksel finije odstupanje. Kamera koja
+    gleda daleko naprijed daje robotu više vremena za reakciju, ali grublju mjeru.</p>
+
+    <p><strong>Praćenje boje.</strong> Traži se predmet poznate boje &mdash; crvena kutija, zeleni znak,
+    žuta traka. Slika se ne pretvara u sivu nego se svaki element uspoređuje s traženim rasponom boje.
+    Rezultat je maska iz koje se računa gdje je predmet i koliko je velik, pa iz veličine i njegova
+    udaljenost.</p>
+
+    <p>Boja se pritom ne opisuje trima vrijednostima crvene, zelene i plave nego <strong>zasebno tonom,
+    zasićenošću i svjetlinom</strong>. Razlog je praktičan: kad se svjetlo promijeni, ton crvene ostaje
+    crven, a sve tri vrijednosti crvene, zelene i plave se pomaknu. Postupak koji radi s tonom podnosi
+    promjenu osvjetljenja mnogo bolje.</p>
+
+    <div class="note">
+      <b>Zašto to nije zastarjelo</b>
+      <p>U doba kad se o vidu govori gotovo isključivo kroz učenje modela, vrijedi zapamtiti da vozilo koje
+      prati crtu i traži obojenu oznaku radi <strong>dvadeset puta u sekundi na računalu od trideset
+      eura</strong>, bez ijednoga primjera za učenje i bez mreže. Kad zadatak dopušta da se prostor uredi
+      &mdash; nacrta crta, zalijepi oznaka &mdash; to je gotovo uvijek bolje rješenje od prepoznavanja
+      neuređenoga prizora.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section id="s5">
+    <div class="sh"><span class="n">6</span><h2>Gdje vid zakaže</h2></div>
+
+    <p>Kamera je pasivno osjetilo: prima svjetlo koje već postoji i nema nikakva nadzora nad njim. Odatle
+    dolaze gotovo svi njezini problemi.</p>
+
+    <div class="tscroll">
+      <table class="t">
+        <thead>
+          <tr><th>Uvjet</th><th>Što se dogodi</th><th>Kako se ublažava</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Premalo svjetla</td>
+            <td>slika je tamna i šumna; produljeno osvjetljenje zamuti sve što se giba</td>
+            <td>vlastita rasvjeta na vozilu, veći objektiv, osjetnik s većim elementima</td>
+          </tr>
+          <tr>
+            <td>Previše svjetla i odsjaji</td>
+            <td>dijelovi slike su bijeli bez ikakva sadržaja; sjaj poda briše crtu koja se prati</td>
+            <td>mat plohe, polarizacijski filtar, kamera postavljena pod kutom</td>
+          </tr>
+          <tr>
+            <td>Promjena osvjetljenja</td>
+            <td>prag postavljen ujutro popodne više ne razdvaja ništa</td>
+            <td>prag koji se računa iz same slike, a ne zadaje brojem</td>
+          </tr>
+          <tr>
+            <td>Gibanje</td>
+            <td>slika se zamuti, a između snimanja i odluke prođe vrijeme u kojemu je robot odmakao</td>
+            <td>kraće osvjetljenje, viši broj snimaka u sekundi, računanje s kašnjenjem</td>
+          </tr>
+          <tr>
+            <td>Sličnost prizora</td>
+            <td>dva hodnika izgledaju jednako, pa robot iz slike ne može razlikovati gdje je</td>
+            <td>oznake u prostoru ili spajanje s drugim osjetilima</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Zato se u pogonima kamera rijetko koristi kao <strong>jedino</strong> osjetilo za sigurnost. Za
+    zaustavljanje pred čovjekom koristi se laserski skener ili dodirna letvica &mdash; nešto što ne ovisi o
+    tome je li upaljeno svjetlo. Kamera radi ono što drugi ne mogu: govori <em>što</em> je pred robotom, ne
+    samo da nešto jest.</p>
+
+    <div class="note">
+      <b>Zaključak jedinice i modula</b>
+      <p>Kamera daje polje brojeva, ne predmete. Iz vidnoga polja i udaljenosti računa se širina prizora, iz nje
+      i broja slikovnih elemenata veličina piksela, a iz nje najmanji detalj koji se pouzdano razlikuje &mdash;
+      uz pravilo od tri do pet elemenata po detalju. Šire vidno polje uvijek znači lošiju razlučivost. Obrada
+      ide od pretvorbe u sivu sliku preko praga i rubova do prepoznavanja, a u robotici se najčešće stane rano.
+      Najkorisnija primjena su oznake u prostoru, koje daju identitet, udaljenost i zakret odjednom. Vid zakaže
+      na svjetlu koje se mijenja, pa se za sigurnost ne oslanja sam.</p>
+      <p>Time je percepcija zaokružena. Sljedeći modul uzima sve te brojeve i iz njih odgovara na prvo od triju
+      pitanja mobilnoga robota: <em>gdje sam?</em></p>
+    </div>
+  </section>
+
+  <!-- ===================== 6 ===================== -->
+  <section id="s6">
+    <div class="sh"><span class="n">7</span><h2>Procjena znanja</h2><span class="score" id="score">&nbsp;</span></div>
+    <p class="sd">Odgovor se zaključava nakon prvoga klika, uz objašnjenje zašto je točan.</p>
+    <div class="qgrid" id="qgrid"></div>
+  </section>
+
+  <nav class="nav" aria-label="Kretanje po modulu">
+    <a href="4-1-senzori.html">
+      <span class="lb">&larr; Prethodna jedinica</span>
+      <span class="tt">4.1. Senzori</span>
+    </a>
+    <a class="nx" href="m4-aktivnosti-za-samostalno-ucenje.html">
+      <span class="lb">Sljedeće &rarr;</span>
+      <span class="tt">Aktivnosti za samostalno učenje</span>
+    </a>
+  </nav>
+</div>
+
+<div class="sf">
+  <div class="sf-in">
+    <span class="brand">FORTRONI<i>Q</i></span>
+    <span>Osnove mobilnih robota &middot; Modul 4 &middot; Jedinica 4.2</span>
+    <span>&copy; <span id="yr">2026</span> ForTroniQ d.o.o. &middot; Sva prava pridržana</span>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+var y = $("yr"); if (y) y.textContent = new Date().getFullYear();
+
+/* ---------- ishodi jedinice ---------- */
+var GOALS = [
+ "objasniti put od svjetla do slikovnoga elementa u memoriji",
+ "izračunati veličinu piksela i najmanji uočljiv detalj na zadanoj udaljenosti",
+ "obrazložiti kada vid zakaže i čime se nadopunjuje"
+];
+var gul = $("goals");
+GOALS.forEach(function(g){
+  var li = document.createElement("li");
+  li.innerHTML = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.5l3.4 3.6L12 3.4"/></svg><span>' + g + '</span>';
+  gul.appendChild(li);
+});
+function zar(x, d){ return x.toFixed(d).replace(".", ","); }
+function brj(x){ return x.toFixed(1); }
+function tis(x){ return Math.round(x).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+var F = 'font-family="IBM Plex Sans, sans-serif"';
+function nat(x, y, t, s, boja){
+  return '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-size="' + (s || 11.5) +
+         '" fill="' + (boja || "var(--body)") + '" ' + F + '>' + t + '</text>';
+}
+
+/* ---------- vidno polje ---------- */
+var RAZ = [
+ {n:640,  v:480,  im:"640 × 480"},
+ {n:1280, v:720,  im:"1280 × 720"},
+ {n:1920, v:1080, im:"1920 × 1080"},
+ {n:2560, v:1440, im:"2560 × 1440"},
+ {n:3840, v:2160, im:"3840 × 2160"}
+];
+function crtajVid(){
+  var d = parseInt($("vdrange").value, 10) / 10;
+  var fi = parseInt($("vfrange").value, 10);
+  var ri = parseInt($("vnrange").value, 10);
+  var det = parseInt($("vorange").value, 10) / 1000;
+  var R = RAZ[ri];
+
+  $("vvd").textContent = "Udaljenost: " + zar(d, 1) + " m";
+  $("vvf").innerHTML = "Vodoravno vidno polje: " + fi + "°";
+  $("vvn").textContent = "Razlučivost: " + R.im;
+  $("vvo").textContent = "Veličina detalja: " + Math.round(det * 1000) + " mm";
+
+  var sir = 2 * d * Math.tan(fi * Math.PI / 360);
+  var vis = sir * R.v / R.n;
+  var px = sir / R.n;
+  var najm = px * 4;                       /* pravilo: 3 – 5 elemenata, uzimamo 4 */
+  var elemenata = det / px;
+
+  $("vs").textContent = zar(sir, 2) + " m";
+  $("vv").textContent = zar(vis, 2) + " m";
+  $("vp").textContent = zar(px * 1000, 2) + " mm";
+  $("vd").textContent = zar(najm * 1000, 1) + " mm (uz četiri elementa po detalju)";
+  $("vz").textContent = zar(elemenata, 1) + " elemenata — " +
+    (elemenata >= 5 ? "sigurno" : (elemenata >= 3 ? "na granici" : "premalo"));
+
+  var x;
+  if (elemenata < 3){
+    var blize = d * elemenata / 3;
+    x = "Detalj pokriva manje od tri elementa, pa ga šum i sažimanje progutaju. Treba prići bliže — na oko " +
+        zar(blize, 1) + " m — ili uzeti uže vidno polje ili više elemenata.";
+  } else if (elemenata > 40){
+    x = "Detalj pokriva mnogo više elemenata nego što treba. Vidno polje bi se moglo proširiti ili kamera " +
+        "odmaknuti, čime se dobiva pregled bez gubitka prepoznavanja.";
+  } else {
+    x = "Detalj se pouzdano razlikuje. Zapamti pravilo: preko detalja mora pasti najmanje tri do pet " +
+        "slikovnih elemenata, a ne jedan.";
+  }
+  x += " Ukupno " + tis(R.n * R.v) + " elemenata po snimci.";
+  $("vx").textContent = x;
+  $("vpos").textContent = zar(px * 1000, 2) + " mm/px";
+
+  /* crtež stošca */
+  var s = '<rect x="12" y="16" width="276" height="166" rx="6" fill="none" stroke="var(--rule)" stroke-width="1.3"/>';
+  var ox = 44, oy = 100;
+  var rad = fi * Math.PI / 360;
+  var dug = 200;
+  var x1 = ox + Math.cos(-rad) * dug, y1 = oy + Math.sin(-rad) * dug;
+  var x2 = ox + Math.cos(rad) * dug, y2 = oy + Math.sin(rad) * dug;
+  s += '<path d="M' + ox + ' ' + oy + ' L' + brj(x1) + ' ' + brj(y1) + ' L' + brj(x2) + ' ' + brj(y2) +
+       ' Z" fill="var(--cyan)" fill-opacity=".14" stroke="var(--teal)" stroke-width="1.5"/>';
+  /* kamera */
+  s += '<rect x="' + (ox - 22) + '" y="' + (oy - 13) + '" width="24" height="26" rx="4" fill="var(--paper)" stroke="var(--teal)" stroke-width="2"/>';
+  s += '<circle cx="' + (ox - 5) + '" cy="' + oy + '" r="6" fill="none" stroke="var(--teal)" stroke-width="1.8"/>';
+  /* ravnina prizora */
+  var pxpos = 232;
+  var polusir = Math.tan(rad) * (pxpos - ox);
+  var gore = Math.max(24, oy - polusir), dolje = Math.min(176, oy + polusir);
+  s += '<path d="M' + pxpos + ' ' + brj(gore) + ' V' + brj(dolje) + '" stroke="var(--body)" stroke-width="3"/>';
+  s += '<path d="M' + ox + ' ' + oy + ' H' + pxpos + '" stroke="var(--teal)" stroke-width="1.2" stroke-dasharray="4 4"/>';
+  s += nat(brj((ox + pxpos) / 2), oy - 8, zar(d, 1) + " m", 10, "var(--teal)");
+  s += nat(pxpos + 28, brj(gore) - 6, zar(sir, 2) + " m", 10, "var(--body)");
+  /* detalj */
+  var visDet = Math.max(2, det / sir * (dolje - gore));
+  s += '<rect x="' + (pxpos - 5) + '" y="' + brj(oy - visDet / 2) + '" width="10" height="' + brj(visDet) +
+       '" fill="' + (elemenata >= 3 ? "var(--teal)" : "#B4553F") + '"/>';
+  s += nat(150, 200, "detalj " + Math.round(det * 1000) + " mm pokriva " + zar(elemenata, 1) + " elemenata",
+           10.5, elemenata >= 3 ? "var(--teal)" : "#B4553F");
+  $("vsvg").innerHTML = s;
+}
+["vdrange", "vfrange", "vnrange", "vorange"].forEach(function(id){ $(id).addEventListener("input", crtajVid); });
+crtajVid();
+
+/* ---------- obrada slike ---------- */
+function mreza(vals, boje){
+  var s = "";
+  for (var r = 0; r < 8; r++){
+    for (var c = 0; c < 12; c++){
+      var v = vals(r, c);
+      s += '<rect x="' + (60 + c * 15) + '" y="' + (36 + r * 15) + '" width="15" height="15" fill="' +
+           boje(v) + '"/>';
+    }
+  }
+  s += '<rect x="60" y="36" width="180" height="120" fill="none" stroke="var(--rule)" stroke-width="1.4"/>';
+  return s;
+}
+function krug(r, c){
+  var dx = c - 5.5, dy = r - 3.5;
+  return Math.sqrt(dx * dx + dy * dy) < 2.6 ? 1 : 0;
+}
+function siva(v){ var t = Math.round(230 - v * 150); return "rgb(" + t + "," + t + "," + t + ")"; }
+var OBR = [
+ {k:"Siva slika",
+  art: mreza(function(r, c){ return krug(r, c) ? 0.85 + 0.1 * Math.sin(r * c) : 0.15 + 0.08 * Math.cos(r + c); }, siva),
+  h:"Pretvorba u sivu sliku",
+  p:"Tri broja po elementu — crvena, zelena i plava — svode se na jedan, svjetlinu. Količina podataka pada na trećinu, a za većinu se zadataka ništa ne gubi.",
+  x:"Prvi korak gotovo svake obrade. Boja se zadržava samo kad je sama boja podatak — pri praćenju obojene crte ili traženju obojene oznake."},
+ {k:"Prag",
+  art: mreza(function(r, c){ return krug(r, c) ? 1 : 0; },
+             function(v){ return v ? "#10394A" : "#FFFFFF"; }),
+  h:"Postavljanje praga",
+  p:"Svaki element koji je svjetliji od zadane vrijednosti postaje bijel, svaki tamniji crn. Iz slike ostaju samo oblici.",
+  x:"Najjednostavniji i najbrži postupak, ali i najosjetljiviji na promjenu osvjetljenja. Prag koji se računa iz same slike podnosi promjene, zadani broj ne podnosi."},
+ {k:"Rubovi",
+  art: mreza(function(r, c){
+         var u = krug(r, c);
+         var susjed = krug(r - 1, c) + krug(r + 1, c) + krug(r, c - 1) + krug(r, c + 1);
+         return (u && susjed < 4) || (!u && susjed > 0) ? 1 : 0;
+       }, function(v){ return v ? "#17656E" : "#F3F7F8"; }),
+  h:"Pronalaženje rubova",
+  p:"Traže se mjesta na kojima se svjetlina naglo mijenja. Ostaju obrisi, a sve ravnomjerno osvijetljeno nestaje.",
+  x:"Manje osjetljivo na ukupnu razinu svjetla od praga, jer gleda razliku između susjeda, a ne apsolutnu vrijednost."},
+ {k:"Oblici i oznake",
+  art: mreza(function(r, c){ return krug(r, c) ? 1 : 0; },
+             function(v){ return v ? "#2ECAD4" : "#F3F7F8"; }) +
+       '<rect x="112" y="70" width="76" height="52" fill="none" stroke="#B4553F" stroke-width="2.4"/>' +
+       '<circle cx="150" cy="96" r="4" fill="#B4553F"/>',
+  h:"Traženje oblika i oznaka",
+  p:"U slici se traže poznati oblici: pravac, kružnica, kvadrat s uzorkom. Rezultat više nije slika nego nekoliko brojeva — gdje je oblik i koliko je velik.",
+  x:"Ovdje slika prestaje biti slika i postaje mjerenje. Kod kvadratnih oznaka iz jednoga se oblika dobivaju identitet, udaljenost i zakret."},
+ {k:"Prepoznavanje učenjem",
+  art: mreza(function(r, c){ return krug(r, c) ? 0.9 : 0.12; }, siva) +
+       '<rect x="104" y="62" width="92" height="68" fill="none" stroke="#2ECAD4" stroke-width="2.6"/>' +
+       '<rect x="104" y="46" width="92" height="16" fill="#2ECAD4" fill-opacity=".8"/>' +
+       '<text x="150" y="58" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="IBM Plex Sans, sans-serif" font-weight="600">paleta 0,92</text>',
+  h:"Prepoznavanje predmeta učenjem",
+  p:"Model naučen na tisućama primjera javlja što je na slici i gdje, uz procjenu pouzdanosti. Ne traži se unaprijed zadani oblik nego naučeni.",
+  x:"Jedini postupak koji odgovara na pitanje što je pred robotom. Traži mnogo računalne snage i podatke za učenje, a griješi na prizorima kakve nije vidio."}
+];
+var oseg = $("oseg"), oEls = [];
+OBR.forEach(function(v, i){
+  var b = document.createElement("button");
+  b.className = "segb"; b.type = "button"; b.setAttribute("aria-pressed", "false");
+  b.textContent = v.k;
+  b.addEventListener("click", function(){ selO(i); });
+  oseg.appendChild(b); oEls.push(b);
+});
+var curO = -1;
+function selO(i){
+  if (i === curO) return;
+  curO = i;
+  oEls.forEach(function(b, k){ b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+  var v = OBR[i];
+  $("osvg").innerHTML = v.art + nat(150, 180, "prikaz je shematski, 12 × 8 elemenata", 9.5);
+  $("oh").textContent = v.h; $("op").textContent = v.p; $("ox").textContent = v.x;
+  $("opos").textContent = (i + 1) + " / " + OBR.length;
+}
+selO(0);
+
+/* ---------- procjena znanja ---------- */
+var QS = [
+ {p:"Što kamera zapravo daje upravljačkoj jedinici?",
+  o:["Popis predmeta","Polje brojeva koji opisuju svjetlinu","Udaljenost do zapreke","Kut zakreta"],
+  c:1,
+  e:"Da bi iz toga polja izašla riječ „paleta“, netko mora napisati postupak koji brojeve pretvara u odluku. Sav je računalni vid u tome koraku."},
+ {p:"Kamera ima vidno polje 60° i gleda plohu na 3 m. Kolika je širina prizora?",
+  o:["Oko 1,7 m","Oko 3,5 m","Oko 5,2 m","Oko 6,0 m"],
+  c:1,
+  e:"Š = 2 · d · tg(φ/2) = 2 · 3 · tg 30° = 6 · 0,577 ≈ 3,46 m."},
+ {p:"Za isti prizor i razlučivost 1280 elemenata u retku, koliki je jedan piksel?",
+  o:["Oko 0,27 mm","Oko 2,7 mm","Oko 27 mm","Oko 1,3 mm"],
+  c:1,
+  e:"p = Š / n = 3,46 / 1280 ≈ 0,0027 m, dakle 2,7 mm."},
+ {p:"Koliko slikovnih elemenata mora pasti preko detalja da bi se pouzdano razlikovao?",
+  o:["Jedan je dovoljan","Najmanje tri do pet","Najmanje sto","Nije važno"],
+  c:1,
+  e:"Jedan ili dva progutaju šum, sažimanje i pomak kamere. To je pravilo koje odlučuje o izboru kamere i udaljenosti."},
+ {p:"Što se događa kad se vidno polje proširi sa 60 na 120 stupnjeva?",
+  o:["Slika postaje oštrija","Prizor je širi, ali svaki element pokriva veći komad stvarnosti","Ništa se ne mijenja","Raste broj elemenata"],
+  c:1,
+  e:"Za nadzor okoline šire je bolje, za prepoznavanje uže. Razlučivost i pregled uvijek se razmjenjuju."},
+ {p:"Koji je prvi korak gotovo svake obrade slike?",
+  o:["Prepoznavanje predmeta","Pretvorba u sivu sliku","Traženje rubova","Sažimanje"],
+  c:1,
+  e:"Tri broja po elementu svode se na jedan, pa količina podataka pada na trećinu. Boja se zadržava samo kad je sama boja podatak."},
+ {p:"Zašto je prag osjetljiv na promjenu osvjetljenja?",
+  o:["Jer troši računalnu snagu","Jer uspoređuje apsolutnu svjetlinu sa zadanim brojem","Jer gleda samo rubove","Jer radi sporo"],
+  c:1,
+  e:"Prag postavljen ujutro popodne više ne razdvaja ništa. Prag koji se računa iz same slike podnosi promjene."},
+ {p:"Koje tri stvari kvadratna oznaka daje kameri odjednom?",
+  o:["Boju, veličinu i masu","Identitet, udaljenost i zakret","Brzinu, smjer i visinu","Temperaturu, tlak i vlagu"],
+  c:1,
+  e:"Uzorak nosi broj, veličina na slici daje udaljenost, a oblik trapeza kut. Zato su oznake najjeftiniji izvor apsolutnoga položaja."},
+ {p:"Oznaka stranice 15 cm i piksel od 2,7 mm — koliko elemenata zauzima oznaka?",
+  o:["Oko 15","Oko 55","Oko 150","Oko 400"],
+  c:1,
+  e:"150 mm / 2,7 mm ≈ 55 elemenata. Za pouzdano čitanje uzorka traži se oko šezdeset do osamdeset, pa je to na granici."},
+ {p:"Zašto se kamera za praćenje crte postavlja bliže podu?",
+  o:["Da se zaštiti od prašine","Jer manja udaljenost znači manji piksel, a time finije mjerenje odstupanja","Da se smanji potrošnja","Jer tako izgleda bolje"],
+  c:1,
+  e:"Kamera koja gleda daleko naprijed daje više vremena za reakciju, ali grublju mjeru. To je razmjena koja se bira prema brzini vozila."},
+ {p:"Zašto se pri praćenju boje ne radi izravno s crvenom, zelenom i plavom?",
+  o:["Jer je sporije","Jer se pri promjeni svjetla sve tri vrijednosti pomaknu, a ton ostaje","Jer zauzima više memorije","Jer kamere to ne podržavaju"],
+  c:1,
+  e:"Opis bojom, zasićenošću i svjetlinom podnosi promjenu osvjetljenja mnogo bolje, jer ton crvene ostaje crven."},
+ {p:"Zašto se kamera ne koristi sama za sigurnosno zaustavljanje?",
+  o:["Jer je preskupa","Jer ovisi o svjetlu nad kojim nema nadzora","Jer je prespora","Jer troši previše struje"],
+  c:1,
+  e:"Za zaustavljanje pred čovjekom koristi se laserski skener ili dodirna letvica — nešto što ne ovisi o tome je li upaljeno svjetlo."}
+];
+var grid = $("qgrid"), answered = 0, correct = 0;
+QS.forEach(function(q, i){
+  var card = document.createElement("div"); card.className = "q";
+  var num = document.createElement("div"); num.className = "num";
+  num.textContent = "Pitanje " + (i + 1) + " / " + QS.length; card.appendChild(num);
+  var pr = document.createElement("div"); pr.className = "prompt"; pr.textContent = q.p; card.appendChild(pr);
+  var opts = document.createElement("div"); opts.className = "opts"; card.appendChild(opts);
+  var fb = document.createElement("div"); fb.className = "fb"; fb.hidden = true; card.appendChild(fb);
+  q.o.forEach(function(txt, k){
+    var lab = document.createElement("label"); lab.className = "opt";
+    var inp = document.createElement("input");
+    inp.type = "radio"; inp.name = "q" + i; inp.id = "q" + i + "o" + k;
+    var sp = document.createElement("span"); sp.textContent = txt;
+    lab.appendChild(inp); lab.appendChild(sp); opts.appendChild(lab);
+    inp.addEventListener("change", function(){
+      if (card.dataset.done) return;
+      card.dataset.done = "1"; answered++;
+      var good = (k === q.c); if (good) correct++;
+      Array.prototype.forEach.call(opts.children, function(e2, idx){
+        e2.classList.add("locked"); e2.querySelector("input").disabled = true;
+        if (idx === q.c) e2.classList.add("correct");
+        else if (idx === k) e2.classList.add("wrong");
+      });
+      fb.className = "fb " + (good ? "ok" : "no");
+      fb.innerHTML = "<b>" + (good ? "Točno" : "Netočno") + "</b> &mdash; " + q.e;
+      fb.hidden = false;
+      $("score").textContent = "Riješeno " + answered + " / " + QS.length + " · točnih " + correct;
+    });
+  });
+  grid.appendChild(card);
+});
+
+/* ---------- alatna traka ---------- */
+var cv = $("ftq-canvas"), ctx = cv.getContext("2d");
+var strokes = [], drawing = null, tool = null, board = false;
+var COLORS = ["#17656E", "#2ECAD4", "#C0562A", "#3E7A46", "#10394A"];
+var color = COLORS[0];
+function store(k, v){ try{ localStorage.setItem("ftq-mr-l42-" + k, v); }catch(e){} }
+function load(k){ try{ return localStorage.getItem("ftq-mr-l42-" + k); }catch(e){ return null; } }
+function fit(){
+  var r = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.round(innerWidth * r); cv.height = Math.round(innerHeight * r);
+  cv.style.width = innerWidth + "px"; cv.style.height = innerHeight + "px";
+  ctx.setTransform(r, 0, 0, r, 0, 0); redraw();
+}
+function redraw(){
+  ctx.clearRect(0, 0, innerWidth, innerHeight);
+  if (board){
+    var cs = getComputedStyle(document.body);
+    ctx.fillStyle = cs.backgroundColor || "#fff";
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+  }
+  strokes.forEach(function(s){
+    if (!s.pts || s.pts.length < 2) return;
+    ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (s.tool === "erase"){ ctx.globalCompositeOperation = "destination-out"; ctx.lineWidth = 26; ctx.strokeStyle = "rgba(0,0,0,1)"; }
+    else if (s.tool === "mark"){ ctx.globalAlpha = .32; ctx.lineWidth = 17; ctx.strokeStyle = s.color; }
+    else { ctx.lineWidth = 2.6; ctx.strokeStyle = s.color; }
+    ctx.beginPath(); ctx.moveTo(s.pts[0][0], s.pts[0][1]);
+    for (var i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i][0], s.pts[i][1]);
+    ctx.stroke(); ctx.restore();
+  });
+}
+function setTool(t){
+  tool = (tool === t) ? null : t;
+  ["pen", "mark", "erase"].forEach(function(k){ $("t-" + k).setAttribute("aria-pressed", tool === k ? "true" : "false"); });
+  cv.classList.toggle("on", !!tool);
+}
+cv.addEventListener("pointerdown", function(e){
+  if (!tool) return;
+  cv.setPointerCapture(e.pointerId);
+  drawing = {tool:tool, color:color, pts:[[e.clientX, e.clientY]]};
+  strokes.push(drawing);
+});
+cv.addEventListener("pointermove", function(e){ if (!drawing) return; drawing.pts.push([e.clientX, e.clientY]); redraw(); });
+function endStroke(){ if (!drawing) return; drawing = null; try{ store("strokes", JSON.stringify(strokes.slice(-400))); }catch(e){} }
+cv.addEventListener("pointerup", endStroke);
+cv.addEventListener("pointercancel", endStroke);
+$("t-pen").addEventListener("click", function(){ setTool("pen"); });
+$("t-mark").addEventListener("click", function(){ setTool("mark"); });
+$("t-erase").addEventListener("click", function(){ setTool("erase"); });
+$("t-board").addEventListener("click", function(){
+  board = !board; this.setAttribute("aria-pressed", board ? "true" : "false");
+  if (board && !tool) setTool("pen");
+  store("board", board ? "1" : "0"); redraw();
+});
+$("t-undo").addEventListener("click", function(){ strokes.pop(); redraw(); try{ store("strokes", JSON.stringify(strokes)); }catch(e){} });
+$("t-clear").addEventListener("click", function(){ strokes = []; redraw(); store("strokes", "[]"); });
+var colBox = $("ftq-colors");
+COLORS.forEach(function(c, i){
+  var b = document.createElement("button");
+  b.className = "sw"; b.type = "button"; b.style.background = c;
+  b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+  b.setAttribute("title", "Boja " + (i + 1));
+  b.addEventListener("click", function(){
+    color = c;
+    Array.prototype.forEach.call(colBox.children, function(x){ x.setAttribute("aria-pressed", "false"); });
+    b.setAttribute("aria-pressed", "true");
+  });
+  colBox.appendChild(b);
+});
+$("t-color").addEventListener("click", function(){
+  var on = colBox.classList.toggle("show");
+  this.setAttribute("aria-pressed", on ? "true" : "false");
+});
+var fs = parseFloat(load("fs") || "1");
+function applyFs(){ fs = Math.min(1.5, Math.max(.85, fs)); document.documentElement.style.setProperty("--fs", fs.toFixed(2)); store("fs", fs); }
+applyFs();
+$("t-plus").addEventListener("click", function(){ fs += .1; applyFs(); });
+$("t-minus").addEventListener("click", function(){ fs -= .1; applyFs(); });
+if (load("dys") === "1"){ document.body.classList.add("dys"); $("t-dys").setAttribute("aria-pressed", "true"); }
+$("t-dys").addEventListener("click", function(){
+  var on = document.body.classList.toggle("dys");
+  this.setAttribute("aria-pressed", on ? "true" : "false"); store("dys", on ? "1" : "0");
+});
+$("t-theme").addEventListener("click", function(){
+  var r = document.documentElement, c = r.getAttribute("data-theme");
+  var next = c === "dark" ? "light" : (c === "light" ? null : "dark");
+  if (next) r.setAttribute("data-theme", next); else r.removeAttribute("data-theme");
+  store("theme", next || ""); redraw();
+});
+var st = load("theme"); if (st) document.documentElement.setAttribute("data-theme", st);
+try{
+  var sv = load("strokes"); if (sv) strokes = JSON.parse(sv) || [];
+  if (load("board") === "1"){ board = true; $("t-board").setAttribute("aria-pressed", "true"); }
+}catch(e){ strokes = []; }
+addEventListener("resize", fit);
+fit();
+})();
+</script>
+</body>
+</html>

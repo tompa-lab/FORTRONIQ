@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="ForTroniQ d.o.o.">
+<meta name="robots" content="index, follow">
+<meta name="description" content="Osamnaest zadataka uz pet jedinica modula 1: petlja osjeti–odluči–djeluj, vlastita definicija robota, razine samostalnosti, vremenska crta, razvrstavanje robota, tri pitanja mobilnoga robota, račun trajanja baterije, procjena isplativosti i projektni prijedlog uvođenja.">
+<title>Aktivnosti za samostalno učenje — Modul 1, Uvod u mobilnu robotiku</title>
+<link rel="canonical" href="https://dos.fortroniq.hr/mobilna-robotika/m1-aktivnosti-za-samostalno-ucenje.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/mobilna-robotika/m1-aktivnosti-za-samostalno-ucenje.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/mobilna-robotika/m1-aktivnosti-za-samostalno-ucenje.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/mobilna-robotika/m1-aktivnosti-za-samostalno-ucenje.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Aktivnosti za samostalno učenje — Modul 1">
+<meta property="og:description" content="Zadatci za samostalan rad uz uvodni modul o mobilnoj robotici — promatranje, mjerenje i procjena.">
+<meta property="og:url" content="https://dos.fortroniq.hr/mobilna-robotika/m1-aktivnosti-za-samostalno-ucenje.html">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+
+<style>
+:root{
+  --paper:#FFFFFF;
+  --ink:#10394A;
+  --body:#5D7C90;
+  --rule:#DCE4E8;
+  --teal:#17656E;
+  --teal-d:#0F4A52;
+  --cyan:#2ECAD4;
+  --hero-a:#1B6A72;
+  --hero-b:#0C3F47;
+  --bar:#17181A;
+  --bar-t:#8A9499;
+  --soft:#F3F7F8;
+  --ok:#2E7D53;
+  --bad:#B24A2E;
+  --fs:1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+    --teal:#2A9AA6; --teal-d:#2ECAD4;
+    --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+    --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+  --teal:#2A9AA6; --teal-d:#2ECAD4;
+  --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+  --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  font-size:calc(16px * var(--fs)); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body.dys{letter-spacing:.012em;word-spacing:.09em;line-height:1.85}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+/* ============ GORNJA TRAKA ============ */
+.topbar{background:var(--bar);color:#fff;display:flex;align-items:stretch;overflow-x:auto;font-size:11.5px}
+.tbi{padding:6px 14px;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.tbi .lb{color:var(--bar-t);font-size:9.5px;letter-spacing:.03em}
+.tbi .vl{font-weight:500}
+.tbi.crumb .vl{color:var(--cyan)}
+.tbi .x{display:inline-block;margin-left:6px;opacity:.65}
+.tbi.menu{align-items:center;flex-direction:row;gap:8px}
+.tbi.menu svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.8}
+a.tbi{color:#fff;text-decoration:none}
+a.tbi:hover .vl{color:var(--cyan)}
+
+/* ============ HERO ============ */
+.hero{background:linear-gradient(160deg,var(--hero-a) 0%,var(--hero-b) 100%);position:relative;overflow:hidden}
+.hero-in{position:relative;z-index:3;max-width:1120px;margin:0 auto;padding:38px clamp(20px,6vw,120px) 30px}
+.hero-art{position:absolute;right:0;top:0;bottom:0;width:min(46%,520px);opacity:.5;pointer-events:none}
+.hero-art svg{width:100%;height:100%;display:block}
+.eyebrow{display:flex;flex-wrap:wrap;gap:.5em;align-items:center;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:#9FC9CE}
+.eyebrow b{color:#fff;font-weight:700;letter-spacing:.17em}
+.eyebrow b i{color:var(--cyan);font-style:normal}
+.eyebrow span::after{content:"·";margin-left:.5em;opacity:.6}
+.eyebrow span:last-child::after{content:""}
+.hero h1{
+  margin:.35em 0 0;color:#fff;font-weight:700;
+  font-size:clamp(29px,5vw,50px);letter-spacing:-.026em;line-height:1.06;
+  max-width:16ch;text-wrap:balance;text-shadow:0 2px 20px rgba(0,0,0,.28);
+}
+.lede{max-width:62ch;color:#D4E8EB;font-size:15.5px;line-height:1.62;margin:.9em 0 0}
+
+.goals{
+  position:relative;z-index:3;max-width:1120px;margin:0 auto;
+  padding:4px clamp(20px,6vw,120px) 40px;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:26px 40px;align-items:start;
+}
+.goals-h{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:6px}
+.goals-h svg{width:46px;height:32px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.goals-h span{color:#fff;font-weight:700;font-size:19px;letter-spacing:-.01em}
+.goals ul{margin:0;padding:0;list-style:none;columns:3;column-gap:34px}
+.goals li{break-inside:avoid;margin:0 0 13px;display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:start;color:#E6F5F7;font-size:12.6px;line-height:1.45}
+.goals li svg{width:11px;height:11px;margin-top:4px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){
+  .goals{grid-template-columns:1fr;gap:16px}
+  .goals-h{flex-direction:row;align-items:center;justify-content:flex-start}
+  .goals ul{columns:1}
+}
+.cyanline{height:5px;background:var(--cyan)}
+
+/* ============ SADRŽAJ ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(20px,6vw,120px) 10px}
+.col{max-width:74ch}
+section{padding-top:52px}
+.sh{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:8px}
+.sh .n{
+  flex:0 0 auto;width:27px;height:27px;border-radius:50%;
+  background:var(--teal);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;align-self:center;
+}
+.sh h2{margin:0;font-size:clamp(21px,2.6vw,27px);font-weight:700;letter-spacing:-.022em;line-height:1.15;text-wrap:balance}
+.sd{color:var(--body);font-size:14px;margin:0 0 20px;max-width:70ch}
+p{margin:0 0 1.05em;max-width:74ch;font-size:15.4px;line-height:1.72;color:var(--ink)}
+p.mut{color:var(--body)}
+h3.sub{font-size:17px;font-weight:600;letter-spacing:-.012em;margin:2em 0 .6em;color:var(--ink)}
+strong{font-weight:600}
+em{font-style:italic}
+.kv{color:var(--teal);font-weight:600}
+
+ul.plain{margin:0 0 1.2em;padding-left:1.15em;max-width:74ch}
+ul.plain li{margin-bottom:.45em;font-size:15.2px;line-height:1.66}
+
+/* ============ PLOČE ============ */
+.panel{background:var(--soft);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:26px 0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.panel-head .t{font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--teal)}
+.panel-head .s{font-size:11.5px;color:var(--body);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.chip{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);
+  padding:8px 12px;cursor:pointer;text-align:left;line-height:1.3;
+}
+.chip:hover{border-color:var(--cyan);color:var(--teal)}
+.chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.chip small{display:block;font-size:10.5px;font-weight:500;opacity:.75;margin-top:3px;letter-spacing:.02em}
+.chip.ac{font-size:13px;font-weight:700;letter-spacing:.04em;padding:7px 11px}
+.def{border-top:1px solid var(--rule);padding:18px 17px;background:var(--paper)}
+.def h3{font-size:19px;font-weight:700;letter-spacing:-.015em;margin:0 0 3px;color:var(--ink)}
+.def .en{font-size:12.5px;color:var(--body);margin:0 0 13px}
+.def dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 20px;margin:0}
+.def dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:4px}
+.def dd{margin:0;font-size:14.6px;line-height:1.55}
+@media (max-width:560px){.def dl{grid-template-columns:1fr;gap:2px 0}.def dt{padding-top:11px}}
+
+.norm{border:1px solid var(--rule);border-left:4px solid var(--cyan);border-radius:6px;background:var(--soft);padding:18px 20px;margin:24px 0;max-width:74ch}
+.norm .lbl{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:7px}
+.norm p{margin:0;font-size:17px;line-height:1.55;font-style:italic}
+.norm .src{margin-top:10px;font-size:12px;color:var(--body);font-style:normal}
+
+.note{border:1px solid var(--rule);border-radius:6px;background:var(--soft);padding:15px 17px;margin:22px 0;max-width:74ch}
+.note b{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.note p{margin:0;font-size:14.6px;line-height:1.6}
+
+.tscroll{overflow-x:auto;margin:24px 0}
+table.t{width:100%;border-collapse:collapse;font-size:14.2px;min-width:520px}
+table.t th,table.t td{text-align:left;padding:10px 14px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.5}
+table.t th{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+table.t td:first-child,table.t th:first-child{font-weight:600;padding-right:20px}
+table.t tr:last-child td{border-bottom:0}
+
+.fig{border:1px dashed var(--rule);border-radius:8px;background:var(--soft);padding:26px 18px;margin:26px 0;text-align:center;max-width:74ch}
+.fig .ph{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.fig .cap{font-size:13.6px;color:var(--body);margin:9px auto 0;max-width:58ch;line-height:1.55}
+
+/* ---- usporedba postupaka ---- */
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{
+  font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink);
+}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.cmp{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:10px 26px;padding:15px;align-items:center}
+@media (max-width:640px){.cmp{grid-template-columns:1fr}}
+.cmp svg{width:100%;height:auto;display:block;background:var(--paper);border:1px solid var(--rule);border-radius:6px}
+.cmp .ct h4{margin:0 0 6px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.cmp .ct p{margin:0 0 .7em;font-size:14.4px;line-height:1.6}
+.cmp .ct .ex{font-size:13px;color:var(--body);margin:0}
+
+/* ---- stepenasti učinak ---- */
+.step-bar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.step-bar input[type=range]{flex:1 1 190px;accent-color:var(--teal);min-width:150px}
+.step-bar .val{font-size:13px;font-weight:600;color:var(--teal);font-variant-numeric:tabular-nums;min-width:8.5em}
+.step-out{padding:14px 16px;border-top:1px solid var(--rule);font-size:14.2px;line-height:1.6;color:var(--ink);background:var(--paper)}
+.step-out b{color:var(--teal)}
+
+/* ---- vremenska crta ---- */
+.tl-wrap{background:var(--paper);padding:6px 0}
+svg.tl{display:block;width:100%;height:auto}
+.tlbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.tlbar input[type=range]{flex:1 1 180px;accent-color:var(--teal);min-width:140px}
+.btn{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;padding:7px 13px;cursor:pointer;
+}
+.btn:hover{border-color:var(--cyan);color:var(--teal)}
+.card{border-top:1px solid var(--rule);padding:18px 17px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 24px;background:var(--paper)}
+.card .yr{grid-row:1/span 3;font-size:34px;font-weight:700;color:var(--teal);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.card .era{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--body)}
+.card .ttl{font-size:18px;font-weight:700;letter-spacing:-.015em;line-height:1.3;margin:3px 0 6px}
+.card .txt{font-size:14.6px;line-height:1.6;margin:0;max-width:64ch;color:var(--ink)}
+@media (max-width:540px){.card{grid-template-columns:1fr}.card .yr{grid-row:auto;font-size:28px}}
+
+/* ---- primjene ---- */
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:26px 0}
+.app{border:1px solid var(--rule);border-radius:8px;padding:16px 17px;background:var(--soft)}
+.app h4{margin:0 0 7px;font-size:15.5px;font-weight:700;letter-spacing:-.012em;display:flex;align-items:center;gap:9px}
+.app h4 svg{width:19px;height:19px;stroke:var(--cyan);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.app p{margin:0;font-size:13.6px;line-height:1.6;color:var(--body)}
+
+/* ---- procjena znanja ---- */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:22px}
+.q{background:var(--soft);border:1px solid var(--rule);border-radius:8px;padding:17px;display:flex;flex-direction:column}
+.q .num{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--body)}
+.q .prompt{font-size:15.4px;line-height:1.45;margin:6px 0 13px;font-weight:600}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.opt{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rule);border-radius:5px;padding:9px 11px;cursor:pointer;font-size:14.4px;line-height:1.4;background:var(--paper)}
+.opt:hover{border-color:var(--cyan)}
+.opt input{margin:4px 0 0;accent-color:var(--teal);flex-shrink:0}
+.opt.correct{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.opt.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.opt.locked{cursor:default}
+.opt.locked:hover{border-color:var(--rule)}
+.opt.locked.correct:hover{border-color:var(--ok)}
+.opt.locked.wrong:hover{border-color:var(--bad)}
+.fb{font-size:13.8px;line-height:1.55;margin-top:auto;padding-top:11px;border-top:1px solid var(--rule);color:var(--body)}
+.fb b{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.fb.ok b{color:var(--ok)} .fb.no b{color:var(--bad)} .fb[hidden]{display:none}
+.score{font-size:12.5px;color:var(--body);font-variant-numeric:tabular-nums;margin-left:auto}
+
+/* ---- kretanje ---- */
+.nav{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;margin:54px 0 0;padding-top:24px;border-top:1px solid var(--rule)}
+.nav a,.nav span{
+  display:block;border:1px solid var(--rule);border-radius:8px;padding:13px 17px;
+  text-decoration:none;color:var(--ink);min-width:min(100%,250px);flex:1 1 250px;
+}
+.nav a:hover{border-color:var(--cyan)}
+.nav .lb{display:block;font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--body);margin-bottom:3px}
+.nav .tt{font-size:15px;font-weight:600;letter-spacing:-.012em;line-height:1.35}
+.nav .nx{text-align:right}
+.nav span.soon{opacity:.6}
+.nav span.soon .tt{color:var(--body)}
+
+/* ============ PODNOŽJE ============ */
+.sf{border-top:1px solid var(--rule);margin-top:50px}
+.sf-in{
+  max-width:1120px;margin:0 auto;padding:24px clamp(20px,6vw,120px);
+  display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between;
+  font-size:12.5px;color:var(--body);
+}
+.sf-in .brand{font-weight:700;letter-spacing:.17em;color:var(--teal)}
+.sf-in .brand i{color:var(--cyan);font-style:normal}
+
+/* ============ ALATNA TRAKA ============ */
+#ftq-canvas{position:fixed;inset:0;z-index:40;pointer-events:none;touch-action:none}
+#ftq-canvas.on{pointer-events:auto;cursor:crosshair}
+#ftq-bar{
+  position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:60;
+  display:flex;flex-direction:column;gap:3px;
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;
+  padding:5px;box-shadow:0 2px 16px rgba(16,57,74,.18);
+}
+#ftq-bar hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:auto}
+.tb{
+  width:38px;height:34px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;border-radius:4px;
+  color:var(--body);cursor:pointer;padding:0;
+  font-family:"IBM Plex Sans",sans-serif;font-size:12px;font-weight:700;
+}
+.tb:hover{color:var(--teal);border-color:var(--rule)}
+.tb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.tb svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#ftq-colors{display:none;flex-direction:column;gap:3px;padding-top:3px;border-top:1px solid var(--rule);margin-top:3px}
+#ftq-colors.show{display:flex}
+.sw{width:38px;height:20px;border:1px solid var(--rule);border-radius:4px;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:-4px}
+@media (max-width:680px){#ftq-bar{right:8px;padding:4px}.tb{width:33px;height:30px}.tb svg{width:17px;height:17px}.sw{width:33px;height:17px}}
+@media print{#ftq-bar,.topbar{display:none}}
+
+/* ============ POSEBNO ZA OVU STRANICU ============ */
+.zad{border:1px solid var(--rule);border-radius:8px;background:var(--soft);margin:16px 0;overflow:hidden}
+.zad-g{display:flex;gap:13px;align-items:flex-start;padding:15px 17px;background:var(--paper);border-bottom:1px solid var(--rule)}
+.kv-box{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--rule);border-radius:5px;background:var(--paper);
+  cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.kv-box svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.kv-box[aria-pressed="true"]{background:var(--teal);border-color:var(--teal)}
+.kv-box[aria-pressed="true"] svg{opacity:1}
+.zad-g .im{min-width:0}
+.zad-g h3{margin:0;font-size:17px;font-weight:700;letter-spacing:-.015em;line-height:1.25}
+.zad-g .meta{font-size:12px;color:var(--body);margin-top:4px;display:flex;gap:8px 16px;flex-wrap:wrap}
+.zad-g .meta b{color:var(--teal);font-weight:600}
+.zad-t{padding:15px 17px}
+.zad-t p{margin:0 0 .9em;font-size:14.6px;line-height:1.65}
+.zad-t p:last-child{margin-bottom:0}
+.zad-t dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;margin:12px 0 0}
+.zad-t dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.zad-t dd{margin:0;font-size:14.2px;line-height:1.55}
+@media (max-width:540px){.zad-t dl{grid-template-columns:1fr;gap:2px 0}.zad-t dt{padding-top:10px}}
+.napr{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--rule);
+  padding:11px clamp(20px,6vw,120px);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.napr .tx{font-size:13px;font-weight:600;color:var(--teal);white-space:nowrap}
+.napr .os{flex:1 1 180px;height:8px;border-radius:99px;background:var(--rule);overflow:hidden;min-width:120px}
+.napr .os i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:width .2s}
+.napr button{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--body);background:none;
+  border:1px solid var(--rule);border-radius:5px;padding:6px 13px;cursor:pointer}
+.napr button:hover{border-color:var(--cyan);color:var(--teal)}
+</style>
+</head>
+<body>
+
+<canvas id="ftq-canvas"></canvas>
+
+<div id="ftq-bar" role="toolbar" aria-label="Alati">
+  <button class="tb" id="t-pen"   type="button" aria-pressed="false" title="Olovka"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 10-10a2.1 2.1 0 0 0-3-3L5 16l-1 4z"/></svg></button>
+  <button class="tb" id="t-mark"  type="button" aria-pressed="false" title="Marker"><svg viewBox="0 0 24 24"><path d="M5 18h14"/><path d="M8 14l7-8a2 2 0 0 1 3 3l-7 8H8v-3z"/></svg></button>
+  <button class="tb" id="t-erase" type="button" aria-pressed="false" title="Gumica"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M14 4l6 6-8 8H7l-3-3z"/></svg></button>
+  <button class="tb" id="t-board" type="button" aria-pressed="false" title="Ploča"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M9 20l3-3 3 3"/></svg></button>
+  <button class="tb" id="t-color" type="button" aria-pressed="false" title="Boja"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg></button>
+  <button class="tb" id="t-undo"  type="button" title="Poništi"><svg viewBox="0 0 24 24"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 0 10h-3"/></svg></button>
+  <button class="tb" id="t-clear" type="button" title="Obriši sve"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></button>
+  <hr>
+  <button class="tb" id="t-minus" type="button" title="Smanji slova">A&minus;</button>
+  <button class="tb" id="t-plus"  type="button" title="Povećaj slova">A+</button>
+  <button class="tb" id="t-dys"   type="button" aria-pressed="false" title="Pomoć s disleksijom">Dy</button>
+  <button class="tb" id="t-theme" type="button" title="Svijetla / tamna tema"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 5a7 7 0 0 1 0 14z" fill="currentColor" stroke="none"/></svg></button>
+  <div id="ftq-colors"></div>
+</div>
+
+<nav class="topbar" aria-label="Putanja">
+  <a class="tbi menu" href="../index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Izbornik</span></a>
+  <a class="tbi" href="index.html"><span class="lb">Knjiga</span><span class="vl">Osnove mobilnih robota</span></a>
+  <a class="tbi crumb" href="m1-uvod.html"><span class="lb">Modul</span><span class="vl">Uvod u mobilnu robotiku<span class="x">&#10005;</span></span></a>
+  <div class="tbi crumb"><span class="lb">Odlomak</span><span class="vl">Aktivnosti za samostalno učenje<span class="x">&#10005;</span></span></div>
+</nav>
+
+<header class="hero">
+  <div class="hero-art" aria-hidden="true">
+    <svg viewBox="0 0 420 340" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="#6FD9E2" stroke-width="1.3" opacity=".5">
+        <rect x="112" y="70" width="196" height="206" rx="7"/>
+        <path d="M144 118 h132 M144 154 h132 M144 190 h88"/>
+        <path d="M144 226 l14 14 26-30"/>
+        <circle cx="300" cy="250" r="16"/>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-in">
+    <div class="eyebrow"><b>FORTRONI<i>Q</i></b><span>Osnove mobilnih robota</span><span>Modul 1</span></div>
+    <h1>Aktivnosti za samostalno učenje</h1>
+    <p class="lede">Osamnaest zadataka uz pet nastavnih jedinica modula. Nijedan ne traži robota: sve se radi
+    promatranjem, mjerenjem, skiciranjem i računom, a mnogo toga i u prostoru u kojem svakodnevno boraviš.
+    Odrađeni se zadatci označe kvačicom, a oznaka ostaje zapamćena na ovome uređaju.</p>
+  </div>
+</header>
+<div class="cyanline"></div>
+
+<div class="napr">
+  <span class="tx" id="napr-tx">&nbsp;</span>
+  <span class="os"><i id="napr-os" style="width:0%"></i></span>
+  <button type="button" id="napr-reset">Poništi sve oznake</button>
+</div>
+
+<div class="wrap">
+  <section style="padding-top:34px">
+    <div class="sh"><span class="n">&#9733;</span><h2>Kako raditi zadatke</h2></div>
+    <p>Modul 1 postavlja pojmove: što robot jest, odakle je došao, koje vrste postoje, od čega se mobilni robot
+    sastoji i gdje danas radi. Zadatci zato nisu vježbe na stroju nego vježbe <strong>gledanja i
+    procjene</strong> &mdash; upravo onoga što prethodi svakoj odluci o uvođenju robota.</p>
+    <p>Potrebni su ti samo bilježnica, metar ili aplikacija za mjerenje, sat i pristup mreži. Ondje gdje se
+    traži prostor, dobro posluži školska radionica, skladište, hodnik zgrade ili trgovina; važno je da je
+    stvaran i da ga možeš obići. Mjerila uz zadatak nisu ocjena nego popis onoga što u rješenju mora
+    postojati.</p>
+    <p>Zadatci uz istu jedinicu mogu se raditi bilo kojim redom, ali je korisno kroz sve njih nositi
+    <strong>isti prostor i isti zadatak prijenosa</strong>: tako na kraju modula imaš jedan zaokružen primjer
+    koji ćeš prepoznati i u modulima koji slijede.</p>
+  </section>
+
+  <section id="a11">
+    <div class="sh"><span class="n">1</span><h2>Uz jedinicu 1.1 &mdash; Što je robotika</h2></div>
+    <div id="grupa-11"></div>
+  </section>
+
+  <section id="a12">
+    <div class="sh"><span class="n">2</span><h2>Uz jedinicu 1.2 &mdash; Nastanak robotike</h2></div>
+    <div id="grupa-12"></div>
+  </section>
+
+  <section id="a13">
+    <div class="sh"><span class="n">3</span><h2>Uz jedinicu 1.3 &mdash; Vrste robota</h2></div>
+    <div id="grupa-13"></div>
+  </section>
+
+  <section id="a14">
+    <div class="sh"><span class="n">4</span><h2>Uz jedinicu 1.4 &mdash; Općenito o mobilnoj robotici</h2></div>
+    <div id="grupa-14"></div>
+  </section>
+
+  <section id="a15">
+    <div class="sh"><span class="n">5</span><h2>Uz jedinicu 1.5 &mdash; Servisni i uslužni roboti</h2></div>
+    <div id="grupa-15"></div>
+  </section>
+
+  <section id="apr">
+    <div class="sh"><span class="n">6</span><h2>Projektni zadatak modula</h2></div>
+    <p>Posljednja tri zadatka spajaju cijeli modul u jedan primjer: stvaran prostor, stvaran prijenos, procjena
+    isplativosti i obrazložen prijedlog. Isti se primjer nastavlja u modulima o lokomociji, kinematici i
+    percepciji, pa ga vrijedi napraviti temeljito.</p>
+    <div id="grupa-pr"></div>
+  </section>
+
+  <section>
+    <div class="note">
+      <b>Prije provjere znanja</b>
+      <p>Kad su zadatci gotovi, na redu je procjena znanja cijeloga modula &mdash; dvadeset pitanja iz svih pet
+      jedinica, s prikazom uspješnosti po jedinicama.</p>
+    </div>
+  </section>
+
+  <nav class="nav" aria-label="Kretanje po modulu">
+    <a href="1-5-servisni-i-usluzni-roboti.html">
+      <span class="lb">&larr; Prethodno</span>
+      <span class="tt">1.5. Servisni i uslužni roboti</span>
+    </a>
+    <a class="nx" href="m1-procjena-znanja.html">
+      <span class="lb">Sljedeće &rarr;</span>
+      <span class="tt">Procjena znanja modula</span>
+    </a>
+  </nav>
+</div>
+
+<div class="sf">
+  <div class="sf-in">
+    <span class="brand">FORTRONI<i>Q</i></span>
+    <span>Osnove mobilnih robota &middot; Modul 1</span>
+    <span>&copy; <span id="yr">2026</span> ForTroniQ d.o.o. &middot; Sva prava pridržana</span>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+var y = $("yr"); if (y) y.textContent = new Date().getFullYear();
+
+/* ---------- zadatci ---------- */
+var ZAD = {
+ "11": [
+  {n:"Petlja osjeti – odluči – djeluj na uređaju iz kuće", v:"30 min", o:"pisano",
+   z:"Odaberi pet uređaja iz kuće ili radionice: perilicu, termostat, robotski usisavač, automatska vrata i bušilicu. Za svaki napiši što uređaj osjeća, o čemu odlučuje i čime djeluje. Ondje gdje neki član petlje nedostaje, napiši koji i što zbog toga uređaj ne može.",
+   p:"tablica s pet uređaja i četiri stupca: osjeti, odluči, djeluj, što nedostaje",
+   m:"Za barem dva uređaja je uočeno da nedostaje odlučivanje ili osjetilo; iz toga je izveden zaključak zašto ih ne zovemo robotima."},
+  {n:"Gdje prestaje automat, a počinje robot", v:"25 min", o:"pisano",
+   z:"Napiši vlastitu definiciju robota u najviše tri rečenice, bez prepisivanja iz jedinice. Zatim je iskušaj na graničnim slučajevima: dizalo, naplatna rampa, samoposlužna blagajna, dron na daljinsko upravljanje i računalni program koji sam trguje. Za svaki reci ulazi li u tvoju definiciju i zašto.",
+   p:"definicija u tri rečenice i pet obrazloženih odluka",
+   m:"Definicija spominje djelovanje u fizičkome svijetu i odlučivanje na temelju osjetila; granični su slučajevi obrazloženi definicijom, a ne dojmom."},
+  {n:"Pet razina samostalnosti u praksi", v:"35 min", o:"praktično",
+   z:"Promotri jedan stroj u pogonu ili jedan kućanski uređaj kroz cijeli radni ciklus. Odredi na kojoj je od pet razina samostalnosti iz jedinice i napiši što bi konkretno trebalo dodati da prijeđe na sljedeću razinu, pa na onu iza nje.",
+   p:"opis stroja, procijenjena razina i dva koraka napredovanja s obrazloženjem",
+   m:"Razina je obrazložena time što stroj mjeri i o čemu sam odlučuje; koraci napredovanja navode konkretno osjetilo ili odluku, a ne 'bolji program'."}
+ ],
+ "12": [
+  {n:"Vremenska crta s vlastitim izborom", v:"40 min", o:"pisano",
+   z:"Iz vremenske crte u jedinici odaberi šest događaja koje smatraš najvažnijima i poredaj ih po važnosti, ne po godini. Uz svaki napiši jednu rečenicu o tome što bi bilo drukčije da se nije dogodio. Zatim dodaj jedan događaj koji u crti nije naveden, s godinom i izvorom.",
+   p:"poredak šest događaja s obrazloženjem i sedmi dodani događaj s izvorom",
+   m:"Poredak je obrazložen posljedicom, a ne godinom; dodani događaj ima provjerljiv izvor i objašnjeno mjesto u nizu."},
+  {n:"Četiri pokretačke sile danas", v:"30 min", o:"pisano",
+   z:"Jedinica navodi četiri sile koje su pogurale mobilnu robotiku: jeftina osjetila, računala male potrošnje, baterije i dostupni algoritmi. Za svaku pronađi jedan današnji primjer proizvoda ili sastavnice s podatkom o cijeni ili svojstvu i procijeni koja je sila danas najsporija.",
+   p:"četiri primjera s podatcima i obrazložen odgovor koja sila danas najviše koči",
+   m:"Podatci su navedeni s izvorom; procjena najsporije sile obrazložena je usporedbom, a ne dojmom."},
+  {n:"Od žice do slobodne vožnje", v:"35 min", o:"pisano",
+   z:"Opiši pet načina vođenja vozila u skladištu redom kojim su se pojavljivali — od žice u podu do slobodne vožnje po karti. Za svaki napiši što se moralo ugraditi u zgradu, koliko je stajala promjena rute i zašto je sljedeći način bio bolji.",
+   p:"tablica: način vođenja, zahvat u zgradu, cijena promjene rute, razlog prijelaza",
+   m:"Prepoznato je da se s napretkom teret seli sa zgrade na vozilo; navedeno je što se time dobiva, a što gubi."}
+ ],
+ "13": [
+  {n:"Razvrstavanje po četirima podjelama", v:"35 min", o:"pisano",
+   z:"Pronađi osam stvarnih robota — na mreži, u pogonu, u trgovini ili u kući. Svakoga razvrstaj po sve četiri podjele iz jedinice: po namjeni, po pokretljivosti, po ustroju i po načinu suradnje s čovjekom. Navedi izvor slike ili podatka.",
+   p:"tablica s osam redaka i četirima stupcima razvrstavanja, s izvorima",
+   m:"Sve su četiri podjele primijenjene na svaki primjer; barem jedan primjer pokazuje da isti robot može pripadati različitim razredima ovisno o podjeli."},
+  {n:"Četiri načina suradnje s čovjekom", v:"30 min", o:"pisano",
+   z:"Opiši četiri načina suradnje robota i čovjeka prema tehničkoj specifikaciji ISO/TS 15066. Za svaki navedi koji zaštitni uređaj ili postupak taj način zahtijeva, koju brzinu dopušta i za kakav je posao prikladan. Zatim odaberi jedan posao iz svoje okoline i predloži način uz obrazloženje.",
+   p:"pregled četiriju načina i obrazložen prijedlog za jedan stvaran posao",
+   m:"Razlikuje se zaustavljanje nadzirano brzinom od ograničenja sile i snage; prijedlog uzima u obzir i brzinu i cijenu zaštite."},
+  {n:"Ista zadaća, tri ustroja", v:"40 min", o:"pisano",
+   z:"Zadaća je premjestiti kutiju s police na stol. Skiciraj kako bi je obavila serijska ruka, kako paralelni ustroj, a kako mobilni robot s rukom. Za svaki ustroj napiši dohvat, nosivost, brzinu i cijenu reda veličine, pa obrazloži izbor.",
+   p:"tri skice s tablicom svojstava i obrazložen odabir",
+   m:"Prepoznata je razmjena između dohvata i krutosti; mobilna je izvedba obrazložena time što se radno mjesto mijenja."}
+ ],
+ "14": [
+  {n:"Tri pitanja u vlastitome prostoru", v:"40 min", o:"praktično",
+   z:"Odaberi prostor koji možeš obići: hodnik, radionicu, skladište ili stan. Zamisli da njime vozi mobilni robot i odgovori na tri pitanja iz jedinice — gdje sam, kamo idem, kako do onamo — konkretno za taj prostor. Za svako pitanje navedi što bi robot morao mjeriti da na njega odgovori.",
+   p:"tlocrt prostora sa skicom rute i tri odgovora s popisom potrebnih mjerenja",
+   m:"Tlocrt ima mjere; za pitanje 'gdje sam' navedeno je barem jedno osjetilo, a za 'kako do onamo' spomenuta je zapreka koje u karti nema."},
+  {n:"Sastavnice na stvarnome vozilu", v:"30 min", o:"pisano",
+   z:"Pronađi na mreži tehnički list jednoga stvarnog mobilnog robota. Za deset sastavnica iz sheme u jedinici — pogon, kotači, baterija, upravljačka jedinica, osjetila, sigurnosni sklop i ostale — pronađi odgovarajući podatak ili zaključi da ga proizvođač ne navodi.",
+   p:"tablica: sastavnica, podatak iz lista, izvor; uz napomenu što nedostaje",
+   m:"Uočeno je što proizvođači redovito prešućuju; barem za bateriju i osjetila navedene su mjerne jedinice."},
+  {n:"Koliko traje jedno punjenje", v:"35 min", o:"računski",
+   z:"Vozilo ima bateriju od 24 V i 40 Ah, prosječnu snagu 150 W i koristi 80 posto kapaciteta. Izračunaj koliko traje jedno punjenje. Zatim izračunaj koliko bi trajalo pri 300 W i koliko bi baterija morala imati amper-sati za osam sati rada pri 150 W. Na kraju procijeni masu takve baterije uz 150 Wh po kilogramu.",
+   p:"tri izračuna s postupkom i mjernim jedinicama te procjena mase",
+   m:"Ispravno je izračunata energija u vat-satima; uočeno je da se vrijeme rada prepolovljuje udvostručenjem snage, a masa raste razmjerno kapacitetu."}
+ ],
+ "15": [
+  {n:"Osam područja, jedan popis", v:"30 min", o:"pisano",
+   z:"Za osam područja primjene iz jedinice pronađi po jedan stvaran proizvod na tržištu. Za svaki zabilježi što radi, gdje se koristi, koje je ograničenje proizvođač sam naveo i koliko stoji, ako je cijena javna.",
+   p:"tablica s osam proizvoda i izvorima",
+   m:"Za barem pet proizvoda pronađeno je navedeno ograničenje; uočeno je da se cijena često ne objavljuje i navedeno je zašto."},
+  {n:"Isplati li se kod nas", v:"40 min", o:"računski",
+   z:"Za prostor koji si odabrao u zadatku uz jedinicu 1.4 procijeni koliko se sati dnevno troši na prijenos. Izmjeri stvarno: prati jednu osobu kroz sat vremena ili izbroji hodove. Zatim izračunaj godišnju uštedu uz 15 € po satu i 250 radnih dana, pa vrijeme povrata za ulaganje od 60.000 €.",
+   p:"zapis mjerenja, izračun godišnje uštede i vremena povrata s postupkom",
+   m:"Mjerenje je opisano tako da se može ponoviti; u zaključku se spominje barem jedna stavka koju taj račun ne obuhvaća."},
+  {n:"Zašto neke primjene ostanu na pokusu", v:"30 min", o:"pisano",
+   z:"Pronađi dvije primjene mobilnih robota koje su zaživjele i dvije koje su ostale na pokusu ili su povučene. Za sve četiri prođi kroz šest svojstava iz tablice u jedinici — prostor, zadatak, rukovanje, vrijeme, ljudi, račun — i pokaži gdje se razlikuju.",
+   p:"usporedna tablica četiriju primjena po šest svojstava sa zaključkom",
+   m:"Zaključak se poziva na svojstva zadatka, a ne na tehnologiju; navedeni su izvori za sve četiri primjene."}
+ ],
+ "pr": [
+  {n:"Prijedlog uvođenja za stvaran prostor", v:"3 – 4 h", o:"projektni",
+   z:"Za prostor s kojim si radio kroz cijeli modul napiši prijedlog uvođenja mobilnog robota. Obuhvati: opis prostora s tlocrtom i mjerama, zadatak prijenosa s izmjerenom količinom, tri pitanja iz jedinice 1.4 odgovorena za taj prostor, razred robota po četirima podjelama iz jedinice 1.3, način suradnje s ljudima, procjenu vremena rada po punjenju i račun povrata ulaganja.",
+   p:"prijedlog od tri do pet stranica s tlocrtom, računima i obrazloženjem svake odluke",
+   m:"Sve su jedinice modula vidljive u prijedlogu; svaki je broj popraćen izvorom ili postupkom izračuna; navedeno je i pod kojim se uvjetima uvođenje ne isplati."},
+  {n:"Popis prije nabave", v:"1 h", o:"pisano",
+   z:"Prođi kontrolni popis od dvanaest stavki iz jedinice 1.5 za svoj prijedlog. Za svaku stavku napiši je li ispunjena, čime to dokazuješ i što treba napraviti ako nije. Na kraju odluči preporučuješ li uvođenje sada, kasnije ili nikako.",
+   p:"ispunjen popis s dokazima i obrazložena preporuka",
+   m:"Preporuka slijedi iz popisa; barem za tri stavke navedeno je konkretno mjerenje ili dokument kao dokaz."},
+  {n:"Predstavljanje u pet minuta", v:"1 – 2 h", o:"projektni",
+   z:"Pripremi izlaganje od pet minuta kojim bi prijedlog obrazložio nekome tko ne poznaje robotiku — voditelju pogona, ravnatelju ili vlasniku. Najviše šest slika, bez stručnih naziva bez objašnjenja, s jednim brojem koji je najvažniji.",
+   p:"izlaganje od najviše šest slika i zapis onoga što se govori",
+   m:"Prvi je podatak zadatak i njegova cijena, a ne robot; najvažniji je broj jasno istaknut; na kraju je navedeno što bi moglo poći po zlu."}
+ ]
+};
+
+var KLJUC = "ftq-mr-m1akt-zadaci";
+var stanje = {};
+try { stanje = JSON.parse(localStorage.getItem(KLJUC) || "{}") || {}; } catch (e) { stanje = {}; }
+var kutije = [], ukupnoZad = 0;
+
+function napraviZadatak(id, z, redni){
+  var d = document.createElement("div"); d.className = "zad";
+  var gore = document.createElement("div"); gore.className = "zad-g";
+  var b = document.createElement("button");
+  b.className = "kv-box"; b.type = "button";
+  b.setAttribute("aria-label", "Označi zadatak kao odrađen");
+  b.setAttribute("aria-pressed", stanje[id] ? "true" : "false");
+  b.innerHTML = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.5l3.4 3.6L12 3.4"/></svg>';
+  b.addEventListener("click", function(){
+    var on = b.getAttribute("aria-pressed") === "true";
+    b.setAttribute("aria-pressed", on ? "false" : "true");
+    stanje[id] = !on;
+    try { localStorage.setItem(KLJUC, JSON.stringify(stanje)); } catch (e) {}
+    osvjeziNapredak();
+  });
+  kutije.push({id:id, el:b}); ukupnoZad++;
+  var im = document.createElement("div"); im.className = "im";
+  im.innerHTML = '<h3>' + redni + '. ' + z.n + '</h3>' +
+    '<div class="meta"><span>Vrijeme <b>' + z.v + '</b></span><span>Vrsta <b>' + z.o + '</b></span></div>';
+  gore.appendChild(b); gore.appendChild(im);
+  var t = document.createElement("div"); t.className = "zad-t";
+  t.innerHTML = '<p>' + z.z + '</p><dl>' +
+    '<dt>Predaje se</dt><dd>' + z.p + '</dd>' +
+    '<dt>Mjerila</dt><dd>' + z.m + '</dd></dl>';
+  d.appendChild(gore); d.appendChild(t);
+  return d;
+}
+
+["11", "12", "13", "14", "15", "pr"].forEach(function(g){
+  var box = $("grupa-" + g);
+  ZAD[g].forEach(function(z, i){
+    box.appendChild(napraviZadatak(g + "-" + i, z, i + 1));
+  });
+});
+
+function osvjeziNapredak(){
+  var n = 0;
+  kutije.forEach(function(k){ if (k.el.getAttribute("aria-pressed") === "true") n++; });
+  $("napr-tx").textContent = "Odrađeno " + n + " od " + ukupnoZad + " zadataka";
+  $("napr-os").style.width = Math.round(n / ukupnoZad * 100) + "%";
+}
+$("napr-reset").addEventListener("click", function(){
+  kutije.forEach(function(k){ k.el.setAttribute("aria-pressed", "false"); stanje[k.id] = false; });
+  try { localStorage.setItem(KLJUC, "{}"); } catch (e) {}
+  osvjeziNapredak();
+});
+osvjeziNapredak();
+
+/* ---------- alatna traka ---------- */
+var cv = $("ftq-canvas"), ctx = cv.getContext("2d");
+var strokes = [], drawing = null, tool = null, board = false;
+var COLORS = ["#17656E", "#2ECAD4", "#C0562A", "#3E7A46", "#10394A"];
+var color = COLORS[0];
+function store(k, v){ try{ localStorage.setItem("ftq-mr-m1akt-" + k, v); }catch(e){} }
+function load(k){ try{ return localStorage.getItem("ftq-mr-m1akt-" + k); }catch(e){ return null; } }
+function fit(){
+  var r = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.round(innerWidth * r); cv.height = Math.round(innerHeight * r);
+  cv.style.width = innerWidth + "px"; cv.style.height = innerHeight + "px";
+  ctx.setTransform(r, 0, 0, r, 0, 0); redraw();
+}
+function redraw(){
+  ctx.clearRect(0, 0, innerWidth, innerHeight);
+  if (board){
+    var cs = getComputedStyle(document.body);
+    ctx.fillStyle = cs.backgroundColor || "#fff";
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+  }
+  strokes.forEach(function(s){
+    if (!s.pts || s.pts.length < 2) return;
+    ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (s.tool === "erase"){ ctx.globalCompositeOperation = "destination-out"; ctx.lineWidth = 26; ctx.strokeStyle = "rgba(0,0,0,1)"; }
+    else if (s.tool === "mark"){ ctx.globalAlpha = .32; ctx.lineWidth = 17; ctx.strokeStyle = s.color; }
+    else { ctx.lineWidth = 2.6; ctx.strokeStyle = s.color; }
+    ctx.beginPath(); ctx.moveTo(s.pts[0][0], s.pts[0][1]);
+    for (var i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i][0], s.pts[i][1]);
+    ctx.stroke(); ctx.restore();
+  });
+}
+function setTool(t){
+  tool = (tool === t) ? null : t;
+  ["pen", "mark", "erase"].forEach(function(k){ $("t-" + k).setAttribute("aria-pressed", tool === k ? "true" : "false"); });
+  cv.classList.toggle("on", !!tool);
+}
+cv.addEventListener("pointerdown", function(e){
+  if (!tool) return;
+  cv.setPointerCapture(e.pointerId);
+  drawing = {tool:tool, color:color, pts:[[e.clientX, e.clientY]]};
+  strokes.push(drawing);
+});
+cv.addEventListener("pointermove", function(e){ if (!drawing) return; drawing.pts.push([e.clientX, e.clientY]); redraw(); });
+function endStroke(){ if (!drawing) return; drawing = null; try{ store("strokes", JSON.stringify(strokes.slice(-400))); }catch(e){} }
+cv.addEventListener("pointerup", endStroke);
+cv.addEventListener("pointercancel", endStroke);
+$("t-pen").addEventListener("click", function(){ setTool("pen"); });
+$("t-mark").addEventListener("click", function(){ setTool("mark"); });
+$("t-erase").addEventListener("click", function(){ setTool("erase"); });
+$("t-board").addEventListener("click", function(){
+  board = !board; this.setAttribute("aria-pressed", board ? "true" : "false");
+  if (board && !tool) setTool("pen");
+  store("board", board ? "1" : "0"); redraw();
+});
+$("t-undo").addEventListener("click", function(){ strokes.pop(); redraw(); try{ store("strokes", JSON.stringify(strokes)); }catch(e){} });
+$("t-clear").addEventListener("click", function(){ strokes = []; redraw(); store("strokes", "[]"); });
+var colBox = $("ftq-colors");
+COLORS.forEach(function(c, i){
+  var b = document.createElement("button");
+  b.className = "sw"; b.type = "button"; b.style.background = c;
+  b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+  b.setAttribute("title", "Boja " + (i + 1));
+  b.addEventListener("click", function(){
+    color = c;
+    Array.prototype.forEach.call(colBox.children, function(x){ x.setAttribute("aria-pressed", "false"); });
+    b.setAttribute("aria-pressed", "true");
+  });
+  colBox.appendChild(b);
+});
+$("t-color").addEventListener("click", function(){
+  var on = colBox.classList.toggle("show");
+  this.setAttribute("aria-pressed", on ? "true" : "false");
+});
+var fs = parseFloat(load("fs") || "1");
+function applyFs(){ fs = Math.min(1.5, Math.max(.85, fs)); document.documentElement.style.setProperty("--fs", fs.toFixed(2)); store("fs", fs); }
+applyFs();
+$("t-plus").addEventListener("click", function(){ fs += .1; applyFs(); });
+$("t-minus").addEventListener("click", function(){ fs -= .1; applyFs(); });
+if (load("dys") === "1"){ document.body.classList.add("dys"); $("t-dys").setAttribute("aria-pressed", "true"); }
+$("t-dys").addEventListener("click", function(){
+  var on = document.body.classList.toggle("dys");
+  this.setAttribute("aria-pressed", on ? "true" : "false"); store("dys", on ? "1" : "0");
+});
+$("t-theme").addEventListener("click", function(){
+  var r = document.documentElement, c = r.getAttribute("data-theme");
+  var next = c === "dark" ? "light" : (c === "light" ? null : "dark");
+  if (next) r.setAttribute("data-theme", next); else r.removeAttribute("data-theme");
+  store("theme", next || ""); redraw();
+});
+var st = load("theme"); if (st) document.documentElement.setAttribute("data-theme", st);
+try{
+  var sv = load("strokes"); if (sv) strokes = JSON.parse(sv) || [];
+  if (load("board") === "1"){ board = true; $("t-board").setAttribute("aria-pressed", "true"); }
+}catch(e){ strokes = []; }
+addEventListener("resize", fit);
+fit();
+})();
+</script>
+</body>
+</html>

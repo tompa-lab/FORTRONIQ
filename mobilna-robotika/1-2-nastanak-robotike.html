@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="ForTroniQ d.o.o.">
+<meta name="robots" content="index, follow">
+<meta name="description" content="Razvoj robotike od automata i Jacquardova stana, preko Unimatea, Walterovih kornjača i Shakeyja, do skladišnih robota: vremenska crta sa šesnaest prekretnica, razvoj vođenja vozila od žice u podu do AMR-a i četiri sile koje su pomicale granicu.">
+<title>Nastanak robotike — Modul 1</title>
+<link rel="canonical" href="https://dos.fortroniq.hr/mobilna-robotika/1-2-nastanak-robotike.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/mobilna-robotika/1-2-nastanak-robotike.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/mobilna-robotika/1-2-nastanak-robotike.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/mobilna-robotika/1-2-nastanak-robotike.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Nastanak robotike">
+<meta property="og:description" content="Vremenska crta razvoja, od prvih automata do skladišnih robota, i razlozi svakoga skoka.">
+<meta property="og:url" content="https://dos.fortroniq.hr/mobilna-robotika/1-2-nastanak-robotike.html">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+
+<style>
+:root{
+  --paper:#FFFFFF;
+  --ink:#10394A;
+  --body:#5D7C90;
+  --rule:#DCE4E8;
+  --teal:#17656E;
+  --teal-d:#0F4A52;
+  --cyan:#2ECAD4;
+  --hero-a:#1B6A72;
+  --hero-b:#0C3F47;
+  --bar:#17181A;
+  --bar-t:#8A9499;
+  --soft:#F3F7F8;
+  --ok:#2E7D53;
+  --bad:#B24A2E;
+  --fs:1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+    --teal:#2A9AA6; --teal-d:#2ECAD4;
+    --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+    --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+  --teal:#2A9AA6; --teal-d:#2ECAD4;
+  --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+  --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  font-size:calc(16px * var(--fs)); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body.dys{letter-spacing:.012em;word-spacing:.09em;line-height:1.85}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+/* ============ GORNJA TRAKA ============ */
+.topbar{background:var(--bar);color:#fff;display:flex;align-items:stretch;overflow-x:auto;font-size:11.5px}
+.tbi{padding:6px 14px;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.tbi .lb{color:var(--bar-t);font-size:9.5px;letter-spacing:.03em}
+.tbi .vl{font-weight:500}
+.tbi.crumb .vl{color:var(--cyan)}
+.tbi .x{display:inline-block;margin-left:6px;opacity:.65}
+.tbi.menu{align-items:center;flex-direction:row;gap:8px}
+.tbi.menu svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.8}
+a.tbi{color:#fff;text-decoration:none}
+a.tbi:hover .vl{color:var(--cyan)}
+
+/* ============ HERO ============ */
+.hero{background:linear-gradient(160deg,var(--hero-a) 0%,var(--hero-b) 100%);position:relative;overflow:hidden}
+.hero-in{position:relative;z-index:3;max-width:1120px;margin:0 auto;padding:38px clamp(20px,6vw,120px) 30px}
+.hero-art{position:absolute;right:0;top:0;bottom:0;width:min(46%,520px);opacity:.5;pointer-events:none}
+.hero-art svg{width:100%;height:100%;display:block}
+.eyebrow{display:flex;flex-wrap:wrap;gap:.5em;align-items:center;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:#9FC9CE}
+.eyebrow b{color:#fff;font-weight:700;letter-spacing:.17em}
+.eyebrow b i{color:var(--cyan);font-style:normal}
+.eyebrow span::after{content:"·";margin-left:.5em;opacity:.6}
+.eyebrow span:last-child::after{content:""}
+.hero h1{
+  margin:.35em 0 0;color:#fff;font-weight:700;
+  font-size:clamp(29px,5vw,50px);letter-spacing:-.026em;line-height:1.06;
+  max-width:16ch;text-wrap:balance;text-shadow:0 2px 20px rgba(0,0,0,.28);
+}
+.lede{max-width:62ch;color:#D4E8EB;font-size:15.5px;line-height:1.62;margin:.9em 0 0}
+
+.goals{
+  position:relative;z-index:3;max-width:1120px;margin:0 auto;
+  padding:4px clamp(20px,6vw,120px) 40px;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:26px 40px;align-items:start;
+}
+.goals-h{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:6px}
+.goals-h svg{width:46px;height:32px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.goals-h span{color:#fff;font-weight:700;font-size:19px;letter-spacing:-.01em}
+.goals ul{margin:0;padding:0;list-style:none;columns:3;column-gap:34px}
+.goals li{break-inside:avoid;margin:0 0 13px;display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:start;color:#E6F5F7;font-size:12.6px;line-height:1.45}
+.goals li svg{width:11px;height:11px;margin-top:4px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){
+  .goals{grid-template-columns:1fr;gap:16px}
+  .goals-h{flex-direction:row;align-items:center;justify-content:flex-start}
+  .goals ul{columns:1}
+}
+.cyanline{height:5px;background:var(--cyan)}
+
+/* ============ SADRŽAJ ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(20px,6vw,120px) 10px}
+.col{max-width:74ch}
+section{padding-top:52px}
+.sh{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:8px}
+.sh .n{
+  flex:0 0 auto;width:27px;height:27px;border-radius:50%;
+  background:var(--teal);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;align-self:center;
+}
+.sh h2{margin:0;font-size:clamp(21px,2.6vw,27px);font-weight:700;letter-spacing:-.022em;line-height:1.15;text-wrap:balance}
+.sd{color:var(--body);font-size:14px;margin:0 0 20px;max-width:70ch}
+p{margin:0 0 1.05em;max-width:74ch;font-size:15.4px;line-height:1.72;color:var(--ink)}
+p.mut{color:var(--body)}
+h3.sub{font-size:17px;font-weight:600;letter-spacing:-.012em;margin:2em 0 .6em;color:var(--ink)}
+strong{font-weight:600}
+em{font-style:italic}
+.kv{color:var(--teal);font-weight:600}
+
+ul.plain{margin:0 0 1.2em;padding-left:1.15em;max-width:74ch}
+ul.plain li{margin-bottom:.45em;font-size:15.2px;line-height:1.66}
+
+/* ============ PLOČE ============ */
+.panel{background:var(--soft);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:26px 0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.panel-head .t{font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--teal)}
+.panel-head .s{font-size:11.5px;color:var(--body);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.chip{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);
+  padding:8px 12px;cursor:pointer;text-align:left;line-height:1.3;
+}
+.chip:hover{border-color:var(--cyan);color:var(--teal)}
+.chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.chip small{display:block;font-size:10.5px;font-weight:500;opacity:.75;margin-top:3px;letter-spacing:.02em}
+.chip.ac{font-size:13px;font-weight:700;letter-spacing:.04em;padding:7px 11px}
+.def{border-top:1px solid var(--rule);padding:18px 17px;background:var(--paper)}
+.def h3{font-size:19px;font-weight:700;letter-spacing:-.015em;margin:0 0 3px;color:var(--ink)}
+.def .en{font-size:12.5px;color:var(--body);margin:0 0 13px}
+.def dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 20px;margin:0}
+.def dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:4px}
+.def dd{margin:0;font-size:14.6px;line-height:1.55}
+@media (max-width:560px){.def dl{grid-template-columns:1fr;gap:2px 0}.def dt{padding-top:11px}}
+
+.norm{border:1px solid var(--rule);border-left:4px solid var(--cyan);border-radius:6px;background:var(--soft);padding:18px 20px;margin:24px 0;max-width:74ch}
+.norm .lbl{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:7px}
+.norm p{margin:0;font-size:17px;line-height:1.55;font-style:italic}
+.norm .src{margin-top:10px;font-size:12px;color:var(--body);font-style:normal}
+
+.note{border:1px solid var(--rule);border-radius:6px;background:var(--soft);padding:15px 17px;margin:22px 0;max-width:74ch}
+.note b{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.note p{margin:0;font-size:14.6px;line-height:1.6}
+
+.tscroll{overflow-x:auto;margin:24px 0}
+table.t{width:100%;border-collapse:collapse;font-size:14.2px;min-width:520px}
+table.t th,table.t td{text-align:left;padding:10px 14px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.5}
+table.t th{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+table.t td:first-child,table.t th:first-child{font-weight:600;padding-right:20px}
+table.t tr:last-child td{border-bottom:0}
+
+.fig{border:1px dashed var(--rule);border-radius:8px;background:var(--soft);padding:26px 18px;margin:26px 0;text-align:center;max-width:74ch}
+.fig .ph{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.fig .cap{font-size:13.6px;color:var(--body);margin:9px auto 0;max-width:58ch;line-height:1.55}
+
+/* ---- usporedba postupaka ---- */
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{
+  font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink);
+}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.cmp{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:10px 26px;padding:15px;align-items:center}
+@media (max-width:640px){.cmp{grid-template-columns:1fr}}
+.cmp svg{width:100%;height:auto;display:block;background:var(--paper);border:1px solid var(--rule);border-radius:6px}
+.cmp .ct h4{margin:0 0 6px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.cmp .ct p{margin:0 0 .7em;font-size:14.4px;line-height:1.6}
+.cmp .ct .ex{font-size:13px;color:var(--body);margin:0}
+
+/* ---- stepenasti učinak ---- */
+.step-bar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.step-bar input[type=range]{flex:1 1 190px;accent-color:var(--teal);min-width:150px}
+.step-bar .val{font-size:13px;font-weight:600;color:var(--teal);font-variant-numeric:tabular-nums;min-width:8.5em}
+.step-out{padding:14px 16px;border-top:1px solid var(--rule);font-size:14.2px;line-height:1.6;color:var(--ink);background:var(--paper)}
+.step-out b{color:var(--teal)}
+
+/* ---- vremenska crta ---- */
+.tl-wrap{background:var(--paper);padding:6px 0}
+svg.tl{display:block;width:100%;height:auto}
+.tlbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.tlbar input[type=range]{flex:1 1 180px;accent-color:var(--teal);min-width:140px}
+.btn{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;padding:7px 13px;cursor:pointer;
+}
+.btn:hover{border-color:var(--cyan);color:var(--teal)}
+.card{border-top:1px solid var(--rule);padding:18px 17px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 24px;background:var(--paper)}
+.card .yr{grid-row:1/span 3;font-size:34px;font-weight:700;color:var(--teal);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.card .era{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--body)}
+.card .ttl{font-size:18px;font-weight:700;letter-spacing:-.015em;line-height:1.3;margin:3px 0 6px}
+.card .txt{font-size:14.6px;line-height:1.6;margin:0;max-width:64ch;color:var(--ink)}
+@media (max-width:540px){.card{grid-template-columns:1fr}.card .yr{grid-row:auto;font-size:28px}}
+
+/* ---- primjene ---- */
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:26px 0}
+.app{border:1px solid var(--rule);border-radius:8px;padding:16px 17px;background:var(--soft)}
+.app h4{margin:0 0 7px;font-size:15.5px;font-weight:700;letter-spacing:-.012em;display:flex;align-items:center;gap:9px}
+.app h4 svg{width:19px;height:19px;stroke:var(--cyan);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.app p{margin:0;font-size:13.6px;line-height:1.6;color:var(--body)}
+
+/* ---- procjena znanja ---- */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:22px}
+.q{background:var(--soft);border:1px solid var(--rule);border-radius:8px;padding:17px;display:flex;flex-direction:column}
+.q .num{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--body)}
+.q .prompt{font-size:15.4px;line-height:1.45;margin:6px 0 13px;font-weight:600}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.opt{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rule);border-radius:5px;padding:9px 11px;cursor:pointer;font-size:14.4px;line-height:1.4;background:var(--paper)}
+.opt:hover{border-color:var(--cyan)}
+.opt input{margin:4px 0 0;accent-color:var(--teal);flex-shrink:0}
+.opt.correct{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.opt.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.opt.locked{cursor:default}
+.opt.locked:hover{border-color:var(--rule)}
+.opt.locked.correct:hover{border-color:var(--ok)}
+.opt.locked.wrong:hover{border-color:var(--bad)}
+.fb{font-size:13.8px;line-height:1.55;margin-top:auto;padding-top:11px;border-top:1px solid var(--rule);color:var(--body)}
+.fb b{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.fb.ok b{color:var(--ok)} .fb.no b{color:var(--bad)} .fb[hidden]{display:none}
+.score{font-size:12.5px;color:var(--body);font-variant-numeric:tabular-nums;margin-left:auto}
+
+/* ---- kretanje ---- */
+.nav{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;margin:54px 0 0;padding-top:24px;border-top:1px solid var(--rule)}
+.nav a,.nav span{
+  display:block;border:1px solid var(--rule);border-radius:8px;padding:13px 17px;
+  text-decoration:none;color:var(--ink);min-width:min(100%,250px);flex:1 1 250px;
+}
+.nav a:hover{border-color:var(--cyan)}
+.nav .lb{display:block;font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--body);margin-bottom:3px}
+.nav .tt{font-size:15px;font-weight:600;letter-spacing:-.012em;line-height:1.35}
+.nav .nx{text-align:right}
+.nav span.soon{opacity:.6}
+.nav span.soon .tt{color:var(--body)}
+
+/* ============ PODNOŽJE ============ */
+.sf{border-top:1px solid var(--rule);margin-top:50px}
+.sf-in{
+  max-width:1120px;margin:0 auto;padding:24px clamp(20px,6vw,120px);
+  display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between;
+  font-size:12.5px;color:var(--body);
+}
+.sf-in .brand{font-weight:700;letter-spacing:.17em;color:var(--teal)}
+.sf-in .brand i{color:var(--cyan);font-style:normal}
+
+/* ============ ALATNA TRAKA ============ */
+#ftq-canvas{position:fixed;inset:0;z-index:40;pointer-events:none;touch-action:none}
+#ftq-canvas.on{pointer-events:auto;cursor:crosshair}
+#ftq-bar{
+  position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:60;
+  display:flex;flex-direction:column;gap:3px;
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;
+  padding:5px;box-shadow:0 2px 16px rgba(16,57,74,.18);
+}
+#ftq-bar hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:auto}
+.tb{
+  width:38px;height:34px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;border-radius:4px;
+  color:var(--body);cursor:pointer;padding:0;
+  font-family:"IBM Plex Sans",sans-serif;font-size:12px;font-weight:700;
+}
+.tb:hover{color:var(--teal);border-color:var(--rule)}
+.tb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.tb svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#ftq-colors{display:none;flex-direction:column;gap:3px;padding-top:3px;border-top:1px solid var(--rule);margin-top:3px}
+#ftq-colors.show{display:flex}
+.sw{width:38px;height:20px;border:1px solid var(--rule);border-radius:4px;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:-4px}
+@media (max-width:680px){#ftq-bar{right:8px;padding:4px}.tb{width:33px;height:30px}.tb svg{width:17px;height:17px}.sw{width:33px;height:17px}}
+@media print{#ftq-bar,.topbar{display:none}}
+
+/* ============ POSEBNO ZA OVU STRANICU ============ */
+.shema{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:0}
+@media (max-width:820px){.shema{grid-template-columns:1fr}}
+.shema-l{padding:16px;background:var(--paper);border-right:1px solid var(--rule)}
+@media (max-width:820px){.shema-l{border-right:0;border-bottom:1px solid var(--rule)}}
+.shema-l svg{width:100%;height:auto;display:block}
+.hot{cursor:pointer}
+.hot circle.tocka{fill:var(--paper);stroke:var(--teal);stroke-width:2}
+.hot text{font-family:"IBM Plex Sans",sans-serif;font-size:11px;font-weight:700;fill:var(--teal);text-anchor:middle;dominant-baseline:central}
+.hot[aria-pressed="true"] circle.tocka{fill:var(--teal);stroke:var(--teal)}
+.hot[aria-pressed="true"] text{fill:#fff}
+.hot:hover circle.tocka{stroke:var(--cyan)}
+.shema-d{padding:18px 17px;background:var(--paper)}
+.shema-d .br{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
+.shema-d h4{margin:5px 0 8px;font-size:18px;font-weight:700;letter-spacing:-.015em}
+.shema-d p{margin:0 0 .8em;font-size:14.4px;line-height:1.6}
+.shema-d p:last-child{margin-bottom:0}
+.shema-d .uloga{font-size:13.4px;color:var(--body);border-top:1px solid var(--rule);padding-top:10px;margin-top:12px}
+
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink)}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.izv{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:12px 26px;padding:15px;align-items:center}
+@media (max-width:680px){.izv{grid-template-columns:1fr}}
+.izv svg{width:100%;height:auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:block}
+.izv .ct h4{margin:0 0 7px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.izv .ct p{margin:0 0 .8em;font-size:14.4px;line-height:1.6}
+.izv .ct dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 16px;margin:0}
+.izv .ct dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.izv .ct dd{margin:0;font-size:13.8px;line-height:1.5}
+
+.koraci{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.korak{flex:1 1 118px;min-width:112px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);
+  padding:11px 10px;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink)}
+.korak:hover{border-color:var(--cyan)}
+.korak[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.korak .br{font-size:10.5px;font-weight:700;letter-spacing:.12em;opacity:.7}
+.korak .im{display:block;font-size:13px;font-weight:600;line-height:1.28;margin-top:3px}
+
+.greske{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin:24px 0}
+.gr{border:1px solid var(--rule);border-radius:8px;background:var(--soft);padding:16px 17px}
+.gr h4{margin:0 0 8px;font-size:15.5px;font-weight:700;letter-spacing:-.012em}
+.gr dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-top:9px}
+.gr dd{margin:2px 0 0;font-size:13.8px;line-height:1.56;color:var(--body)}
+.gr dl{margin:0}
+
+.isp{display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:12px 26px;padding:16px;align-items:center}
+@media (max-width:660px){.isp{grid-template-columns:1fr}}
+.isp svg{width:100%;height:auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:block}
+.isp dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;margin:0 0 12px}
+.isp dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.isp dd{margin:0;font-size:15px;font-variant-numeric:tabular-nums}
+.isp p{margin:0;font-size:14.2px;line-height:1.6;color:var(--body)}
+.ibar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);background:var(--paper);flex-wrap:wrap}
+.ibar input[type=range]{flex:1 1 200px;accent-color:var(--teal);min-width:150px}
+.ibar .val{font-size:13px;font-weight:600;color:var(--teal);min-width:7em;font-variant-numeric:tabular-nums}
+
+.pop{border:1px solid var(--rule);border-radius:8px;background:var(--soft);overflow:hidden;margin:16px 0}
+.pop .st{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.pop .st:last-child{border-bottom:0}
+.pop .kv-box{flex:0 0 auto;width:21px;height:21px;border:2px solid var(--rule);border-radius:5px;background:var(--paper);
+  cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.pop .kv-box svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.pop .kv-box[aria-pressed="true"]{background:var(--teal);border-color:var(--teal)}
+.pop .kv-box[aria-pressed="true"] svg{opacity:1}
+.pop .tx{min-width:0}
+.pop .tx b{display:block;font-size:14.6px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.pop .tx span{font-size:13.6px;line-height:1.6;color:var(--body)}
+.pop .nog{display:flex;gap:13px;align-items:center;padding:12px 16px;background:var(--soft);flex-wrap:wrap}
+.pop .nog .os{flex:1 1 160px;height:8px;border-radius:99px;background:var(--rule);overflow:hidden;min-width:120px}
+.pop .nog .os i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:width .2s}
+.pop .nog .tx2{font-size:12.8px;font-weight:600;color:var(--teal);white-space:nowrap}
+.pop .nog button{font-family:inherit;font-size:12.3px;font-weight:600;color:var(--body);background:none;
+  border:1px solid var(--rule);border-radius:5px;padding:5px 12px;cursor:pointer}
+.pop .nog button:hover{border-color:var(--cyan);color:var(--teal)}
+
+.crta{padding:16px 16px 4px;background:var(--paper);border-top:1px solid var(--rule)}
+.crta svg{width:100%;height:auto;display:block;overflow:visible}
+.crta .tk{cursor:pointer}
+.crta .tk circle{transition:r .15s}
+.crta .tk:hover circle{r:8}
+</style>
+</head>
+<body>
+
+<canvas id="ftq-canvas"></canvas>
+
+<div id="ftq-bar" role="toolbar" aria-label="Alati">
+  <button class="tb" id="t-pen"   type="button" aria-pressed="false" title="Olovka"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 10-10a2.1 2.1 0 0 0-3-3L5 16l-1 4z"/></svg></button>
+  <button class="tb" id="t-mark"  type="button" aria-pressed="false" title="Marker"><svg viewBox="0 0 24 24"><path d="M5 18h14"/><path d="M8 14l7-8a2 2 0 0 1 3 3l-7 8H8v-3z"/></svg></button>
+  <button class="tb" id="t-erase" type="button" aria-pressed="false" title="Gumica"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M14 4l6 6-8 8H7l-3-3z"/></svg></button>
+  <button class="tb" id="t-board" type="button" aria-pressed="false" title="Ploča"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M9 20l3-3 3 3"/></svg></button>
+  <button class="tb" id="t-color" type="button" aria-pressed="false" title="Boja"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg></button>
+  <button class="tb" id="t-undo"  type="button" title="Poništi"><svg viewBox="0 0 24 24"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 0 10h-3"/></svg></button>
+  <button class="tb" id="t-clear" type="button" title="Obriši sve"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></button>
+  <hr>
+  <button class="tb" id="t-minus" type="button" title="Smanji slova">A&minus;</button>
+  <button class="tb" id="t-plus"  type="button" title="Povećaj slova">A+</button>
+  <button class="tb" id="t-dys"   type="button" aria-pressed="false" title="Pomoć s disleksijom">Dy</button>
+  <button class="tb" id="t-theme" type="button" title="Svijetla / tamna tema"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 5a7 7 0 0 1 0 14z" fill="currentColor" stroke="none"/></svg></button>
+  <div id="ftq-colors"></div>
+</div>
+
+<nav class="topbar" aria-label="Putanja">
+  <a class="tbi menu" href="../index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Izbornik</span></a>
+  <a class="tbi" href="index.html"><span class="lb">Knjiga</span><span class="vl">Osnove mobilnih robota</span></a>
+  <a class="tbi crumb" href="m1-uvod.html"><span class="lb">Modul</span><span class="vl">Uvod u mobilnu robotiku<span class="x">&#10005;</span></span></a>
+  <div class="tbi crumb"><span class="lb">Odlomak</span><span class="vl">Nastanak robotike<span class="x">&#10005;</span></span></div>
+</nav>
+
+<header class="hero">
+  <div class="hero-art" aria-hidden="true">
+    <svg viewBox="0 0 420 340" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="#6FD9E2" stroke-width="1.5" opacity=".6">
+        <path d="M60 200 H360"/>
+      </g>
+      <g fill="#6FD9E2" opacity=".65">
+        <circle cx="110" cy="200" r="6"/><circle cx="175" cy="200" r="6"/>
+        <circle cx="240" cy="200" r="6"/><circle cx="305" cy="200" r="6"/>
+      </g>
+      <g fill="none" stroke="#6FD9E2" stroke-width="1.2" opacity=".4">
+        <path d="M110 200 V160 M175 200 V132 M240 200 V150 M305 200 V110"/>
+        <rect x="92" y="138" width="36" height="22" rx="3"/>
+        <rect x="157" y="110" width="36" height="22" rx="3"/>
+        <rect x="222" y="128" width="36" height="22" rx="3"/>
+        <rect x="287" y="88" width="36" height="22" rx="3"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-in">
+    <div class="eyebrow">
+      <b>FORTRONI<i>Q</i></b><span>Osnove mobilnih robota</span><span>Modul 1</span><span>Jedinica 1.2</span>
+    </div>
+    <h1>Nastanak robotike</h1>
+    <p class="lede">Robotika nije nastala odjednom niti je rasla ravnomjerno. Granica onoga što se smatra
+    izvedivim pomaknula se nekoliko puta, i svaki put zbog jednoga konkretnog razloga &mdash; jeftinijega
+    računala, novoga osjetila, boljega algoritma ili natjecanja koje je pokazalo da nešto ipak ide.</p>
+  </div>
+
+  <div class="goals">
+    <div class="goals-h">
+      <svg viewBox="0 0 46 32" aria-hidden="true"><path d="M4 17l8 9L28 6"/><path d="M20 17l8 9L44 6"/></svg>
+      <span>Moći ću:</span>
+    </div>
+    <ul id="goals"></ul>
+  </div>
+</header>
+<div class="cyanline"></div>
+
+<div class="wrap">
+
+  <!-- ===================== 1 ===================== -->
+  <section id="s1">
+    <div class="sh"><span class="n">1</span><h2>Prije nego što je riječ postojala</h2></div>
+
+    <p>Naprave koje same izvode slijed radnji starije su od riječi <em>robot</em> gotovo dvije tisuće godina.
+    Heron Aleksandrijski opisuje u prvome stoljeću kazališne naprave pokretane utezima i užadi, koje su izvodile
+    cijele prizore bez ljudskoga dodira. U trinaestom stoljeću <strong>al‑Jazari</strong> gradi sat s figurama
+    koje se pomiču u zadanome trenutku i naprave za dizanje vode s krivuljnim mehanizmom.</p>
+
+    <p>U osamnaestome stoljeću nastaju <strong>automati</strong> koji oponašaju živa bića: Vaucansonova patka
+    koja kljuca zrnje, pisari i crtači Jaqueta‑Droza koji povlače pero po papiru. Bili su to vrhunci
+    finomehanike, ali i savršeni primjeri onoga što u prethodnoj jedinici nije robot &mdash; izvode zadan slijed
+    i ne mjere ništa.</p>
+
+    <p>Dvije naprave iz toga niza ipak su izravni preci struke. <strong>Jacquardov tkalački stan</strong> iz
+    1804. vodi uzorak <em>bušenim karticama</em>, pa se ista naprava mijenjanjem kartica prenamjenjuje &mdash; to
+    je začetak programiranja. A 1898. <strong>Nikola Tesla</strong> na izložbi u New Yorku upravlja
+    brodićem radiovalovima, bez ijedne žice. To nije robot, jer odluku donosi čovjek, ali jest prvi
+    <em>daljinski vođen stroj</em> i početak onoga što se danas zove teleoperacijom.</p>
+
+    <div class="fig">
+      <div class="ph">Mjesto za sliku 1.1</div>
+      <p class="cap">Tri preteče na jednoj slici: bušena kartica Jacquardova stana, automat iz 18. stoljeća i
+      Teslin radiovođeni brodić, s godinama i kratkom napomenom što je svaki donio.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section id="s2">
+    <div class="sh"><span class="n">2</span><h2>Vremenska crta</h2></div>
+
+    <p>Šesnaest događaja koji su pomaknuli granicu. Crta je podijeljena na četiri razdoblja, a svako ima svoju
+    pokretačku silu &mdash; o njima govori peti odjeljak.</p>
+
+    <p class="sd">Klikni točku na crti.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Razvoj robotike i mobilne robotike</div>
+        <div class="s" id="cpos">&nbsp;</div>
+      </div>
+      <div class="crta">
+        <svg id="csvg" viewBox="0 0 900 210" role="img" aria-label="Vremenska crta razvoja robotike"></svg>
+      </div>
+      <div class="def" id="cdef"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section id="s3">
+    <div class="sh"><span class="n">3</span><h2>Industrijski robot dolazi prvi</h2></div>
+
+    <p>Prvi je robot bio nepokretan, i to nije slučajnost. U tvornici je okolina uređena: dio uvijek dolazi na
+    isto mjesto, u istome položaju, u isto vrijeme. Takav zadatak ne traži da robot zna gdje je &mdash; traži
+    samo da točno ponovi gibanje. To je bilo izvedivo elektronikom pedesetih godina; mobilnost nije.</p>
+
+    <p><strong>George Devol</strong> 1954. prijavljuje patent za napravu koju naziva <em>programiranim
+    prijenosom predmeta</em>. S <strong>Josephom Engelbergerom</strong> dvije godine poslije osniva tvrtku
+    <em>Unimation</em>, a 1961. prvi <span class="kv">Unimate</span> počinje raditi u pogonu General Motorsa u
+    New Jerseyju: vadi vruće odljevke iz stroja za tlačni lijev i slaže ih. Posao je bio vruć, bučan i opasan
+    — upravo takav kakav se prvi predaje stroju.</p>
+
+    <h3 class="sub">Dvadeset godina usavršavanja</h3>
+    <div class="tscroll">
+    <table class="t">
+      <tr><th>Godina</th><th>Što se pojavilo</th><th>Zašto je bilo važno</th></tr>
+      <tr><td>1969.</td><td>Stanfordska ruka</td><td>prva ruka oblikovana za računalno upravljanje, sa šest električnih osi</td></tr>
+      <tr><td>1973.</td><td>KUKA Famulus</td><td>prvi robot sa šest elektromehanički pogonjenih osi</td></tr>
+      <tr><td>1974.</td><td>ABB IRB 6</td><td>prvi potpuno električni robot kojim upravlja mikroprocesor</td></tr>
+      <tr><td>1978.</td><td>PUMA</td><td>robot za sklapanje sitnih dijelova; postao mjerilo za cijelu granu</td></tr>
+      <tr><td>1978.</td><td>SCARA</td><td>izvedba s popustljivošću u ravnini, a krutošću po visini — za umetanje</td></tr>
+    </table>
+    </div>
+
+    <p>Do kraja sedamdesetih industrijski je robot bio riješen problem: znalo se kako ga graditi, kako ga
+    programirati i kako ga uklopiti u traku. Mobilna je robotika u isto vrijeme još bila u laboratoriju.</p>
+  </section>
+
+  <!-- ===================== 4 ===================== -->
+  <section id="s4">
+    <div class="sh"><span class="n">4</span><h2>Prvi mobilni roboti</h2></div>
+
+    <p>Zanimljivo je da je prvi <em>autonomni</em> robot bio mobilan, i da je nastao prije industrijskoga.
+    Britanski neurofiziolog <strong>W. Grey Walter</strong> gradi 1948. i 1949. dvije male naprave na trima
+    kotačima, nazvane <em>Elmer</em> i <em>Elsie</em>. Imale su fotoćeliju, dodirni prekidač, dvije elektronske
+    cijevi i bateriju &mdash; i ponašale se iznenađujuće složeno: tražile su svjetlo, zaobilazile prepreke i
+    same se vraćale na punjenje kad bi baterija oslabila.</p>
+
+    <p>Walterova je poanta bila znanstvena: htio je pokazati da složeno ponašanje ne traži složen mozak nego
+    <strong>zatvorenu petlju između osjetila i pogona</strong>. Ta ista misao vraća se osamdesetih u obliku
+    reaktivnoga upravljanja i vidjet ćemo je u modulu 6.</p>
+
+    <h3 class="sub">Shakey — prvi robot koji je razmišljao o tome što radi</h3>
+    <p>Između 1966. i 1972. u istraživačkome institutu SRI nastaje <span class="kv">Shakey</span>, kolica visoka
+    kao čovjek, s televizijskom kamerom, dodirnim brkovima i radiovezom prema računalu veličine sobe. Ime je
+    dobio po tome što se tresao dok se gibao.</p>
+
+    <p>Shakey je bio prvi robot koji je zadatak <em>rastavljao na korake</em>. Naredbi poput <em>gurni kutiju s
+    platforme</em> pristupao je tako da sam smisli slijed: dovezi se do rampe, popni se, priđi kutiji, gurni je.
+    Za to su u istome projektu nastala dva alata koja se i danas koriste svugdje: planer <span class="kv">STRIPS</span>
+    i algoritam pretraživanja <span class="kv">A*</span>. Algoritam A* vratit će se u modulu 6 kao osnovna metoda
+    planiranja putanje.</p>
+
+    <h3 class="sub">Mjesec i Mars</h3>
+    <p>Dok su laboratoriji gradili prototipove, sovjetski <strong>Lunohod 1</strong> 1970. vozi po Mjesecu —
+    daljinski vođen sa Zemlje, uz kašnjenje signala od nekoliko sekundi. Godine 1997. mala kolica
+    <strong>Sojourner</strong> voze po Marsu, gdje je kašnjenje toliko da izravno vođenje više nije moguće, pa
+    vozilo dio odluka mora donositi samo. Svemir je tako postao prvo mjesto na kojem se samostalnost isplatila
+    ne zbog cijene rada, nego zbog udaljenosti.</p>
+
+    <div class="fig">
+      <div class="ph">Mjesto za sliku 4.1</div>
+      <p class="cap">Usporedni prikaz triju ranih mobilnih robota: Walterove kornjače, Shakeyja i Lunohoda, s
+      naznačenim osjetilima i mjestom na kojem se donosila odluka.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section id="s5">
+    <div class="sh"><span class="n">5</span><h2>Iz laboratorija u skladište</h2></div>
+
+    <p>Usporedo s laboratorijima tekao je i jedan posve praktičan niz. Sredinom pedesetih u Sjedinjenim Državama
+    pojavljuje se prvo <strong>vozilo bez vozača</strong> u skladištu: vučna kolica koja slijede žicu položenu u
+    pod. Nema osjetila okoline, nema odluke &mdash; ali ima gibanje bez čovjeka, i to u pogonu.</p>
+
+    <p class="sd">Klikni način vođenja.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Kako se vodilo vozilo kroz skladište</div>
+        <div class="s" id="vpos">&nbsp;</div>
+      </div>
+      <div class="chips" id="vchips"></div>
+      <div class="def" id="vdef"></div>
+    </div>
+
+    <p>Prijelaz s posljednjega na pretposljednji redak u tome nizu presudan je i ima svoje ime: vozilo koje ne
+    treba nikakvu ugrađenu oznaku zove se <span class="kv">AMR</span> — <em>autonomni mobilni robot</em>, za
+    razliku od <span class="kv">AGV</span>, <em>automatski vođenoga vozila</em>. Razlika nije u pogonu nego u
+    tome <strong>tko određuje put</strong>: kod AGV‑a put je ugrađen u zgradu, kod AMR‑a je u robotu.</p>
+
+    <div class="note">
+      <b>Zašto je to promijenilo tržište</b>
+      <p>Kad put više nije ugrađen u pod, promjena rasporeda skladišta ne znači i preuređenje. Vozilo se
+      jednostavno ponovno provoza i napravi novu kartu. Trošak uvođenja pao je s razine građevinskoga zahvata
+      na razinu nabave opreme, i to je razlog zbog kojega su mobilni roboti u desetak godina prešli iz
+      iznimke u redovitu opremu skladišta.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 6 ===================== -->
+  <section id="s6">
+    <div class="sh"><span class="n">6</span><h2>Četiri sile koje su pomicale granicu</h2></div>
+
+    <p>Gledajući cijelu crtu unatrag, svaki skok ima jedan od četiriju uzroka. Nijedan nije bio zamisao koja je
+    pala s neba; svaki je bio nešto što je postalo <em>dovoljno jeftino ili dovoljno dobro</em>.</p>
+
+    <p class="sd">Klikni silu.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Što je pokretalo razvoj</div>
+        <div class="s" id="fpos">&nbsp;</div>
+      </div>
+      <div class="seg" id="fseg"></div>
+      <div class="izv">
+        <svg id="fsvg" viewBox="0 0 320 240" role="img" aria-label="Prikaz odabrane pokretačke sile"></svg>
+        <div class="ct">
+          <h4 id="fh">&nbsp;</h4>
+          <p id="fp">&nbsp;</p>
+          <dl>
+            <dt>Što se promijenilo</dt><dd id="fsp">&nbsp;</dd>
+            <dt>Što je time postalo moguće</dt><dd id="fmo">&nbsp;</dd>
+            <dt>Vidi se u</dt><dd id="fvi">&nbsp;</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">Natjecanja kao ubrzivač</h3>
+    <p>Poseban slučaj su natjecanja. Godine 2004. američka agencija DARPA raspisuje utrku samovozećih vozila
+    kroz pustinju; <strong>nijedno vozilo nije završilo stazu</strong>, a najbolje je prešlo nešto manje od
+    dvanaest kilometara od sto pedeset. Već sljedeće godine pet vozila prelazi cijelu stazu, a pobjeđuje
+    Stanfordov <em>Stanley</em>. Godine 2007. utrka se seli u gradsku sredinu, s prometnim pravilima i drugim
+    vozilima.</p>
+
+    <p>U tri godine problem je iz „nemoguće" prešao u „riješeno u ograničenim uvjetima". Nije se promijenila
+    fizika nego <em>koncentracija</em>: desetci skupina radile su isti zadatak, rezultati su bili javni, a
+    rješenja su se poslije prelila u industriju. Veći dio ljudi koji danas vode razvoj samovozećih vozila
+    sudjelovao je u tim utrkama.</p>
+  </section>
+
+  <!-- ===================== 7 ===================== -->
+  <section id="s7">
+    <div class="sh"><span class="n">7</span><h2>Gdje smo danas, a što još nije riješeno</h2></div>
+
+    <p>Mobilni robot koji vozi po poznatome, ravnome i osvijetljenome prostoru danas je gotov proizvod. Kupuje
+    se, pusti u pogon u nekoliko dana i radi u smjenama. To vrijedi za skladišta, bolnice, tvorničke hale i
+    velike trgovine.</p>
+
+    <p>Ono što nije riješeno leži izvan tih uvjeta:</p>
+
+    <ul class="plain">
+      <li><strong>Gustoća energije.</strong> Baterija je i dalje najteži i najskuplji dio. Vozilo koje radi
+      cijelu smjenu ili nosi mali teret, ili staje na punjenje.</li>
+      <li><strong>Nesređen prostor.</strong> Hrpa kutija, kabel na podu, mokra mrlja — sve ono što čovjek ni ne
+      primijeti, za robota je iznimka koju treba razriješiti.</li>
+      <li><strong>Predviđanje ljudi.</strong> Zaobići stup je lako; zaobići čovjeka koji se možda upravo
+      predomišlja mnogo je teže, jer traži procjenu namjere, a ne samo položaja.</li>
+      <li><strong>Rukovanje predmetima.</strong> Vožnja je riješena bolje od hvatanja. Uzeti nepoznat predmet
+      iz nesređene hrpe i dalje je otvoren problem.</li>
+      <li><strong>Potvrđivanje sigurnosti.</strong> Dokazati da se sustav koji uči ponaša predvidljivo teže je
+      nego dokazati isto za sustav s nepromjenjivim programom.</li>
+    </ul>
+
+    <div class="note">
+      <b>Zaključak jedinice</b>
+      <p>Robotika je nastala u tvornici, gdje je okolina uređena, pa je prvi robot bio nepokretan. Mobilnost je
+      morala pričekati jeftina računala, osjetila i algoritme — a kad je stigla, promijenila je i pitanje: ne
+      više <em>kako ponoviti gibanje</em>, nego <em>kako znati gdje si i kamo ideš</em>. Upravo o tome govore
+      preostali moduli ovoga područja.</p>
+      <p>Sljedeća jedinica uvodi podjele: po namjeni, po ustroju, po prostoru i po stupnju samostalnosti — i
+      objašnjava zašto ih ima više i zašto se preklapaju.</p>
+    </div>
+  </section>
+
+  <!-- ===================== PROCJENA ===================== -->
+  <section id="s8">
+    <div class="sh"><span class="n">8</span><h2>Procjena znanja</h2><span class="score" id="score">&nbsp;</span></div>
+    <p class="sd">Odgovor se zaključava nakon prvoga klika, uz objašnjenje zašto je točan.</p>
+    <div class="qgrid" id="qgrid"></div>
+  </section>
+
+  <nav class="nav" aria-label="Kretanje po modulu">
+    <a href="1-1-sto-je-robotika.html">
+      <span class="lb">&larr; Prethodna jedinica</span>
+      <span class="tt">1.1. Što je robotika</span>
+    </a>
+    <a class="nx" href="1-3-vrste-robota.html">
+      <span class="lb">Sljedeća jedinica &rarr;</span>
+      <span class="tt">1.3. Vrste robota</span>
+    </a>
+  </nav>
+</div>
+
+<div class="sf">
+  <div class="sf-in">
+    <span class="brand">FORTRONI<i>Q</i></span>
+    <span>Osnove mobilnih robota &middot; Modul 1 &middot; Jedinica 1.2</span>
+    <span>&copy; <span id="yr">2026</span> ForTroniQ d.o.o. &middot; Sva prava pridržana</span>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+var y = $("yr"); if (y) y.textContent = new Date().getFullYear();
+
+/* ---------- ishodi jedinice ---------- */
+var GOALS = [
+ "navesti prekretnice u razvoju robotike i mobilne robotike",
+ "objasniti zašto je industrijski robot nastao prije mobilnoga",
+ "razlikovati automatski vođeno vozilo od autonomnoga mobilnog robota"
+];
+var gul = $("goals");
+GOALS.forEach(function(g){
+  var li = document.createElement("li");
+  li.innerHTML = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.5l3.4 3.6L12 3.4"/></svg><span>' + g + '</span>';
+  gul.appendChild(li);
+});
+
+/* ---------- vremenska crta ---------- */
+var DOG = [
+ {g:1948, n:"Walterove kornjače", o:"W. Grey Walter gradi Elmera i Elsie — male naprave na trima kotačima s fotoćelijom, dodirnim prekidačem i dvjema elektronskim cijevima.", z:"Prvi autonomni mobilni roboti. Pokazali su da složeno ponašanje ne traži složen mozak nego zatvorenu petlju između osjetila i pogona."},
+ {g:1954, n:"Devolov patent", o:"George Devol prijavljuje patent za napravu koju naziva programiranim prijenosom predmeta.", z:"Prvi put je zapisana zamisao stroja koji se programira za rukovanje, a ne gradi za jedan jedini zahvat."},
+ {g:1956, n:"Osnovana Unimation", o:"Devol i Joseph Engelberger osnivaju prvu tvrtku na svijetu koja gradi robote.", z:"Robotika prestaje biti pokus i postaje grana. Engelbergera se otada naziva ocem industrijske robotike."},
+ {g:1961, n:"Unimate u pogonu", o:"Prvi Unimate počinje raditi u pogonu General Motorsa u New Jerseyju: vadi vruće odljevke iz stroja za tlačni lijev.", z:"Prvi robot koji je doista radio u proizvodnji. Zadatak je bio vruć, bučan i opasan — takav se prvi predaje stroju."},
+ {g:1968, n:"Algoritam A*", o:"U sklopu projekta Shakey objavljen je algoritam pretraživanja koji uz cijenu prijeđenoga puta uzima u obzir i procjenu do cilja.", z:"I danas je osnovna metoda planiranja putanje. Vraća se u modulu 6."},
+ {g:1970, n:"Lunohod 1", o:"Sovjetsko vozilo vozi po Mjesecu, daljinski vođeno sa Zemlje, uz kašnjenje signala od nekoliko sekundi.", z:"Prvi put je vozilo bez vozača radilo na drugome nebeskom tijelu. Kašnjenje je pokazalo granice izravnoga vođenja."},
+ {g:1972, n:"Shakey", o:"U institutu SRI dovršen je robot koji zadatak sam rastavlja na korake: dovezi se, popni se, priđi, gurni.", z:"Prvi robot koji je razmišljao o vlastitim postupcima. Iz projekta su izišli planer STRIPS i algoritam A*."},
+ {g:1974, n:"ABB IRB 6", o:"Predstavljen prvi potpuno električni industrijski robot kojim upravlja mikroprocesor.", z:"Elektronika ulazi u robota. Upravljanje prestaje biti sklopovsko i postaje programsko."},
+ {g:1978, n:"PUMA i SCARA", o:"Iste godine pojavljuju se robot za sklapanje sitnih dijelova i izvedba popustljiva u ravnini, a kruta po visini.", z:"Robot izlazi iz teških poslova i ulazi u fino sklapanje. Obje izvedbe i danas se proizvode."},
+ {g:1986, n:"Temelji istodobne lokalizacije i kartiranja", o:"Objavljen je postupak koji položaj robota i karta prostora procjenjuje zajedno, uz procjenu nesigurnosti.", z:"Odgovor na pitanje kako izraditi kartu ako ne znaš gdje si, i kako znati gdje si ako nemaš kartu. Tema modula 5."},
+ {g:1997, n:"Sojourner na Marsu", o:"Mala kolica voze po Marsu, gdje je kašnjenje signala toliko da izravno vođenje nije moguće.", z:"Samostalnost se prvi put isplatila zbog udaljenosti, a ne zbog cijene rada."},
+ {g:2002, n:"Robotski usisavač", o:"Na tržište dolazi kućanski robot koji se sam giba po sobi i vraća na punjenje.", z:"Prvi mobilni robot u masovnoj proizvodnji. Pokazao je da jednostavno ponašanje uz nisku cijenu nadmašuje složeno uz visoku."},
+ {g:2004, n:"Prva pustinjska utrka", o:"Raspisana je utrka samovozećih vozila kroz pustinju. Nijedno vozilo nije završilo stazu; najbolje je prešlo oko dvanaest od sto pedeset kilometara.", z:"Neuspjeh koji je pokrenuo granu. Rezultati su bili javni, pa su se rješenja brzo prelila među skupinama."},
+ {g:2005, n:"Utrka je završena", o:"Sljedeće godine pet vozila prelazi cijelu stazu; pobjeđuje Stanfordovo vozilo.", z:"U jednoj je godini zadatak iz nemogućega prešao u riješen u ograničenim uvjetima."},
+ {g:2007, n:"Zajednički programski okvir", o:"Počinje razvoj otvorenoga okvira za robotske programe, s ujednačenim načinom razmjene poruka među dijelovima sustava.", z:"Prestalo je pisanje istoga od nule u svakoj skupini. Osjetila, algoritmi i pogoni postali su zamjenjivi dijelovi."},
+ {g:2012, n:"Roboti preuzimaju skladišta", o:"Velik trgovac na mreži otkupljuje proizvođača skladišnih robota i uvodi ih u svoje centre.", z:"Mobilni robot prelazi iz opreme za pokus u redovitu opremu. Od tada je glavno pitanje koliko ih, a ne hoće li ih biti."}
+];
+function crtaj(sel){
+  var p = [], g0 = 1940, g1 = 2026, x0 = 46, x1 = 858, y = 128;
+  var X = function(g){ return x0 + (g - g0) / (g1 - g0) * (x1 - x0); };
+  var raz = [{a:1940, b:1960, n:"pokusi"}, {a:1960, b:1980, n:"industrijski robot"},
+             {a:1980, b:2002, n:"algoritmi"}, {a:2002, b:2026, n:"masovna primjena"}];
+  raz.forEach(function(r, i){
+    p.push('<rect x="' + X(r.a).toFixed(1) + '" y="20" width="' + (X(r.b) - X(r.a)).toFixed(1) +
+           '" height="' + (y - 20) + '" fill="var(--cyan)" fill-opacity="' + (i % 2 ? ".05" : ".09") + '"/>');
+    p.push('<text x="' + ((X(r.a) + X(r.b)) / 2).toFixed(1) + '" y="34" text-anchor="middle" font-size="10.5" ' +
+           'font-weight="700" letter-spacing="1.4" fill="var(--teal)" font-family="IBM Plex Sans, sans-serif">' +
+           r.n.toUpperCase() + '</text>');
+  });
+  p.push('<path d="M' + x0 + ' ' + y + ' H' + x1 + '" stroke="var(--teal)" stroke-width="2.2"/>');
+  var d;
+  for (d = 1940; d <= 2020; d += 10){
+    p.push('<path d="M' + X(d).toFixed(1) + ' ' + y + ' v7" stroke="var(--rule)" stroke-width="1.4"/>');
+    p.push('<text x="' + X(d).toFixed(1) + '" y="' + (y + 22) + '" text-anchor="middle" font-size="10.5" ' +
+           'fill="var(--body)" font-family="IBM Plex Sans, sans-serif">' + d + '</text>');
+  }
+  DOG.forEach(function(e, i){
+    var x = X(e.g), gore = (i % 2 === 0), vy = gore ? y - 26 : y + 34;
+    var odabran = (i === sel);
+    p.push('<path d="M' + x.toFixed(1) + ' ' + y + ' V' + vy + '" stroke="' +
+           (odabran ? "var(--teal)" : "var(--rule)") + '" stroke-width="' + (odabran ? "2" : "1.3") + '"/>');
+    p.push('<g class="tk" id="tk' + i + '" role="button" tabindex="0" aria-label="' + e.g + ' ' + e.n + '">' +
+           '<circle cx="' + x.toFixed(1) + '" cy="' + vy + '" r="' + (odabran ? 8 : 6) + '" fill="' +
+           (odabran ? "var(--teal)" : "var(--paper)") + '" stroke="var(--teal)" stroke-width="2.2"/></g>');
+    if (odabran){
+      p.push('<text x="' + x.toFixed(1) + '" y="' + (gore ? vy - 15 : vy + 20) + '" text-anchor="middle" ' +
+             'font-size="11.5" font-weight="700" fill="var(--teal)" font-family="IBM Plex Sans, sans-serif">' +
+             e.g + '</text>');
+    }
+  });
+  $("csvg").innerHTML = p.join("");
+  DOG.forEach(function(e, i){
+    var el = document.getElementById("tk" + i);
+    el.addEventListener("click", function(){ selC(i); });
+    el.addEventListener("keydown", function(ev){
+      if (ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); selC(i); }
+    });
+  });
+}
+var curC = -1;
+function selC(i){
+  if (i === curC) return;
+  curC = i;
+  crtaj(i);
+  var e = DOG[i];
+  $("cdef").innerHTML = '<h3>' + e.g + '. &mdash; ' + e.n + '</h3><dl>' +
+    '<dt>Što se dogodilo</dt><dd>' + e.o + '</dd>' +
+    '<dt>Zašto je važno</dt><dd>' + e.z + '</dd></dl>';
+  $("cpos").textContent = (i + 1) + " / " + DOG.length;
+}
+selC(3);
+
+/* ---------- vođenje vozila kroz skladište ---------- */
+var VOD = [
+ {k:"Žica u podu", en:"od sredine 1950-ih",
+  kk:"U pod se ureže kanal i položi žica kroz koju teče izmjenična struja; vozilo prati magnetsko polje dvjema zavojnicama.",
+  pr:"Vrlo pouzdano, neosjetljivo na prljavštinu i osvjetljenje, jeftino za održavanje.",
+  og:"Put je ugrađen u zgradu. Svaka promjena rasporeda znači rezanje poda.",
+  je:"AGV"},
+ {k:"Traka ili magnetna vrpca", en:"1970-e",
+  kk:"Na pod se zalijepi obojena ili magnetna vrpca, a vozilo je prati optičkim ili magnetskim osjetilom.",
+  pr:"Put se mijenja bez građevinskoga zahvata — vrpca se jednostavno premjesti.",
+  og:"Vrpca se troši, prlja i oštećuje prolaskom viličara. Račvanja traže dodatnu logiku.",
+  je:"AGV"},
+ {k:"Odbljesne oznake i laser", en:"1990-e",
+  kk:"Po zidovima se postave odbojne oznake; vozilo rotirajućim laserom mjeri smjer prema njima i računa svoj položaj trokutovanjem.",
+  pr:"Put više nije fizički označen na podu, nego zadan u programu. Promjena rute traje minutu.",
+  og:"Oznake se moraju postaviti i izmjeriti; svaka pregradnja zgrade traži ponovno mjerenje.",
+  je:"AGV"},
+ {k:"Prirodne značajke prostora", en:"od 2000-ih",
+  kk:"Vozilo laserskim daljinomjerom mjeri obrise zidova, stupova i polica te se uspoređuje s kartom koju je samo izradilo.",
+  pr:"Nema nikakve ugradnje u zgradu. Vozilo se jednom provoza, napravi kartu i vozi.",
+  og:"Traži skuplja osjetila i mnogo više računanja; prazna i simetrična hala može ga zbuniti.",
+  je:"AMR"},
+ {k:"Karta i planiranje u hodu", en:"današnje izvedbe",
+  kk:"Uz kartu vozilo prati i ono što se mijenja — ljude, viličare, prepreke — i putanju preračunava u hodu.",
+  pr:"Vozilo dijeli prostor s ljudima bez ograde i samo bira zaobilaznicu.",
+  og:"Najsloženije za potvrđivanje sigurnosti; traži osjetila koja pouzdano razlikuju čovjeka od predmeta.",
+  je:"AMR"}
+];
+var vchips = $("vchips"), vdef = $("vdef"), vEls = [];
+VOD.forEach(function(m, i){
+  var b = document.createElement("button");
+  b.className = "chip"; b.type = "button"; b.setAttribute("aria-pressed", "false");
+  b.innerHTML = m.k + "<small>" + m.en + "</small>";
+  b.addEventListener("click", function(){ selV(i); });
+  vchips.appendChild(b); vEls.push(b);
+});
+var curV = -1;
+function selV(i){
+  if (i === curV) return;
+  curV = i;
+  vEls.forEach(function(b, k){ b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+  var m = VOD[i];
+  vdef.innerHTML = '<h3>' + m.k + '</h3><p class="en">' + m.en + '</p><dl>' +
+    '<dt>Kako radi</dt><dd>' + m.kk + '</dd>' +
+    '<dt>Prednost</dt><dd>' + m.pr + '</dd>' +
+    '<dt>Ograničenje</dt><dd>' + m.og + '</dd>' +
+    '<dt>Razred</dt><dd>' + m.je + '</dd></dl>';
+  $("vpos").textContent = (i + 1) + " / " + VOD.length;
+}
+selV(0);
+
+/* ---------- četiri sile ---------- */
+var SILE = [
+ {k:"Računala", art:"cpu",
+  h:"Računalo koje stane u robota",
+  p:"Shakey je odluke računao na stroju veličine sobe, povezan radiovezom. Svaki put kad je ista računska snaga stala u manje kućište i trošila manje struje, robot je mogao ponijeti više pameti sa sobom.",
+  sp:"od sobe, preko ormara, do pločice veličine dlana",
+  mo:"planiranje putanje u hodu, obrada slike na samome vozilu",
+  vi:"Shakey 1972., skladišni roboti od 2012."},
+ {k:"Osjetila", art:"senzor",
+  h:"Osjetila koja su pojeftinila",
+  p:"Žiroskop je desetljećima bio precizan, velik i skup instrument. Kad su u mobilne telefone ušla sitna osjetila ubrzanja i zakreta izrađena u silicij, cijena im je pala tisućustruko. Isto se poslije dogodilo s laserskim daljinomjerom.",
+  sp:"od instrumenta za zrakoplov do sastavnice od nekoliko eura",
+  mo:"mjerenje vlastitoga gibanja i obrisa prostora na svakome vozilu",
+  vi:"robotski usisavač 2002., današnji AMR"},
+ {k:"Algoritmi", art:"algo",
+  h:"Postupci koji su riješili prava pitanja",
+  p:"Neki su problemi čekali ideju, a ne opremu. Kako naći najkraći put kroz mrežu. Kako istodobno procijeniti gdje si i kako prostor izgleda. Kako iz niza nesigurnih mjerenja izvući pouzdanu procjenu.",
+  sp:"od pokušaja i pogreške do postupaka s dokazanim svojstvima",
+  mo:"navigacija u nepoznatome prostoru, rad s nesigurnim mjerenjem",
+  vi:"A* 1968., istodobna lokalizacija i kartiranje od 1986."},
+ {k:"Cijena i mjerilo", art:"cijena",
+  h:"Kad se isplatilo praviti ih mnogo",
+  p:"Dok se robot izrađivao pojedinačno, svaki je bio projekt. Kad je potražnja narasla toliko da se isplati serijska proizvodnja, cijena po komadu pala je, a s njom i prag na kojem se uvođenje isplati.",
+  sp:"od jedinačne izradbe do serije i zamjenjivih dijelova",
+  mo:"kupnja gotova vozila umjesto razvoja vlastitoga",
+  vi:"skladišni sustavi od 2012., dostavni roboti danas"}
+];
+var FART = {
+ cpu:'<rect x="60" y="70" width="120" height="100" rx="6" fill="none" stroke="var(--body)" stroke-width="2"/>' +
+     '<rect x="200" y="104" width="54" height="46" rx="4" fill="var(--cyan)" fill-opacity=".2" stroke="var(--teal)" stroke-width="2.2"/>' +
+     '<path d="M214 104 v-10 M228 104 v-10 M242 104 v-10 M214 150 v10 M228 150 v10 M242 150 v10" stroke="var(--teal)" stroke-width="1.8"/>' +
+     '<path d="M186 120 h8 M186 130 h8" stroke="var(--rule)" stroke-width="1.6"/>' +
+     '<path d="M182 126 L198 126" stroke="var(--teal)" stroke-width="2" marker-end=""/>' +
+     '<text x="160" y="206" text-anchor="middle" font-size="12" fill="var(--body)" font-family="IBM Plex Sans, sans-serif">ista snaga, sve manje kućište</text>',
+ senzor:'<circle cx="110" cy="120" r="40" fill="none" stroke="var(--body)" stroke-width="2"/>' +
+        '<circle cx="110" cy="120" r="12" fill="none" stroke="var(--body)" stroke-width="1.6"/>' +
+        '<rect x="196" y="104" width="34" height="32" rx="3" fill="var(--cyan)" fill-opacity=".24" stroke="var(--teal)" stroke-width="2.2"/>' +
+        '<path d="M200 136 v8 M212 136 v8 M224 136 v8" stroke="var(--teal)" stroke-width="1.8"/>' +
+        '<text x="160" y="206" text-anchor="middle" font-size="12" fill="var(--body)" font-family="IBM Plex Sans, sans-serif">instrument postaje sastavnica</text>',
+ algo:'<circle cx="70" cy="80" r="13" fill="none" stroke="var(--teal)" stroke-width="2"/>' +
+      '<circle cx="150" cy="60" r="13" fill="none" stroke="var(--teal)" stroke-width="2"/>' +
+      '<circle cx="150" cy="140" r="13" fill="none" stroke="var(--teal)" stroke-width="2"/>' +
+      '<circle cx="240" cy="110" r="13" fill="var(--cyan)" fill-opacity=".3" stroke="var(--teal)" stroke-width="2.4"/>' +
+      '<path d="M83 77 L137 63 M83 85 L138 134 M163 66 L228 104 M163 136 L228 118" stroke="var(--rule)" stroke-width="1.6"/>' +
+      '<path d="M83 77 L137 63 M163 66 L228 104" stroke="var(--teal)" stroke-width="2.6"/>' +
+      '<text x="160" y="206" text-anchor="middle" font-size="12" fill="var(--body)" font-family="IBM Plex Sans, sans-serif">najkraći put kroz mrežu</text>',
+ cijena:'<path d="M60 170 H270" stroke="var(--rule)" stroke-width="1.6"/>' +
+        '<path d="M60 60 V170" stroke="var(--rule)" stroke-width="1.6"/>' +
+        '<path d="M66 74 C120 74 150 150 264 158" fill="none" stroke="var(--teal)" stroke-width="2.6"/>' +
+        '<g fill="var(--cyan)"><circle cx="66" cy="74" r="4"/><circle cx="150" cy="128" r="4"/><circle cx="264" cy="158" r="4"/></g>' +
+        '<text x="160" y="206" text-anchor="middle" font-size="12" fill="var(--body)" font-family="IBM Plex Sans, sans-serif">cijena po komadu pada s količinom</text>'
+};
+var fseg = $("fseg"), fEls = [];
+SILE.forEach(function(v, i){
+  var b = document.createElement("button");
+  b.className = "segb"; b.type = "button"; b.setAttribute("aria-pressed", "false");
+  b.textContent = v.k;
+  b.addEventListener("click", function(){ selF(i); });
+  fseg.appendChild(b); fEls.push(b);
+});
+var curF = -1;
+function selF(i){
+  if (i === curF) return;
+  curF = i;
+  fEls.forEach(function(b, k){ b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+  var v = SILE[i];
+  $("fsvg").innerHTML = FART[v.art];
+  $("fh").textContent = v.h; $("fp").textContent = v.p;
+  $("fsp").textContent = v.sp; $("fmo").textContent = v.mo; $("fvi").textContent = v.vi;
+  $("fpos").textContent = (i + 1) + " / " + SILE.length;
+}
+selF(0);
+
+/* ---------- procjena znanja ---------- */
+var QS = [
+ {p:"Zašto je prvi robot bio nepokretan, a ne mobilan?",
+  o:["Jer nije bilo kotača dovoljne kvalitete","Jer je u tvornici okolina uređena, pa zadatak ne traži da robot zna gdje je","Jer su propisi zabranjivali gibanje","Jer su baterije bile preskupe"],
+  c:1,
+  e:"Dio uvijek dolazi na isto mjesto, u istome položaju. Takav je zadatak bio izvediv elektronikom pedesetih godina; mobilnost nije."},
+ {p:"Što su bile Walterove kornjače iz 1948. i 1949.?",
+  o:["Igračke bez osjetila","Prvi autonomni mobilni roboti s fotoćelijom i dodirnim prekidačem","Daljinski vođena vozila","Prvi industrijski roboti"],
+  c:1,
+  e:"Tražile su svjetlo, zaobilazile prepreke i same se vraćale na punjenje. Pokazale su da složeno ponašanje ne traži složen mozak nego zatvorenu petlju."},
+ {p:"Po čemu je Shakey bio prvi?",
+  o:["Bio je najbrži robot svojega doba","Zadatak je sam rastavljao na korake i planirao slijed postupaka","Prvi je koristio baterije","Prvi je radio u tvornici"],
+  c:1,
+  e:"Iz toga su projekta izišli planer STRIPS i algoritam A*, koji se i danas koristi za planiranje putanje."},
+ {p:"Koja je razlika između AGV-a i AMR-a?",
+  o:["AMR je brži","Kod AGV-a je put ugrađen u zgradu, kod AMR-a je u robotu","AGV nema baterije","AMR radi samo vani"],
+  c:1,
+  e:"AGV slijedi žicu, vrpcu ili oznake postavljene u prostor. AMR mjeri prirodne značajke prostora i putanju određuje sam, prema karti koju je izradio."},
+ {p:"Što se dogodilo na prvoj pustinjskoj utrci samovozećih vozila 2004.?",
+  o:["Pobijedilo je Stanfordovo vozilo","Nijedno vozilo nije završilo stazu","Utrka je otkazana","Pobijedilo je vozilo bez osjetila"],
+  c:1,
+  e:"Najbolje je prešlo oko dvanaest od sto pedeset kilometara. Već sljedeće godine pet je vozila prešlo cijelu stazu — neuspjeh je pokrenuo granu."},
+ {p:"Zašto je pojeftinjenje osjetila toliko utjecalo na mobilnu robotiku?",
+  o:["Jer su osjetila postala točnija od instrumenata","Jer su sitna osjetila zakreta i ubrzanja iz mobilnih telefona pala u cijeni tisućustruko","Jer su zamijenila računala","Jer su smanjila potrošnju baterije"],
+  c:1,
+  e:"Mjerenje vlastitoga gibanja i obrisa prostora prestalo je biti povlastica skupih sustava i postalo dostupno svakome vozilu."},
+ {p:"Zašto se samostalnost prvi put isplatila u svemiru?",
+  o:["Zbog manje gravitacije","Zbog kašnjenja signala, koje čini izravno vođenje neizvedivim","Zbog jeftinije opreme","Zbog propisa"],
+  c:1,
+  e:"Lunohod je još bio daljinski vođen uz kašnjenje od nekoliko sekundi. Na Marsu je kašnjenje toliko da vozilo dio odluka mora donositi samo."},
+ {p:"Što je danas najveća prepreka duljemu samostalnom radu mobilnoga robota?",
+  o:["Brzina računala","Gustoća energije u bateriji","Nedostatak algoritama za planiranje","Cijena kotača"],
+  c:1,
+  e:"Baterija je i dalje najteži i najskuplji dio. Vozilo koje radi cijelu smjenu ili nosi mali teret, ili staje na punjenje."}
+];
+var answered = 0, correct = 0, grid = $("qgrid");
+$("score").textContent = "Riješeno 0 / " + QS.length + " · točnih 0";
+QS.forEach(function(q, i){
+  var card = document.createElement("div"); card.className = "q";
+  var num = document.createElement("div"); num.className = "num";
+  num.textContent = "Pitanje " + (i + 1) + " / " + QS.length; card.appendChild(num);
+  var pr = document.createElement("div"); pr.className = "prompt"; pr.textContent = q.p; card.appendChild(pr);
+  var opts = document.createElement("div"); opts.className = "opts"; card.appendChild(opts);
+  var fb = document.createElement("div"); fb.className = "fb"; fb.hidden = true; card.appendChild(fb);
+  q.o.forEach(function(txt, k){
+    var lab = document.createElement("label"); lab.className = "opt";
+    var inp = document.createElement("input");
+    inp.type = "radio"; inp.name = "q" + i; inp.id = "q" + i + "o" + k;
+    var sp = document.createElement("span"); sp.textContent = txt;
+    lab.appendChild(inp); lab.appendChild(sp); opts.appendChild(lab);
+    inp.addEventListener("change", function(){
+      if (card.dataset.done) return;
+      card.dataset.done = "1"; answered++;
+      var good = (k === q.c); if (good) correct++;
+      Array.prototype.forEach.call(opts.children, function(e2, idx){
+        e2.classList.add("locked"); e2.querySelector("input").disabled = true;
+        if (idx === q.c) e2.classList.add("correct");
+        else if (idx === k) e2.classList.add("wrong");
+      });
+      fb.className = "fb " + (good ? "ok" : "no");
+      fb.innerHTML = "<b>" + (good ? "Točno" : "Netočno") + "</b> &mdash; " + q.e;
+      fb.hidden = false;
+      $("score").textContent = "Riješeno " + answered + " / " + QS.length + " · točnih " + correct;
+    });
+  });
+  grid.appendChild(card);
+});
+
+/* ---------- alatna traka ---------- */
+var cv = $("ftq-canvas"), ctx = cv.getContext("2d");
+var strokes = [], drawing = null, tool = null, board = false;
+var COLORS = ["#17656E", "#2ECAD4", "#C0562A", "#3E7A46", "#10394A"];
+var color = COLORS[0];
+function store(k, v){ try{ localStorage.setItem("ftq-mr-l12-" + k, v); }catch(e){} }
+function load(k){ try{ return localStorage.getItem("ftq-mr-l12-" + k); }catch(e){ return null; } }
+function fit(){
+  var r = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.round(innerWidth * r); cv.height = Math.round(innerHeight * r);
+  cv.style.width = innerWidth + "px"; cv.style.height = innerHeight + "px";
+  ctx.setTransform(r, 0, 0, r, 0, 0); redraw();
+}
+function redraw(){
+  ctx.clearRect(0, 0, innerWidth, innerHeight);
+  if (board){
+    var cs = getComputedStyle(document.body);
+    ctx.fillStyle = cs.backgroundColor || "#fff";
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+  }
+  strokes.forEach(function(s){
+    if (!s.pts || s.pts.length < 2) return;
+    ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (s.tool === "erase"){ ctx.globalCompositeOperation = "destination-out"; ctx.lineWidth = 26; ctx.strokeStyle = "rgba(0,0,0,1)"; }
+    else if (s.tool === "mark"){ ctx.globalAlpha = .32; ctx.lineWidth = 17; ctx.strokeStyle = s.color; }
+    else { ctx.lineWidth = 2.6; ctx.strokeStyle = s.color; }
+    ctx.beginPath(); ctx.moveTo(s.pts[0][0], s.pts[0][1]);
+    for (var i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i][0], s.pts[i][1]);
+    ctx.stroke(); ctx.restore();
+  });
+}
+function setTool(t){
+  tool = (tool === t) ? null : t;
+  ["pen", "mark", "erase"].forEach(function(k){ $("t-" + k).setAttribute("aria-pressed", tool === k ? "true" : "false"); });
+  cv.classList.toggle("on", !!tool);
+}
+cv.addEventListener("pointerdown", function(e){
+  if (!tool) return;
+  cv.setPointerCapture(e.pointerId);
+  drawing = {tool:tool, color:color, pts:[[e.clientX, e.clientY]]};
+  strokes.push(drawing);
+});
+cv.addEventListener("pointermove", function(e){ if (!drawing) return; drawing.pts.push([e.clientX, e.clientY]); redraw(); });
+function endStroke(){ if (!drawing) return; drawing = null; try{ store("strokes", JSON.stringify(strokes.slice(-400))); }catch(e){} }
+cv.addEventListener("pointerup", endStroke);
+cv.addEventListener("pointercancel", endStroke);
+$("t-pen").addEventListener("click", function(){ setTool("pen"); });
+$("t-mark").addEventListener("click", function(){ setTool("mark"); });
+$("t-erase").addEventListener("click", function(){ setTool("erase"); });
+$("t-board").addEventListener("click", function(){
+  board = !board; this.setAttribute("aria-pressed", board ? "true" : "false");
+  if (board && !tool) setTool("pen");
+  store("board", board ? "1" : "0"); redraw();
+});
+$("t-undo").addEventListener("click", function(){ strokes.pop(); redraw(); try{ store("strokes", JSON.stringify(strokes)); }catch(e){} });
+$("t-clear").addEventListener("click", function(){ strokes = []; redraw(); store("strokes", "[]"); });
+var colBox = $("ftq-colors");
+COLORS.forEach(function(c, i){
+  var b = document.createElement("button");
+  b.className = "sw"; b.type = "button"; b.style.background = c;
+  b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+  b.setAttribute("title", "Boja " + (i + 1));
+  b.addEventListener("click", function(){
+    color = c;
+    Array.prototype.forEach.call(colBox.children, function(x){ x.setAttribute("aria-pressed", "false"); });
+    b.setAttribute("aria-pressed", "true");
+  });
+  colBox.appendChild(b);
+});
+$("t-color").addEventListener("click", function(){
+  var on = colBox.classList.toggle("show");
+  this.setAttribute("aria-pressed", on ? "true" : "false");
+});
+var fs = parseFloat(load("fs") || "1");
+function applyFs(){ fs = Math.min(1.5, Math.max(.85, fs)); document.documentElement.style.setProperty("--fs", fs.toFixed(2)); store("fs", fs); }
+applyFs();
+$("t-plus").addEventListener("click", function(){ fs += .1; applyFs(); });
+$("t-minus").addEventListener("click", function(){ fs -= .1; applyFs(); });
+if (load("dys") === "1"){ document.body.classList.add("dys"); $("t-dys").setAttribute("aria-pressed", "true"); }
+$("t-dys").addEventListener("click", function(){
+  var on = document.body.classList.toggle("dys");
+  this.setAttribute("aria-pressed", on ? "true" : "false"); store("dys", on ? "1" : "0");
+});
+$("t-theme").addEventListener("click", function(){
+  var r = document.documentElement, c = r.getAttribute("data-theme");
+  var next = c === "dark" ? "light" : (c === "light" ? null : "dark");
+  if (next) r.setAttribute("data-theme", next); else r.removeAttribute("data-theme");
+  store("theme", next || ""); redraw();
+});
+var st = load("theme"); if (st) document.documentElement.setAttribute("data-theme", st);
+try{
+  var sv = load("strokes"); if (sv) strokes = JSON.parse(sv) || [];
+  if (load("board") === "1"){ board = true; $("t-board").setAttribute("aria-pressed", "true"); }
+}catch(e){ strokes = []; }
+addEventListener("resize", fit);
+fit();
+})();
+</script>
+</body>
+</html>

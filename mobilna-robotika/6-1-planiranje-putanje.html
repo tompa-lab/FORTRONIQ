@@ -1,0 +1,1230 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="ForTroniQ d.o.o.">
+<meta name="robots" content="index, follow">
+<meta name="description" content="Prikaz prostora mrežom i grafom vidljivosti s usporedbom duljine putanje, pretraživanje najkraćega puta i uloga procjene ostatka do cilja s prikazom broja obiđenih mjesta, potencijalna polja i lokalni minimum te mjerila za izbor postupka.">
+<title>Planiranje putanje — Modul 6</title>
+<link rel="canonical" href="https://dos.fortroniq.hr/mobilna-robotika/6-1-planiranje-putanje.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/mobilna-robotika/6-1-planiranje-putanje.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/mobilna-robotika/6-1-planiranje-putanje.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/mobilna-robotika/6-1-planiranje-putanje.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Planiranje putanje">
+<meta property="og:description" content="Mreža nasuprot grafu vidljivosti, pretraživanje s procjenom i potencijalna polja.">
+<meta property="og:url" content="https://dos.fortroniq.hr/mobilna-robotika/6-1-planiranje-putanje.html">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+
+<style>
+:root{
+  --paper:#FFFFFF;
+  --ink:#10394A;
+  --body:#5D7C90;
+  --rule:#DCE4E8;
+  --teal:#17656E;
+  --teal-d:#0F4A52;
+  --cyan:#2ECAD4;
+  --hero-a:#1B6A72;
+  --hero-b:#0C3F47;
+  --bar:#17181A;
+  --bar-t:#8A9499;
+  --soft:#F3F7F8;
+  --ok:#2E7D53;
+  --bad:#B24A2E;
+  --fs:1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+    --teal:#2A9AA6; --teal-d:#2ECAD4;
+    --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+    --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1719; --ink:#DCEAEE; --body:#94AEBB; --rule:#243238;
+  --teal:#2A9AA6; --teal-d:#2ECAD4;
+  --hero-a:#123F46; --hero-b:#08272C; --bar:#000;
+  --soft:#131F22; --ok:#5FB98A; --bad:#E08A70;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  font-size:calc(16px * var(--fs)); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body.dys{letter-spacing:.012em;word-spacing:.09em;line-height:1.85}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+/* ============ GORNJA TRAKA ============ */
+.topbar{background:var(--bar);color:#fff;display:flex;align-items:stretch;overflow-x:auto;font-size:11.5px}
+.tbi{padding:6px 14px;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.tbi .lb{color:var(--bar-t);font-size:9.5px;letter-spacing:.03em}
+.tbi .vl{font-weight:500}
+.tbi.crumb .vl{color:var(--cyan)}
+.tbi .x{display:inline-block;margin-left:6px;opacity:.65}
+.tbi.menu{align-items:center;flex-direction:row;gap:8px}
+.tbi.menu svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.8}
+a.tbi{color:#fff;text-decoration:none}
+a.tbi:hover .vl{color:var(--cyan)}
+
+/* ============ HERO ============ */
+.hero{background:linear-gradient(160deg,var(--hero-a) 0%,var(--hero-b) 100%);position:relative;overflow:hidden}
+.hero-in{position:relative;z-index:3;max-width:1120px;margin:0 auto;padding:38px clamp(20px,6vw,120px) 30px}
+.hero-art{position:absolute;right:0;top:0;bottom:0;width:min(46%,520px);opacity:.5;pointer-events:none}
+.hero-art svg{width:100%;height:100%;display:block}
+.eyebrow{display:flex;flex-wrap:wrap;gap:.5em;align-items:center;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:#9FC9CE}
+.eyebrow b{color:#fff;font-weight:700;letter-spacing:.17em}
+.eyebrow b i{color:var(--cyan);font-style:normal}
+.eyebrow span::after{content:"·";margin-left:.5em;opacity:.6}
+.eyebrow span:last-child::after{content:""}
+.hero h1{
+  margin:.35em 0 0;color:#fff;font-weight:700;
+  font-size:clamp(29px,5vw,50px);letter-spacing:-.026em;line-height:1.06;
+  max-width:16ch;text-wrap:balance;text-shadow:0 2px 20px rgba(0,0,0,.28);
+}
+.lede{max-width:62ch;color:#D4E8EB;font-size:15.5px;line-height:1.62;margin:.9em 0 0}
+
+.goals{
+  position:relative;z-index:3;max-width:1120px;margin:0 auto;
+  padding:4px clamp(20px,6vw,120px) 40px;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:26px 40px;align-items:start;
+}
+.goals-h{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:6px}
+.goals-h svg{width:46px;height:32px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.goals-h span{color:#fff;font-weight:700;font-size:19px;letter-spacing:-.01em}
+.goals ul{margin:0;padding:0;list-style:none;columns:3;column-gap:34px}
+.goals li{break-inside:avoid;margin:0 0 13px;display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:start;color:#E6F5F7;font-size:12.6px;line-height:1.45}
+.goals li svg{width:11px;height:11px;margin-top:4px;stroke:var(--cyan);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){
+  .goals{grid-template-columns:1fr;gap:16px}
+  .goals-h{flex-direction:row;align-items:center;justify-content:flex-start}
+  .goals ul{columns:1}
+}
+.cyanline{height:5px;background:var(--cyan)}
+
+/* ============ SADRŽAJ ============ */
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(20px,6vw,120px) 10px}
+.col{max-width:74ch}
+section{padding-top:52px}
+.sh{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:8px}
+.sh .n{
+  flex:0 0 auto;width:27px;height:27px;border-radius:50%;
+  background:var(--teal);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;align-self:center;
+}
+.sh h2{margin:0;font-size:clamp(21px,2.6vw,27px);font-weight:700;letter-spacing:-.022em;line-height:1.15;text-wrap:balance}
+.sd{color:var(--body);font-size:14px;margin:0 0 20px;max-width:70ch}
+p{margin:0 0 1.05em;max-width:74ch;font-size:15.4px;line-height:1.72;color:var(--ink)}
+p.mut{color:var(--body)}
+h3.sub{font-size:17px;font-weight:600;letter-spacing:-.012em;margin:2em 0 .6em;color:var(--ink)}
+strong{font-weight:600}
+em{font-style:italic}
+.kv{color:var(--teal);font-weight:600}
+
+ul.plain{margin:0 0 1.2em;padding-left:1.15em;max-width:74ch}
+ul.plain li{margin-bottom:.45em;font-size:15.2px;line-height:1.66}
+
+/* ============ PLOČE ============ */
+.panel{background:var(--soft);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:26px 0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.panel-head .t{font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--teal)}
+.panel-head .s{font-size:11.5px;color:var(--body);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.chip{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);
+  padding:8px 12px;cursor:pointer;text-align:left;line-height:1.3;
+}
+.chip:hover{border-color:var(--cyan);color:var(--teal)}
+.chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.chip small{display:block;font-size:10.5px;font-weight:500;opacity:.75;margin-top:3px;letter-spacing:.02em}
+.chip.ac{font-size:13px;font-weight:700;letter-spacing:.04em;padding:7px 11px}
+.def{border-top:1px solid var(--rule);padding:18px 17px;background:var(--paper)}
+.def h3{font-size:19px;font-weight:700;letter-spacing:-.015em;margin:0 0 3px;color:var(--ink)}
+.def .en{font-size:12.5px;color:var(--body);margin:0 0 13px}
+.def dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 20px;margin:0}
+.def dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:4px}
+.def dd{margin:0;font-size:14.6px;line-height:1.55}
+@media (max-width:560px){.def dl{grid-template-columns:1fr;gap:2px 0}.def dt{padding-top:11px}}
+
+.norm{border:1px solid var(--rule);border-left:4px solid var(--cyan);border-radius:6px;background:var(--soft);padding:18px 20px;margin:24px 0;max-width:74ch}
+.norm .lbl{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:7px}
+.norm p{margin:0;font-size:17px;line-height:1.55;font-style:italic}
+.norm .src{margin-top:10px;font-size:12px;color:var(--body);font-style:normal}
+
+.note{border:1px solid var(--rule);border-radius:6px;background:var(--soft);padding:15px 17px;margin:22px 0;max-width:74ch}
+.note b{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+.note p{margin:0;font-size:14.6px;line-height:1.6}
+
+.tscroll{overflow-x:auto;margin:24px 0}
+table.t{width:100%;border-collapse:collapse;font-size:14.2px;min-width:520px}
+table.t th,table.t td{text-align:left;padding:10px 14px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.5}
+table.t th{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+table.t td:first-child,table.t th:first-child{font-weight:600;padding-right:20px}
+table.t tr:last-child td{border-bottom:0}
+
+.fig{border:1px dashed var(--rule);border-radius:8px;background:var(--soft);padding:26px 18px;margin:26px 0;text-align:center;max-width:74ch}
+.fig .ph{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.fig .cap{font-size:13.6px;color:var(--body);margin:9px auto 0;max-width:58ch;line-height:1.55}
+
+/* ---- usporedba postupaka ---- */
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{
+  font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink);
+}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.cmp{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:10px 26px;padding:15px;align-items:center}
+@media (max-width:640px){.cmp{grid-template-columns:1fr}}
+.cmp svg{width:100%;height:auto;display:block;background:var(--paper);border:1px solid var(--rule);border-radius:6px}
+.cmp .ct h4{margin:0 0 6px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.cmp .ct p{margin:0 0 .7em;font-size:14.4px;line-height:1.6}
+.cmp .ct .ex{font-size:13px;color:var(--body);margin:0}
+
+/* ---- stepenasti učinak ---- */
+.step-bar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.step-bar input[type=range]{flex:1 1 190px;accent-color:var(--teal);min-width:150px}
+.step-bar .val{font-size:13px;font-weight:600;color:var(--teal);font-variant-numeric:tabular-nums;min-width:8.5em}
+.step-out{padding:14px 16px;border-top:1px solid var(--rule);font-size:14.2px;line-height:1.6;color:var(--ink);background:var(--paper)}
+.step-out b{color:var(--teal)}
+
+/* ---- vremenska crta ---- */
+.tl-wrap{background:var(--paper);padding:6px 0}
+svg.tl{display:block;width:100%;height:auto}
+.tlbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--rule);flex-wrap:wrap;background:var(--paper)}
+.tlbar input[type=range]{flex:1 1 180px;accent-color:var(--teal);min-width:140px}
+.btn{
+  font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;padding:7px 13px;cursor:pointer;
+}
+.btn:hover{border-color:var(--cyan);color:var(--teal)}
+.card{border-top:1px solid var(--rule);padding:18px 17px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 24px;background:var(--paper)}
+.card .yr{grid-row:1/span 3;font-size:34px;font-weight:700;color:var(--teal);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.card .era{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--body)}
+.card .ttl{font-size:18px;font-weight:700;letter-spacing:-.015em;line-height:1.3;margin:3px 0 6px}
+.card .txt{font-size:14.6px;line-height:1.6;margin:0;max-width:64ch;color:var(--ink)}
+@media (max-width:540px){.card{grid-template-columns:1fr}.card .yr{grid-row:auto;font-size:28px}}
+
+/* ---- primjene ---- */
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:26px 0}
+.app{border:1px solid var(--rule);border-radius:8px;padding:16px 17px;background:var(--soft)}
+.app h4{margin:0 0 7px;font-size:15.5px;font-weight:700;letter-spacing:-.012em;display:flex;align-items:center;gap:9px}
+.app h4 svg{width:19px;height:19px;stroke:var(--cyan);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.app p{margin:0;font-size:13.6px;line-height:1.6;color:var(--body)}
+
+/* ---- procjena znanja ---- */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:22px}
+.q{background:var(--soft);border:1px solid var(--rule);border-radius:8px;padding:17px;display:flex;flex-direction:column}
+.q .num{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--body)}
+.q .prompt{font-size:15.4px;line-height:1.45;margin:6px 0 13px;font-weight:600}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.opt{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--rule);border-radius:5px;padding:9px 11px;cursor:pointer;font-size:14.4px;line-height:1.4;background:var(--paper)}
+.opt:hover{border-color:var(--cyan)}
+.opt input{margin:4px 0 0;accent-color:var(--teal);flex-shrink:0}
+.opt.correct{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.opt.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.opt.locked{cursor:default}
+.opt.locked:hover{border-color:var(--rule)}
+.opt.locked.correct:hover{border-color:var(--ok)}
+.opt.locked.wrong:hover{border-color:var(--bad)}
+.fb{font-size:13.8px;line-height:1.55;margin-top:auto;padding-top:11px;border-top:1px solid var(--rule);color:var(--body)}
+.fb b{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.fb.ok b{color:var(--ok)} .fb.no b{color:var(--bad)} .fb[hidden]{display:none}
+.score{font-size:12.5px;color:var(--body);font-variant-numeric:tabular-nums;margin-left:auto}
+
+/* ---- kretanje ---- */
+.nav{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;margin:54px 0 0;padding-top:24px;border-top:1px solid var(--rule)}
+.nav a,.nav span{
+  display:block;border:1px solid var(--rule);border-radius:8px;padding:13px 17px;
+  text-decoration:none;color:var(--ink);min-width:min(100%,250px);flex:1 1 250px;
+}
+.nav a:hover{border-color:var(--cyan)}
+.nav .lb{display:block;font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--body);margin-bottom:3px}
+.nav .tt{font-size:15px;font-weight:600;letter-spacing:-.012em;line-height:1.35}
+.nav .nx{text-align:right}
+.nav span.soon{opacity:.6}
+.nav span.soon .tt{color:var(--body)}
+
+/* ============ PODNOŽJE ============ */
+.sf{border-top:1px solid var(--rule);margin-top:50px}
+.sf-in{
+  max-width:1120px;margin:0 auto;padding:24px clamp(20px,6vw,120px);
+  display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between;
+  font-size:12.5px;color:var(--body);
+}
+.sf-in .brand{font-weight:700;letter-spacing:.17em;color:var(--teal)}
+.sf-in .brand i{color:var(--cyan);font-style:normal}
+
+/* ============ ALATNA TRAKA ============ */
+#ftq-canvas{position:fixed;inset:0;z-index:40;pointer-events:none;touch-action:none}
+#ftq-canvas.on{pointer-events:auto;cursor:crosshair}
+#ftq-bar{
+  position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:60;
+  display:flex;flex-direction:column;gap:3px;
+  background:var(--paper);border:1px solid var(--rule);border-radius:5px;
+  padding:5px;box-shadow:0 2px 16px rgba(16,57,74,.18);
+}
+#ftq-bar hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:auto}
+.tb{
+  width:38px;height:34px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;border-radius:4px;
+  color:var(--body);cursor:pointer;padding:0;
+  font-family:"IBM Plex Sans",sans-serif;font-size:12px;font-weight:700;
+}
+.tb:hover{color:var(--teal);border-color:var(--rule)}
+.tb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.tb svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#ftq-colors{display:none;flex-direction:column;gap:3px;padding-top:3px;border-top:1px solid var(--rule);margin-top:3px}
+#ftq-colors.show{display:flex}
+.sw{width:38px;height:20px;border:1px solid var(--rule);border-radius:4px;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:-4px}
+@media (max-width:680px){#ftq-bar{right:8px;padding:4px}.tb{width:33px;height:30px}.tb svg{width:17px;height:17px}.sw{width:33px;height:17px}}
+@media print{#ftq-bar,.topbar{display:none}}
+
+/* ============ POSEBNO ZA OVU STRANICU ============ */
+.shema{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:0}
+@media (max-width:820px){.shema{grid-template-columns:1fr}}
+.shema-l{padding:16px;background:var(--paper);border-right:1px solid var(--rule)}
+@media (max-width:820px){.shema-l{border-right:0;border-bottom:1px solid var(--rule)}}
+.shema-l svg{width:100%;height:auto;display:block}
+.hot{cursor:pointer}
+.hot circle.tocka{fill:var(--paper);stroke:var(--teal);stroke-width:2}
+.hot text{font-family:"IBM Plex Sans",sans-serif;font-size:11px;font-weight:700;fill:var(--teal);text-anchor:middle;dominant-baseline:central}
+.hot[aria-pressed="true"] circle.tocka{fill:var(--teal);stroke:var(--teal)}
+.hot[aria-pressed="true"] text{fill:#fff}
+.hot:hover circle.tocka{stroke:var(--cyan)}
+.shema-d{padding:18px 17px;background:var(--paper)}
+.shema-d .br{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
+.shema-d h4{margin:5px 0 8px;font-size:18px;font-weight:700;letter-spacing:-.015em}
+.shema-d p{margin:0 0 .8em;font-size:14.4px;line-height:1.6}
+.shema-d p:last-child{margin-bottom:0}
+.shema-d .uloga{font-size:13.4px;color:var(--body);border-top:1px solid var(--rule);padding-top:10px;margin-top:12px}
+
+.seg{display:flex;flex-wrap:wrap;gap:8px;padding:15px 15px 0}
+.segb{font-family:inherit;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;
+  border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink)}
+.segb:hover{border-color:var(--cyan);color:var(--teal)}
+.segb[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.izv{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:12px 26px;padding:15px;align-items:center}
+@media (max-width:680px){.izv{grid-template-columns:1fr}}
+.izv svg{width:100%;height:auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:block}
+.izv .ct h4{margin:0 0 7px;font-size:17px;font-weight:700;letter-spacing:-.015em}
+.izv .ct p{margin:0 0 .8em;font-size:14.4px;line-height:1.6}
+.izv .ct dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 16px;margin:0}
+.izv .ct dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.izv .ct dd{margin:0;font-size:13.8px;line-height:1.5}
+
+.koraci{display:flex;flex-wrap:wrap;gap:8px;padding:15px}
+.korak{flex:1 1 118px;min-width:112px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);
+  padding:11px 10px;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink)}
+.korak:hover{border-color:var(--cyan)}
+.korak[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.korak .br{font-size:10.5px;font-weight:700;letter-spacing:.12em;opacity:.7}
+.korak .im{display:block;font-size:13px;font-weight:600;line-height:1.28;margin-top:3px}
+
+.greske{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin:24px 0}
+.gr{border:1px solid var(--rule);border-radius:8px;background:var(--soft);padding:16px 17px}
+.gr h4{margin:0 0 8px;font-size:15.5px;font-weight:700;letter-spacing:-.012em}
+.gr dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-top:9px}
+.gr dd{margin:2px 0 0;font-size:13.8px;line-height:1.56;color:var(--body)}
+.gr dl{margin:0}
+
+.isp{display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:12px 26px;padding:16px;align-items:center}
+@media (max-width:660px){.isp{grid-template-columns:1fr}}
+.isp svg{width:100%;height:auto;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:block}
+.isp dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;margin:0 0 12px}
+.isp dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+.isp dd{margin:0;font-size:15px;font-variant-numeric:tabular-nums}
+.isp p{margin:0;font-size:14.2px;line-height:1.6;color:var(--body)}
+.ibar{display:flex;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--rule);background:var(--paper);flex-wrap:wrap}
+.ibar input[type=range]{flex:1 1 200px;accent-color:var(--teal);min-width:150px}
+.ibar .val{font-size:13px;font-weight:600;color:var(--teal);min-width:7em;font-variant-numeric:tabular-nums}
+
+.pop{border:1px solid var(--rule);border-radius:8px;background:var(--soft);overflow:hidden;margin:16px 0}
+.pop .st{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.pop .st:last-child{border-bottom:0}
+.pop .kv-box{flex:0 0 auto;width:21px;height:21px;border:2px solid var(--rule);border-radius:5px;background:var(--paper);
+  cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.pop .kv-box svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.pop .kv-box[aria-pressed="true"]{background:var(--teal);border-color:var(--teal)}
+.pop .kv-box[aria-pressed="true"] svg{opacity:1}
+.pop .tx{min-width:0}
+.pop .tx b{display:block;font-size:14.6px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.pop .tx span{font-size:13.6px;line-height:1.6;color:var(--body)}
+.pop .nog{display:flex;gap:13px;align-items:center;padding:12px 16px;background:var(--soft);flex-wrap:wrap}
+.pop .nog .os{flex:1 1 160px;height:8px;border-radius:99px;background:var(--rule);overflow:hidden;min-width:120px}
+.pop .nog .os i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));transition:width .2s}
+.pop .nog .tx2{font-size:12.8px;font-weight:600;color:var(--teal);white-space:nowrap}
+.pop .nog button{font-family:inherit;font-size:12.3px;font-weight:600;color:var(--body);background:none;
+  border:1px solid var(--rule);border-radius:5px;padding:5px 12px;cursor:pointer}
+.pop .nog button:hover{border-color:var(--cyan);color:var(--teal)}
+
+.vaga{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:0}
+@media (max-width:820px){.vaga{grid-template-columns:1fr}}
+.vaga-l{padding:16px;background:var(--paper);border-right:1px solid var(--rule)}
+@media (max-width:820px){.vaga-l{border-right:0;border-bottom:1px solid var(--rule)}}
+.vaga-l svg{width:100%;height:auto;display:block}
+.vaga-d{padding:16px 18px;background:var(--soft);min-width:0}
+.vaga-d h4{margin:0 0 7px;font-size:16.5px;font-weight:700;color:var(--ink);letter-spacing:-.015em}
+.vaga-d p{margin:0 0 .75em;font-size:14.2px;line-height:1.62;color:var(--body)}
+.vaga-d dl{margin:0;display:grid;grid-template-columns:auto;gap:2px 0}
+.vaga-d dt{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-top:9px}
+.vaga-d dd{margin:0;font-size:13.6px;line-height:1.58;color:var(--body)}
+.mjerila{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:0;border-top:1px solid var(--rule)}
+.mj{padding:14px 16px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);background:var(--paper)}
+.mj:last-child{border-right:0}
+.mj b{display:block;font-size:14.2px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.mj span{display:block;font-size:13.2px;line-height:1.55;color:var(--body)}
+.mj i{display:block;font-style:normal;font-size:11.6px;font-weight:600;color:var(--teal);margin-top:6px;letter-spacing:.02em}
+
+.izraz{border:1px solid var(--rule);border-radius:8px;background:var(--soft);padding:16px 18px;margin:18px 0}
+.izraz .lb{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);
+  display:block;margin-bottom:8px}
+.izraz p{margin:0 0 .55em;font-size:15.4px;line-height:1.7;color:var(--ink)}
+.izraz p:last-child{margin-bottom:0}
+.izraz b{font-weight:700}
+.izraz .np{font-size:13.4px;color:var(--body);line-height:1.6;margin-top:10px}
+</style>
+</head>
+<body>
+
+<canvas id="ftq-canvas"></canvas>
+
+<div id="ftq-bar" role="toolbar" aria-label="Alati">
+  <button class="tb" id="t-pen"   type="button" aria-pressed="false" title="Olovka"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 10-10a2.1 2.1 0 0 0-3-3L5 16l-1 4z"/></svg></button>
+  <button class="tb" id="t-mark"  type="button" aria-pressed="false" title="Marker"><svg viewBox="0 0 24 24"><path d="M5 18h14"/><path d="M8 14l7-8a2 2 0 0 1 3 3l-7 8H8v-3z"/></svg></button>
+  <button class="tb" id="t-erase" type="button" aria-pressed="false" title="Gumica"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M14 4l6 6-8 8H7l-3-3z"/></svg></button>
+  <button class="tb" id="t-board" type="button" aria-pressed="false" title="Ploča"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M9 20l3-3 3 3"/></svg></button>
+  <button class="tb" id="t-color" type="button" aria-pressed="false" title="Boja"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg></button>
+  <button class="tb" id="t-undo"  type="button" title="Poništi"><svg viewBox="0 0 24 24"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 0 10h-3"/></svg></button>
+  <button class="tb" id="t-clear" type="button" title="Obriši sve"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></button>
+  <hr>
+  <button class="tb" id="t-minus" type="button" title="Smanji slova">A&minus;</button>
+  <button class="tb" id="t-plus"  type="button" title="Povećaj slova">A+</button>
+  <button class="tb" id="t-dys"   type="button" aria-pressed="false" title="Pomoć s disleksijom">Dy</button>
+  <button class="tb" id="t-theme" type="button" title="Svijetla / tamna tema"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 5a7 7 0 0 1 0 14z" fill="currentColor" stroke="none"/></svg></button>
+  <div id="ftq-colors"></div>
+</div>
+
+<nav class="topbar" aria-label="Putanja">
+  <a class="tbi menu" href="../index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Izbornik</span></a>
+  <a class="tbi" href="index.html"><span class="lb">Knjiga</span><span class="vl">Osnove mobilnih robota</span></a>
+  <a class="tbi crumb" href="m6-planiranje-gibanja.html"><span class="lb">Modul</span><span class="vl">Planiranje gibanja<span class="x">&#10005;</span></span></a>
+  <div class="tbi crumb"><span class="lb">Odlomak</span><span class="vl">Planiranje putanje<span class="x">&#10005;</span></span></div>
+</nav>
+
+<header class="hero">
+  <div class="hero-art" aria-hidden="true">
+    <svg viewBox="0 0 420 340" preserveAspectRatio="xMidYMid slice">
+      <g fill="none" stroke="#6FD9E2" stroke-width="1" opacity=".28">
+        <path d="M60 60 V290 M100 60 V290 M140 60 V290 M180 60 V290 M220 60 V290 M260 60 V290 M300 60 V290 M340 60 V290"/>
+        <path d="M60 60 H360 M60 100 H360 M60 140 H360 M60 180 H360 M60 220 H360 M60 260 H360"/>
+      </g>
+      <g fill="#6FD9E2" opacity=".3">
+        <rect x="140" y="100" width="40" height="120"/>
+        <rect x="260" y="180" width="80" height="40"/>
+      </g>
+      <g fill="none" stroke="#6FD9E2" stroke-width="2.6" opacity=".8">
+        <path d="M80 270 H120 V240 V80 H240 V140 H320 V90"/>
+      </g>
+      <g fill="#6FD9E2" opacity=".8"><circle cx="80" cy="270" r="8"/></g>
+      <g fill="none" stroke="#6FD9E2" stroke-width="2.4" opacity=".8"><circle cx="320" cy="90" r="10"/></g>
+    </svg>
+  </div>
+
+  <div class="hero-in">
+    <div class="eyebrow">
+      <b>FORTRONI<i>Q</i></b><span>Osnove mobilnih robota</span><span>Modul 6</span><span>Jedinica 6.1</span>
+    </div>
+    <h1>Planiranje putanje</h1>
+    <p class="lede">Karta i cilj su poznati; traži se put. Zvuči jednostavno, ali izbor načina na koji se
+    prostor prikaže odlučuje hoće li se put naći u milisekundi ili u minuti &mdash; i koliko će biti dug.</p>
+    </div>
+
+  <div class="goals">
+    <div class="goals-h">
+      <svg viewBox="0 0 46 32" aria-hidden="true"><path d="M4 17l8 9L28 6"/><path d="M20 17l8 9L44 6"/></svg>
+      <span>Moći ću:</span>
+    </div>
+    <ul id="goals"></ul>
+  </div>
+</header>
+<div class="cyanline"></div>
+
+<div class="wrap">
+
+  <!-- ===================== 1 ===================== -->
+  <section id="s1">
+    <div class="sh"><span class="n">1</span><h2>Što planiranje jest, a što nije</h2></div>
+
+    <p>Planiranje putanje uzima tri stvari: <strong>kartu</strong> sa proširenim zaprekama iz jedinice 3.3,
+    <strong>trenutačni položaj</strong> iz modula 5 i <strong>cilj</strong>. Daje jednu stvar: niz točaka od
+    prvoga do drugoga kroz koje vozilo može proći.</p>
+
+    <p>Ono što planiranje <em>ne</em> radi jednako je važno. Ne prati vozilo u vožnji, ne reagira na ono što
+    se pojavi, ne zadaje brzine kotača. To su poslovi drugih dviju jedinica ovoga modula. Planiranje se izvede
+    jednom &mdash; ili nekoliko puta u sekundi, ovisno o izvedbi &mdash; i preda put dalje.</p>
+
+    <p>Ključna odluka nije <em>koji postupak</em> nego <strong>kako prikazati prostor</strong>. Traženje puta
+    u neprekidnoj ravnini nije izvedivo, jer položaja ima beskonačno mnogo. Prostor se zato svede na konačan
+    broj mjesta i veza &mdash; na <strong>graf</strong> &mdash; i tek se u njemu traži put. Različiti načini
+    tvorbe grafa daju različite putanje, i o tome je ova jedinica.</p>
+
+    <div class="note">
+      <b>Uvjeti koje put mora zadovoljiti</b>
+      <p>Prohodan je prvi i neizostavan &mdash; ne smije dodirivati proširene zapreke. <strong>Kratak</strong>
+      je drugi, ali ne po svaku cijenu: put koji je dva metra kraći, a prolazi na deset centimetara od police,
+      lošiji je od duljega kroz sredinu hodnika. <strong>Izvediv</strong> je treći: vozilo koje se ne okreće u
+      mjestu ne može izvesti put s oštrim kutom, koliko god on bio kratak. I <strong>gladak</strong> je
+      četvrti, jer svaki lom putanje znači kočenje i ubrzanje.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section id="s2">
+    <div class="sh"><span class="n">2</span><h2>Dva načina da se prostor pretvori u graf</h2></div>
+
+    <p>Iz iste karte mogu se napraviti dva vrlo različita grafa, i oni daju različite putanje.</p>
+
+    <p><strong>Mreža</strong> uzima kvadratiće karte kao čvorove, a susjedstvo kao veze. Svaki je kvadratić
+    spojen sa svojim susjedima &mdash; četirima ako se dopušta samo vodoravno i okomito, ili osam ako se
+    dopušta i dijagonalno.</p>
+
+    <p><strong>Graf vidljivosti</strong> uzima samo <em>uglove zapreka</em> kao čvorove, a vezu postavlja
+    između svakoga para uglova koji se međusobno vide &mdash; to jest između kojih se može povući ravna crta
+    koja ne siječe nijednu zapreku.</p>
+
+    <p class="sd">Odaberi prikaz i usporedi.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Mreža nasuprot grafu vidljivosti</div>
+        <div class="s" id="gpos">&nbsp;</div>
+      </div>
+      <div class="seg" id="gseg"></div>
+      <div class="isp">
+        <svg id="gsvg" viewBox="0 0 300 230" role="img" aria-label="Usporedba prikaza prostora mrežom i grafom vidljivosti"></svg>
+        <div>
+          <dl>
+            <dt>Broj čvorova</dt><dd id="gc">&nbsp;</dd>
+            <dt>Duljina putanje</dt><dd id="gd">&nbsp;</dd>
+            <dt>Najkraći mogući put</dt><dd id="gn">&nbsp;</dd>
+            <dt>Odstupanje od najkraćega</dt><dd id="go">&nbsp;</dd>
+            <dt>Blizina zaprekama</dt><dd id="gb">&nbsp;</dd>
+          </dl>
+          <p id="gx">&nbsp;</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Razlika u duljini nije mala. Mreža sa četirima susjedima daje put koji se penje stubama i može biti do
+    <strong>41 posto dulji</strong> od ravne crte; s osam susjeda pada na oko <strong>8 posto</strong>. Graf
+    vidljivosti daje <strong>doista najkraći</strong> put, jer se sastoji od ravnih dionica između uglova.</p>
+
+    <p>Ali graf vidljivosti ima ozbiljnu manu: put mu ide <strong>točno uz uglove zapreka</strong>. To je
+    najkraće i najopasnije. U praksi se zato ili zapreke šire i za sigurnosni razmak, ili se putanja naknadno
+    zaobli i odmakne od uglova.</p>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section id="s3">
+    <div class="sh"><span class="n">3</span><h2>Traženje najkraćega puta</h2></div>
+
+    <p>Kad je graf napravljen, traženje puta je stara i dobro riješena zadaća. Postupak je uvijek isti: od
+    polazišta se šire <strong>mjesta koja su već dosegnuta</strong>, i za svako se pamti koliko je do njega
+    najjeftinije doći i odakle se došlo. Kad se dosegne cilj, put se pročita unatrag.</p>
+
+    <p>Razlika među postupcima je samo u tome <strong>kojim redom se mjesta obrađuju</strong>.</p>
+
+    <div class="tscroll">
+      <table class="t">
+        <thead>
+          <tr><th>Postupak</th><th>Bira sljedeće mjesto po</th><th>Nalazi najkraći put</th><th>Koliko obiđe</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Pretraživanje u širinu</td><td>broju koraka od polazišta</td><td>da, ako su svi koraci jednako skupi</td><td>mnogo — širi se na sve strane jednako</td></tr>
+          <tr><td>Pretraživanje po cijeni</td><td>prijeđenome putu od polazišta</td><td>da, i uz različite cijene koraka</td><td>mnogo — i dalje se širi u krug</td></tr>
+          <tr><td>Pohlepno prema cilju</td><td>procijenjenoj udaljenosti do cilja</td><td>ne</td><td>malo, ali zna zaglaviti iza zapreke</td></tr>
+          <tr><td>Pretraživanje s procjenom</td><td>zbroju prijeđenoga puta i procjene ostatka</td><td>da, ako procjena nikad ne pretjera</td><td>znatno manje od prvih dvaju</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Posljednji redak je onaj koji se u praksi koristi. Ideja mu je jednostavna: umjesto da se širi jednako
+    na sve strane, pretraživanje se <strong>nagne prema cilju</strong> dodavanjem procjene koliko je ostalo.
+    Kao procjena se uzima ravna udaljenost do cilja &mdash; ona nikad ne pretjeruje, jer stvarni put ne može
+    biti kraći od ravne crte, a upravo to jamči da će se naći najkraći put.</p>
+
+    <div class="izraz">
+      <span class="lb">Vrijednost po kojoj se bira sljedeće mjesto</span>
+      <p><b>f = g + h</b></p>
+      <p class="np">Gdje je <em>g</em> stvarni prijeđeni put od polazišta do toga mjesta, a <em>h</em>
+      procjena ostatka do cilja. Uzme li se <em>h</em> = 0, postupak se svede na pretraživanje po cijeni;
+      uzme li se <em>g</em> = 0, na pohlepno traženje. Zbroj daje najbolje od obojega.</p>
+    </div>
+
+    <p class="sd">Klikni „Pretraži&ldquo; i gledaj koliko se mjesta obiđe.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Pretraživanje mreže</div>
+        <div class="s" id="ppos">&nbsp;</div>
+      </div>
+      <div class="isp">
+        <svg id="psvg" viewBox="0 0 300 230" role="img" aria-label="Tijek pretraživanja mreže do cilja"></svg>
+        <div>
+          <dl>
+            <dt>Obiđeno mjesta</dt><dd id="pb">&nbsp;</dd>
+            <dt>Ukupno prohodnih</dt><dd id="pu">&nbsp;</dd>
+            <dt>Udio pretražene karte</dt><dd id="pd">&nbsp;</dd>
+            <dt>Duljina nađenoga puta</dt><dd id="pl">&nbsp;</dd>
+          </dl>
+          <p id="px">&nbsp;</p>
+        </div>
+      </div>
+      <div class="step-bar">
+        <span class="val" id="pvt">Postupak: s procjenom (f = g + h)</span>
+        <input type="range" id="ptrange" min="0" max="1" step="1" value="1" aria-label="Izbor postupka">
+        <button class="btn" type="button" id="pplay">Pretraži</button>
+      </div>
+    </div>
+
+    <p>Razlika je u praksi golema. Na karti skladišta s nekoliko stotina tisuća ćelija pretraživanje bez
+    procjene obiđe gotovo cijelu kartu; s procjenom obiđe usku traku prema cilju. Rezultat je isti put, nađen
+    desetak puta brže.</p>
+  </section>
+
+  <!-- ===================== 4 ===================== -->
+  <section id="s4">
+    <div class="sh"><span class="n">4</span><h2>Potencijalna polja</h2></div>
+
+    <p>Postoji i posve drukčiji pristup, koji ne gradi graf niti išta pretražuje. Zamisli da cilj
+    <strong>privlači</strong> vozilo, a svaka zapreka ga <strong>odbija</strong>, kao istoimeni polovi
+    magneta. Zbroj svih tih sila u svakoj točki daje smjer u kojem se vozilo giba.</p>
+
+    <div class="izraz">
+      <span class="lb">Zbroj privlačenja i odbijanja</span>
+      <p><b>F = F<sub>cilj</sub> + &Sigma; F<sub>zapreka</sub></b></p>
+      <p class="np">Privlačenje raste s udaljenošću od cilja, odbijanje naglo raste kad se zapreci priđe
+      blizu, a izvan zadanoga dometa je nula. Vozilo u svakome koraku ide u smjeru zbroja.</p>
+    </div>
+
+    <p>Prednost je u jednostavnosti i brzini: nema pretraživanja, račun je nekoliko zbrajanja, i postupak
+    <strong>sam po sebi izbjegava zapreke</strong> koje nisu bile u karti &mdash; jer odbijanje računa iz
+    trenutačnoga mjerenja, ne iz karte.</p>
+
+    <p>Mana je ozbiljna i zove se <strong>lokalni minimum</strong>. Ako se privlačenje cilja i odbijanje
+    zapreka ponište, zbroj je nula i vozilo <em>stane</em> &mdash; iako cilj nije dosegnut i iako put postoji.
+    Klasičan slučaj je udubina u zidu okrenuta prema cilju: vozilo uđe u nju i zaglavi.</p>
+
+    <p class="sd">Odaberi raspored i pogledaj kamo vozilo ode.</p>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="t">Potencijalno polje i njegove zamke</div>
+        <div class="s" id="fpos">&nbsp;</div>
+      </div>
+      <div class="cmp">
+        <svg id="fsvg" viewBox="0 0 300 220" role="img" aria-label="Gibanje vozila u potencijalnom polju"></svg>
+        <div class="ct">
+          <h4 id="fh">&nbsp;</h4>
+          <p id="fp">&nbsp;</p>
+          <p class="ex" id="fx">&nbsp;</p>
+        </div>
+      </div>
+      <div class="seg" id="fseg"></div>
+    </div>
+
+    <p>Zbog te mane potencijalna se polja gotovo nikad ne koriste sama za planiranje. Koriste se
+    <strong>uz</strong> planiranje grafom: graf daje niz međutočaka kroz prostor, a polje vozi između njih i
+    usput zaobilazi ono što se pojavilo. Tako se dobiva jamstvo da će se cilj doseći i brzina reakcije.</p>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section id="s5">
+    <div class="sh"><span class="n">5</span><h2>Kako se bira</h2></div>
+
+    <p>Odabir se svodi na nekoliko pitanja, i rijetko kad je jedan postupak odgovor na sva.</p>
+
+    <div class="mjerila">
+      <div class="mj">
+        <b>Koliko je prostor velik</b>
+        <span>Za male prostore mreža s procjenom radi u milisekundama. Za velike se gradi topološka karta
+        prema jedinici 5.2, planira po njoj, pa se mreža koristi samo unutar trenutačnoga dijela.</span>
+        <i>mreža do nekoliko stotina tisuća ćelija</i>
+      </div>
+      <div class="mj">
+        <b>Koliko se prostor mijenja</b>
+        <span>U prostoru koji se stalno mijenja put se mora planirati iznova, i to nekoliko puta u sekundi.
+        Tada je brzina važnija od duljine, pa se planira na grubljoj mreži.</span>
+        <i>ponovno planiranje umjesto savršenoga puta</i>
+      </div>
+      <div class="mj">
+        <b>Koliko je vozilo upravljivo</b>
+        <span>Vozilo koje se okreće u mjestu izvede bilo koji put iz mreže. Vozilo s Ackermannovim pogonom
+        treba put od lukova najmanjega dopuštenog polumjera.</span>
+        <i>neholonomnomu vozilu treba poseban planer</i>
+      </div>
+      <div class="mj">
+        <b>Koliko je siguran razmak potreban</b>
+        <span>Najkraći put ide uz uglove. Ako se traži razmak, u cijenu prolaska kroz ćeliju dodaje se kazna
+        razmjerna blizini zapreke — pa planer sam bira sredinu hodnika.</span>
+        <i>kazna za blizinu, ne samo prohodnost</i>
+      </div>
+    </div>
+
+    <p>Posljednji je stupac najkorisniji trik cijele jedinice. Umjesto da se traži samo <em>najkraći</em> put,
+    svakoj se ćeliji doda trošak koji raste kako se približava zapreci. Planer koji traži najjeftiniji put
+    tada sam odabere sredinu hodnika &mdash; bez ijednoga posebnog pravila.</p>
+
+    <div class="note">
+      <b>Zaključak jedinice</b>
+      <p>Planiranje uzima kartu, položaj i cilj i daje niz točaka. Prostor se prije toga mora svesti na graf:
+      mreža uzima kvadratiće kao čvorove i daje put do 41 posto dulji od ravnoga (8 posto s dijagonalama),
+      graf vidljivosti uzima uglove zapreka i daje doista najkraći put, ali uz same uglove. Najkraći se put
+      traži širenjem od polazišta, a dodavanjem procjene ostatka do cilja pretraživanje se nagne prema cilju i
+      obiđe mnogo manje mjesta. Potencijalna polja ne pretražuju ništa i brza su, ali zaglave u lokalnome
+      minimumu, pa se koriste uz planiranje, ne umjesto njega.</p>
+      <p>Plan vrijedi za prostor kakav je bio u trenutku planiranja. Što kad se promijeni, tema je sljedeće
+      jedinice.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 6 ===================== -->
+  <section id="s6">
+    <div class="sh"><span class="n">6</span><h2>Procjena znanja</h2><span class="score" id="score">&nbsp;</span></div>
+    <p class="sd">Odgovor se zaključava nakon prvoga klika, uz objašnjenje zašto je točan.</p>
+    <div class="qgrid" id="qgrid"></div>
+  </section>
+
+  <nav class="nav" aria-label="Kretanje po modulu">
+    <a href="m6-planiranje-gibanja.html">
+      <span class="lb">&larr; Natrag na modul</span>
+      <span class="tt">Modul 6 &middot; Planiranje gibanja</span>
+    </a>
+    <a class="nx" href="6-2-izbjegavanje-prepreka.html">
+      <span class="lb">Sljedeća jedinica &rarr;</span>
+      <span class="tt">6.2. Izbjegavanje prepreka</span>
+    </a>
+  </nav>
+</div>
+
+<div class="sf">
+  <div class="sf-in">
+    <span class="brand">FORTRONI<i>Q</i></span>
+    <span>Osnove mobilnih robota &middot; Modul 6 &middot; Jedinica 6.1</span>
+    <span>&copy; <span id="yr">2026</span> ForTroniQ d.o.o. &middot; Sva prava pridržana</span>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+var y = $("yr"); if (y) y.textContent = new Date().getFullYear();
+
+/* ---------- ishodi jedinice ---------- */
+var GOALS = [
+ "razlikovati prikaz prostora mrežom od grafa vidljivosti",
+ "objasniti pretraživanje najkraćega puta i ulogu procjene ostatka",
+ "prepoznati zamku potencijalnih polja i znati kako se zaobilazi"
+];
+var gul = $("goals");
+GOALS.forEach(function(g){
+  var li = document.createElement("li");
+  li.innerHTML = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.5l3.4 3.6L12 3.4"/></svg><span>' + g + '</span>';
+  gul.appendChild(li);
+});
+function zar(x, d){ return x.toFixed(d).replace(".", ","); }
+function brj(x){ return x.toFixed(1); }
+var F = 'font-family="IBM Plex Sans, sans-serif"';
+function nat(x, y, t, s, boja){
+  return '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-size="' + (s || 11.5) +
+         '" fill="' + (boja || "var(--body)") + '" ' + F + '>' + t + '</text>';
+}
+
+/* ---------- zajednička karta 20 × 12 ---------- */
+var NX = 20, NY = 12, VEL = 13, OX = 20, OY = 30;
+var ZAP = [];
+for (var r = 0; r < NY; r++){
+  ZAP.push([]);
+  for (var c = 0; c < NX; c++){
+    var u = (c >= 6 && c <= 7 && r >= 1 && r <= 7) ||
+            (c >= 12 && c <= 15 && r >= 5 && r <= 6) ||
+            (c >= 10 && c <= 11 && r >= 8 && r <= 10);
+    ZAP[r].push(u ? 1 : 0);
+  }
+}
+var START = [1, 10], CILJ = [18, 1];
+function CX(c){ return OX + c * VEL + VEL / 2; }
+function CY(r){ return OY + r * VEL + VEL / 2; }
+function crtajKartu(dodatno){
+  var s = "";
+  for (var r = 0; r < NY; r++){
+    for (var c = 0; c < NX; c++){
+      s += '<rect x="' + (OX + c * VEL) + '" y="' + (OY + r * VEL) + '" width="' + VEL + '" height="' + VEL +
+           '" fill="' + (ZAP[r][c] ? "var(--ink)" : "var(--soft)") + '" stroke="var(--rule)" stroke-width=".4"/>';
+    }
+  }
+  return s + (dodatno || "");
+}
+function oznake(){
+  return '<circle cx="' + CX(START[0]) + '" cy="' + CY(START[1]) + '" r="5" fill="var(--teal)"/>' +
+         '<circle cx="' + CX(CILJ[0]) + '" cy="' + CY(CILJ[1]) + '" r="5.5" fill="none" stroke="var(--teal)" stroke-width="2.6"/>';
+}
+
+/* ---------- pretraživanje ---------- */
+function trazi(sSusjeda, sProcjenom){
+  var INF = 1e9;
+  var g = [], odakle = [], gotovo = [], red = [];
+  for (var r = 0; r < NY; r++){ g.push([]); odakle.push([]); gotovo.push([]);
+    for (var c = 0; c < NX; c++){ g[r].push(INF); odakle[r].push(null); gotovo[r].push(0); } }
+  var SUS = sSusjeda === 8
+    ? [[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[1,1,1.4142],[1,-1,1.4142],[-1,1,1.4142],[-1,-1,1.4142]]
+    : [[1,0,1],[-1,0,1],[0,1,1],[0,-1,1]];
+  function h(c, r){
+    var dx = Math.abs(c - CILJ[0]), dy = Math.abs(r - CILJ[1]);
+    return sProcjenom ? (sSusjeda === 8 ? Math.max(dx, dy) + 0.4142 * Math.min(dx, dy)
+                                        : dx + dy) : 0;
+  }
+  g[START[1]][START[0]] = 0;
+  red.push([START[0], START[1], h(START[0], START[1])]);
+  var obidjeno = 0, redoslijed = [];
+  while (red.length){
+    red.sort(function(a, b){ return a[2] - b[2]; });
+    var t = red.shift();
+    var c0 = t[0], r0 = t[1];
+    if (gotovo[r0][c0]) continue;
+    gotovo[r0][c0] = 1; obidjeno++;
+    redoslijed.push([c0, r0]);
+    if (c0 === CILJ[0] && r0 === CILJ[1]) break;
+    SUS.forEach(function(sv){
+      var c1 = c0 + sv[0], r1 = r0 + sv[1];
+      if (c1 < 0 || c1 >= NX || r1 < 0 || r1 >= NY) return;
+      if (ZAP[r1][c1]) return;
+      if (sv[2] > 1.1 && (ZAP[r0][c1] || ZAP[r1][c0])) return;   /* bez rezanja uglova */
+      var ng = g[r0][c0] + sv[2];
+      if (ng < g[r1][c1]){
+        g[r1][c1] = ng; odakle[r1][c1] = [c0, r0];
+        red.push([c1, r1, ng + h(c1, r1)]);
+      }
+    });
+  }
+  var put = [], cur = [CILJ[0], CILJ[1]];
+  if (g[CILJ[1]][CILJ[0]] < INF){
+    while (cur){ put.unshift(cur); cur = odakle[cur[1]][cur[0]]; }
+  }
+  var prohodnih = 0;
+  for (var r2 = 0; r2 < NY; r2++) for (var c2 = 0; c2 < NX; c2++) if (!ZAP[r2][c2]) prohodnih++;
+  return {put:put, obidjeno:obidjeno, redoslijed:redoslijed,
+          duljina:g[CILJ[1]][CILJ[0]], prohodnih:prohodnih};
+}
+
+/* ---------- mreža nasuprot vidljivosti ---------- */
+var VID_PUT = [[1.5, 10.5], [5.5, 8.2], [8.5, 7.6], [11.5, 4.6], [16.5, 4.4], [18.5, 1.5]];
+var GRAF = [
+ {k:"Mreža, četiri susjeda", vrsta:"m4"},
+ {k:"Mreža, osam susjeda", vrsta:"m8"},
+ {k:"Graf vidljivosti", vrsta:"v"}
+];
+var gseg = $("gseg"), gEls = [];
+GRAF.forEach(function(v, i){
+  var b = document.createElement("button");
+  b.className = "segb"; b.type = "button"; b.setAttribute("aria-pressed", "false");
+  b.textContent = v.k;
+  b.addEventListener("click", function(){ selG(i); });
+  gseg.appendChild(b); gEls.push(b);
+});
+function duljinaTocaka(t){
+  var d = 0;
+  for (var i = 1; i < t.length; i++)
+    d += Math.sqrt(Math.pow(t[i][0] - t[i-1][0], 2) + Math.pow(t[i][1] - t[i-1][1], 2));
+  return d;
+}
+var RAVNO = Math.sqrt(Math.pow(CILJ[0] - START[0], 2) + Math.pow(CILJ[1] - START[1], 2));
+var curG = -1;
+function selG(i){
+  if (i === curG) return;
+  curG = i;
+  gEls.forEach(function(b, k){ b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+  var v = GRAF[i], s = "", put, duljina, cvorova, blizina;
+  if (v.vrsta === "v"){
+    s = crtajKartu();
+    /* veze grafa vidljivosti - shematski */
+    var uglovi = [[5.5, 0.5], [5.5, 8.2], [8.5, 0.5], [8.5, 7.6], [11.5, 4.6], [11.5, 7.4],
+                  [16.5, 4.4], [16.5, 7.4], [9.5, 7.4], [9.5, 10.6], [12.5, 7.4]];
+    uglovi.forEach(function(u){
+      s += '<circle cx="' + brj(CX(u[0] - 0.5)) + '" cy="' + brj(CY(u[1] - 0.5)) +
+           '" r="3" fill="none" stroke="var(--body)" stroke-width="1.4" opacity=".7"/>';
+    });
+    var d = "";
+    VID_PUT.forEach(function(t, k){
+      d += (k === 0 ? "M" : " L") + brj(CX(t[0] - 0.5)) + " " + brj(CY(t[1] - 0.5));
+    });
+    s += '<path d="' + d + '" fill="none" stroke="var(--cyan)" stroke-width="2.8" stroke-linejoin="round"/>';
+    duljina = duljinaTocaka(VID_PUT);
+    cvorova = uglovi.length + 2;
+    blizina = "prolazi uz same uglove zapreka";
+  } else {
+    var rez = trazi(v.vrsta === "m8" ? 8 : 4, 1);
+    put = rez.put;
+    s = crtajKartu();
+    var d2 = "";
+    put.forEach(function(t, k){
+      d2 += (k === 0 ? "M" : " L") + brj(CX(t[0])) + " " + brj(CY(t[1]));
+    });
+    s += '<path d="' + d2 + '" fill="none" stroke="var(--cyan)" stroke-width="2.8" stroke-linejoin="round"/>';
+    duljina = rez.duljina;
+    cvorova = rez.prohodnih;
+    blizina = v.vrsta === "m8" ? "prolazi uz zapreke, ali po sredini ćelije" : "drži se sredine ćelija";
+  }
+  s += oznake();
+  s += nat(150, 208, "puni kružić: polazište · prazni: cilj", 9.5);
+  $("gsvg").innerHTML = s;
+  $("gc").textContent = cvorova + (v.vrsta === "v" ? " (uglovi zapreka)" : " (prohodne ćelije)");
+  $("gd").textContent = zar(duljina, 2) + " ćelija";
+  $("gn").textContent = zar(RAVNO, 2) + " ćelija (ravna crta)";
+  $("go").textContent = "+" + zar((duljina / RAVNO - 1) * 100, 1) + " %";
+  $("gb").textContent = blizina;
+  var x;
+  if (v.vrsta === "m4") x = "Bez dijagonala put se penje stubama. U najgorem slučaju to je 41 posto dulje od ravne crte — omjer dijagonale i stranice kvadrata.";
+  else if (v.vrsta === "m8") x = "Dijagonale smanjuju odstupanje na oko osam posto u najgorem slučaju. Uz to treba paziti da se ne reže ugao zapreke, što je ovdje spriječeno.";
+  else x = "Graf vidljivosti daje doista najkraći put, ali uz same uglove. U praksi se zato zapreke šire i za sigurnosni razmak ili se putanja naknadno zaobli.";
+  $("gx").textContent = x;
+  $("gpos").textContent = zar(duljina, 1);
+}
+selG(0);
+
+/* ---------- pretraživanje s prikazom ---------- */
+var pT = null, pRez = null, pK = 0;
+function crtajPretr(){
+  var sProc = parseInt($("ptrange").value, 10);
+  $("pvt").textContent = sProc ? "Postupak: s procjenom (f = g + h)" : "Postupak: bez procjene (f = g)";
+  if (!pRez){
+    $("psvg").innerHTML = crtajKartu() + oznake() +
+      nat(150, 208, "klikni Pretraži", 10.5);
+    $("pb").textContent = "—"; $("pu").textContent = "—";
+    $("pd").textContent = "—"; $("pl").textContent = "—";
+    $("px").textContent = "Postupak bez procjene širi se jednako na sve strane; s procjenom se nagne prema cilju i obiđe znatno manje mjesta.";
+    $("ppos").textContent = "spremno";
+    return;
+  }
+  var s = crtajKartu();
+  for (var i = 0; i < Math.min(pK, pRez.redoslijed.length); i++){
+    var t = pRez.redoslijed[i];
+    s += '<rect x="' + (OX + t[0] * VEL) + '" y="' + (OY + t[1] * VEL) + '" width="' + VEL + '" height="' + VEL +
+         '" fill="var(--cyan)" fill-opacity="' + (0.18 + 0.3 * (i / pRez.redoslijed.length)) + '"/>';
+  }
+  if (pK >= pRez.redoslijed.length){
+    var d = "";
+    pRez.put.forEach(function(t, k){
+      d += (k === 0 ? "M" : " L") + brj(CX(t[0])) + " " + brj(CY(t[1]));
+    });
+    s += '<path d="' + d + '" fill="none" stroke="var(--teal)" stroke-width="2.8" stroke-linejoin="round"/>';
+  }
+  s += oznake();
+  var ob = Math.min(pK, pRez.obidjeno);
+  s += nat(150, 208, "svijetlo: obiđena mjesta · tamna crta: nađeni put", 9.5);
+  $("psvg").innerHTML = s;
+  $("pb").textContent = ob;
+  $("pu").textContent = pRez.prohodnih;
+  $("pd").textContent = zar(ob / pRez.prohodnih * 100, 1) + " %";
+  $("pl").textContent = pK >= pRez.redoslijed.length ? zar(pRez.duljina, 2) + " ćelija" : "traži se…";
+  $("ppos").textContent = ob + " / " + pRez.prohodnih;
+  if (pK >= pRez.redoslijed.length){
+    $("px").textContent = sProc
+      ? "S procjenom je obiđeno " + zar(pRez.obidjeno / pRez.prohodnih * 100, 0) +
+        " posto prohodnih mjesta. Put je jednak onomu bez procjene — procjena ne mijenja rezultat, samo brzinu."
+      : "Bez procjene se pretraživanje širi u krug i obilazi gotovo cijelu kartu. Nađeni je put jednak, ali je za njega obiđeno mnogo više mjesta.";
+  }
+}
+$("ptrange").addEventListener("input", function(){ pRez = null; pK = 0; crtajPretr(); });
+$("pplay").addEventListener("click", function(){
+  if (pT){ clearInterval(pT); pT = null; $("pplay").textContent = "Pretraži"; return; }
+  pRez = trazi(8, parseInt($("ptrange").value, 10));
+  pK = 0;
+  $("pplay").textContent = "Zaustavi";
+  pT = setInterval(function(){
+    pK += 3;
+    crtajPretr();
+    if (pK >= pRez.redoslijed.length){
+      clearInterval(pT); pT = null; $("pplay").textContent = "Pretraži";
+    }
+  }, 40);
+});
+crtajPretr();
+
+/* ---------- potencijalna polja ---------- */
+var POLJA = [
+ {k:"Slobodan put", tip:"ok",
+  h:"Jednostavan slučaj",
+  p:"Cilj privlači, jedna zapreka odbija. Vozilo obiđe zapreku i stigne do cilja, bez ikakva pretraživanja i uz vrlo malo računa.",
+  x:"Ovakav slučaj je razlog zašto se potencijalna polja i dalje koriste: brza su i sama zaobilaze ono što nije bilo u karti."},
+ {k:"Udubina u zidu", tip:"min",
+  h:"Lokalni minimum",
+  p:"Zid s udubinom okrenutom prema cilju. Vozilo uđe u udubinu; ondje se privlačenje cilja i odbijanje triju strana ponište, pa je zbroj nula.",
+  x:"Vozilo stane iako cilj nije dosegnut i iako put postoji. To je glavni razlog zašto se polja ne koriste sama."},
+ {k:"Uski prolaz", tip:"uzak",
+  h:"Titranje u uskome prolazu",
+  p:"Prolaz je uži od dvostrukoga dometa odbijanja, pa oba zida guraju vozilo istodobno. Ono skreće lijevo pa desno i prolazi titrajući, ili uopće ne uđe.",
+  x:"Rješenje je smanjiti domet odbijanja ili prolaz proglasiti neprohodnim — ali oba znače da polje samo ne odlučuje dobro."},
+ {k:"Polje uz plan", tip:"spoj",
+  h:"Polje uz planiranu putanju",
+  p:"Graf daje niz međutočaka, a polje vozi između njih: svaka međutočka redom postaje privremeni cilj koji privlači, a zapreke i dalje odbijaju.",
+  x:"Tako se dobiva jamstvo da će se cilj doseći, koje polje samo nema, i brzina reakcije, koju plan sam nema. To je izvedba koja se koristi u praksi."}
+];
+var fseg = $("fseg"), fEls = [];
+POLJA.forEach(function(v, i){
+  var b = document.createElement("button");
+  b.className = "segb"; b.type = "button"; b.setAttribute("aria-pressed", "false");
+  b.textContent = v.k;
+  b.addEventListener("click", function(){ selF(i); });
+  fseg.appendChild(b); fEls.push(b);
+});
+var curF = -1;
+function selF(i){
+  if (i === curF) return;
+  curF = i;
+  fEls.forEach(function(b, k){ b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+  var v = POLJA[i];
+  var s = '<rect x="14" y="16" width="272" height="166" rx="6" fill="none" stroke="var(--rule)" stroke-width="1.3"/>';
+  var start = [42, 150], cilj = [258, 52];
+  var zap = [], put = [];
+  if (v.tip === "ok"){
+    zap = [[130, 86, 52, 42]];
+    put = [[42,150],[74,140],[104,132],[128,136],[150,142],[176,128],[200,102],[228,76],[258,52]];
+  } else if (v.tip === "min"){
+    zap = [[120, 44, 18, 100], [120, 44, 92, 16], [120, 128, 92, 16]];
+    put = [[42,150],[76,138],[104,120],[124,104],[140,96],[152,94],[158,94],[158,94]];
+  } else if (v.tip === "uzak"){
+    zap = [[132, 20, 34, 62], [132, 116, 34, 62]];
+    put = [[42,150],[78,138],[108,122],[130,112],[142,98],[152,110],[164,96],[176,108],[196,92],[222,72],[258,52]];
+  } else {
+    zap = [[120, 44, 18, 100], [120, 44, 92, 16], [120, 128, 92, 16]];
+    put = [[42,150],[76,146],[104,150],[134,156],[166,150],[192,126],[214,98],[236,74],[258,52]];
+  }
+  zap.forEach(function(z){
+    s += '<rect x="' + z[0] + '" y="' + z[1] + '" width="' + z[2] + '" height="' + z[3] +
+         '" fill="var(--ink)" fill-opacity=".8"/>';
+    s += '<rect x="' + (z[0] - 12) + '" y="' + (z[1] - 12) + '" width="' + (z[2] + 24) + '" height="' + (z[3] + 24) +
+         '" fill="#B4553F" fill-opacity=".1" stroke="#B4553F" stroke-width="1" stroke-dasharray="3 3"/>';
+  });
+  /* međutočke kod spoja */
+  if (v.tip === "spoj"){
+    [[104, 150], [166, 150], [214, 98]].forEach(function(t){
+      s += '<circle cx="' + t[0] + '" cy="' + t[1] + '" r="4.5" fill="none" stroke="var(--body)" stroke-width="1.8" stroke-dasharray="2 2"/>';
+    });
+  }
+  var d = "";
+  put.forEach(function(t, k){ d += (k === 0 ? "M" : " L") + t[0] + " " + t[1]; });
+  s += '<path d="' + d + '" fill="none" stroke="' + (v.tip === "min" ? "#B4553F" : "var(--cyan)") +
+       '" stroke-width="2.8" stroke-linejoin="round"/>';
+  s += '<circle cx="' + start[0] + '" cy="' + start[1] + '" r="5.5" fill="var(--teal)"/>';
+  s += '<circle cx="' + cilj[0] + '" cy="' + cilj[1] + '" r="6" fill="none" stroke="var(--teal)" stroke-width="2.6"/>';
+  var kraj = put[put.length - 1];
+  if (v.tip === "min"){
+    s += '<circle cx="' + kraj[0] + '" cy="' + kraj[1] + '" r="9" fill="#B4553F" fill-opacity=".3" stroke="#B4553F" stroke-width="2"/>';
+    s += nat(150, 200, "vozilo je stalo: zbroj sila je nula", 10.5, "#B4553F");
+  } else if (v.tip === "uzak"){
+    s += nat(150, 200, "vozilo prolazi, ali titrajući", 10.5);
+  } else {
+    s += nat(150, 200, "vozilo dolazi do cilja", 10.5, "var(--teal)");
+  }
+  $("fsvg").innerHTML = s;
+  $("fh").textContent = v.h; $("fp").textContent = v.p; $("fx").textContent = v.x;
+  $("fpos").textContent = (i + 1) + " / " + POLJA.length;
+}
+selF(0);
+
+/* ---------- procjena znanja ---------- */
+var QS = [
+ {p:"Što planiranje putanje uzima kao ulaz?",
+  o:["Samo cilj","Kartu s proširenim zaprekama, trenutačni položaj i cilj","Brzine kotača","Mjerenja osjetila"],
+  c:1,
+  e:"Daje niz točaka od položaja do cilja. Ne prati vožnju, ne reagira na nove zapreke i ne zadaje brzine kotača."},
+ {p:"Zašto se prostor pretvara u graf?",
+  o:["Zbog prikaza","Jer u neprekidnoj ravnini ima beskonačno mnogo položaja, pa se ne može pretraživati","Zbog memorije","Zbog norme"],
+  c:1,
+  e:"Prostor se svede na konačan broj mjesta i veza, i tek se u njemu traži put."},
+ {p:"Koliko je dulji put po mreži s četirima susjedima od ravne crte, u najgorem slučaju?",
+  o:["8 %","20 %","41 %","100 %"],
+  c:2,
+  e:"Put se penje stubama, pa je duljina zbroj kateta umjesto hipotenuze — omjer je √2, odnosno 41 posto."},
+ {p:"Što graf vidljivosti uzima kao čvorove?",
+  o:["Kvadratiće karte","Uglove zapreka","Sredine hodnika","Mjesta na kojima je robot bio"],
+  c:1,
+  e:"Veze se postavljaju između svakoga para uglova koji se međusobno vide. Rezultat je doista najkraći put."},
+ {p:"Koja je glavna mana grafa vidljivosti?",
+  o:["Spor je","Put ide točno uz uglove zapreka","Ne nalazi put","Traži previše memorije"],
+  c:1,
+  e:"Najkraće je i najopasnije. U praksi se zapreke šire i za sigurnosni razmak ili se putanja naknadno odmakne."},
+ {p:"Što znači f = g + h u pretraživanju?",
+  o:["Zbroj dviju zapreka","Prijeđeni put od polazišta plus procjena ostatka do cilja","Brzina i kut","Cijena i vrijeme"],
+  c:1,
+  e:"Uz h = 0 postupak se svodi na pretraživanje po cijeni; uz g = 0 na pohlepno traženje prema cilju."},
+ {p:"Zašto se kao procjena ostatka uzima ravna udaljenost do cilja?",
+  o:["Jer se najlakše računa","Jer nikad ne pretjeruje, čime se jamči da će se naći najkraći put","Jer je najtočnija","Jer tako propisuje norma"],
+  c:1,
+  e:"Stvarni put ne može biti kraći od ravne crte. Procjena koja bi pretjerala mogla bi navesti pretraživanje da propusti bolji put."},
+ {p:"Što se dobiva dodavanjem procjene u pretraživanje?",
+  o:["Kraći put","Isti put uz mnogo manje obiđenih mjesta","Sigurniji put","Gladak put"],
+  c:1,
+  e:"Pretraživanje se nagne prema cilju umjesto da se širi u krug. Na velikim kartama to je razlika od desetak puta."},
+ {p:"Što je lokalni minimum kod potencijalnih polja?",
+  o:["Najniža točka karte","Mjesto gdje se privlačenje i odbijanje ponište, pa vozilo stane","Najkraći put","Mjesto s najmanje zapreka"],
+  c:1,
+  e:"Klasičan slučaj je udubina u zidu okrenuta prema cilju: vozilo uđe i zaglavi, iako put postoji."},
+ {p:"Kako se potencijalna polja koriste u praksi?",
+  o:["Sama, umjesto planiranja","Uz planiranje grafom: graf daje međutočke, polje vozi između njih","Samo u simulaciji","Ne koriste se"],
+  c:1,
+  e:"Tako se spaja jamstvo da će se cilj doseći, koje polje nema, s brzinom reakcije, koju plan nema."},
+ {p:"Kako se postiže da planer sam bira sredinu hodnika?",
+  o:["Posebnim pravilom","Dodavanjem kazne u cijenu prolaska kroz ćeliju, razmjerno blizini zapreke","Širenjem svih zapreka","Smanjenjem brzine"],
+  c:1,
+  e:"Planer koji traži najjeftiniji put tada sam izbjegava blizinu zapreka, bez ijednoga dodatnog pravila."}
+];
+var grid = $("qgrid"), answered = 0, correct = 0;
+QS.forEach(function(q, i){
+  var card = document.createElement("div"); card.className = "q";
+  var num = document.createElement("div"); num.className = "num";
+  num.textContent = "Pitanje " + (i + 1) + " / " + QS.length; card.appendChild(num);
+  var pr = document.createElement("div"); pr.className = "prompt"; pr.textContent = q.p; card.appendChild(pr);
+  var opts = document.createElement("div"); opts.className = "opts"; card.appendChild(opts);
+  var fb = document.createElement("div"); fb.className = "fb"; fb.hidden = true; card.appendChild(fb);
+  q.o.forEach(function(txt, k){
+    var lab = document.createElement("label"); lab.className = "opt";
+    var inp = document.createElement("input");
+    inp.type = "radio"; inp.name = "q" + i; inp.id = "q" + i + "o" + k;
+    var sp = document.createElement("span"); sp.textContent = txt;
+    lab.appendChild(inp); lab.appendChild(sp); opts.appendChild(lab);
+    inp.addEventListener("change", function(){
+      if (card.dataset.done) return;
+      card.dataset.done = "1"; answered++;
+      var good = (k === q.c); if (good) correct++;
+      Array.prototype.forEach.call(opts.children, function(e2, idx){
+        e2.classList.add("locked"); e2.querySelector("input").disabled = true;
+        if (idx === q.c) e2.classList.add("correct");
+        else if (idx === k) e2.classList.add("wrong");
+      });
+      fb.className = "fb " + (good ? "ok" : "no");
+      fb.innerHTML = "<b>" + (good ? "Točno" : "Netočno") + "</b> &mdash; " + q.e;
+      fb.hidden = false;
+      $("score").textContent = "Riješeno " + answered + " / " + QS.length + " · točnih " + correct;
+    });
+  });
+  grid.appendChild(card);
+});
+
+/* ---------- alatna traka ---------- */
+var cv = $("ftq-canvas"), ctx = cv.getContext("2d");
+var strokes = [], drawing = null, tool = null, board = false;
+var COLORS = ["#17656E", "#2ECAD4", "#C0562A", "#3E7A46", "#10394A"];
+var color = COLORS[0];
+function store(k, v){ try{ localStorage.setItem("ftq-mr-l61-" + k, v); }catch(e){} }
+function load(k){ try{ return localStorage.getItem("ftq-mr-l61-" + k); }catch(e){ return null; } }
+function fit(){
+  var r = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.round(innerWidth * r); cv.height = Math.round(innerHeight * r);
+  cv.style.width = innerWidth + "px"; cv.style.height = innerHeight + "px";
+  ctx.setTransform(r, 0, 0, r, 0, 0); redraw();
+}
+function redraw(){
+  ctx.clearRect(0, 0, innerWidth, innerHeight);
+  if (board){
+    var cs = getComputedStyle(document.body);
+    ctx.fillStyle = cs.backgroundColor || "#fff";
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+  }
+  strokes.forEach(function(s){
+    if (!s.pts || s.pts.length < 2) return;
+    ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (s.tool === "erase"){ ctx.globalCompositeOperation = "destination-out"; ctx.lineWidth = 26; ctx.strokeStyle = "rgba(0,0,0,1)"; }
+    else if (s.tool === "mark"){ ctx.globalAlpha = .32; ctx.lineWidth = 17; ctx.strokeStyle = s.color; }
+    else { ctx.lineWidth = 2.6; ctx.strokeStyle = s.color; }
+    ctx.beginPath(); ctx.moveTo(s.pts[0][0], s.pts[0][1]);
+    for (var i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i][0], s.pts[i][1]);
+    ctx.stroke(); ctx.restore();
+  });
+}
+function setTool(t){
+  tool = (tool === t) ? null : t;
+  ["pen", "mark", "erase"].forEach(function(k){ $("t-" + k).setAttribute("aria-pressed", tool === k ? "true" : "false"); });
+  cv.classList.toggle("on", !!tool);
+}
+cv.addEventListener("pointerdown", function(e){
+  if (!tool) return;
+  cv.setPointerCapture(e.pointerId);
+  drawing = {tool:tool, color:color, pts:[[e.clientX, e.clientY]]};
+  strokes.push(drawing);
+});
+cv.addEventListener("pointermove", function(e){ if (!drawing) return; drawing.pts.push([e.clientX, e.clientY]); redraw(); });
+function endStroke(){ if (!drawing) return; drawing = null; try{ store("strokes", JSON.stringify(strokes.slice(-400))); }catch(e){} }
+cv.addEventListener("pointerup", endStroke);
+cv.addEventListener("pointercancel", endStroke);
+$("t-pen").addEventListener("click", function(){ setTool("pen"); });
+$("t-mark").addEventListener("click", function(){ setTool("mark"); });
+$("t-erase").addEventListener("click", function(){ setTool("erase"); });
+$("t-board").addEventListener("click", function(){
+  board = !board; this.setAttribute("aria-pressed", board ? "true" : "false");
+  if (board && !tool) setTool("pen");
+  store("board", board ? "1" : "0"); redraw();
+});
+$("t-undo").addEventListener("click", function(){ strokes.pop(); redraw(); try{ store("strokes", JSON.stringify(strokes)); }catch(e){} });
+$("t-clear").addEventListener("click", function(){ strokes = []; redraw(); store("strokes", "[]"); });
+var colBox = $("ftq-colors");
+COLORS.forEach(function(c, i){
+  var b = document.createElement("button");
+  b.className = "sw"; b.type = "button"; b.style.background = c;
+  b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+  b.setAttribute("title", "Boja " + (i + 1));
+  b.addEventListener("click", function(){
+    color = c;
+    Array.prototype.forEach.call(colBox.children, function(x){ x.setAttribute("aria-pressed", "false"); });
+    b.setAttribute("aria-pressed", "true");
+  });
+  colBox.appendChild(b);
+});
+$("t-color").addEventListener("click", function(){
+  var on = colBox.classList.toggle("show");
+  this.setAttribute("aria-pressed", on ? "true" : "false");
+});
+var fs = parseFloat(load("fs") || "1");
+function applyFs(){ fs = Math.min(1.5, Math.max(.85, fs)); document.documentElement.style.setProperty("--fs", fs.toFixed(2)); store("fs", fs); }
+applyFs();
+$("t-plus").addEventListener("click", function(){ fs += .1; applyFs(); });
+$("t-minus").addEventListener("click", function(){ fs -= .1; applyFs(); });
+if (load("dys") === "1"){ document.body.classList.add("dys"); $("t-dys").setAttribute("aria-pressed", "true"); }
+$("t-dys").addEventListener("click", function(){
+  var on = document.body.classList.toggle("dys");
+  this.setAttribute("aria-pressed", on ? "true" : "false"); store("dys", on ? "1" : "0");
+});
+$("t-theme").addEventListener("click", function(){
+  var r = document.documentElement, c = r.getAttribute("data-theme");
+  var next = c === "dark" ? "light" : (c === "light" ? null : "dark");
+  if (next) r.setAttribute("data-theme", next); else r.removeAttribute("data-theme");
+  store("theme", next || ""); redraw();
+});
+var st = load("theme"); if (st) document.documentElement.setAttribute("data-theme", st);
+try{
+  var sv = load("strokes"); if (sv) strokes = JSON.parse(sv) || [];
+  if (load("board") === "1"){ board = true; $("t-board").setAttribute("aria-pressed", "true"); }
+}catch(e){ strokes = []; }
+addEventListener("resize", fit);
+fit();
+})();
+</script>
+</body>
+</html>
