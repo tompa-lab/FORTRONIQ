@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4.2 Prepoznavanje i otklanjanje čestih problema pri ispisu — Upravljanje 3D printerom | FORTRONIQ</title>
+<meta name="description" content="Gotovo svaka pogreška pri ispisu ostavlja trag koji se vidi na predmetu. Rubovi koji se dižu, praznine među linijama, niti između stijenki ili stepenica na pola visine nisu slučajn">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/upravljanje-3d-printerom/4-2-cesti-problemi.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/upravljanje-3d-printerom/4-2-cesti-problemi.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/upravljanje-3d-printerom/4-2-cesti-problemi.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/upravljanje-3d-printerom/4-2-cesti-problemi.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="4.2 Prepoznavanje i otklanjanje čestih problema pri ispisu">
+<meta property="og:description" content="Gotovo svaka pogreška pri ispisu ostavlja trag koji se vidi na predmetu. Rubovi koji se dižu, praznine među linijama, niti između stijenki ili stepenica na pola visine nisu slučajn">
+<meta property="og:url" content="https://dos.fortroniq.hr/upravljanje-3d-printerom/4-2-cesti-problemi.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://www.fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://www.fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Upravljanje 3D printerom</a><i aria-hidden="true">/</i><a href="m4-odrzavanje-i-poteskoce.html">4. Održavanje i otklanjanje poteškoća</a><i aria-hidden="true">/</i><span aria-current="page">4.2 Prepoznavanje i otklanjanje čestih problema pri ispisu</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 4 &middot; ODRŽAVANJE I OTKLANJANJE POTEŠKOĆA</p><p class="nadnaslov">Nastavna jedinica 4.2</p><h1>Prepoznavanje i otklanjanje čestih problema pri ispisu</h1><p>Gotovo svaka pogreška pri ispisu ostavlja trag koji se vidi na predmetu. Rubovi koji se dižu, praznine među linijama, niti između stijenki ili stepenica na pola visine nisu slučajni oblici nego posljedice određenih uzroka. Tko ih nauči čitati, popravak svodi na jednu ili dvije promjene umjesto na nasumično mijenjanje postavki.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>prepoznati čestu pogrešku pri ispisu iz izgleda predmeta</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>povezati izgled pogreške s njezinim najvjerojatnijim uzrokom</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odabrati zahvat i odrediti redoslijed promjena pri otklanjanju uzroka</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>razlikovati pogreške mehaničkog podrijetla od onih koje nastaju postavkama</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>provesti ispitni ispis kojim se promjena potvrđuje</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>procijeniti trošak neuspjelih ispisa i korist od uklanjanja uzroka</span></li></ul></div></div></header><div class="omot"><section><h2>Kako se traži uzrok</h2><div class="crta"></div><p>Pri traženju uzroka najveća je pogreška promijeniti nekoliko postavki odjednom. Ako se istodobno podigne temperatura, uspori ispis i pojača hlađenje, a ispis uspije, ne zna se koja je promjena pomogla i koja je od njih možda pogoršala nešto drugo. Pravilo je jednostavno: <strong>jedna promjena po ispisu</strong>, i to na uzorku koji traje nekoliko minuta, a ne na predmetu koji traje dva sata.</p><p>Prije nego što se dira ijedna postavka, provjeravaju se tri stvari koje objašnjavaju veći dio svih pogrešaka. Prva je <strong>stanje materijala</strong>: je li filament suh, je li ispravno namotan i prolazi li slobodno do ekstrudera. Druga je <strong>stanje uređaja</strong>: je li podloga čista i poravnata, je li mlaznica prohodna, jesu li remeni zategnuti. Treća je <strong>sam model i priprema</strong>: je li mreža zatvorena, ima li predmet dovoljnu površinu naliježanja i jesu li potpore uopće postavljene ondje gdje trebaju.</p><p>Tek kada su te tri skupine provjerene, ima smisla mijenjati parametre. I tada se ide od promjena koje najmanje mijenjaju ostalo: najprije temperatura i protok, zatim brzina i hlađenje, pa tek onda uvlačenje i geometrija putanje. Svaka se promjena bilježi, jer se inače nakon deset pokušaja više ne zna od čega se krenulo.</p></section><section><h2>Pregled pogrešaka, uzroka i zahvata</h2><div class="crta"></div><p>Tablica povezuje ono što se vidi s onim što se mijenja. U stupcu zahvata naveden je prvi korak, onaj kojim se počinje; ako on ne pomogne, prelazi se na sljedeći u opisu pojedine pogreške u nastavku jedinice.</p><div class="tablica-omot"><table><thead><tr><th>Pogreška</th><th>Kako izgleda</th><th>Najčešći uzrok</th><th>Prvi zahvat</th></tr></thead><tbody><tr><td>Slaba prionjivost prvog sloja</td><td>linije se ne spajaju, predmet se odvaja već u prvom sloju</td><td>prevelik razmak mlaznice, masna ili hladna podloga</td><td>očistiti podlogu alkoholom i spustiti prvi sloj za 0,02 &mdash; 0,05 mm</td></tr><tr><td>Savijanje rubova (warping)</td><td>uglovi se podižu s podloge, dno postaje konkavno</td><td>skupljanje materijala pri hlađenju, hladna podloga, propuh</td><td>podići temperaturu podloge i dodati obrub od 5 mm</td></tr><tr><td>Slonovska noga</td><td>prva dva do tri sloja šira su od ostatka predmeta</td><td>prenizak prvi sloj uz previsoku temperaturu podloge</td><td>sniziti temperaturu podloge za 5 &deg;C i provjeriti razmak mlaznice</td></tr><tr><td>Nitice (stringing)</td><td>tanke niti između odvojenih dijelova predmeta</td><td>vlažan filament, previsoka temperatura, premalo uvlačenje</td><td>osušiti filament, zatim sniziti temperaturu za 5 &deg;C</td></tr><tr><td>Začepljena mlaznica</td><td>istiskivanje prestaje ili je bitno slabije, ekstruder škljoca</td><td>nečistoća, zagoreni ostaci, kvar hlađenja grla</td><td>provjeriti ventilator hladnjaka, zatim hladni potez</td></tr><tr><td>Podistiskivanje</td><td>praznine između linija, tanke i isprekidane stijenke</td><td>premalen protok, začepljenje, prevelika brzina</td><td>provjeriti prohodnost, zatim povisiti protok za 3 &mdash; 5 %</td></tr><tr><td>Pretiskivanje</td><td>izbočene, hrapave stijenke, nakupine na uglovima</td><td>prevelik protok, pogrešan promjer filamenta u postavkama</td><td>unijeti izmjereni promjer filamenta i sniziti protok</td></tr><tr><td>Odvajanje slojeva</td><td>predmet se rukom razdvaja po vodoravnoj ravnini</td><td>preniska temperatura, prejako hlađenje, propuh</td><td>povisiti temperaturu mlaznice za 5 &mdash; 10 &deg;C</td></tr><tr><td>Pomak sloja</td><td>sve iznad određene visine pomaknuto je u jednu stranu</td><td>olabavljena remenica, prezategnut remen, sudar s predmetom</td><td>provjeriti vijak remenice i zategnutost remena</td></tr><tr><td>Šupljine u gornjoj plohi</td><td>gornja ploha ima rupice, kroz nju se vidi ispuna</td><td>premalo gornjih slojeva ili preniska ispuna</td><td>povećati broj gornjih slojeva na pet</td></tr><tr><td>Loši mostovi i previsi</td><td>obješene niti ispod previsa, hrapava donja ploha</td><td>nedovoljno hlađenje, prevelika brzina mosta, nema potpore</td><td>pojačati hlađenje na 100 % i usporiti mostove</td></tr><tr><td>Curenje filamenta</td><td>materijal izlazi uz navoj mlaznice, nakupina na bloku</td><td>mlaznica nije dotegnuta na radnoj temperaturi</td><td>očistiti blok i dotegnuti mlaznicu zagrijanu na radnu temperaturu</td></tr></tbody></table></div><figure class="crtez"><svg viewBox="0 0 640 400" role="img" aria-label="Slika 4.2: Izgled pogreške najbrže vodi do uzroka ako se zna što se na uzorku traži.">
+<text class="mali" x="320" y="26" text-anchor="middle">Šest čestih pogrešaka i njihov izgled</text><rect class="pf" x="20" y="40" width="190" height="150" rx="10"/><path class="l" d="M39 136 L191 136"/><path class="cf" d="M53 122 L71 136 L159 136 L177 122 L177 80 L53 80 Z"/><path class="l" d="M53 122 L71 136 L159 136 L177 122 L177 80 L53 80 Z"/><path class="t" d="M53 122 L71 136 L159 136 L177 122"/><text x="115" y="162" text-anchor="middle">Savijanje rubova</text><text class="mali" x="115" y="182" text-anchor="middle">hladna podloga</text><rect class="pf" x="225" y="40" width="190" height="150" rx="10"/><path class="l" d="M244 136 L396 136"/><rect class="cf" x="268" y="80" width="104" height="46"/><rect class="l" x="268" y="80" width="104" height="46"/><path class="tf" d="M258 136 L382 136 L372 126 L268 126 Z"/><text x="320" y="162" text-anchor="middle">Slonovska noga</text><text class="mali" x="320" y="182" text-anchor="middle">prenizak z-offset</text><rect class="pf" x="430" y="40" width="190" height="150" rx="10"/><rect class="cf" x="479" y="80" width="22" height="56"/><rect class="l" x="479" y="80" width="22" height="56"/><rect class="cf" x="549" y="80" width="22" height="56"/><rect class="l" x="549" y="80" width="22" height="56"/><path class="l" d="M449 136 L601 136"/><path class="t" d="M501 92 q22 8 48 0"/><path class="t" d="M501 104 q22 12 48 0"/><path class="t" d="M501 116 q22 16 48 0"/><text x="525" y="162" text-anchor="middle">Nitice</text><text class="mali" x="525" y="182" text-anchor="middle">slabo uvlačenje</text><rect class="pf" x="20" y="204" width="190" height="150" rx="10"/><path class="l" d="M39 300 L191 300"/><rect class="rf" x="57" y="292" width="13" height="12"/><rect class="l2" x="57" y="292" width="13" height="12"/><rect class="rf" x="72" y="292" width="13" height="12"/><rect class="l2" x="72" y="292" width="13" height="12"/><rect class="rf" x="87" y="292" width="13" height="12"/><rect class="l2" x="87" y="292" width="13" height="12"/><rect class="rf" x="102" y="292" width="13" height="12"/><rect class="l2" x="102" y="292" width="13" height="12"/><rect class="rf" x="117" y="292" width="13" height="12"/><rect class="l2" x="117" y="292" width="13" height="12"/><rect class="rf" x="132" y="292" width="13" height="12"/><rect class="l2" x="132" y="292" width="13" height="12"/><rect class="rf" x="147" y="292" width="13" height="12"/><rect class="l2" x="147" y="292" width="13" height="12"/><rect class="rf" x="162" y="292" width="13" height="12"/><rect class="l2" x="162" y="292" width="13" height="12"/><rect class="rf" x="72" y="278" width="13" height="12"/><rect class="l2" x="72" y="278" width="13" height="12"/><rect class="rf" x="87" y="278" width="13" height="12"/><rect class="l2" x="87" y="278" width="13" height="12"/><rect class="rf" x="117" y="278" width="13" height="12"/><rect class="l2" x="117" y="278" width="13" height="12"/><rect class="rf" x="132" y="278" width="13" height="12"/><rect class="l2" x="132" y="278" width="13" height="12"/><rect class="rf" x="162" y="278" width="13" height="12"/><rect class="l2" x="162" y="278" width="13" height="12"/><rect class="rf" x="57" y="264" width="13" height="12"/><rect class="l2" x="57" y="264" width="13" height="12"/><rect class="rf" x="72" y="264" width="13" height="12"/><rect class="l2" x="72" y="264" width="13" height="12"/><rect class="rf" x="102" y="264" width="13" height="12"/><rect class="l2" x="102" y="264" width="13" height="12"/><rect class="rf" x="117" y="264" width="13" height="12"/><rect class="l2" x="117" y="264" width="13" height="12"/><rect class="rf" x="147" y="264" width="13" height="12"/><rect class="l2" x="147" y="264" width="13" height="12"/><rect class="rf" x="162" y="264" width="13" height="12"/><rect class="l2" x="162" y="264" width="13" height="12"/><rect class="rf" x="57" y="250" width="13" height="12"/><rect class="l2" x="57" y="250" width="13" height="12"/><rect class="rf" x="87" y="250" width="13" height="12"/><rect class="l2" x="87" y="250" width="13" height="12"/><rect class="rf" x="102" y="250" width="13" height="12"/><rect class="l2" x="102" y="250" width="13" height="12"/><rect class="rf" x="132" y="250" width="13" height="12"/><rect class="l2" x="132" y="250" width="13" height="12"/><rect class="rf" x="147" y="250" width="13" height="12"/><rect class="l2" x="147" y="250" width="13" height="12"/><text x="115" y="326" text-anchor="middle">Podistiskivanje</text><text class="mali" x="115" y="346" text-anchor="middle">začepljena mlaznica</text><rect class="pf" x="225" y="204" width="190" height="150" rx="10"/><path class="l" d="M244 300 L396 300"/><rect class="cf" x="270" y="270" width="100" height="30"/><rect class="l" x="270" y="270" width="100" height="30"/><rect class="cf" x="298" y="240" width="100" height="30"/><rect class="l" x="298" y="240" width="100" height="30"/><path class="t" d="M270 270 L398 270"/><path class="l2" d="M270 226 L270 238"/><path class="l2" d="M298 226 L298 238"/><path class="l2" d="M278 232 L290 232"/><path class="if" d="M270 232 L278 228 L278 236 Z"/><path class="if" d="M298 232 L290 228 L290 236 Z"/><text class="mali" x="284" y="222" text-anchor="middle">pomak</text><text x="320" y="326" text-anchor="middle">Pomak sloja</text><text class="mali" x="320" y="346" text-anchor="middle">labav remen</text><rect class="pf" x="430" y="204" width="190" height="150" rx="10"/><rect class="cf" x="463" y="242" width="124" height="60"/><rect class="l" x="463" y="242" width="124" height="60"/><path class="l2" d="M469 242 L469 302"/><path class="l2" d="M487 242 L487 302"/><path class="l2" d="M505 242 L505 302"/><path class="l2" d="M523 242 L523 302"/><path class="l2" d="M541 242 L541 302"/><path class="l2" d="M559 242 L559 302"/><path class="l2" d="M577 242 L577 302"/><circle class="tf" cx="495" cy="262" r="7"/><circle class="tf" cx="531" cy="278" r="9"/><circle class="tf" cx="559" cy="256" r="6"/><text x="525" y="326" text-anchor="middle">Šupljine u plohi</text><text class="mali" x="525" y="346" text-anchor="middle">malo gornjih slojeva</text><text class="mali" x="320" y="386" text-anchor="middle">Uzroci se isključuju redom: najprije mehanika, zatim postavke.</text>
+</svg><figcaption><b>Slika 4.2</b> &mdash; Izgled pogreške najbrže vodi do uzroka ako se zna što se na uzorku traži.</figcaption></figure><p>Iste pogreške ponekad imaju više uzroka, pa se popis ne čita kao recept nego kao redoslijed provjere. Redoslijed je, međutim, bitan: uvijek se prvo isključuju mehanički uzroci, jer nijedna postavka ne popravlja olabavljenu remenicu.</p></section><section><h2>Prvi sloj: prionjivost, savijanje rubova i slonovska noga</h2><div class="crta"></div><p>Prvi sloj odlučuje o ispisu. Ako se on ne primi, nema smisla čekati kraj. Tri su pogreške vezane uz njega i sve tri imaju zajedničko ishodište u razmaku mlaznice i temperaturi.</p><p><strong>Slaba prionjivost</strong> prepoznaje se po tome što se linije prvog sloja ne spajaju jedna s drugom i lako se pomiču. Uzroci se provjeravaju ovim redom: čistoća podloge, razmak mlaznice, temperatura podloge, brzina prvog sloja. Za PLA je na printeru P-1 uobičajena podloga na 60 &deg;C, a prvi se sloj ispisuje na oko polovici brzine, dakle oko 30 mm/s. Ako ni to ne pomogne, dodaje se pomoćni sloj &mdash; tanak sloj ljepila u stiku ili razrijeđenog ljepila namijenjenog podlozi.</p><p><strong>Savijanje rubova</strong> nastaje zato što se materijal pri hlađenju skuplja. Donji slojevi su hladniji od gornjih, pa unutarnje napetosti podižu rubove. ABS i ASA skupljaju se oko 0,7 &mdash; 0,8 %, PETG manje, a PLA najmanje, pa se pogreška gotovo uvijek javlja kod prvih dvaju materijala. Zahvati idu redom: topla i čista podloga, obrub oko predmeta, zaklon od propuha ili zatvoreno kućište, zaobljeni umjesto oštrih uglova na dnu modela. Isključivanje hlađenja u prvih nekoliko slojeva također pomaže.</p><p><strong>Slonovska noga</strong> je suprotan slučaj: donji slojevi su pretijesno pritisnuti i materijal se razlije bočno, pa predmet na dnu ima proširenje od nekoliko desetinki milimetra. Kod nosača N-14, koji se u sklop ulaže donjom plohom, takvo proširenje smeta jer dio više ne naliježe. Popravlja se podizanjem prvog sloja, snižavanjem temperature podloge i, u sliceru, zaobljenjem donjeg ruba za 0,2 mm.</p><div class="okvir primjer"><h4>Primjer</h4><p>Nosač N-14 ispisuje se u PLA materijalu, 90 slojeva po 0,20 mm. Prva tri ispisa odvojila su se u prvom satu. Provjerom je utvrđeno da podloga nije odmašćena nakon prethodnog ispisa u ABS-u, na kojem je korišteno ljepilo. Nakon pranja toplom vodom i deterdžentom te brisanja alkoholom, isti je posao prošao bez promjene ijedne postavke.</p></div></section><section><h2>Istiskivanje: protok, začepljenje i škljocanje</h2><div class="crta"></div><p>Sve pogreške ove skupine svode se na odnos između količine materijala koju putanja traži i količine koju mlaznica stvarno daje.</p><p><strong>Podistiskivanje</strong> ostavlja praznine između susjednih linija, stijenke postaju prozirne, a gornja ploha ne zatvara se. Uzroci se traže redom: prohodnost mlaznice, sila pritiska kotačića ekstrudera, promjer filamenta unesen u slicer, brzina i temperatura. Ako se protok povisi, a stanje se ne popravi, uzrok je gotovo sigurno mehanički i protok se vraća na polaznu vrijednost.</p><p><strong>Pretiskivanje</strong> daje suprotnu sliku: linije su preširoke, stijenke hrapave, na uglovima se skupljaju nakupine koje mlaznica u sljedećem prolazu razmazuje. Najčešći uzrok nije postavka protoka nego pogrešno unesen promjer filamenta. Filament se izmjeri pomičnom mjerkom na nekoliko mjesta; stvarna vrijednost obično je između 1,72 i 1,76 mm, a razlika od 0,05 mm mijenja količinu materijala za oko 6 %.</p><p><strong>Začepljenje</strong> može biti potpuno ili djelomično. Potpuno se prepoznaje odmah: materijal prestaje izlaziti, a ekstruder škljoca jer zupčanik proklizava po filamentu. Djelomično je podmuklije &mdash; ispis traje, ali je stalno podistisnut. Uzroci su nečistoća u materijalu, zagoreni ostaci prethodnog materijala i, najčešće, kvar hlađenja grla. Otklanja se hladnim potezom, a ako ni to ne pomogne, rastavljanjem grijaćeg bloka i zamjenom cijevi.</p><div class="tablica-omot"><table><thead><tr><th>Znak</th><th>Što upućuje na mehanički uzrok</th><th>Što upućuje na postavke</th></tr></thead><tbody><tr><td>Škljocanje ekstrudera</td><td>otpor u putanji filamenta, začepljenje, hladno grlo</td><td>prevelika brzina uz nisku temperaturu</td></tr><tr><td>Praznine u stijenci</td><td>istrošen zupčanik, slab pritisak kotačića</td><td>premalen protok, preširok sloj</td></tr><tr><td>Nakupine na uglovima</td><td>curenje uz navoj mlaznice</td><td>prevelik protok ili pogrešan promjer filamenta</td></tr><tr><td>Ispis slabi nakon 20 min</td><td>grlo se pregrijava, hlađenje ne radi</td><td>predugo zadržavanje na visokoj temperaturi</td></tr><tr><td>Filament se uvija u ekstruderu</td><td>prejak pritisak kotačića, uski provrt</td><td>preniska temperatura za taj materijal</td></tr></tbody></table></div></section><section><h2>Slojevi i putanje: odvajanje, pomak i šupljine</h2><div class="crta"></div><p><strong>Odvajanje slojeva</strong> znači da se novi sloj nije dovoljno spojio s prethodnim. Predmet izgleda uredno, ali se rukom razdvaja po vodoravnoj ravnini. Uzrok je premalo topline na mjestu spoja: preniska temperatura mlaznice, prejako hlađenje, propuh u prostoriji ili predugo vrijeme između dvaju prolaza po istom mjestu. Kod visokih i tankih predmeta pomaže ispis dvaju komada istodobno, jer svaki sloj ima vremena da se ohladi, ili obrnuto &mdash; usporavanje ispisa da bi se materijal duže zadržao topao, ovisno o tome je li problem u pregrijavanju ili prehlađivanju.</p><p><strong>Pomak sloja</strong> prepoznaje se po tome što je sve iznad određene visine pomaknuto u jednom smjeru, a mjere ispod i iznad su ispravne. To je mehanička pogreška. Provjerava se vijak remenice na osovini motora, zategnutost remena, prolaze li vodilice slobodno i je li mlaznica negdje udarila u već ispisani dio predmeta. Prezategnut remen jednako je loš kao prelabav, jer opterećuje motor i uzrokuje gubitak koraka.</p><p><strong>Šupljine u gornjoj plohi</strong> nastaju kada gornji slojevi nemaju na čemu ležati. Uzrok je premalo gornjih slojeva, preniska ispuna ili prevelika visina sloja u odnosu na promjer mlaznice. Pravilo koje vrijedi za većinu slučajeva: najmanje četiri, radije pet gornjih slojeva, a ispuna najmanje 15 %. Za nosač N-14 s postavkama iz ovog područja &mdash; visina sloja 0,20 mm, dvije obodne linije i ispuna 20 % &mdash; pet gornjih slojeva daje zatvorenu plohu bez povećanja potrošnje materijala.</p><div class="okvir"><h4>Zapamtite</h4><p>Pogreška koja se javlja uvijek na istoj visini upućuje na model ili postavke. Pogreška koja se javlja svaki put na drugoj visini upućuje na mehaniku ili na materijal.</p></div></section><section><h2>Nitice, mostovi, previsi i curenje</h2><div class="crta"></div><p><strong>Nitice</strong> nastaju kada mlaznica prelazi praznim hodom s jednog dijela predmeta na drugi, a rastaljeni materijal i dalje curi kroz otvor. Najčešći uzrok nije postavka uvlačenja nego <strong>vlaga u filamentu</strong>: voda u materijalu isparava u mlaznici, stvara mjehuriće i tjera materijal van. Ako se pri ispisu čuje tiho pucketanje ili se na izlaznom materijalu vide mjehurići, filament treba osušiti prije bilo kakvog namještanja. Kada je materijal suh, redom se mijenjaju temperatura (niže za 5 &deg;C), duljina uvlačenja i brzina praznog hoda.</p><p><strong>Mostovi</strong> su dijelovi putanje razapeti između dviju uporišnih točaka, bez ičega ispod. Uspijevaju ako se materijal brzo ohladi i ako je putanja dovoljno zategnuta. Zato se pri mostovima hlađenje postavlja na najviše, brzina umjereno smanjuje, a protok blago snižava. <strong>Previsi</strong> su kosine; pravilo je da se kut do otprilike 45 &deg; od okomice ispisuje bez potpore, jer svaki sloj još dovoljno naliježe na prethodni. Iznad toga se dodaje potpora ili se predmet drugačije okrene.</p><p><strong>Curenje filamenta</strong> uz navoj mlaznice prepoznaje se po nakupini oko grijaćeg bloka koja s vremenom zagori i pada na predmet. Uzrok je gotovo uvijek mlaznica koja nije dotegnuta na radnoj temperaturi, pa se pri zagrijavanju stvorila zračnost. Blok se očisti dok je topao, mlaznica se odvije, navoj se pregleda i mlaznica se ponovno ugradi po pravilu: umjereno zategnuti hladno, dotegnuti zagrijano.</p><div class="racun" id="r42"><div class="racun-h"><b>Koliko stoje neuspjeli ispisi?</b><em>Računski prikaz</em></div><p>Procjena gubitka na materijalu i vremenu prije i nakon uklanjanja uzroka pogrešaka. Polazne vrijednosti odgovaraju nosaču N-14: masa 7,7 g i trajanje ispisa 1 h 50 min.</p><div class="polja"><div class="polje"><label for="r42-n">Ispisa mjesečno<output id="r42-n-out" for="r42-n" data-jed=" kom">60 kom</output></label><input type="range" id="r42-n" data-ulaz="n" min="5" max="300" step="5" value="60"></div><div class="polje"><label for="r42-p1">Udio neuspjelih prije<output id="r42-p1-out" for="r42-p1" data-jed="%">18%</output></label><input type="range" id="r42-p1" data-ulaz="p1" min="0" max="50" step="1" value="18"></div><div class="polje"><label for="r42-p2">Udio neuspjelih poslije<output id="r42-p2-out" for="r42-p2" data-jed="%">4%</output></label><input type="range" id="r42-p2" data-ulaz="p2" min="0" max="50" step="1" value="4"></div><div class="polje"><label for="r42-m">Masa predmeta<output id="r42-m-out" for="r42-m" data-jed=" g">7,7 g</output></label><input type="range" id="r42-m" data-ulaz="m" min="1" max="200" step="0.1" value="7.7"></div><div class="polje"><label for="r42-c">Cijena filamenta<output id="r42-c-out" for="r42-c" data-jed=" EUR/kg">22 EUR/kg</output></label><input type="range" id="r42-c" data-ulaz="c" min="10" max="80" step="1" value="22"></div><div class="polje"><label for="r42-t">Trajanje ispisa<output id="r42-t-out" for="r42-t" data-jed=" h">1,8 h</output></label><input type="range" id="r42-t" data-ulaz="t" min="0.2" max="12" step="0.1" value="1.8"></div></div><div class="ishod"><div class="ish"><span>Gubitak prije</span><b id="r42-prije">&mdash;<small>EUR/mj.</small></b></div><div class="ish"><span>Gubitak poslije</span><b id="r42-poslije">&mdash;<small>EUR/mj.</small></b></div><div class="ish"><span>Vraćeno vrijeme</span><b id="r42-sati">&mdash;<small>h/mj.</small></b></div></div><p class="poruka" id="r42-poruka"></p></div></section><section><h2>Zapis promjena i potvrda ispravka</h2><div class="crta"></div><p>Svaka promjena postavki ima smisla samo ako se zna što je bilo prije i što je promjena donijela. Zato se uz ispitne uzorke vodi kratak zapis: datum, materijal, promijenjena postavka, stara i nova vrijednost te ishod. Nakon pet ili šest zapisa radionica ima vlastiti profil materijala koji vrijedi više od bilo kojeg preuzetog.</p><p>Za potvrdu ispravka koriste se mali uzorci, ne cijeli predmeti. Za nitice služi uzorak s dva tornjića između kojih mlaznica stalno prelazi. Za mostove uzorak s rasponima od 20 do 60 mm. Za previse uzorak sa stepenastim kutovima od 30 do 70 &deg;. Za protok šuplja kocka s jednom stijenkom, kojoj se izmjeri debljina. Svaki od njih traje nekoliko minuta i troši nekoliko grama materijala.</p><p>Kada se ispravak potvrdi, promjena se unosi u profil i tek se tada ponavlja veliki ispis. Suprotan redoslijed &mdash; promjena, pa odmah dvosatni ispis &mdash; najskuplji je način provjere i najčešći uzrok osjećaja da se pogreške vraćaju bez razloga.</p></section><section><h2>Ključni pojmovi</h2><div class="crta"></div><div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody><tr><td>Savijanje rubova</td><td>Podizanje rubova predmeta zbog skupljanja materijala pri hlađenju.</td></tr><tr><td>Slonovska noga</td><td>Proširenje donjih slojeva zbog prejakog pritiska i topline podloge.</td></tr><tr><td>Nitice</td><td>Tanke niti materijala između odvojenih dijelova predmeta.</td></tr><tr><td>Podistiskivanje</td><td>Manjak materijala u odnosu na putanju; praznine i tanke stijenke.</td></tr><tr><td>Pretiskivanje</td><td>Višak materijala; preširoke linije i nakupine na uglovima.</td></tr><tr><td>Pomak sloja</td><td>Trajni pomak svih slojeva iznad određene visine, mehaničkog podrijetla.</td></tr><tr><td>Most</td><td>Dio putanje razapet između dviju uporišnih točaka, bez potpore ispod.</td></tr></tbody></table></div></section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="3" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 1 od 3</p><p class="pit">Koliko se postavki mijenja u jednom pokušaju otklanjanja pogreške?</p><div class="odg"><button type="button">Sve odjednom, radi brzine</button><button type="button">Jedna, uz ispitni uzorak</button><button type="button">Najmanje tri</button><button type="button">Ovisno o materijalu</button></div><p class="obraz">Uz više istodobnih promjena ne zna se koja je djelovala; mijenja se jedna postavka po ispisu.</p></div><div class="kviz" data-tocno="2"><p class="brojac">Pitanje 2 od 3</p><p class="pit">Pogreška se javlja svaki put na drugoj visini predmeta. Uzrok je najvjerojatnije:</p><div class="odg"><button type="button">u modelu</button><button type="button">u broju gornjih slojeva</button><button type="button">u mehanici ili materijalu</button><button type="button">u boji filamenta</button></div><p class="obraz">Pogreška vezana uz stalnu visinu upućuje na model ili postavke, a promjenjiva na mehaniku ili materijal.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 3 od 3</p><p class="pit">Koji je najčešći uzrok nitica pri ispisu?</p><div class="odg"><button type="button">Prevelik broj obodnih linija</button><button type="button">Vlaga u filamentu</button><button type="button">Preniska temperatura podloge</button><button type="button">Previsoka ispuna</button></div><p class="obraz">Voda u materijalu isparava u mlaznici i tjera materijal van; filament se najprije suši, pa tek onda namještaju uvlačenje i temperatura.</p></div><p class="rezultat">Odgovoreno 0 od 3.</p></div></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="4-1-redovno-odrzavanje.html">&#8592; 4.1 Redovno održavanje 3D printera</a><a class="gumb" href="4-3-sigurnost.html">4.3 Sigurnost pri radu s 3D printerom <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-upravljanje-3d-printerom-4-2-cesti-problemi-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+(function(){
+  var k = document.getElementById('r42'); if(!k) return;
+  var jedinice = {'prije':'EUR/mj.','poslije':'EUR/mj.','sati':'h/mj.'};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){ 
+          var cijenaKom = (v.m / 1000) * v.c;
+          var n1 = v.n * (v.p1 / 100);
+          var n2 = v.n * (v.p2 / 100);
+          var g1 = n1 * cijenaKom;
+          var g2 = n2 * cijenaKom;
+          var sati = (n1 - n2) * v.t;
+          if (sati < 0) sati = 0;
+          return {
+            prije: g1.toFixed(2),
+            poslije: g2.toFixed(2),
+            sati: sati.toFixed(1),
+            _poruka: v.p2 >= v.p1 ? 'Postavljeni udio poslije nije manji od onoga prije, pa prikaz ne pokazuje korist; unesite stvarno smanjenje udjela neuspjelih ispisa.'
+                   : (sati > 20 ? 'Vraćeno vrijeme stroja veće je od gubitka na materijalu; u radionici s jednim printerom to je glavni dobitak.'
+                                : 'Ušteda je uglavnom u materijalu; pri malom broju ispisa vrijeme stroja nije usko grlo.')
+          };
+         }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = racunaj(v) || {};
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r42-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small>' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r42-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+</script>
+</body>
+</html>
