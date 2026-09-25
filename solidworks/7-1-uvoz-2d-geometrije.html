@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7.1 Uvoz 2D geometrije iz AutoCAD-a — SolidWorks | FORTRONIQ</title>
+<meta name="description" content="Rijetko koji limeni dio nastaje na praznom zaslonu. Obris najčešće već postoji u nečijoj DWG ili DXF datoteci, nacrtan prije nekoliko godina i provjeren na stroju. Uvoz takve geome">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/solidworks/7-1-uvoz-2d-geometrije.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/solidworks/7-1-uvoz-2d-geometrije.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/solidworks/7-1-uvoz-2d-geometrije.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/solidworks/7-1-uvoz-2d-geometrije.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="7.1 Uvoz 2D geometrije iz AutoCAD-a">
+<meta property="og:description" content="Rijetko koji limeni dio nastaje na praznom zaslonu. Obris najčešće već postoji u nečijoj DWG ili DXF datoteci, nacrtan prije nekoliko godina i provjeren na stroju. Uvoz takve geome">
+<meta property="og:url" content="https://dos.fortroniq.hr/solidworks/7-1-uvoz-2d-geometrije.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://www.fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://www.fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">SolidWorks</a><i aria-hidden="true">/</i><a href="m7-modeliranje-limova.html">7. Modeliranje limova</a><i aria-hidden="true">/</i><span aria-current="page">7.1 Uvoz 2D geometrije iz AutoCAD-a</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 7 &middot; MODELIRANJE LIMOVA</p><p class="nadnaslov">Nastavna jedinica 7.1</p><h1>Uvoz 2D geometrije iz AutoCAD-a</h1><p>Rijetko koji limeni dio nastaje na praznom zaslonu. Obris najčešće već postoji u nečijoj DWG ili DXF datoteci, nacrtan prije nekoliko godina i provjeren na stroju. Uvoz takve geometrije traje minutu, ali između uvezenih linija i upotrebljivog tijela stoji korak koji se ne smije preskočiti: čišćenje.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti razliku između formata DWG i DXF te njihova ograničenja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>uvesti 2D geometriju u dokument dijela i postaviti je na odabranu ravninu</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>provjeriti i ispraviti mjerilo i mjerne jedinice uvezene geometrije</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>prepoznati i ukloniti dvostruke linije, praznine i otvorene obrise</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pretvoriti očišćeni obris u osnovnu prirubnicu limenog dijela</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>imenovati osnovne značajke lima: prirubnice, savijanje, olakšanje i razvijeni oblik</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>procijeniti vrijeme potrebno za čišćenje uvezene skice</span></li></ul></div></div></header><div class="omot"><section><h2>Zašto se 2D crtež uopće uvozi</h2><div class="crta"></div><p>U poduzeću koje radi dulje od nekoliko godina crtež gotovo uvijek postoji prije modela. Razvijeni oblici limova, obrisi brtvi, tlocrti postrojenja, presjeci profila i nacrti koje šalje kupac dolaze kao dvodimenzionalni crtež, najčešće u formatu DWG ili DXF. Takva geometrija nije bezvrijedna: netko ju je već izmjerio, provjerio i odobrio, a možda je po njoj već izrađena i serija dijelova. Precrtavanje takvog obrisa u SolidWorksu gubitak je vremena i, što je gore, prilika da se unese pogreška koje u izvorniku nije bilo.</p><p>Zato SolidWorks ima ugrađen put kojim 2D geometrija ulazi u model. Uvoz pritom nije čarolija. Program ne razumije što obris predstavlja, ne zna koja je linija rub dijela, a koja pomoćna crta, i ne pretvara crtež u tijelo sam od sebe. Uvoz donosi <strong>entitete skice</strong> &mdash; linije, lukove, kružnice i splajnove &mdash; postavljene na odabranu ravninu. Sve ostalo, od čišćenja do izvlačenja, ostaje na onome tko modelira.</p><p>U ovom modulu uvezeni obris ima jasnu svrhu. Poklopac oznake <strong>L-3</strong>, izrađen iz lima debljine 2 mm, prolazi kroz sve tri jedinice: počinje kao obris u DXF datoteci, postaje tijelo lima s dvjema prirubnicama i na kraju se vraća u dvije dimenzije kao razvijeni oblik za lasersko rezanje. Krug se zatvara, ali geometrija na kraju nije jednaka onoj s početka &mdash; i upravo je razlika među njima ono što treba razumjeti.</p><div class="okvir"><h4>Zapamtite</h4><p>Uvoz prenosi <em>geometriju</em>, ne i <em>namjeru dizajna</em>. Uvezene linije nemaju relacije, nemaju kote i ne znaju koja je mjera važna. Namjeru dizajna u model unosi onaj tko obris pretvara u značajke.</p></div></section><section><h2>Formati DWG i DXF</h2><div class="crta"></div><p>Dva se formata u praksi susreću gotovo jednako često. <strong>DWG</strong> je izvorni zapis AutoCAD-a: sve što crtež sadrži zapisano je u njemu, ali oblik zapisa vezan je uz izdanje programa u kojem je nastao. <strong>DXF</strong> je otvoreni zapis namijenjen razmjeni; u njemu je isti crtež opisan u čitljivom, tekstualnom obliku, pa ga razumije gotovo svaki CAD, CAM i upravljački program stroja za rezanje.</p><p>Zato vrijedi jednostavno pravilo: <em>za razmjenu se šalje DXF</em>, a DWG se koristi kad se crtež i dalje uređuje u AutoCAD-u. Rezači lima, plazma i vodeni rezači u pravilu očekuju DXF, i to često u starijem izdanju zapisa, jer su njihovi upravljački programi napisani davno i ne prate novosti.</p><div class="tablica-omot"><table><thead><tr><th>Svojstvo</th><th>DWG</th><th>DXF</th></tr></thead><tbody><tr><td>Vrsta zapisa</td><td>dvojni, zatvoren</td><td>tekstualni, otvoren i objavljen</td></tr><tr><td>Namjena</td><td>rad u AutoCAD-u</td><td>razmjena među programima</td></tr><tr><td>Veličina datoteke</td><td>manja</td><td>veća, često nekoliko puta</td></tr><tr><td>Slojevi i blokovi</td><td>prenose se u cijelosti</td><td>prenose se, blokovi se često rasprše</td></tr><tr><td>Kote i tekst</td><td>prenose se</td><td>prenose se, ali ih SolidWorks pri uvozu u skicu zanemaruje</td></tr><tr><td>Izdanje zapisa</td><td>vezano uz inačicu programa</td><td>bira se pri izvozu (R12, 2000, 2013 i dalje)</td></tr><tr><td>Podrška strojeva</td><td>rijetka</td><td>gotovo općenita</td></tr></tbody></table></div><p>Na uvoz utječe i ono što je u crtežu zapisano kao <strong>splajn</strong>. Splajn je krivulja opisana upravljačkim točkama, a ne polumjerom, pa stroj za rezanje iz njega mora izračunati niz kratkih pomaka. Ako je izvorni oblik zapravo luk, bolje ga je i zapisati kao luk: rez je glađi, datoteka manja, a kasnija izmjena mjere moguća jednim brojem.</p><p>Sadržaj DXF datoteke može se pogledati i običnim uređivačem teksta. Svaki entitet zapisan je kao niz parova: broj koji označava značenje i vrijednost uz njega.</p><pre><code>0
+SECTION
+2
+ENTITIES
+0
+LINE
+8
+OBRIS
+10
+0.0
+20
+0.0
+11
+136.52
+21
+0.0
+0
+LINE
+8
+SAVIJANJE
+...
+0
+ENDSEC</code></pre><p>U isječku se vidi ono najvažnije: oznaka 8 nosi naziv sloja, a parovi 10, 20, 11 i 21 nose koordinate početka i kraja linije. Upravo se po nazivu sloja kasnije razdvajaju obris rezanja i linije savijanja.</p></section><section><h2>Čarobnjak za uvoz</h2><div class="crta"></div><p>Otvaranjem DWG ili DXF datoteke SolidWorks pokreće <strong>čarobnjak za uvoz</strong>, niz koraka u kojima se odlučuje što se s crtežom radi. Prva i najvažnija odluka jest odredište: uvezena geometrija može postati novi <em>dio</em>, može ući u <em>skicu</em> postojećeg dokumenta ili se može otvoriti kao <em>nacrt</em>.</p><div class="tablica-omot"><table><thead><tr><th>Odredište uvoza</th><th>Što nastaje</th><th>Kada se bira</th></tr></thead><tbody><tr><td>Novi dio</td><td>dokument dijela s jednom skicom</td><td>obris je početak novog modela</td></tr><tr><td>Skica postojećeg dijela</td><td>entiteti na odabranoj ravnini ili plohi</td><td>model već postoji, dodaje se obris izreza ili otvora</td></tr><tr><td>Nacrt</td><td>listovi s pogledima i kotama</td><td>crtež se samo pregledava ili dopunjuje, bez modela</td></tr><tr><td>3D krivulje</td><td>krivulje u prostoru</td><td>crtež nosi putanju za vučenje profila</td></tr></tbody></table></div><p>U ostalim koracima čarobnjaka bira se ravnina na koju geometrija ulazi, mjerne jedinice crteža, mjerilo i popis slojeva koji se uvoze. Posljednja stavka često spašava pola posla: ako se u uvoz uključi samo sloj s obrisom, u skicu neće ući kote, šrafure, okvir lista ni sastavnica, pa čišćenja gotovo da i nema.</p><p>Čarobnjak nudi i mogućnost da već pri uvozu spoji krajeve koji se gotovo dodiruju te da ukloni entitete kraće od zadane vrijednosti. Te se postavke ne smiju uključivati napamet: prevelika tolerancija spajanja pojest će i one sitne detalje koji na dijelu stvarno postoje, primjerice olakšanje savijanja široko samo 2 mm.</p><div class="okvir primjer"><h4>Primjer</h4><p>Dobavljač šalje DXF s razvijenim oblikom poklopca L-3. U datoteci su tri sloja: <em>OBRIS</em> s vanjskim rubom i provrtima, <em>SAVIJANJE</em> s dvjema linijama savijanja i <em>KOTE</em> s kotiranjem. U uvoz se uključuju prva dva, treći se isključi. U skicu tako uđe 21 entitet umjesto 96.</p></div></section><section><h2>Mjerilo i mjerne jedinice</h2><div class="crta"></div><p>Uvezena geometrija najčešće izgleda ispravno, a ipak je pogrešne veličine. Razlog je u tome što DXF zapis ne mora sadržavati podatak o jedinicama: u njemu stoje samo brojevi. Ako je crtež nacrtan u metrima, a SolidWorks ga pročita kao milimetre, dio će biti tisuću puta manji. Ako je crtan u palcima, razlika je 25,4 puta.</p><p>Zato se odmah nakon uvoza radi <strong>kontrolna izmjera</strong>. Bira se mjera koja je na izvornom crtežu kotirana i uspoređuje se s izmjerenom vrijednošću u skici. Ako se ne poklapaju, mjerilo se ispravlja množenjem &mdash; u čarobnjaku ili naknadno naredbom za mjerilo entiteta &mdash; a nikako ponovnim crtanjem.</p><div class="tablica-omot"><table><thead><tr><th>Situacija</th><th>Odnos mjera</th><th>Ispravak</th></tr></thead><tbody><tr><td>Crtež u metrima, čita se kao mm</td><td>model je 1000 puta manji</td><td>mjerilo 1000</td></tr><tr><td>Crtež u centimetrima</td><td>model je 10 puta manji</td><td>mjerilo 10</td></tr><tr><td>Crtež u palcima</td><td>model je 25,4 puta manji</td><td>mjerilo 25,4</td></tr><tr><td>Crtež u milimetrima</td><td>poklapa se</td><td>bez ispravka</td></tr><tr><td>Crtan u mjerilu 1:2</td><td>model je dvostruko manji</td><td>mjerilo 2, uz pisanu potvrdu naručitelja</td></tr></tbody></table></div><div class="okvir pazi"><h4>Pažnja</h4><p>Crtež nacrtan u <em>mjerilu</em> različitom od 1:1 opasniji je od crteža u pogrešnim jedinicama, jer razlika nije okrugao broj i lako promakne. Prije množenja uvijek provjerite barem dvije različite kote; ako obje daju isti faktor, mjerilo je sigurno.</p></div></section><section><h2>Čišćenje uvezene geometrije</h2><div class="crta"></div><p>Uvezena skica gotovo nikada nije spremna za izvlačenje. Crtež je nastajao za ispis, a ne za modeliranje: na njemu je važno kako izgleda, a ne je li obris zatvoren. Program pri izvlačenju traži upravo suprotno &mdash; zatvoren obris bez preklapanja, bez praznina i bez suvišnih entiteta.</p><p>Četiri se nedostatka susreću gotovo uvijek. <strong>Dvostruke linije</strong> nastaju kad je netko precrtao postojeću crtu umjesto da je premjesti; na zaslonu se ne vide jer leže jedna na drugoj. <strong>Praznine</strong> u uglovima ostaju kad se crta bez uhvata točke, a mjere su im stotinke milimetra. <strong>Prekoračene linije</strong> vire preko spoja i tvore mali rep. <strong>Otvoreni obrisi</strong> nastaju kad je dio ruba obrisan ili nikada nije ni nacrtan.</p><figure class="crtez"><svg viewBox="0 0 640 340" role="img" aria-label="Slika 7.1: Tipične pogreške u uvezenom obrisu i isti obris nakon čišćenja.">
+<text x="165" y="26" text-anchor="middle">Uvezeno iz DXF-a</text><text x="475" y="26" text-anchor="middle">Nakon &#269;i&#353;&#263;enja</text><line class="l2 dash" x1="320" y1="14" x2="320" y2="336"/><path class="l" fill="none" d="M55,60 L265,60"/><path class="l" fill="none" d="M59,64 L261,64"/><path class="l" fill="none" d="M265,46 L265,140"/><path class="l" fill="none" d="M265,140 L195,140"/><path class="l" fill="none" d="M195,140 L195,220"/><path class="l" fill="none" d="M195,220 L74,220"/><path class="l" fill="none" d="M55,204 L55,60"/><line class="l2 dash" x1="150" y1="80" x2="150" y2="68"/><line class="l2 dash" x1="78" y1="205" x2="68" y2="212"/><line class="l2 dash" x1="280" y1="50" x2="268" y2="50"/><circle class="pf" cx="150" cy="92" r="12"/><circle class="l2" fill="none" cx="150" cy="92" r="12"/><text class="mali" x="150" y="97" text-anchor="middle">1</text><circle class="pf" cx="88" cy="196" r="12"/><circle class="l2" fill="none" cx="88" cy="196" r="12"/><text class="mali" x="88" y="201" text-anchor="middle">2</text><circle class="pf" cx="292" cy="50" r="12"/><circle class="l2" fill="none" cx="292" cy="50" r="12"/><text class="mali" x="292" y="55" text-anchor="middle">3</text><path class="cf" d="M375,60 L585,60 L585,140 L515,140 L515,220 L375,220 Z"/><path class="l" fill="none" d="M375,60 L585,60 L585,140 L515,140 L515,220 L375,220 Z"/><circle class="pf" cx="405" cy="92" r="12"/><circle class="l2" fill="none" cx="405" cy="92" r="12"/><text class="mali" x="405" y="97" text-anchor="middle">4</text><text class="mali" x="24" y="270" text-anchor="start">1 &#183; dvostruka linija preko obrisa</text><text class="mali" x="24" y="296" text-anchor="start">2 &#183; praznina manja od tolerancije</text><text class="mali" x="24" y="322" text-anchor="start">3 &#183; linija prekora&#269;uje spoj</text><text class="mali" x="344" y="270" text-anchor="start">4 &#183; zatvoren i &#269;ist obris,</text><text class="mali" x="344" y="296" text-anchor="start">spreman za izvla&#269;enje u tijelo</text>
+</svg><figcaption><b>Slika 7.1</b> &mdash; Tipične pogreške u uvezenom obrisu i isti obris nakon čišćenja.</figcaption></figure><p>Čišćenje se radi redom, a ne nasumce. Najprije se uključi prikaz koji ističe nevezane krajeve, zatim se pokrene alat za popravak skice koji sam pronalazi preklapanja, praznine i sitne entitete. Tek ono što alat ne riješi ispravlja se ručno: obrišu se ostaci, produlje se krajevi i doda se relacija podudarnosti.</p><ol class="tekst"><li>Ukloniti slojeve koji nisu potrebni, ako to nije učinjeno već pri uvozu.</li><li>Pokrenuti alat za popravak skice s tolerancijom manjom od najsitnijeg stvarnog detalja.</li><li>Obrisati dvostruke i nulte entitete koje alat prijavi.</li><li>Zatvoriti preostale praznine produljenjem ili relacijom podudarnosti.</li><li>Zamijeniti splajnove lukovima ondje gdje je izvorni oblik kružni.</li><li>Provjeriti zatvorenost pokusnim izvlačenjem na 1 mm i, ako uspije, poništiti ga.</li></ol><div class="okvir pazi"><h4>Pažnja</h4><p>Uvezena skica u pravilu ostaje <em>nedovoljno određena</em>, i to je u redu. Pokušaj da se stotine uvezenih entiteta potpuno odrede kotama traje dulje nego ponovno crtanje. Odrede se samo mjere koje se kasnije mijenjaju; ostatak se fiksira jednom relacijom.</p></div><div class="racun" id="r71"><div class="racun-h"><b>Koliko traje čišćenje uvezene skice?</b><em>Računski prikaz</em></div><p>Procjena broja pogrešaka u uvezenoj geometriji i vremena potrebnog za čišćenje. Vremena po pogrešci uzeta su iz iskustva i vrijede za skicu srednje složenosti.</p><div class="polja"><div class="polje"><label for="r71-ent">Entiteta u uvezenoj skici<output id="r71-ent-out" for="r71-ent" data-jed="">1200</output></label><input type="range" id="r71-ent" data-ulaz="ent" min="100" max="4000" step="50" value="1200"></div><div class="polje"><label for="r71-dvo">Udio dvostrukih entiteta<output id="r71-dvo-out" for="r71-dvo" data-jed="%">8%</output></label><input type="range" id="r71-dvo" data-ulaz="dvo" min="0" max="25" step="1" value="8"></div><div class="polje"><label for="r71-praz">Praznina u obrisima<output id="r71-praz-out" for="r71-praz" data-jed="">18</output></label><input type="range" id="r71-praz" data-ulaz="praz" min="0" max="80" step="1" value="18"></div><div class="polje"><label for="r71-otv">Otvorenih obrisa<output id="r71-otv-out" for="r71-otv" data-jed="">3</output></label><input type="range" id="r71-otv" data-ulaz="otv" min="0" max="20" step="1" value="3"></div><div class="polje"><label for="r71-nac">Način čišćenja</label><select id="r71-nac" data-ulaz="nac"><option value="rucno">ručno, entitet po entitet</option><option value="alat" selected>alat za popravak skice</option></select></div></div><div class="ishod"><div class="ish"><span>Pogrešaka ukupno</span><b id="r71-pog">&mdash;</b></div><div class="ish"><span>Procijenjeno vrijeme</span><b id="r71-vr">&mdash;<small>min</small></b></div><div class="ish"><span>Udio ispravne geometrije</span><b id="r71-zdr">&mdash;<small>%</small></b></div></div><p class="poruka" id="r71-poruka"></p></div></section><section><h2>Od očišćenog obrisa do limenog tijela</h2><div class="crta"></div><p>Kada je obris zatvoren, slijedi korak koji limeni dio razdvaja od svakog drugog. Umjesto obične značajke izvlačenja bira se <strong>osnovna prirubnica</strong>. Ona iz zatvorenog obrisa daje ravnu ploču zadane debljine, ali istodobno u dokument upisuje i parametre lima: debljinu, pretpostavljeni radijus savijanja, vrstu olakšanja i pravilo po kojem se računa razvijena duljina. Od tog trenutka dokument zna da je riječ o limu i nudi alate kojih kod punog dijela nema.</p><p>Sljedeći krak dodaje se <strong>rubnom prirubnicom</strong>. Bira se brid, zadaje se kut, duljina i položaj kraka u odnosu na brid, a program sam umeće luk savijanja i, po potrebi, <strong>olakšanje savijanja</strong> &mdash; mali izrez na kraju linije savijanja koji sprječava da se materijal na rubu potrga ili nabora.</p><figure class="crtez"><svg viewBox="0 0 640 280" role="img" aria-label="Slika 7.2: Presjek savijanja s prirubnicama i tlocrt s olakšanjem savijanja.">
+<text x="175" y="26" text-anchor="middle">Presjek savijanja</text><text x="480" y="26" text-anchor="middle">Tlocrt s olak&#353;anjem</text><line class="l2 dash" x1="330" y1="14" x2="330" y2="266"/><path class="pf" d="M50,200 L172,200 A16,16 0 0 0 188,184 L188,90 L200,90 L200,184 A28,28 0 0 1 172,212 L50,212 Z"/><path class="l" fill="none" d="M50,200 L172,200 A16,16 0 0 0 188,184 L188,90 L200,90 L200,184 A28,28 0 0 1 172,212 L50,212 Z"/><path class="t" fill="none" d="M172,200 A16,16 0 0 0 188,184"/><line class="l2 dash" x1="180" y1="192" x2="128" y2="152"/><text class="mali" x="122" y="150" text-anchor="end">R = 2 mm</text><text class="mali" x="194" y="76" text-anchor="middle">rubna prirubnica</text><line class="l2 dash" x1="140" y1="236" x2="140" y2="214"/><text class="mali" x="140" y="250" text-anchor="middle">osnovna prirubnica, t = 2 mm</text><path class="pf" d="M370,110 L500,110 L500,158 L508,158 L508,110 L580,110 L580,240 L370,240 Z"/><rect class="cf" x="370" y="110" width="130" height="40"/><path class="l" fill="none" d="M370,110 L500,110 L500,158 L508,158 L508,110 L580,110 L580,240 L370,240 Z"/><line class="l2 dash" x1="370" y1="150" x2="500" y2="150"/><text class="mali" x="435" y="134" text-anchor="middle">rubna prirubnica</text><text class="mali" x="475" y="204" text-anchor="middle">osnovna prirubnica</text><line class="l2 dash" x1="435" y1="166" x2="435" y2="152"/><text class="mali" x="435" y="182" text-anchor="middle">linija savijanja</text><line class="l2 dash" x1="556" y1="98" x2="516" y2="118"/><path class="if" d="M508,122 L520,117 L517,126 Z"/><text class="mali" x="600" y="92" text-anchor="end">olak&#353;anje savijanja</text>
+</svg><figcaption><b>Slika 7.2</b> &mdash; Presjek savijanja s prirubnicama i tlocrt s olakšanjem savijanja.</figcaption></figure><div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Što opisuje</th><th>Vrijednost za L-3</th></tr></thead><tbody><tr><td>Debljina lima</td><td>debljina ploče iz koje se dio reže</td><td>2 mm</td></tr><tr><td>Radijus savijanja</td><td>unutarnji polumjer luka na savijanju</td><td>2 mm</td></tr><tr><td>Kut savijanja</td><td>kut za koji se krak zakreće</td><td>90&deg;</td></tr><tr><td>Olakšanje savijanja</td><td>izrez na kraju linije savijanja</td><td>pravokutno, širina 2 mm</td></tr><tr><td>K-faktor</td><td>položaj neutralne osi u debljini</td><td>0,44</td></tr><tr><td>Razvijeni oblik</td><td>ravna ploha prije savijanja</td><td>136,52 &times; 90 mm</td></tr></tbody></table></div><p>Naredbom za <strong>razvijeni oblik</strong> model se u svakom trenutku može izravnati. To nije nova geometrija nego drugo stanje istog tijela: savijeni i razvijeni oblik dijele stablo i sve mjere, pa promjena kraka povlači promjenu razvijene duljine. Upravo se zato limeni dio ne modelira kao obična ploča koja se poslije &bdquo;nekako&ldquo; savije.</p></section><section><h2>Česte pogreške i njihovo otklanjanje</h2><div class="crta"></div><p>Većina neuspjelih uvoza svodi se na desetak uzroka koji se ponavljaju. Tablica ih povezuje s uzrokom i s ispravkom, a redoslijed je onaj kojim se najčešće pojavljuju u radu.</p><div class="tablica-omot"><table><thead><tr><th>Pogreška</th><th>Uzrok</th><th>Ispravak</th></tr></thead><tbody><tr><td>Izvlačenje javlja da obris nije zatvoren</td><td>praznina manja od zaslona</td><td>prikaz nevezanih krajeva, pa alat za popravak skice</td></tr><tr><td>Tijelo je puno na mjestu izreza</td><td>unutarnji obris nije zatvoren</td><td>zatvoriti unutarnji obris prije izvlačenja</td></tr><tr><td>Dio je tisuću puta manji</td><td>crtež u metrima</td><td>mjerilo 1000 i kontrolna izmjera</td></tr><tr><td>Skica ima tisuće entiteta</td><td>uvezeni su svi slojevi</td><td>ponoviti uvoz samo sa slojem obrisa</td></tr><tr><td>Rub je nazubljen</td><td>luk je zapisan kao splajn ili niz kratkih linija</td><td>zamijeniti lukom zadanog polumjera</td></tr><tr><td>Zaobljenje je nestalo</td><td>prevelika tolerancija spajanja</td><td>ponoviti uvoz s manjom tolerancijom</td></tr><tr><td>Model se pri izmjeni raspada</td><td>kasnije značajke vezane na uvezene entitete</td><td>nacrtati nosivu geometriju iznova, uvezeno ostaviti kao predložak</td></tr></tbody></table></div><p>Posljednji redak vrijedi posebno naglasiti. Uvezena skica dobra je kao <em>predložak</em>: po njoj se brzo precrtava obris s relacijama i kotama, a onda se uvezeni entiteti pretvore u konstrukcijsku geometriju ili se skica sakrije. Model koji se oslanja izravno na stotine uvezenih linija teško podnosi bilo kakvu izmjenu.</p><div class="okvir"><h4>Zapamtite</h4><p>Redoslijed je uvijek isti: <strong>uvoz &rarr; provjera mjerila &rarr; čišćenje &rarr; zatvorenost &rarr; osnovna prirubnica</strong>. Preskakanje bilo kojeg koraka otkriva se tek na stroju za rezanje, kada je materijal već izrezan.</p></div></section><section><h2>Ključni pojmovi</h2><div class="crta"></div><div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody><tr><td>DWG i DXF</td><td>Izvorni zapis AutoCAD-a i otvoreni zapis za razmjenu; strojevi za rezanje traže DXF.</td></tr><tr><td>Čarobnjak za uvoz</td><td>Niz koraka u kojem se bira odredište uvoza, ravnina, jedinice, mjerilo i slojevi.</td></tr><tr><td>Kontrolna izmjera</td><td>Usporedba jedne poznate kote s izmjerenom vrijednošću radi provjere mjerila.</td></tr><tr><td>Alat za popravak skice</td><td>Naredba koja pronalazi preklapanja, praznine i sitne entitete u skici.</td></tr><tr><td>Tolerancija spajanja</td><td>Najveći razmak koji se pri čišćenju još smatra spojem dvaju entiteta.</td></tr><tr><td>Osnovna prirubnica</td><td>Prva značajka lima; iz zatvorenog obrisa daje ploču i upisuje parametre lima.</td></tr><tr><td>Rubna prirubnica</td><td>Značajka koja na bridu podiže novi krak pod zadanim kutom i radijusom.</td></tr><tr><td>Razvijeni oblik</td><td>Stanje istog tijela u kojem su sva savijanja izravnata.</td></tr></tbody></table></div></section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="3" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 1 od 3</p><p class="pit">Koji se format u pravilu šalje stroju za lasersko rezanje?</p><div class="odg"><button type="button">DWG</button><button type="button">DXF</button><button type="button">SLDPRT</button><button type="button">STEP</button></div><p class="obraz">DXF je otvoren zapis koji razumije gotovo svaki upravljački program rezača; DWG se koristi za rad u AutoCAD-u.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 2 od 3</p><p class="pit">Uvezena geometrija u SolidWorksu postaje:</p><div class="odg"><button type="button">gotovo tijelo</button><button type="button">entiteti skice bez relacija i kota</button><button type="button">značajka izvlačenja</button><button type="button">sklop</button></div><p class="obraz">Uvoz donosi samo geometriju; relacije, kote i namjeru dizajna dodaje onaj tko modelira.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 3 od 3</p><p class="pit">Dio uvezen iz crteža nacrtanog u metrima bit će:</p><div class="odg"><button type="button">1000 puta veći</button><button type="button">1000 puta manji</button><button type="button">25,4 puta manji</button><button type="button">jednak</button></div><p class="obraz">Brojevi se čitaju kao milimetri, pa je model tisuću puta manji; ispravlja se mjerilom 1000.</p></div><p class="rezultat">Odgovoreno 0 od 3.</p></div></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="m7-modeliranje-limova.html">&#8592; 7. Modeliranje limova</a><a class="gumb" href="7-2-autocad-i-solidworks.html">7.2 AutoCAD i SolidWorks &mdash; razlike i sličnosti <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-solidworks-7-1-uvoz-2d-geometrije-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+(function(){
+  var k = document.getElementById('r71'); if(!k) return;
+  var jedinice = {'pog':'','vr':'min','zdr':'%'};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){ 
+          var dvoN = Math.round(v.ent * v.dvo / 100);
+          var pog = dvoN + v.praz + v.otv;
+          var osn = (v.nac === 'alat') ? (3 + pog * 0.08) : (pog * 0.4);
+          var t = osn + v.otv * 1.5;
+          var zdr = Math.max(0, 100 * (1 - pog / Math.max(1, v.ent)));
+          return {
+            pog: pog,
+            vr: t.toFixed(1),
+            zdr: zdr.toFixed(0),
+            _poruka: (pog / Math.max(1, v.ent) > 0.15)
+              ? 'Više od petine geometrije je neispravna — brže je zatražiti novi izvoz od pošiljatelja nego čistiti ovakvu datoteku.'
+              : ((v.nac === 'rucno' && pog > 40)
+                 ? 'Kod ovolikog broja pogrešaka alat za popravak skice gotovo uvijek se isplati.'
+                 : 'Čišćenje je izvedivo u jednom prolazu; nakon njega obavezno slijedi provjera zatvorenosti.')
+          };
+         }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = racunaj(v) || {};
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r71-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small>' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r71-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+</script>
+</body>
+</html>
