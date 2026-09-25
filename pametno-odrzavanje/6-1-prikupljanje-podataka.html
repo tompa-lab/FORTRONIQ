@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6.1 Prikupljanje podataka sa senzora — Pametno održavanje | FORTRONIQ</title>
+<meta name="description" content="Pametno održavanje počinje mjerenjem, a mjerenje počinje odlukama koje se poslije ne mogu ispraviti: koja se veličina prati, kojim senzorom, gdje se senzor pričvršćuje i koliko se ">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/pametno-odrzavanje/6-1-prikupljanje-podataka.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/pametno-odrzavanje/6-1-prikupljanje-podataka.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/pametno-odrzavanje/6-1-prikupljanje-podataka.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/pametno-odrzavanje/6-1-prikupljanje-podataka.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="6.1 Prikupljanje podataka sa senzora">
+<meta property="og:description" content="Pametno održavanje počinje mjerenjem, a mjerenje počinje odlukama koje se poslije ne mogu ispraviti: koja se veličina prati, kojim senzorom, gdje se senzor pričvršćuje i koliko se ">
+<meta property="og:url" content="https://dos.fortroniq.hr/pametno-odrzavanje/6-1-prikupljanje-podataka.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://www.fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://www.fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Pametno održavanje</a><i aria-hidden="true">/</i><a href="m6-dijagnostika-na-temelju-podataka.html">6. Dijagnostika kvarova na temelju podataka</a><i aria-hidden="true">/</i><span aria-current="page">6.1 Prikupljanje podataka sa senzora</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 6 &middot; DIJAGNOSTIKA KVAROVA NA TEMELJU PODATAKA</p><p class="nadnaslov">Nastavna jedinica 6.1</p><h1>Prikupljanje podataka sa senzora</h1><p>Pametno održavanje počinje mjerenjem, a mjerenje počinje odlukama koje se poslije ne mogu ispraviti: koja se veličina prati, kojim senzorom, gdje se senzor pričvršćuje i koliko se puta u sekundi očita. Loše postavljen senzor daje uredan niz brojeva koji ne znači ništa, a presporo uzorkovanje pokaže frekvenciju koje u stroju nema. Ova jedinica postavlja temelj cijelog modula.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odabrati senzor prema veličini koja se prati na robotskom podsustavu</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odrediti mjesto postavljanja senzora i prikladan način pričvršćenja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>primijeniti Nyquistov uvjet pri izboru učestalosti uzorkovanja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati količinu podataka koju mjerenje stvara u zadanom razdoblju</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti ulogu vremenske oznake i usklađenog sata u prikupljanju podataka</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>opisati postupak kada podatak izostane ili je očito neispravan</span></li></ul></div></div></header><div class="omot"><section><h2>Što se prati na robotskoj ćeliji</h2><div class="crta"></div><p>Robotska ćelija <strong>PO-1</strong> prati nas kroz cijelo područje. U njoj šestoosni robot nosivosti 20 kg i dosega 1650 mm poslužuje CNC glodalicu. Ćelija radi <strong>4000 h godišnje</strong> u taktu od 96 s. Iz zapisa održavanja poznato je srednje vrijeme između kvarova <strong>MTBF 620 h</strong> i srednje vrijeme popravka <strong>MTTR 3,5 h</strong>, iz čega slijedi raspoloživost <strong>99,4 %</strong>. Godišnje se dogodi <strong>6,5 kvarova</strong> i <strong>22,6 h zastoja</strong>, a uz trošak zastoja 180 EUR/h to je <strong>4063 EUR</strong> godišnje. Ukupna učinkovitost opreme iznosi <strong>OEE 78 %</strong>.</p><p>Cilj nije mjeriti sve što se izmjeriti može nego ono što se mijenja prije kvara. Zato se popis veličina izvodi iz analize kvarova iz četvrtog modula: ondje gdje se kvarovi ponavljaju, ondje se postavlja senzor. Na PO-1 to je dalo četiri veličine.</p><div class="tablica-omot"><table><thead><tr><th>Veličina</th><th>Podsustav</th><th>Senzor</th><th>Učestalost</th><th>Što otkriva</th></tr></thead><tbody><tr><td>Vibracije</td><td>osi 2 i 3, kućište reduktora</td><td>piezoelektrični akcelerometar</td><td>25,6 kHz</td><td>trošenje ležaja, olabavljenost, neuravnoteženje</td></tr><tr><td>Temperatura</td><td>reduktor osi 2</td><td>PT100</td><td>1 Hz</td><td>manjak ili starenje maziva, preopterećenje</td></tr><tr><td>Struja motora</td><td>pogonsko pojačalo osi 2 i 3</td><td>strujni senzor s Hallovim članom</td><td>100 Hz</td><td>porast otpora gibanja, zaglavljivanje</td></tr><tr><td>Broj ciklusa</td><td>upravljačka jedinica robota</td><td>brojilo u programu</td><td>po ciklusu</td><td>sati rada i opterećenje kao podloga za planiranje</td></tr></tbody></table></div><p>Uz te četiri veličine bilježi se i <strong>kontekst</strong>: koji program robot izvodi, masa obratka, temperatura okoline i je li ćelija u radu ili u mirovanju. Bez konteksta se mjerenje ne može protumačiti, jer isti iznos vibracija znači jedno pri nošenju obratka od 18 kg, a posve drugo pri praznom hodu. Tu razliku model iz jedinice 6.4 mora vidjeti u podacima, inače će je naučiti kao kvar.</p></section><section><h2>Izbor senzora prema mjerenoj veličini</h2><div class="crta"></div><p>Senzor se ne bira po cijeni nego po tome što treba vidjeti. Za svaku veličinu postoji nekoliko izvedbi koje se razlikuju po mjernom području, odzivu i otpornosti na okolinu.</p><p><strong>Akcelerometar</strong> mjeri ubrzanje titranja. Piezoelektrična izvedba s ugrađenim pojačalom uobičajena je u industriji: mjerno područje od nekoliko herca do 10 kHz, osjetljivost 100 mV/g i otpornost na temperature do 120 &deg;C. Iz ubrzanja se integriranjem dobiva brzina titranja u mm/s, a upravo je efektivna brzina veličina po kojoj se ocjenjuje stanje stroja.</p><p><strong>Temperatura</strong> se mjeri otporničkim osjetnikom PT100 ili termoparom. PT100 je platinski otpornik kojemu otpor raste s temperaturom i pri 0 &deg;C iznosi 100 &#8486;. Točan je, stabilan i jednostavan za umjeravanje, ali sporiji i ograničen na područje do oko 600 &deg;C. Termopar radi na termoelektričnom učinku: spoj dvaju različitih metala daje napon razmjeran razlici temperatura. Jeftin je, brz i podnosi visoke temperature, ali je manje točan i traži usporedni spoj.</p><div class="tablica-omot"><table><thead><tr><th>Senzor</th><th>Mjeri</th><th>Područje</th><th>Prednost</th><th>Ograničenje</th></tr></thead><tbody><tr><td>Akcelerometar (piezo)</td><td>ubrzanje titranja</td><td>2 Hz &ndash; 10 kHz</td><td>vidi udarce i visoke frekvencije</td><td>osjetljiv na način pričvršćenja</td></tr><tr><td>PT100</td><td>temperaturu</td><td>&minus;50 do 600 &deg;C</td><td>točan i stabilan, lako se umjerava</td><td>spor odziv, traži trožilni ili četverožilni spoj</td></tr><tr><td>Termopar tip K</td><td>temperaturu</td><td>&minus;40 do 1200 &deg;C</td><td>brz, jeftin, podnosi vrućinu</td><td>manja točnost, potreban usporedni spoj</td></tr><tr><td>Strujni senzor (Hall)</td><td>struju motora</td><td>0 &ndash; 50 A</td><td>ne prekida strujni krug, galvanski odvojen</td><td>osjetljiv na vanjska magnetska polja</td></tr><tr><td>Mikrofon / akustička sonda</td><td>zvučni tlak</td><td>20 Hz &ndash; 20 kHz</td><td>ne dodiruje stroj, hvata škripu i propuštanje</td><td>kupi buku cijele hale</td></tr></tbody></table></div><div class="okvir"><h4>Zapamtite</h4><p>Ubrzanje najbolje pokazuje <em>visoke</em> frekvencije, brzina titranja <em>srednje</em>, a pomak <em>niske</em>. Zato se stanje ležaja traži u ubrzanju, opće stanje stroja u brzini, a savijenost vratila u pomaku. Ista snimka, tri načina gledanja.</p></div></section><section><h2>Mjesto postavljanja i način pričvršćenja</h2><div class="crta"></div><p>Senzor mora biti što bliže mjestu na kojem sila nastaje i na putu kojim se titranje prenosi. Na robotu je to kućište reduktora one osi koja se prati, i to na kruti dio kućišta, a ne na poklopac, lim ili zaštitni mijeh. Mjerni smjer bira se prema očekivanom uzroku: radijalni smjer pokazuje neuravnoteženje i stanje ležaja, uzdužni smjer nesuosnost i istrošenost zupčanika.</p><figure class="crtez"><svg viewBox="0 0 640 350" role="img" aria-label="Slika 6.1: Mjesta postavljanja senzora na robotskoj ćeliji PO-1 i veličine koje se na njima prate.">
+<text x="176" y="30" text-anchor="middle">Ćelija PO-1</text>
+<path class="l2" fill="none" d="M16,282 L360,282"/>
+<rect class="pf" x="20" y="196" width="46" height="86" rx="4"/>
+<path class="l2" fill="none" d="M28,214 H58 M28,230 H58 M28,246 H50"/>
+<text class="mali" x="43" y="300" text-anchor="middle">ormar</text>
+<rect class="pf" x="86" y="254" width="104" height="28" rx="4"/>
+<rect class="pf" x="112" y="184" width="52" height="72" rx="6"/>
+<circle class="l" cx="138" cy="190" r="11"/>
+<path class="l" fill="none" d="M138,190 L246,104"/>
+<circle class="l" cx="246" cy="104" r="10"/>
+<path class="l" fill="none" d="M246,104 L338,146"/>
+<circle class="l" cx="338" cy="146" r="8"/>
+<rect class="pf" x="346" y="134" width="26" height="24" rx="3"/>
+<text class="mali" x="138" y="300" text-anchor="middle">postolje</text>
+<path class="l2 dash" fill="none" d="M250,52 L250,90"/>
+<circle class="pf" cx="156" cy="166" r="13"/><text class="mali" x="156" y="171" text-anchor="middle">1</text>
+<circle class="pf" cx="262" cy="80" r="13"/><text class="mali" x="262" y="85" text-anchor="middle">2</text>
+<circle class="pf" cx="102" cy="210" r="13"/><text class="mali" x="102" y="215" text-anchor="middle">3</text>
+<circle class="pf" cx="43" cy="170" r="13"/><text class="mali" x="43" y="175" text-anchor="middle">4</text>
+<circle class="pf" cx="250" cy="38" r="13"/><text class="mali" x="250" y="43" text-anchor="middle">5</text>
+<line class="t" x1="380" y1="46" x2="380" y2="272"/>
+<text x="400" y="42" text-anchor="start">Mjerna mjesta</text>
+<text class="mali" x="400" y="76" text-anchor="start">1  akcelerometar &mdash; os 2</text>
+<text class="mali" x="400" y="94" text-anchor="start">kućište reduktora, vijak M6</text>
+<text class="mali" x="400" y="126" text-anchor="start">2  akcelerometar &mdash; os 3</text>
+<text class="mali" x="400" y="144" text-anchor="start">radijalni smjer, 25,6 kHz</text>
+<text class="mali" x="400" y="176" text-anchor="start">3  PT100 &mdash; reduktor osi 2</text>
+<text class="mali" x="400" y="194" text-anchor="start">uz sam spremnik maziva, 1 Hz</text>
+<text class="mali" x="400" y="226" text-anchor="start">4  strujni senzor &mdash; ormar</text>
+<text class="mali" x="400" y="244" text-anchor="start">vodič pojačala osi 2 i 3</text>
+<text class="mali" x="400" y="276" text-anchor="start">5  mikrofon &mdash; iznad ćelije</text>
+<text class="mali" x="400" y="294" text-anchor="start">udaljenost 1,2 m od osi 3</text>
+<text class="mali" x="320" y="330" text-anchor="middle">Senzor ide na kruto kućište, u smjeru u kojem se očekuje sila.</text>
+</svg><figcaption><b>Slika 6.1</b> &mdash; Mjesta postavljanja senzora na robotskoj ćeliji PO-1 i veličine koje se na njima prate.</figcaption></figure><p>Način pričvršćenja odlučuje koliko se visoko u frekvenciji smije vjerovati mjerenju. Isti akcelerometar na vijku daje uporabljiv signal do 10 kHz, na magnetu do 2 kHz, a na šiljku u ruci jedva do 1 kHz. Razlog je jednostavan: svaki popustljiv spoj djeluje kao opruga i guši visoke frekvencije, a uz to unosi vlastitu rezonanciju.</p><div class="tablica-omot"><table><thead><tr><th>Pričvršćenje</th><th>Gornja granica</th><th>Prikladno za</th><th>Napomena</th></tr></thead><tbody><tr><td>Vijak M6 u obrađenu plohu</td><td>do 10 kHz</td><td>stalno mjerno mjesto</td><td>ploha ravna, tanki sloj maziva ispod podnožja</td></tr><tr><td>Ljepilo</td><td>do 8 kHz</td><td>mjesto bez mogućnosti bušenja</td><td>ljepilo mora biti kruto, ne elastično</td></tr><tr><td>Magnet</td><td>do 2 kHz</td><td>obilazna mjerenja</td><td>samo na ravnu i čistu plohu</td></tr><tr><td>Šiljak u ruci</td><td>do 1 kHz</td><td>brza provjera</td><td>rezultat ovisi o ruci mjeritelja</td></tr></tbody></table></div><p>Kabel se vodi uz nepomične dijelove i pričvršćuje na svakih 200 do 300 mm. Na robotu to znači da mora pratiti postojeći energetski lanac i nikada ne smije prelaziti preko zgloba slobodno, jer kabel koji se savija milijun puta godišnje puca prije nego senzor. Za pokretne osi koriste se kabeli za vučenje, s oznakom broja savijanja koju navodi proizvođač.</p></section><section><h2>Učestalost uzorkovanja i Nyquistov uvjet</h2><div class="crta"></div><p>Senzor daje neprekidan signal, a računalo pamti niz brojeva. Pretvaranje jednoga u drugo zove se <strong>uzorkovanje</strong>, a broj očitanja u sekundi <strong>učestalost uzorkovanja</strong> <em>f</em><sub>s</sub>. Osnovno pravilo poznato je kao <strong>Nyquistov uvjet</strong>: da bi se frekvencija <em>f</em> uopće mogla prepoznati, mora vrijediti <em>f</em><sub>s</sub> &gt; 2<em>f</em>. Uzorkuje li se sporije, u zapisu se pojavi frekvencija koje u stroju nema.</p><figure class="crtez"><svg viewBox="0 0 640 280" role="img" aria-label="Slika 6.2: Isti signal uzorkovan dovoljno gusto i presporo; u drugom slučaju nastaje prividna niska frekvencija.">
+<text x="156" y="30" text-anchor="middle">Dovoljno gusto</text>
+<text x="462" y="30" text-anchor="middle">Presporo</text>
+<path class="l2" fill="none" d="M44,90 L44,212 M44,212 L268,212"/>
+<path class="l" fill="none" d="M50,150 Q66,110 82,150 T114,150 T146,150 T178,150 T210,150 T242,150"/>
+<circle class="if" cx="50" cy="150" r="3.4"/><circle class="if" cx="66" cy="110" r="3.4"/>
+<circle class="if" cx="82" cy="150" r="3.4"/><circle class="if" cx="98" cy="190" r="3.4"/>
+<circle class="if" cx="114" cy="150" r="3.4"/><circle class="if" cx="130" cy="110" r="3.4"/>
+<circle class="if" cx="146" cy="150" r="3.4"/><circle class="if" cx="162" cy="190" r="3.4"/>
+<circle class="if" cx="178" cy="150" r="3.4"/><circle class="if" cx="194" cy="110" r="3.4"/>
+<circle class="if" cx="210" cy="150" r="3.4"/><circle class="if" cx="226" cy="190" r="3.4"/>
+<circle class="if" cx="242" cy="150" r="3.4"/>
+<text class="mali" x="150" y="240" text-anchor="middle">4 uzorka po periodu</text>
+<text class="mali" x="150" y="262" text-anchor="middle">oblik signala ostaje prepoznatljiv</text>
+<path class="l2" fill="none" d="M336,90 L336,212 M336,212 L568,212"/>
+<path class="l2" fill="none" d="M348,150 Q364,110 380,150 T412,150 T444,150 T476,150 T508,150 T540,150"/>
+<path class="t dash" fill="none" d="M348,150 Q396,230 444,150 T540,150"/>
+<circle class="if" cx="348" cy="150" r="4"/><circle class="if" cx="396" cy="190" r="4"/>
+<circle class="if" cx="444" cy="150" r="4"/><circle class="if" cx="492" cy="110" r="4"/>
+<circle class="if" cx="540" cy="150" r="4"/>
+<text class="mali" x="462" y="240" text-anchor="middle">manje od 2 uzorka po periodu</text>
+<text class="mali" x="462" y="262" text-anchor="middle">iscrtkano: prividni signal koji ne postoji</text>
+</svg><figcaption><b>Slika 6.2</b> &mdash; Isti signal uzorkovan dovoljno gusto i presporo; u drugom slučaju nastaje prividna niska frekvencija.</figcaption></figure><p>Za PO-1 je odabrano <em>f</em><sub>s</sub> = <strong>25,6 kHz</strong>, a mjerno područje iskazano je kao 0 &ndash; 10 kHz. Odnos 2,56 između te dvije vrijednosti nije slučajan: sklop ispred pretvornika propušta samo frekvencije ispod granice, a taj filtar ne reže naglo nego postupno. Rezerva od 2,56 puta osigurava da ostatak iznad granice bude toliko prigušen da više ne može stvoriti prividnu frekvenciju. Analizatori vibracija zato uvijek navode područje jednako <em>f</em><sub>s</sub>/2,56.</p><div class="okvir pazi"><h4>Pažnja</h4><p>Filtar protiv preslikavanja radi <em>prije</em> pretvorbe u brojeve. Ako se presporo uzorkovani zapis naknadno obradi bilo kojim programom, prividna frekvencija se više ne može ukloniti &mdash; u podacima izgleda kao posve uredan titraj. Jedini je lijek ponoviti mjerenje.</p></div><p>Za temperaturu vrijedi drugo mjerilo. Reduktor se grije minutama, pa je 1 Hz i više nego dovoljno; brže uzorkovanje samo puni pohranu. Za struju motora dovoljno je 100 Hz ako se prati srednje opterećenje, ali 10 kHz ako se traže znakovi u samom obliku struje. Pravilo je: učestalost se bira prema brzini pojave koja se traži, a ne prema mogućnostima uređaja.</p><div class="racun" id="r61"><div class="racun-h"><b>Najviša mjerljiva frekvencija i količina podataka</b><em>Računski prikaz</em></div><p>Postavite učestalost uzorkovanja i obilježja snimanja pa pratite dokle mjerenje seže u frekvenciji i koliko podataka stvara. Pretpostavlja se jedna snimka svakog sata i 4000 radnih sati godišnje, kao na ćeliji PO-1.</p><div class="polja"><div class="polje"><label for="r61-fs">Učestalost uzorkovanja<output id="r61-fs-out" for="r61-fs" data-jed=" kHz">25,6 kHz</output></label><input type="range" id="r61-fs" data-ulaz="fs" min="1" max="51.2" step="0.2" value="25.6"></div><div class="polje"><label for="r61-n">Broj kanala<output id="r61-n-out" for="r61-n" data-jed="">2</output></label><input type="range" id="r61-n" data-ulaz="n" min="1" max="8" step="1" value="2"></div><div class="polje"><label for="r61-b">Razlučivost pretvornika</label><select id="r61-b" data-ulaz="b"><option value="16">16 bita</option><option value="24" selected>24 bita</option><option value="32">32 bita</option></select></div><div class="polje"><label for="r61-t">Trajanje snimke<output id="r61-t-out" for="r61-t" data-jed=" s">10 s</output></label><input type="range" id="r61-t" data-ulaz="t" min="1" max="60" step="1" value="10"></div></div><div class="ishod"><div class="ish"><span>Nyquistova granica</span><b id="r61-fn">&mdash;<small>kHz</small></b></div><div class="ish"><span>Uporabljivo područje (f/2,56)</span><b id="r61-fu">&mdash;<small>kHz</small></b></div><div class="ish"><span>Jedna snimka</span><b id="r61-mb">&mdash;<small>MB</small></b></div><div class="ish"><span>Sirovi podaci godišnje</span><b id="r61-gb">&mdash;<small>GB</small></b></div></div><p class="poruka" id="r61-poruka"></p></div></section><section><h2>Prikupljanje, prijenos i pohrana</h2><div class="crta"></div><p>Između senzora i baze podataka stoji nekoliko koraka. Signal se pojačava i filtrira, pretvara u brojeve, prikuplja u sabirniku uz ćeliju i tek onda šalje dalje. Sabirnik je u pravilu malo industrijsko računalo koje snimku obradi na licu mjesta i prema van pošalje sažetak, a cijelu snimku zadrži samo kad nešto odstupa. Takva podjela posla zove se obrada na rubu mreže.</p><div class="tablica-omot"><table><thead><tr><th>Korak</th><th>Što se događa</th><th>Primjer na PO-1</th></tr></thead><tbody><tr><td>Mjerenje</td><td>senzor pretvara fizikalnu veličinu u napon</td><td>akcelerometar 100 mV/g na osi 2</td></tr><tr><td>Priprema signala</td><td>pojačanje i filtar protiv preslikavanja</td><td>granica 10 kHz</td></tr><tr><td>Pretvorba</td><td>analogno-digitalni pretvornik, 24 bita</td><td>25,6 kHz, 10 s po snimci</td></tr><tr><td>Sabirnik</td><td>izračun značajki, kratkotrajna pohrana</td><td>RMS, faktor vrha, vrhovi u spektru</td></tr><tr><td>Prijenos</td><td>protokol prema poslužitelju</td><td>MQTT preko žičane mreže ćelije</td></tr><tr><td>Pohrana</td><td>baza vremenskih nizova</td><td>značajke trajno, sirove snimke 90 dana</td></tr></tbody></table></div><p>Svaka vrijednost mora nositi <strong>vremensku oznaku</strong>. Bez nje se ne može usporediti vibracija s temperaturom, ni mjerenje sa zapisom o zahvatu. Oznaka se zapisuje u obliku <code>2026-03-14T07:20:00Z</code>, dakle s datumom, vremenom i oznakom vremenske zone. Satovi svih uređaja usklađuju se prema jednom izvoru, jer razlika od nekoliko sekundi među uređajima poništi svaku usporedbu brzih pojava.</p><p>Uz vremensku oznaku ide i <strong>oznaka izvora</strong>: koji senzor, koja os, koji stroj i koja mjerna jedinica. Redak bez jedinice bezvrijedan je jednako kao redak bez vremena. Ustaljen zapis jednog mjerenja izgleda ovako:</p><pre><code>{
+  &quot;vrijeme&quot;: &quot;2026-03-14T07:20:00Z&quot;,
+  &quot;stroj&quot;: &quot;PO-1&quot;,
+  &quot;mjesto&quot;: &quot;os2-reduktor&quot;,
+  &quot;velicina&quot;: &quot;rms_brzine&quot;,
+  &quot;vrijednost&quot;: 2.84,
+  &quot;jedinica&quot;: &quot;mm/s&quot;,
+  &quot;program&quot;: &quot;POSLUGA_A&quot;
+}</code></pre><p>Pohrana se dijeli na dvije razine. Značajke su male i čuvaju se godinama, jer upravo one nose trend. Sirove snimke zauzimaju mnogo prostora i čuvaju se ograničeno, ali se snimka uz svaku uzbunu izdvaja i čuva trajno &mdash; ona je jedini dokaz kako je kvar izgledao u podacima.</p></section><section><h2>Kada podatak izostane</h2><div class="crta"></div><p>Prekid u nizu nije rijetkost nego redovita pojava. Mreža zastane, sabirnik se ponovno pokrene, kabel se olabavi, senzor otkaže. Razlika između uređenog i neuređenog sustava nije u tome događa li se to, nego zna li se prepoznati i što se s time radi.</p><div class="tablica-omot"><table><thead><tr><th>Pojava u podacima</th><th>Vjerojatan uzrok</th><th>Postupak</th></tr></thead><tbody><tr><td>Nema zapisa u nekoliko sati</td><td>prekid mreže ili ponovno pokretanje sabirnika</td><td>popuniti iz lokalne pohrane sabirnika, označiti razdoblje</td></tr><tr><td>Vrijednost je stalno ista</td><td>senzor otkazao ili je kabel prekinut</td><td>ne popunjavati, označiti kao neispravno i izaći na provjeru</td></tr><tr><td>Vrijednost je nula ili izvan područja</td><td>kratki spoj, neispravan napon napajanja</td><td>odbaciti redak, provjeriti napajanje i spoj</td></tr><tr><td>Skok bez povratka</td><td>senzor pomaknut ili ponovno pričvršćen</td><td>zabilježiti zahvat, po potrebi snimiti novu osnovnu snimku</td></tr><tr><td>Nagli šum po cijelom spektru</td><td>smetnja iz pretvarača ili loše uzemljenje</td><td>provjeriti oklop kabela i točku uzemljenja</td></tr></tbody></table></div><div class="okvir pazi"><h4>Pažnja</h4><p>Praznina se nikada ne popunjava tako da se potiho upiše prosjek. Model iz jedinice 6.4 tada uči na izmišljenim brojevima i, što je gore, prazninu više nitko ne vidi. Popunjena vrijednost mora nositi oznaku da je popunjena.</p></div><p>Prekid se prati i brojčano. Udio valjanih mjerenja u razdoblju zove se <strong>pokrivenost podataka</strong>. Na PO-1 se traži najmanje 95 %; ispod te granice zaključak o trendu postaje nesiguran, jer nedostaju upravo oni sati u kojima se nešto događalo. Pokrivenost je zato jedan od prvih pokazatelja na nadzornoj ploči iz jedinice 6.5.</p><p>Konačno, i sam senzor treba održavati. Akcelerometar se jednom godišnje provjerava na umjerivaču, PT100 usporedbom s referentnim osjetnikom, a spojevi i pričvrsni vijci pregledavaju se pri redovnom godišnjem zahvatu na robotu. Sustav koji mjeri stanje stroja i sam je oprema koja ima svoj plan održavanja.</p></section><section><h2>Ključni pojmovi</h2><div class="crta"></div><div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody><tr><td>Akcelerometar</td><td>Senzor ubrzanja titranja; u industriji najčešće piezoelektrični, s ugrađenim pojačalom.</td></tr><tr><td>PT100</td><td>Platinski otpornički osjetnik temperature; pri 0 &deg;C ima otpor 100 &#8486;.</td></tr><tr><td>Termopar</td><td>Osjetnik temperature koji iz spoja dvaju metala daje napon razmjeran razlici temperatura.</td></tr><tr><td>Učestalost uzorkovanja</td><td>Broj očitanja signala u sekundi; za vibracije na PO-1 iznosi 25,6 kHz.</td></tr><tr><td>Nyquistov uvjet</td><td>Uvjet da učestalost uzorkovanja bude veća od dvostruke najviše frekvencije u signalu.</td></tr><tr><td>Preslikavanje</td><td>Pojava prividne niske frekvencije zbog presporog uzorkovanja.</td></tr><tr><td>Pokrivenost podataka</td><td>Udio valjanih mjerenja u razdoblju; na PO-1 se traži najmanje 95 %.</td></tr></tbody></table></div></section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="3" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="2"><p class="brojac">Pitanje 1 od 3</p><p class="pit">Koliko najmanje mora iznositi učestalost uzorkovanja da bi se prepoznao titraj od 4 kHz?</p><div class="odg"><button type="button">2 kHz</button><button type="button">4 kHz</button><button type="button">više od 8 kHz</button><button type="button">40 kHz</button></div><p class="obraz">Nyquistov uvjet traži da učestalost bude veća od dvostruke najviše frekvencije, dakle iznad 8 kHz.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 2 od 3</p><p class="pit">Zašto se akcelerometar radije pričvršćuje vijkom nego magnetom?</p><div class="odg"><button type="button">Jer je jeftinije</button><button type="button">Jer vijak podiže gornju granicu uporabljivog mjerenja s oko 2 kHz na oko 10 kHz</button><button type="button">Jer magnet mijenja temperaturu</button><button type="button">Jer se vijak lakše skida</button></div><p class="obraz">Popustljiv spoj djeluje kao opruga i guši visoke frekvencije, pa magnet ograničava mjerenje na oko 2 kHz.</p></div><div class="kviz" data-tocno="2"><p class="brojac">Pitanje 3 od 3</p><p class="pit">Što se radi kada senzor nekoliko sati daje stalno istu vrijednost?</p><div class="odg"><button type="button">Vrijednost se prihvaća kao ispravna</button><button type="button">Niz se popuni prosjekom</button><button type="button">Razdoblje se označi kao neispravno i provjeri se senzor</button><button type="button">Prag uzbune se snizi</button></div><p class="obraz">Zamrznuta vrijednost znak je otkaza senzora ili prekida kabela; podatak se ne popunjava nego se provjeri spoj.</p></div><p class="rezultat">Odgovoreno 0 od 3.</p></div></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="m6-dijagnostika-na-temelju-podataka.html">&#8592; 6. Dijagnostika kvarova na temelju podataka</a><a class="gumb" href="6-2-analiza-i-vizualizacija.html">6.2 Analiza i vizualizacija prikupljenih podataka <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-pametno-odrzavanje-6-1-prikupljanje-podataka-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+(function(){
+  var k = document.getElementById('r61'); if(!k) return;
+  var jedinice = {'fn':'kHz','fu':'kHz','mb':'MB','gb':'GB'};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){ 
+          var bita = parseFloat(v.b);
+          var fn = v.fs / 2;
+          var fu = v.fs / 2.56;
+          var uzoraka = v.fs * 1000 * v.t * v.n;
+          var mb = uzoraka * (bita / 8) / 1048576;
+          var gb = mb * 4000 / 1024;
+          return { fn: fn.toFixed(2), fu: fu.toFixed(2), mb: mb.toFixed(1), gb: gb.toFixed(1),
+            _poruka: (fu < 5)
+              ? 'Uporabljivo podrucje ne doseze podrucje ostecenja lezaja; za PO-1 treba barem 25,6 kHz.'
+              : (gb > 400
+                 ? 'Kolicina sirovih podataka je velika. Racunajte znacajke u sabirniku, a cijele snimke cuvajte samo uz uzbunu.'
+                 : 'Odnos podrucja i kolicine podataka je razuman za trajno pracenje.') };
+         }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = racunaj(v) || {};
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r61-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small>' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r61-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+</script>
+</body>
+</html>

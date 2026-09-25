@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7.1 Postavljanje IoT projekta pametnog održavanja — Pametno održavanje | FORTRONIQ</title>
+<meta name="description" content="Projekt pametnog održavanja ne počinje izborom senzora nego rečenicom o tome što se želi postići i po čemu će se na kraju znati je li postignuto. Tek kada je cilj brojčano zapisan,">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/pametno-odrzavanje/7-1-postavljanje-projekta.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/pametno-odrzavanje/7-1-postavljanje-projekta.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/pametno-odrzavanje/7-1-postavljanje-projekta.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/pametno-odrzavanje/7-1-postavljanje-projekta.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="7.1 Postavljanje IoT projekta pametnog održavanja">
+<meta property="og:description" content="Projekt pametnog održavanja ne počinje izborom senzora nego rečenicom o tome što se želi postići i po čemu će se na kraju znati je li postignuto. Tek kada je cilj brojčano zapisan,">
+<meta property="og:url" content="https://dos.fortroniq.hr/pametno-odrzavanje/7-1-postavljanje-projekta.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://www.fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://www.fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Pametno održavanje</a><i aria-hidden="true">/</i><a href="m7-razrada-iot-projekata.html">7. Razrada IoT projekata</a><i aria-hidden="true">/</i><span aria-current="page">7.1 Postavljanje IoT projekta pametnog održavanja</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 7 &middot; RAZRADA IOT PROJEKATA</p><p class="nadnaslov">Nastavna jedinica 7.1</p><h1>Postavljanje IoT projekta pametnog održavanja</h1><p>Projekt pametnog održavanja ne počinje izborom senzora nego rečenicom o tome što se želi postići i po čemu će se na kraju znati je li postignuto. Tek kada je cilj brojčano zapisan, izbor veličina, senzora, prijenosa i platforme prestaje biti stvar ukusa i postaje niz odluka koje se mogu obraniti. Ova jedinica postavlja projekt na ćeliji PO-1 od cilja do proračuna.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>postaviti cilj IoT projekta pametnog održavanja i zapisati mjerila uspjeha</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>opisati zatečeno stanje ćelije iz zapisa o kvarovima i zastojima</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odabrati veličine koje se prate i obrazložiti izbor iz analize kvarova</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odabrati senzore i odrediti mjesta postavljanja na robotu</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>usporediti načine prijenosa podataka i industrijske protokole</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti ulogu pristupnika, platforme, pohrane i sigurnosti podataka</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izraditi plan rada s rokovima, proračun projekta i popis rizika</span></li></ul></div></div></header><div class="omot"><section><h2>Od ideje do projekta</h2><div class="crta"></div><p>U pogonu se pametno održavanje najčešće spomene poslije nekog skupog zastoja. Netko kaže da bi se to moglo predvidjeti, netko drugi predloži da se stavi senzor, a treći pita koliko to košta. Sve tri rečenice su razumne, ali nijedna nije projekt. Projekt nastaje tek kada se postavi pitanje <em>koji se problem rješava</em> i <em>kako će se znati da je riješen</em>.</p><p>Naš je problem poznat iz zapisa. Ćelija <strong>PO-1</strong> radi 4000 sati godišnje s taktom od 96 sekundi. Srednje vrijeme između kvarova iznosi 620 sati, a srednje vrijeme popravka 3,5 sata, pa je raspoloživost 99,4 %. Iza tog naizgled lijepog postotka stoji 6,5 kvarova i 22,6 sati neplaniranog zastoja godišnje. Uz trošak zastoja od 180 EUR na sat to je 4063 EUR koje pogon plati, a da za njih ništa ne dobije.</p><div class="tablica-omot"><table><thead><tr><th>Pokazatelj ćelije PO-1</th><th>Vrijednost</th><th>Odakle podatak</th></tr></thead><tbody><tr><td>Godišnji fond rada</td><td>4000 h</td><td>kalendar proizvodnje, dvije smjene</td></tr><tr><td>Takt</td><td>96 s</td><td>mjerenje na ćeliji, prosjek tri mjeseca</td></tr><tr><td>Srednje vrijeme između kvarova (MTBF)</td><td>620 h</td><td>zapisi o kvarovima za protekle dvije godine</td></tr><tr><td>Srednje vrijeme popravka (MTTR)</td><td>3,5 h</td><td>radni nalozi, vrijeme od prijave do puštanja</td></tr><tr><td>Raspoloživost</td><td>99,4 %</td><td>izračun iz MTBF i MTTR</td></tr><tr><td>Broj kvarova godišnje</td><td>6,5</td><td>fond rada podijeljen s MTBF</td></tr><tr><td>Neplanirani zastoj godišnje</td><td>22,6 h</td><td>broj kvarova pomnožen s MTTR</td></tr><tr><td>Ukupna učinkovitost opreme (OEE)</td><td>78 %</td><td>mjesečno izvješće proizvodnje</td></tr><tr><td>Trošak sata zastoja</td><td>180 EUR</td><td>izračun controllinga: izgubljeni komadi i rad</td></tr></tbody></table></div><p>Tek s takvom tablicom pred sobom razgovor mijenja ton. Ne raspravlja se više o tome je li pametno održavanje dobra ideja nego o tome koliki dio od tih 22,6 sati i 4063 EUR se može izbjeći i po kojoj cijeni. To je pitanje na koje projekt mora odgovoriti.</p><p>Projekt u ovom modulu ima zadano ulaganje od <strong>6500 EUR</strong>. U taj iznos ulaze senzori, pristupnik, prva godina platforme, kabliranje i rad na postavljanju i podešavanju. Cilj je <strong>smanjiti neplanirani zastoj za 40 % u prvoj godini</strong>. Sve što slijedi &mdash; izbor veličina, senzora, protokola i pragova &mdash; podređeno je toj jednoj rečenici.</p></section><section><h2>Cilj projekta i mjerila uspjeha</h2><div class="crta"></div><p>Cilj se piše tako da ga se ne može ispuniti napola i objaviti uspjeh. Dobar cilj ima veličinu, iznos, rok i mjesto: <em>smanjiti neplanirani zastoj ćelije PO-1 s 22,6 na najviše 13,6 sati godišnje do kraja prve godine rada sustava</em>. Tako zapisan cilj sam po sebi određuje što se mora mjeriti i tko to mjeri.</p><p>Uz glavni cilj idu <strong>mjerila uspjeha</strong>. Ona pokrivaju i one strane projekta koje glavni cilj ne hvata: koliko sustav smeta operateru, koliko često se vara i je li uopće dovoljno rano javio. Mjerila se dogovaraju prije početka, a ne nakon što rezultati stignu.</p><div class="tablica-omot"><table><thead><tr><th>Mjerilo</th><th>Ciljna vrijednost</th><th>Kako se mjeri</th></tr></thead><tbody><tr><td>Neplanirani zastoj</td><td>najviše 13,6 h godišnje</td><td>zbroj vremena zastoja iz radnih naloga</td></tr><tr><td>Udio najavljenih kvarova</td><td>najmanje 70 %</td><td>kvarovi s prethodnom uzbunom / svi kvarovi</td></tr><tr><td>Vrijeme najave prije kvara</td><td>najmanje 7 dana</td><td>razmak između prve uzbune i zahvata</td></tr><tr><td>Lažne uzbune</td><td>najviše 2 mjesečno</td><td>dnevnik uzbuna, stupac ishod provjere</td></tr><tr><td>Dostupnost podataka</td><td>najmanje 95 % sati</td><td>udio sati s primljenim mjerenjem</td></tr><tr><td>Povrat ulaganja</td><td>najviše 4 godine</td><td>ulaganje / neto godišnja korist</td></tr></tbody></table></div><div class="okvir"><h4>Zapamtite</h4><p>Mjerilo koje se ne može izmjeriti postojećim zapisima nije mjerilo nego želja. Prije nego što ga upišete u projekt, provjerite tko vodi podatak iz kojeg ćete ga izračunati i postoji li taj podatak već danas. Ako ne postoji, prvi zadatak projekta je da ga uvede.</p></div><p>Uz ciljeve se zapisuje i ono što projekt <em>ne</em> obuhvaća. Na PO-1 to su CNC glodalica, sustav stlačenog zraka i transport palete: oni imaju svoje održavanje i u ovom se projektu ne diraju. Jasna granica opsega čuva projekt od tihog širenja u kojem rokovi padaju, a cilj se izgubi.</p></section><section><h2>Zatečeno stanje ćelije i zapisa</h2><div class="crta"></div><p>Drugi korak je pregled onoga što već postoji. Nije rijetkost da pogon ima više podataka nego što misli: upravljačka jedinica robota bilježi opterećenja i temperature, CNC stroj vodi svoje brojače, a služba održavanja ima radne naloge. Snimanje zatečenog stanja znači te izvore popisati i ocijeniti koliko su upotrebljivi.</p><div class="tablica-omot"><table><thead><tr><th>Izvor</th><th>Što sadrži</th><th>Ocjena upotrebljivosti</th></tr></thead><tbody><tr><td>Radni nalozi u CMMS-u</td><td>datum, opis kvara, trajanje, utrošeni dijelovi</td><td>dobra osnova, ali opis kvara često je jedna riječ</td></tr><tr><td>Dnevnik zastoja u proizvodnji</td><td>vrijeme početka i kraja stanke, uzrok po šifri</td><td>točna vremena, uzroci grubo razvrstani</td></tr><tr><td>Zapisi upravljačke jedinice robota</td><td>opterećenja osi, temperature, poruke pogreške</td><td>vrlo korisno, ali se prepisuju tek na zahtjev</td></tr><tr><td>Izvješća o preventivnim pregledima</td><td>podmazivanje, provjera zazora, zamjena dijelova</td><td>uredno vođeno, na papiru</td></tr><tr><td>Iskustvo održavatelja</td><td>znaci koji su prethodili kvarovima</td><td>nezapisano; prikuplja se razgovorom</td></tr></tbody></table></div><p>Iz tih izvora sastavlja se slika kvarova ćelije PO-1 u protekle dvije godine. Od trinaest zabilježenih kvarova sedam otpada na prijenosnik i ležajeve osi 2 i 3, tri na prihvatnicu i njezinu ventilsku skupinu, dva na energetski lanac i kabele, a jedan na davač položaja. Raspored je tipičan i odmah pokazuje gdje se isplati mjeriti.</p><p>Jednako je važno zabilježiti i ono što se u zapisima <em>ne</em> vidi. Nigdje ne postoji podatak o tome koliko je koji kvar najavljivan bukom ili zagrijavanjem, iako održavatelji tvrde da su dva puta čuli promjenu zvuka nekoliko dana prije zastoja. Takva se svjedočanstva zapisuju jer su kasnije polazište za pravila ekspertnog sustava.</p><div class="okvir primjer"><h4>Primjer</h4><p>Kvar od 14. ožujka prošle godine: ležaj na osi 2, zastoj 6 sati, zamijenjen ležaj i mazivo. U dnevniku proizvodnje piše samo <em>mehanički kvar robota</em>. U razgovoru s operaterom ispalo je da je ćelija tjedan dana prije toga zvučala grublje pri brzom kretanju osi 2. Upravo je to podatak koji senzor vibracija hvata bez pogovora.</p></div></section><section><h2>Izbor veličina koje se prate</h2><div class="crta"></div><p>Mjeriti se može gotovo sve, ali svaka mjerena veličina donosi trošak senzora, kabela, prostora u ormaru i pažnje. Zato se bira iz analize kvarova: prate se veličine koje se mijenjaju prije onih kvarova koji najviše koštaju. Za PO-1 to je uski izbor od četiriju veličina.</p><div class="tablica-omot"><table><thead><tr><th>Veličina</th><th>Koji kvar najavljuje</th><th>Senzor</th><th>Uzorkovanje</th></tr></thead><tbody><tr><td>Vibracije na osi 2</td><td>trošenje ležaja i zupčanika prijenosnika</td><td>akcelerometar (IEPE)</td><td>25,6 kHz</td></tr><tr><td>Vibracije na osi 3</td><td>trošenje ležaja i olabavljeni spojevi</td><td>akcelerometar (IEPE)</td><td>25,6 kHz</td></tr><tr><td>Temperatura reduktora</td><td>manjak maziva, preopterećenje, zaglavljivanje</td><td>PT100</td><td>1 Hz</td></tr><tr><td>Struja motora osi 2</td><td>povećano trenje, kočnica koja se ne otpušta</td><td>mjerni modul u ormaru</td><td>10 Hz</td></tr><tr><td>Broj ciklusa</td><td>trošenje vezano uz rad, a ne uz kalendar</td><td>brojač u upravljačkoj jedinici</td><td>po ciklusu</td></tr></tbody></table></div><p>Uzorkovanje se ne bira napamet. Za vibracije je mjerodavna najviša frekvencija koja nosi podatak: zupčani par i kotrljajni ležaj daju značajke i iznad 10 kHz, pa uzorkovanje mora biti barem dvostruko veće. Odatle 25,6 kHz, uobičajena vrijednost mjernih modula. Temperatura se mijenja sporo i 1 Hz je više nego dovoljno; struja se prati s 10 Hz da se vidi oblik zaleta.</p><p>Iz vibracijskog se signala ne šalje sve nego izvedene veličine. Najvažnija je <strong>efektivna vrijednost brzine vibracija</strong>, kraće RMS, izražena u mm/s. Za ćeliju PO-1 dogovoren je prag uzbune od <strong>4,5 mm/s</strong> RMS, izveden iz mjerenja na ispravnom stroju i iz preporuka za strojeve te veličine. Kako se do tog praga dolazi, podrobno se obrađuje u jedinici 7.2.</p><div class="okvir pazi"><h4>Pažnja</h4><p>Uobičajena je pogreška postaviti deset senzora zato što se mogu postaviti. Svaki dodatni kanal povećava količinu podataka, broj mogućih kvarova samog mjernog lanca i broj lažnih uzbuna. Počnite s najmanjim skupom koji pokriva najskuplje kvarove i proširujte ga tek kada za to postoji izmjereni razlog.</p></div></section><section><h2>Senzori i mjesta postavljanja</h2><div class="crta"></div><p>Mjesto senzora jednako je važno kao i njegov izbor. Akcelerometar postavljen na limenu masku mjerit će titranje maske, a ne ležaja. Pravilo je jednostavno: senzor ide na krutu obrađenu površinu, što bliže mjestu nastanka pojave i u smjeru u kojem se pojava očekuje.</p><figure class="crtez"><svg viewBox="0 0 640 380" role="img" aria-label="Slika 7.2: Tlocrt robotske celije PO-1 s mjestima na kojima su postavljeni senzori i s vodom prema pristupniku.">
+<text x="320" y="30" text-anchor="middle">Tlocrt ćelije PO-1</text><text class="mali" x="40" y="40" text-anchor="start">sigurnosna ograda</text><rect class="l2 dash" fill="none" x="30" y="48" width="440" height="252" rx="6"/><rect class="pf" x="310" y="80" width="140" height="96" rx="6"/><text class="mali" x="380" y="122" text-anchor="middle">CNC glodalica</text><text class="mali" x="380" y="144" text-anchor="middle">takt 96 s</text><rect class="pf" x="60" y="76" width="104" height="72" rx="6"/><text class="mali" x="112" y="116" text-anchor="middle">upravljački</text><text class="mali" x="112" y="136" text-anchor="middle">ormar</text><rect class="pf" x="60" y="222" width="104" height="62" rx="6"/><text class="mali" x="112" y="258" text-anchor="middle">paleta</text><circle class="pf" cx="190" cy="200" r="30"/><path class="l" fill="none" d="M190,200 L236,164 L286,138"/><circle class="l" fill="none" cx="236" cy="164" r="9"/><circle class="l" fill="none" cx="286" cy="138" r="7"/><text class="mali" x="460" y="272" text-anchor="end">robot 20 kg / 1650 mm</text><rect class="pf" x="496" y="96" width="124" height="64" rx="6"/><text class="mali" x="558" y="124" text-anchor="middle">pristupnik</text><text class="mali" x="558" y="144" text-anchor="middle">LAN / 4G</text><path class="t dash" fill="none" d="M112,76 L112,62 L558,62 L558,88"/><path class="tf" d="M558,96 L553,85 L563,85 Z"/><text class="mali" x="300" y="78" text-anchor="end">podatkovni vod</text><path class="l2" fill="none" d="M204,141 L230,158 M296,181 L288,148 M232,231 L206,214"/><circle class="pf" cx="196" cy="132" r="11"/><text class="mali" x="196" y="137" text-anchor="middle">1</text><circle class="pf" cx="300" cy="190" r="11"/><text class="mali" x="300" y="195" text-anchor="middle">2</text><circle class="pf" cx="240" cy="238" r="11"/><text class="mali" x="240" y="243" text-anchor="middle">3</text><circle class="pf" cx="140" cy="94" r="11"/><text class="mali" x="140" y="99" text-anchor="middle">4</text><circle class="pf" cx="44" cy="326" r="9"/><text class="mali" x="44" y="331" text-anchor="middle">1</text><text class="mali" x="60" y="331" text-anchor="start">vibracije na osi 2, 25,6 kHz</text><circle class="pf" cx="340" cy="326" r="9"/><text class="mali" x="340" y="331" text-anchor="middle">3</text><text class="mali" x="356" y="331" text-anchor="start">temperatura reduktora (PT100)</text><circle class="pf" cx="44" cy="356" r="9"/><text class="mali" x="44" y="361" text-anchor="middle">2</text><text class="mali" x="60" y="361" text-anchor="start">vibracije na osi 3, 25,6 kHz</text><circle class="pf" cx="340" cy="356" r="9"/><text class="mali" x="340" y="361" text-anchor="middle">4</text><text class="mali" x="356" y="361" text-anchor="start">struja motora i broj ciklusa</text>
+</svg><figcaption><b>Slika 7.2</b> &mdash; Tlocrt robotske celije PO-1 s mjestima na kojima su postavljeni senzori i s vodom prema pristupniku.</figcaption></figure><p>Postupak postavljanja akcelerometra na os 2 izgleda ovako:</p><ol class="tekst"><li>Ćelija se zaustavi i osigura prema postupku zaključavanja i označavanja.</li><li>Odabere se mjesto na kućištu prijenosnika, iznad ležajnog mjesta, na obrađenoj plohi.</li><li>Ploha se očisti, po potrebi poravna i, ako to uputa dopušta, izradi se navojni provrt M6.</li><li>Senzor se pričvrsti vijkom uz propisani moment; ljepilo ili magnet koriste se samo za privremena mjerenja jer smanjuju gornju granicu upotrebljivog područja.</li><li>Kabel se vodi kroz energetski lanac, odvojeno od energetskih vodova, s odteretnicom na oba kraja.</li><li>Zabilježe se položaj, smjer osjetljivosti, serijski broj i osjetljivost senzora.</li><li>Nakon puštanja u rad snimi se referentno stanje kroz najmanje pet punih ciklusa.</li></ol><p>Temperaturni osjetnik PT100 postavlja se na kućište reduktora, ne na motor, jer se prati stanje maziva u prijenosniku. Strujni se modul ugrađuje u upravljački ormar, na izlaz pogonskog pojačala osi 2. Brojač ciklusa ne traži senzor: uzima se iz upravljačke jedinice robota kao brojčana varijabla.</p><p>Referentno stanje snimljeno na ispravnoj ćeliji temelj je svega što slijedi. Bez njega se poslije ne zna je li 3,8 mm/s mnogo ili malo. Za PO-1 referentno stanje iznosi 2,1 mm/s RMS na osi 2 i 1,7 mm/s na osi 3, uz temperaturu reduktora od 52 &deg;C u ustaljenom radu.</p></section><section><h2>Prijenos podataka i pristupnik</h2><div class="crta"></div><p>Izmjereno treba dopremiti do mjesta obrade. U pogonu se sreću tri obitelji rješenja i svaka ima svoje mjesto. Žični prijenos je najpouzdaniji i najlakše se brani pred službom sigurnosti, ali traži polaganje kabela. Bežični je brz za postavljanje, no na njega utječu metalne pregrade i drugi uređaji. Industrijski protokoli nisu treća vrsta veze nego jezik kojim uređaji razgovaraju preko bilo koje od njih.</p><div class="tablica-omot"><table><thead><tr><th>Način prijenosa</th><th>Tipična primjena na ćeliji</th><th>Prednost</th><th>Ograničenje</th></tr></thead><tbody><tr><td>Žično: Ethernet</td><td>pristupnik prema mreži pogona</td><td>stabilno, velika propusnost</td><td>polaganje kabela i mrežne dozvole</td></tr><tr><td>Žično: analogni vod 4&ndash;20 mA</td><td>PT100 i strujni modul do pristupnika</td><td>otporno na smetnje, provjereno</td><td>jedan signal po vodu</td></tr><tr><td>Bežično: Wi-Fi</td><td>privremena mjerenja i prijenosni uređaji</td><td>brzo postavljanje</td><td>zagušenje mreže, metalne pregrade</td></tr><tr><td>Bežično: LoRaWAN</td><td>rijetka mjerenja na udaljenim mjestima</td><td>domet i mala potrošnja</td><td>vrlo mala količina podataka</td></tr><tr><td>Mobilna mreža 4G</td><td>pričuvni put kad mreža pogona nije dostupna</td><td>neovisno o pogonu</td><td>mjesečni trošak i pitanje sigurnosti</td></tr></tbody></table></div><p>Od protokola se u pametnom održavanju najčešće sreću četiri. <strong>OPC UA</strong> je industrijski standard za razmjenu podataka s upravljačkim jedinicama i nosi uz vrijednost i njezin opis. <strong>MQTT</strong> je lagan protokol objave i pretplate, prikladan za slanje mjerenja prema platformi. <strong>Modbus TCP</strong> je jednostavan i star, ali još uvijek raširen. <strong>PROFINET</strong> i <strong>EtherCAT</strong> pripadaju upravljačkoj razini i s njih se podaci najčešće preuzimaju preko upravljačke jedinice, a ne izravno.</p><figure class="crtez"><svg viewBox="0 0 640 290" role="img" aria-label="Slika 7.1: Lanac podataka IoT rjesenja: senzor, pristupnik, platforma, nadzorna ploca i radni nalog, s povratnim zapisom o zahvatu.">
+<text x="320" y="30" text-anchor="middle">Lanac podataka: od senzora do radnog naloga</text><rect class="pf" x="22" y="62" width="130" height="68" rx="8"/><text class="mali" x="87" y="84" text-anchor="middle">senzor</text><text class="mali" x="87" y="104" text-anchor="middle">vibracije</text><text class="mali" x="87" y="122" text-anchor="middle">temperatura</text><rect class="pf" x="178" y="62" width="130" height="68" rx="8"/><text class="mali" x="243" y="84" text-anchor="middle">pristupnik</text><text class="mali" x="243" y="104" text-anchor="middle">RMS, značajke</text><text class="mali" x="243" y="122" text-anchor="middle">MQTT</text><rect class="pf" x="334" y="62" width="130" height="68" rx="8"/><text class="mali" x="399" y="84" text-anchor="middle">platforma</text><text class="mali" x="399" y="104" text-anchor="middle">pohrana</text><text class="mali" x="399" y="122" text-anchor="middle">pravila</text><rect class="pf" x="490" y="62" width="130" height="68" rx="8"/><text class="mali" x="555" y="84" text-anchor="middle">nadzorna</text><text class="mali" x="555" y="104" text-anchor="middle">ploča</text><text class="mali" x="555" y="122" text-anchor="middle">uzbune</text><line class="t" x1="156" y1="96" x2="166" y2="96"/><path class="tf" d="M176,96 L165,101 L165,91 Z"/><line class="t" x1="312" y1="96" x2="322" y2="96"/><path class="tf" d="M332,96 L321,101 L321,91 Z"/><line class="t" x1="468" y1="96" x2="478" y2="96"/><path class="tf" d="M488,96 L477,101 L477,91 Z"/><rect class="pf" x="490" y="188" width="130" height="68" rx="8"/><text class="mali" x="555" y="210" text-anchor="middle">radni nalog</text><text class="mali" x="555" y="230" text-anchor="middle">CMMS</text><text class="mali" x="555" y="248" text-anchor="middle">zahvat</text><line class="t" x1="555" y1="134" x2="555" y2="172"/><path class="tf" d="M555,184 L550,173 L560,173 Z"/><path class="l2 dash" fill="none" d="M490,222 L420,222 L420,144"/><path class="if" d="M420,134 L415,145 L425,145 Z"/><text class="mali" x="478" y="274" text-anchor="end">zapis o zahvatu</text><text class="mali" x="215" y="180" text-anchor="middle">Pristupnik od 1 536 000 uzoraka u minuti</text><text class="mali" x="215" y="202" text-anchor="middle">računa jednu vrijednost RMS, pa u oblak</text><text class="mali" x="215" y="224" text-anchor="middle">odlazi tek milijunti dio izmjerenog.</text>
+</svg><figcaption><b>Slika 7.1</b> &mdash; Lanac podataka IoT rjesenja: senzor, pristupnik, platforma, nadzorna ploca i radni nalog, s povratnim zapisom o zahvatu.</figcaption></figure><p>Ključni je uređaj <strong>pristupnik</strong>. On stoji uz ćeliju, prikuplja signale sa svih senzora i obavlja prvu obradu. Upravo tu se od sirovog signala od 25 600 uzoraka u sekundi računa jedna vrijednost RMS u minuti i nekoliko dodatnih značajki. Time se količina podataka smanji za nekoliko redova veličine, mreža se ne zagušuje, a u oblak putuje ono što je doista potrebno. Sirovi zapis čuva se na pristupniku nekoliko dana za slučaj da zatreba podrobnija analiza.</p></section><section><h2>Platforma, pohrana i sigurnost podataka</h2><div class="crta"></div><p>Platforma je mjesto na kojem podaci žive. Ona prima poruke pristupnika, sprema ih, crta grafove, izvodi pravila i šalje uzbune. Bira se između rješenja u oblaku i rješenja na poslužitelju u pogonu, a izbor je češće pitanje pravila tvrtke nego tehnike.</p><div class="tablica-omot"><table><thead><tr><th>Obilježje</th><th>Platforma u oblaku</th><th>Platforma u pogonu</th></tr></thead><tbody><tr><td>Postavljanje</td><td>brzo, bez vlastite opreme</td><td>traži poslužitelj i informatičara</td></tr><tr><td>Trošak</td><td>mjesečna naknada po uređaju</td><td>jednokratno ulaganje i održavanje</td></tr><tr><td>Pristup izvan pogona</td><td>ugrađeno</td><td>traži siguran udaljeni pristup</td></tr><tr><td>Podaci izlaze iz tvrtke</td><td>da, uz ugovor o obradi</td><td>ne</td></tr><tr><td>Nadogradnje</td><td>obavlja ih davatelj usluge</td><td>obavlja ih pogon</td></tr><tr><td>Rad bez veze s internetom</td><td>ograničen</td><td>potpun</td></tr></tbody></table></div><p>Pohrana se planira unaprijed jer podaci rastu tiho. Na PO-1 se u platformu šalje jedna vrijednost RMS po minuti za dvije osi, temperatura svake sekunde i struja deset puta u sekundi. To je oko 900 tisuća zapisa dnevno, odnosno red veličine nekoliko stotina megabajta godišnje &mdash; malo za platformu, ali dovoljno da se isplati odrediti pravilo čuvanja: minutne vrijednosti godinu dana, satni sažeci pet godina, sirovi zapisi sedam dana.</p><div class="okvir pazi"><h4>Pažnja</h4><p>Svaki novi uređaj na mreži pogona istodobno je i nova vrata. Pristupnik mora biti u zasebnom mrežnom segmentu, veza prema platformi šifrirana, pristup zaštićen lozinkom koja nije tvornička, a ovlasti podijeljene tako da operater vidi stanje, održavatelj mijenja pragove, a samo administrator mijenja pravila. Popis uređaja i lozinki dio je dokumentacije projekta.</p></div><p>Uz sigurnost ide i pitanje vlasništva podataka. Ugovorom se određuje tko smije vidjeti mjerenja, koliko se dugo čuvaju i što se s njima događa ako se suradnja prekine. Za školski je projekt to formalnost, za pogon nije: podaci o vibracijama otkrivaju i koliko se i kada radilo, što je poslovni podatak.</p></section><section><h2>Plan rada, proračun i rizici</h2><div class="crta"></div><p>Projekt se dijeli na zadatke s rokovima i nositeljima. Za PO-1 dvanaest tjedana je razumno razdoblje: dva tjedna za snimanje stanja, dva za nabavu, jedan za postavljanje, dva za platformu i pravila, tri za probni rad i dva za vrednovanje i predaju.</p><figure class="crtez"><svg viewBox="0 0 640 320" role="img" aria-label="Slika 7.3: Plan rada projekta po tjednima s dvjema prekretnicama: senzori u pogonu i predaja projekta.">
+<text x="320" y="28" text-anchor="middle">Plan rada projekta po tjednima s dvjema prekretnicama</text><text class="mali" x="20" y="60" text-anchor="start">tjedan</text><path class="l2 dash" fill="none" d="M200,66 L200,278 M235,66 L235,278 M270,66 L270,278 M305,66 L305,278 M340,66 L340,278 M375,66 L375,278 M410,66 L410,278 M445,66 L445,278 M480,66 L480,278 M515,66 L515,278 M550,66 L550,278 M585,66 L585,278 M620,66 L620,278"/><text class="mali" x="218" y="60" text-anchor="middle">1</text><text class="mali" x="253" y="60" text-anchor="middle">2</text><text class="mali" x="288" y="60" text-anchor="middle">3</text><text class="mali" x="323" y="60" text-anchor="middle">4</text><text class="mali" x="358" y="60" text-anchor="middle">5</text><text class="mali" x="393" y="60" text-anchor="middle">6</text><text class="mali" x="428" y="60" text-anchor="middle">7</text><text class="mali" x="463" y="60" text-anchor="middle">8</text><text class="mali" x="498" y="60" text-anchor="middle">9</text><text class="mali" x="533" y="60" text-anchor="middle">10</text><text class="mali" x="568" y="60" text-anchor="middle">11</text><text class="mali" x="603" y="60" text-anchor="middle">12</text><text class="mali" x="190" y="89" text-anchor="end">snimanje stanja</text><rect class="cf" x="200" y="76" width="70" height="18"/><rect class="l2" fill="none" x="200" y="76" width="70" height="18"/><text class="mali" x="190" y="119" text-anchor="end">nabava senzora</text><rect class="cf" x="235" y="106" width="105" height="18"/><rect class="l2" fill="none" x="235" y="106" width="105" height="18"/><text class="mali" x="190" y="149" text-anchor="end">postavljanje</text><rect class="cf" x="340" y="136" width="35" height="18"/><rect class="l2" fill="none" x="340" y="136" width="35" height="18"/><text class="mali" x="190" y="179" text-anchor="end">platforma</text><rect class="cf" x="340" y="166" width="70" height="18"/><rect class="l2" fill="none" x="340" y="166" width="70" height="18"/><text class="mali" x="190" y="209" text-anchor="end">pravila i pragovi</text><rect class="cf" x="375" y="196" width="105" height="18"/><rect class="l2" fill="none" x="375" y="196" width="105" height="18"/><text class="mali" x="190" y="239" text-anchor="end">probno razdoblje</text><rect class="cf" x="445" y="226" width="140" height="18"/><rect class="l2" fill="none" x="445" y="226" width="140" height="18"/><text class="mali" x="190" y="269" text-anchor="end">vrednovanje</text><rect class="cf" x="550" y="256" width="70" height="18"/><rect class="l2" fill="none" x="550" y="256" width="70" height="18"/><path class="if" d="M375,137 L383,145 L375,153 L367,145 Z"/><path class="if" d="M620,257 L628,265 L620,273 L612,265 Z"/><text class="mali" x="200" y="302" text-anchor="start">M1 &mdash; senzori u pogonu</text><text class="mali" x="420" y="302" text-anchor="start">M2 &mdash; predaja projekta</text>
+</svg><figcaption><b>Slika 7.3</b> &mdash; Plan rada projekta po tjednima s dvjema prekretnicama: senzori u pogonu i predaja projekta.</figcaption></figure><p>Proračun se piše po stavkama, jer se tako i troši. Za PO-1 unutar zadanih 6500 EUR stane oprema, platforma i rad, uz malu pričuvu koja gotovo uvijek zatreba.</p><div class="tablica-omot"><table><thead><tr><th>Stavka</th><th>Iznos</th><th>Napomena</th></tr></thead><tbody><tr><td>Dva akcelerometra s kabelima</td><td>1400 EUR</td><td>industrijska izvedba, IEPE</td></tr><tr><td>Mjerni modul za vibracije</td><td>1200 EUR</td><td>dva kanala, 25,6 kHz</td></tr><tr><td>PT100 i strujni mjerni modul</td><td>450 EUR</td><td>ugradnja u ormar</td></tr><tr><td>Pristupnik</td><td>900 EUR</td><td>industrijsko računalo s OPC UA i MQTT</td></tr><tr><td>Platforma, prva godina</td><td>600 EUR</td><td>naknada po uređaju</td></tr><tr><td>Materijal i kabliranje</td><td>350 EUR</td><td>energetski lanac, odteretnice, sitni materijal</td></tr><tr><td>Rad na postavljanju i podešavanju</td><td>1200 EUR</td><td>40 sati</td></tr><tr><td>Pričuva</td><td>400 EUR</td><td>oko 6 % ukupnog iznosa</td></tr><tr><td>Ukupno</td><td>6500 EUR</td><td>usklađeno sa zadanim okvirom</td></tr></tbody></table></div><p>Na kraju se popisuju rizici. Rizik nije sve što može poći po zlu nego ono što je dovoljno vjerojatno i dovoljno skupo da za njega vrijedi imati odgovor unaprijed.</p><div class="tablica-omot"><table><thead><tr><th>Rizik</th><th>Posljedica</th><th>Mjera</th></tr></thead><tbody><tr><td>Nema slobodnog termina za zastoj ćelije</td><td>kasni postavljanje senzora</td><td>postavljanje spojiti s planiranim preventivnim pregledom</td></tr><tr><td>Mreža pogona ne dopušta novi uređaj</td><td>podaci ne stižu u platformu</td><td>dogovor s informatikom prije nabave, pričuvni put 4G</td></tr><tr><td>Prag je postavljen prenisko</td><td>previše lažnih uzbuna, gubitak povjerenja</td><td>probno razdoblje i usklađivanje pragova</td></tr><tr><td>U probnom razdoblju nema nijednog kvara</td><td>model se ne može provjeriti</td><td>provjera na zabilježenim kvarovima iz prošlosti</td></tr><tr><td>Kabel u energetskom lancu puca</td><td>gubitak signala i lažna uzbuna</td><td>kabel predviđen za savijanje, odteretnice, nadzor dostupnosti podataka</td></tr></tbody></table></div><div class="racun" id="r71"><div class="racun-h"><b>Proračun projekta i povrat ulaganja</b><em>Računski prikaz</em></div><p>Ulaganje se vraća iz skraćenog zastoja i iz popravaka koji se izbjegnu jer je kvar uhvaćen rano. Pomaknite klizače i pratite neto godišnju korist i vrijeme povrata. Zadane vrijednosti odgovaraju ćeliji PO-1.</p><div class="polja"><div class="polje"><label for="r71-ulaganje">Ulaganje u projekt<output id="r71-ulaganje-out" for="r71-ulaganje" data-jed=" EUR">6500 EUR</output></label><input type="range" id="r71-ulaganje" data-ulaz="ulaganje" min="2000" max="15000" step="250" value="6500"></div><div class="polje"><label for="r71-zastoj">Neplanirani zastoj godišnje<output id="r71-zastoj-out" for="r71-zastoj" data-jed=" h">22,6 h</output></label><input type="range" id="r71-zastoj" data-ulaz="zastoj" min="5" max="60" step="0.1" value="22.6"></div><div class="polje"><label for="r71-cijena">Trošak sata zastoja<output id="r71-cijena-out" for="r71-cijena" data-jed=" EUR">180 EUR</output></label><input type="range" id="r71-cijena" data-ulaz="cijena" min="60" max="400" step="10" value="180"></div><div class="polje"><label for="r71-smanjenje">Ciljano smanjenje zastoja<output id="r71-smanjenje-out" for="r71-smanjenje" data-jed="%">40%</output></label><input type="range" id="r71-smanjenje" data-ulaz="smanjenje" min="10" max="70" step="5" value="40"></div><div class="polje"><label for="r71-steta">Izbjegnuti popravci i dijelovi<output id="r71-steta-out" for="r71-steta" data-jed=" EUR">1200 EUR</output></label><input type="range" id="r71-steta" data-ulaz="steta" min="0" max="4000" step="100" value="1200"></div><div class="polje"><label for="r71-pogon">Godišnji trošak platforme i nadzora<output id="r71-pogon-out" for="r71-pogon" data-jed=" EUR">600 EUR</output></label><input type="range" id="r71-pogon" data-ulaz="pogon" min="0" max="1500" step="50" value="600"></div></div><div class="ishod"><div class="ish"><span>Sadašnji trošak zastoja</span><b id="r71-trosak">&mdash;<small>EUR</small></b></div><div class="ish"><span>Ušteda na zastoju</span><b id="r71-usteda">&mdash;<small>EUR</small></b></div><div class="ish"><span>Neto godišnja korist</span><b id="r71-neto">&mdash;<small>EUR</small></b></div><div class="ish"><span>Povrat ulaganja</span><b id="r71-povrat">&mdash;<small>god</small></b></div><div class="ish"><span>Neto rezultat u pet godina</span><b id="r71-pet">&mdash;<small>EUR</small></b></div></div><p class="poruka" id="r71-poruka"></p></div></section><section><h2>Ključni pojmovi</h2><div class="crta"></div><div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody><tr><td>Cilj projekta</td><td>Brojčano zapisana namjera s rokom: koliko se čega mijenja i do kada.</td></tr><tr><td>Mjerilo uspjeha</td><td>Pokazatelj dogovoren prije početka, kojim se na kraju prosuđuje ishod.</td></tr><tr><td>Zatečeno stanje</td><td>Slika ćelije i njezinih zapisa prije zahvata; polazište za usporedbu.</td></tr><tr><td>Referentno stanje</td><td>Mjerenje snimljeno na ispravnom stroju; mjera prema kojoj se sudi odstupanje.</td></tr><tr><td>Pristupnik</td><td>Uređaj uz stroj koji prikuplja i sažima signale prije slanja u platformu.</td></tr><tr><td>OPC UA</td><td>Industrijski standard razmjene podataka s upravljačkim jedinicama.</td></tr><tr><td>MQTT</td><td>Lagan protokol objave i pretplate, uobičajen za slanje mjerenja u platformu.</td></tr><tr><td>Opseg projekta</td><td>Popis onoga što projekt obuhvaća i, jednako važno, što ne obuhvaća.</td></tr></tbody></table></div></section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="3" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 1 od 3</p><p class="pit">Čime projekt pametnog održavanja mora početi?</p><div class="odg"><button type="button">izborom senzora</button><button type="button">brojčano zapisanim ciljem i mjerilima uspjeha</button><button type="button">nabavom platforme</button><button type="button">postavljanjem pragova</button></div><p class="obraz">Bez cilja i mjerila ne postoji način da se na kraju prosudi je li projekt uspio.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 2 od 3</p><p class="pit">Zašto se vibracije uzorkuju s 25,6 kHz, a temperatura s 1 Hz?</p><div class="odg"><button type="button">jer je akcelerometar skuplji</button><button type="button">jer vibracijski signal nosi podatak i na visokim frekvencijama, a temperatura se mijenja sporo</button><button type="button">jer to traži platforma</button><button type="button">jer se tako štedi kabel</button></div><p class="obraz">Uzorkovanje se bira prema najvišoj frekvenciji koja nosi podatak o pojavi koja se prati.</p></div><div class="kviz" data-tocno="2"><p class="brojac">Pitanje 3 od 3</p><p class="pit">Koja je glavna uloga pristupnika u lancu podataka?</p><div class="odg"><button type="button">prikazuje grafove operateru</button><button type="button">otvara radni nalog</button><button type="button">prikuplja signale i sažima ih prije slanja u platformu</button><button type="button">pohranjuje podatke pet godina</button></div><p class="obraz">Pristupnik od milijuna uzoraka računa nekoliko značajki, pa mrežom putuje malo podataka.</p></div><p class="rezultat">Odgovoreno 0 od 3.</p></div></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="m7-razrada-iot-projekata.html">&#8592; 7. Razrada IoT projekata</a><a class="gumb" href="7-2-ekspertni-sustav.html">7.2 Modeliranje ekspertnog sustava rane dijagnostike kvarova <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-pametno-odrzavanje-7-1-postavljanje-projekta-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+(function(){
+  var k = document.getElementById('r71'); if(!k) return;
+  var jedinice = {'trosak':'EUR','usteda':'EUR','neto':'EUR','povrat':'god','pet':'EUR'};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){ 
+          var trosak = v.zastoj * v.cijena;
+          var usteda = trosak * v.smanjenje / 100;
+          var neto = usteda + v.steta - v.pogon;
+          var povrat = neto > 0 ? v.ulaganje / neto : 0;
+          var pet = neto * 5 - v.ulaganje;
+          var por;
+          if (neto <= 0) { por = 'Uz ovakve postavke projekt ne vraća uloženo: godisnji trosak nadzora pojede cijelu korist.'; }
+          else if (povrat > 5) { por = 'Povrat dulji od pet godina teško se brani. Smanjite opseg opreme ili projekt proširite na više strojeva s istim pristupnikom.'; }
+          else if (povrat > 3) { por = 'Povrat je na granici prihvatljivog. Isti senzori i ista platforma na drugoj ćeliji udvostručili bi korist uz mali dodatni trošak.'; }
+          else { por = 'Povrat je unutar cilja od četiri godine; uz to ostaju i koristi koje se ne računaju u novcu, kao mirniji rad smjene.'; }
+          return { trosak: Math.round(trosak),
+                   usteda: Math.round(usteda),
+                   neto: Math.round(neto),
+                   povrat: povrat > 0 ? povrat.toFixed(1).replace('.', ',') : '&mdash;',
+                   pet: Math.round(pet),
+                   _poruka: por };
+         }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = racunaj(v) || {};
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r71-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small>' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r71-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+</script>
+</body>
+</html>
