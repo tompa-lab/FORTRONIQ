@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V12 VDMA metoda s tri cilindra — blokirajući signal — Pneumatika i hidraulika | FORTRONIQ</title>
+<meta name="description" content="Na napravi za savijanje trake u oblik slova U tri cilindra rade u slijedu A+ B+ C+ B− A− C−. VDMA metodom tražite koji od tri razvodnika imaju blokirajući signal, uklanjate…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v12-vdma-tri-cilindra.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v12-vdma-tri-cilindra.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/pneumatika-i-hidraulika/v12-vdma-tri-cilindra.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v12-vdma-tri-cilindra.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Vježba V12: VDMA metoda s tri cilindra — blokirajući signal">
+<meta property="og:description" content="Na napravi za savijanje trake u oblik slova U tri cilindra rade u slijedu A+ B+ C+ B− A− C−. VDMA metodom tražite koji od tri razvodnika imaju blokirajući signal, uklanjate…">
+<meta property="og:url" content="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v12-vdma-tri-cilindra.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- pneumatika i hidraulika */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Pneumatika i hidraulika</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">V12 VDMA metoda s tri cilindra — blokirajući signal</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VJEŽBA V12 &middot; MODUL 3 &middot; PNEUMATSKO UPRAVLJANJE</p><p class="nadnaslov">Vježba V12 &middot; 2 sata</p><h1>VDMA metoda s tri cilindra — blokirajući signal</h1><p>Na napravi za savijanje trake u oblik slova U tri cilindra rade u slijedu A+ B+ C+ B− A− C−. VDMA metodom tražite koji od tri razvodnika imaju blokirajući signal, uklanjate ga jednosmjernim valjcima i provjeravate silu, potrošnju zraka i vrijeme ciklusa.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izvesti uvjete koraka za slijed s tri cilindra i nacrtati dijagram put–korak sa signalima</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>primijeniti pravilo za prepoznavanje blokirajućeg signala bez crtanja cijelog dijagrama</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>spojiti i pustiti u rad sklop s tri cilindra i dva jednosmjerna valjka</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati silu savijanja, potrošnju zraka po smjeni i vrijeme ciklusa</span></li></ul></div></div></header><div class="omot"><section id="o-vjezbi"><h2>O vježbi</h2><div class="crta"></div><div class="oznake-vj"><span>Vježba V12</span><span>Trajanje: 2 sata</span><span>Modul 3</span></div><p>Prije vježbe proći gradivo: <a href="3-4-vdma-metoda.html">3.4 VDMA metoda</a>.</p><p>Pitanja i zadaci na ovoj stranici su bez odgovora. Rješenje s postupkom otvara se gumbom <em>Prikaži rješenje</em> ispod svakog pitanja, a upute za nastavnika nalaze se na dnu stranice.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div></section><section><h2>Zadatak</h2><div class="crta"></div>
+<p>Čelična traka presjeka 20 × 2 mm savija se u oblik slova U na krutoj matrici. Radnik uloži odrezani komad trake i pritisne tipkalo <b>S</b>. Tada:</p>
+<ul>
+<li>cilindar <b>A</b> (Ø32/12 mm, hod 30 mm) steže traku odozgo na matricu,</li>
+<li>cilindar <b>B</b> (Ø50/20 mm, hod 60 mm) savija lijevi krak,</li>
+<li>cilindar <b>C</b> (Ø50/20 mm, hod 60 mm) savija desni krak,</li>
+<li>B se vraća, zatim A otpušta stezanje, a C se vraća posljednji. Dok je izvučen, C pridržava desni krak, pa elastični povrat materijala ne podiže komad s matrice u trenutku otpuštanja stezača.</li>
+</ul>
+<p class="formula">A+ B+ C+ B− A− C−</p>
+<p>Mreža ima 6 bar pretlaka. Probom je utvrđeno da je za savijanje jednog kraka potrebna sila od 800 N. Planirani ritam je 6 komada u minuti, a ručno ulaganje i vađenje traje oko 7 s. Ciklus smije krenuti samo iz osnovnog položaja, odnosno kad je C uvučen (c0).</p>
+<p>U vježbi V11 blokirajući signal postojao je na oba razvodnika. S tri cilindra to više nije pravilo: neki razvodnici imaju blokirajući signal, a neki nemaju. Vaš je zadatak odrediti koji su signali blokirajući, riješiti ih jednosmjernim valjcima, spojiti sklop i provjeriti rad.</p>
+</section>
+<section><h2>Oprema i pribor</h2><div class="crta"></div>
+<ul>
+<li>ploča za spajanje s pripremnom grupom i razdjelnikom (najmanje 8 izlaza);</li>
+<li>tri dvoradna cilindra s nosačima graničnih ventila (u vježbi se smiju zamijeniti manjim cilindrima);</li>
+<li>tri razvodnika 5/2 s obostranim pneumatskim upravljanjem;</li>
+<li>četiri granična ventila 3/2 s valjkom (a0, b1, c0, c1) i dva s jednosmjernim valjkom (a1, b0);</li>
+<li>ventil 3/2 s tipkalom (S);</li>
+<li>za dopunski zadatak dva jednosmjerna prigušna ventila;</li>
+<li>cijevi Ø4 i Ø6 mm, T-spojnice, čepovi, rezač cijevi, štoperica, radni list s praznim dijagramom.</li>
+</ul>
+</section>
+<section><h2>Sigurnost pri radu</h2><div class="crta"></div>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Tri cilindra znače tri zone gnječenja. Prije otvaranja zraka provjerite da nitko nema ruke na ploči, da su sve cijevi utaknute do kraja i da su neiskorišteni priključci razdjelnika začepljeni. Prvo puštanje radite pri 3 bar. Ako se sklop zaustavi u međupoložaju, <b>prvo zatvorite zrak i odzračite sustav</b>, a tek onda tražite uzrok; razvodnici su bistabilni i zadržavaju položaj, pa cilindar može krenuti čim se zrak ponovno otvori.</p></div>
+</section>
+<section><h2>Shema</h2><div class="crta"></div>
+<figure class="crtez"><svg viewBox="0 0 640 400" role="img" aria-label="Slika V12.1: pneumatska shema slijeda A+ B+ C+ B− A− C− s jednosmjernim valjcima a1 i b0">
+<rect class="pf" x="40" y="40" width="100" height="30"/>
+<line class="l" x1="54" y1="42" x2="54" y2="68" fill="none"/>
+<rect class="pf" x="56" y="52" width="100" height="6"/>
+<text x="32" y="61" text-anchor="end">A</text>
+<line class="l2" x1="156" y1="38" x2="156" y2="26" fill="none"/>
+<text x="156" y="22" text-anchor="middle" class="mali">a0</text>
+<line class="l2" x1="201" y1="38" x2="201" y2="26" fill="none"/>
+<text x="201" y="22" text-anchor="middle" class="mali">a1</text>
+<line class="l" x1="50" y1="70" x2="50" y2="76" fill="none"/>
+<line class="l" x1="130" y1="70" x2="130" y2="76" fill="none"/>
+<rect class="pf" x="250" y="40" width="100" height="30"/>
+<line class="l" x1="264" y1="42" x2="264" y2="68" fill="none"/>
+<rect class="pf" x="266" y="52" width="100" height="6"/>
+<text x="242" y="61" text-anchor="end">B</text>
+<line class="l2" x1="366" y1="38" x2="366" y2="26" fill="none"/>
+<text x="366" y="22" text-anchor="middle" class="mali">b0</text>
+<line class="l2" x1="411" y1="38" x2="411" y2="26" fill="none"/>
+<text x="411" y="22" text-anchor="middle" class="mali">b1</text>
+<line class="l" x1="260" y1="70" x2="260" y2="76" fill="none"/>
+<line class="l" x1="340" y1="70" x2="340" y2="76" fill="none"/>
+<rect class="pf" x="460" y="40" width="100" height="30"/>
+<line class="l" x1="474" y1="42" x2="474" y2="68" fill="none"/>
+<rect class="pf" x="476" y="52" width="100" height="6"/>
+<text x="452" y="61" text-anchor="end">C</text>
+<line class="l2" x1="576" y1="38" x2="576" y2="26" fill="none"/>
+<text x="576" y="22" text-anchor="middle" class="mali">c0</text>
+<line class="l2" x1="621" y1="38" x2="621" y2="26" fill="none"/>
+<text x="621" y="22" text-anchor="middle" class="mali">c1</text>
+<line class="l" x1="470" y1="70" x2="470" y2="76" fill="none"/>
+<line class="l" x1="550" y1="70" x2="550" y2="76" fill="none"/>
+<line class="l2" x1="190" y1="7" x2="204" y2="7" fill="none"/>
+<polygon class="bf" points="210,7 204,9.4 204,4.6"/>
+<line class="l2" x1="376" y1="7" x2="362" y2="7" fill="none"/>
+<polygon class="bf" points="356,7 362,4.6 362,9.4"/>
+<rect class="pf" x="64" y="150" width="36" height="36"/>
+<rect class="pf" x="100" y="150" width="36" height="36"/>
+<line class="l2" x1="82" y1="184" x2="75.5" y2="161.6" fill="none"/>
+<polygon class="if" points="73,153 79,160.6 72.1,162.6"/>
+<line class="l2" x1="91" y1="152" x2="91" y2="174" fill="none"/>
+<polygon class="if" points="91,183 87.4,174 94.6,174"/>
+<line class="l2" x1="73" y1="186" x2="73" y2="178" fill="none"/>
+<line class="l2" x1="68" y1="178" x2="78" y2="178" fill="none"/>
+<line class="l2" x1="118" y1="184" x2="124.5" y2="161.6" fill="none"/>
+<polygon class="if" points="127,153 127.9,162.6 121,160.6"/>
+<line class="l2" x1="109" y1="152" x2="109" y2="174" fill="none"/>
+<polygon class="if" points="109,183 105.4,174 112.6,174"/>
+<line class="l2" x1="127" y1="186" x2="127" y2="178" fill="none"/>
+<line class="l2" x1="122" y1="178" x2="132" y2="178" fill="none"/>
+<line class="l" x1="109" y1="150" x2="109" y2="140" fill="none"/>
+<line class="l" x1="127" y1="150" x2="127" y2="140" fill="none"/>
+<line class="l" x1="109" y1="186" x2="109" y2="196" fill="none"/>
+<line class="l" x1="118" y1="186" x2="118" y2="208" fill="none"/>
+<line class="l" x1="127" y1="186" x2="127" y2="196" fill="none"/>
+<polygon class="pf" points="104,196 114,196 109,203"/>
+<polygon class="pf" points="122,196 132,196 127,203"/>
+<rect class="pf" x="52" y="161" width="12" height="14"/>
+<polygon class="if" points="61,168 54,163.5 54,172.5"/>
+<line class="l2 dash" x1="52" y1="168" x2="40" y2="168" fill="none"/>
+<text x="38" y="161" text-anchor="end" class="mali">14</text>
+<rect class="pf" x="136" y="161" width="12" height="14"/>
+<polygon class="if" points="139,168 146,163.5 146,172.5"/>
+<line class="l2 dash" x1="148" y1="168" x2="160" y2="168" fill="none"/>
+<text x="162" y="161" text-anchor="start" class="mali">12</text>
+<text x="64" y="144" class="mali">1V1</text>
+<polyline class="l" points="109,140 109,110 50,110 50,76" fill="none"/>
+<polyline class="l" points="127,140 127,120 130,120 130,76" fill="none"/>
+<circle class="pf" cx="118" cy="216" r="8"/>
+<polygon class="pf" points="118,211 113.5,219 122.5,219"/>
+<rect class="pf" x="274" y="150" width="36" height="36"/>
+<rect class="pf" x="310" y="150" width="36" height="36"/>
+<line class="l2" x1="292" y1="184" x2="285.5" y2="161.6" fill="none"/>
+<polygon class="if" points="283,153 289,160.6 282.1,162.6"/>
+<line class="l2" x1="301" y1="152" x2="301" y2="174" fill="none"/>
+<polygon class="if" points="301,183 297.4,174 304.6,174"/>
+<line class="l2" x1="283" y1="186" x2="283" y2="178" fill="none"/>
+<line class="l2" x1="278" y1="178" x2="288" y2="178" fill="none"/>
+<line class="l2" x1="328" y1="184" x2="334.5" y2="161.6" fill="none"/>
+<polygon class="if" points="337,153 337.9,162.6 331,160.6"/>
+<line class="l2" x1="319" y1="152" x2="319" y2="174" fill="none"/>
+<polygon class="if" points="319,183 315.4,174 322.6,174"/>
+<line class="l2" x1="337" y1="186" x2="337" y2="178" fill="none"/>
+<line class="l2" x1="332" y1="178" x2="342" y2="178" fill="none"/>
+<line class="l" x1="319" y1="150" x2="319" y2="140" fill="none"/>
+<line class="l" x1="337" y1="150" x2="337" y2="140" fill="none"/>
+<line class="l" x1="319" y1="186" x2="319" y2="196" fill="none"/>
+<line class="l" x1="328" y1="186" x2="328" y2="208" fill="none"/>
+<line class="l" x1="337" y1="186" x2="337" y2="196" fill="none"/>
+<polygon class="pf" points="314,196 324,196 319,203"/>
+<polygon class="pf" points="332,196 342,196 337,203"/>
+<rect class="pf" x="262" y="161" width="12" height="14"/>
+<polygon class="if" points="271,168 264,163.5 264,172.5"/>
+<line class="l2 dash" x1="262" y1="168" x2="250" y2="168" fill="none"/>
+<text x="248" y="161" text-anchor="end" class="mali">14</text>
+<rect class="pf" x="346" y="161" width="12" height="14"/>
+<polygon class="if" points="349,168 356,163.5 356,172.5"/>
+<line class="l2 dash" x1="358" y1="168" x2="370" y2="168" fill="none"/>
+<text x="372" y="161" text-anchor="start" class="mali">12</text>
+<text x="274" y="144" class="mali">2V1</text>
+<polyline class="l" points="319,140 319,110 260,110 260,76" fill="none"/>
+<polyline class="l" points="337,140 337,120 340,120 340,76" fill="none"/>
+<circle class="pf" cx="328" cy="216" r="8"/>
+<polygon class="pf" points="328,211 323.5,219 332.5,219"/>
+<rect class="pf" x="484" y="150" width="36" height="36"/>
+<rect class="pf" x="520" y="150" width="36" height="36"/>
+<line class="l2" x1="502" y1="184" x2="495.5" y2="161.6" fill="none"/>
+<polygon class="if" points="493,153 499,160.6 492.1,162.6"/>
+<line class="l2" x1="511" y1="152" x2="511" y2="174" fill="none"/>
+<polygon class="if" points="511,183 507.4,174 514.6,174"/>
+<line class="l2" x1="493" y1="186" x2="493" y2="178" fill="none"/>
+<line class="l2" x1="488" y1="178" x2="498" y2="178" fill="none"/>
+<line class="l2" x1="538" y1="184" x2="544.5" y2="161.6" fill="none"/>
+<polygon class="if" points="547,153 547.9,162.6 541,160.6"/>
+<line class="l2" x1="529" y1="152" x2="529" y2="174" fill="none"/>
+<polygon class="if" points="529,183 525.4,174 532.6,174"/>
+<line class="l2" x1="547" y1="186" x2="547" y2="178" fill="none"/>
+<line class="l2" x1="542" y1="178" x2="552" y2="178" fill="none"/>
+<line class="l" x1="529" y1="150" x2="529" y2="140" fill="none"/>
+<line class="l" x1="547" y1="150" x2="547" y2="140" fill="none"/>
+<line class="l" x1="529" y1="186" x2="529" y2="196" fill="none"/>
+<line class="l" x1="538" y1="186" x2="538" y2="208" fill="none"/>
+<line class="l" x1="547" y1="186" x2="547" y2="196" fill="none"/>
+<polygon class="pf" points="524,196 534,196 529,203"/>
+<polygon class="pf" points="542,196 552,196 547,203"/>
+<rect class="pf" x="472" y="161" width="12" height="14"/>
+<polygon class="if" points="481,168 474,163.5 474,172.5"/>
+<line class="l2 dash" x1="472" y1="168" x2="460" y2="168" fill="none"/>
+<text x="458" y="161" text-anchor="end" class="mali">14</text>
+<rect class="pf" x="556" y="161" width="12" height="14"/>
+<polygon class="if" points="559,168 566,163.5 566,172.5"/>
+<line class="l2 dash" x1="568" y1="168" x2="580" y2="168" fill="none"/>
+<text x="582" y="161" text-anchor="start" class="mali">12</text>
+<text x="484" y="144" class="mali">3V1</text>
+<polyline class="l" points="529,140 529,110 470,110 470,76" fill="none"/>
+<polyline class="l" points="547,140 547,120 550,120 550,76" fill="none"/>
+<circle class="pf" cx="538" cy="216" r="8"/>
+<polygon class="pf" points="538,211 533.5,219 542.5,219"/>
+<rect class="pf" x="30" y="236" width="24" height="24"/>
+<rect class="pf" x="54" y="236" width="24" height="24"/>
+<line class="l2" x1="36" y1="258" x2="39.3" y2="247.6" fill="none"/>
+<polygon class="if" points="42,239 42.7,248.7 35.9,246.5"/>
+<line class="l2" x1="48" y1="260" x2="48" y2="252" fill="none"/>
+<line class="l2" x1="43" y1="252" x2="53" y2="252" fill="none"/>
+<line class="l2" x1="66" y1="238" x2="69.3" y2="248.4" fill="none"/>
+<polygon class="if" points="72,257 65.9,249.5 72.7,247.3"/>
+<line class="l2" x1="60" y1="260" x2="60" y2="252" fill="none"/>
+<line class="l2" x1="55" y1="252" x2="65" y2="252" fill="none"/>
+<line class="l" x1="66" y1="236" x2="66" y2="228" fill="none"/>
+<line class="l" x1="60" y1="260" x2="60" y2="268" fill="none"/>
+<line class="l" x1="72" y1="260" x2="72" y2="268" fill="none"/>
+<polygon class="pf" points="67,268 77,268 72,275"/>
+<line class="l" x1="30" y1="248" x2="22" y2="248" fill="none"/>
+<circle class="pf" cx="17" cy="248" r="5"/>
+<text x="17" y="237" text-anchor="middle">c0</text>
+<polyline class="l2" points="78,248 81.2,242 84.4,254 87.6,242 90.8,254 94,242 97,248" fill="none"/>
+<rect class="pf" x="214" y="236" width="24" height="24"/>
+<rect class="pf" x="238" y="236" width="24" height="24"/>
+<line class="l2" x1="220" y1="258" x2="223.3" y2="247.6" fill="none"/>
+<polygon class="if" points="226,239 226.7,248.7 219.9,246.5"/>
+<line class="l2" x1="232" y1="260" x2="232" y2="252" fill="none"/>
+<line class="l2" x1="227" y1="252" x2="237" y2="252" fill="none"/>
+<line class="l2" x1="250" y1="238" x2="253.3" y2="248.4" fill="none"/>
+<polygon class="if" points="256,257 249.9,249.5 256.7,247.3"/>
+<line class="l2" x1="244" y1="260" x2="244" y2="252" fill="none"/>
+<line class="l2" x1="239" y1="252" x2="249" y2="252" fill="none"/>
+<line class="l" x1="250" y1="236" x2="250" y2="228" fill="none"/>
+<line class="l" x1="244" y1="260" x2="244" y2="268" fill="none"/>
+<line class="l" x1="256" y1="260" x2="256" y2="268" fill="none"/>
+<polygon class="pf" points="251,268 261,268 256,275"/>
+<circle class="pf" cx="244" cy="276" r="8"/>
+<polygon class="pf" points="244,271 239.5,279 248.5,279"/>
+<line class="l" x1="214" y1="248" x2="207" y2="248" fill="none"/>
+<line class="l" x1="207" y1="248" x2="202" y2="241" fill="none"/>
+<circle class="pf" cx="199" cy="238" r="4.5"/>
+<line class="l2" x1="211" y1="253" x2="205" y2="247" fill="none"/>
+<text x="199" y="228" text-anchor="middle">a1</text>
+<polyline class="l2" points="262,248 265.2,242 268.4,254 271.6,242 274.8,254 278,242 281,248" fill="none"/>
+<rect class="pf" x="424" y="236" width="24" height="24"/>
+<rect class="pf" x="448" y="236" width="24" height="24"/>
+<line class="l2" x1="430" y1="258" x2="433.3" y2="247.6" fill="none"/>
+<polygon class="if" points="436,239 436.7,248.7 429.9,246.5"/>
+<line class="l2" x1="442" y1="260" x2="442" y2="252" fill="none"/>
+<line class="l2" x1="437" y1="252" x2="447" y2="252" fill="none"/>
+<line class="l2" x1="460" y1="238" x2="463.3" y2="248.4" fill="none"/>
+<polygon class="if" points="466,257 459.9,249.5 466.7,247.3"/>
+<line class="l2" x1="454" y1="260" x2="454" y2="252" fill="none"/>
+<line class="l2" x1="449" y1="252" x2="459" y2="252" fill="none"/>
+<line class="l" x1="460" y1="236" x2="460" y2="228" fill="none"/>
+<line class="l" x1="454" y1="260" x2="454" y2="268" fill="none"/>
+<line class="l" x1="466" y1="260" x2="466" y2="268" fill="none"/>
+<polygon class="pf" points="461,268 471,268 466,275"/>
+<circle class="pf" cx="454" cy="276" r="8"/>
+<polygon class="pf" points="454,271 449.5,279 458.5,279"/>
+<line class="l" x1="424" y1="248" x2="416" y2="248" fill="none"/>
+<circle class="pf" cx="411" cy="248" r="5"/>
+<text x="411" y="237" text-anchor="middle">b1</text>
+<polyline class="l2" points="472,248 475.2,242 478.4,254 481.6,242 484.8,254 488,242 491,248" fill="none"/>
+<rect class="pf" x="24" y="316" width="24" height="24"/>
+<rect class="pf" x="48" y="316" width="24" height="24"/>
+<line class="l2" x1="30" y1="338" x2="33.3" y2="327.6" fill="none"/>
+<polygon class="if" points="36,319 36.7,328.7 29.9,326.5"/>
+<line class="l2" x1="42" y1="340" x2="42" y2="332" fill="none"/>
+<line class="l2" x1="37" y1="332" x2="47" y2="332" fill="none"/>
+<line class="l2" x1="60" y1="318" x2="63.3" y2="328.4" fill="none"/>
+<polygon class="if" points="66,337 59.9,329.5 66.7,327.3"/>
+<line class="l2" x1="54" y1="340" x2="54" y2="332" fill="none"/>
+<line class="l2" x1="49" y1="332" x2="59" y2="332" fill="none"/>
+<line class="l" x1="60" y1="316" x2="60" y2="308" fill="none"/>
+<line class="l" x1="54" y1="340" x2="54" y2="348" fill="none"/>
+<line class="l" x1="66" y1="340" x2="66" y2="348" fill="none"/>
+<polygon class="pf" points="61,348 71,348 66,355"/>
+<circle class="pf" cx="54" cy="356" r="8"/>
+<polygon class="pf" points="54,351 49.5,359 58.5,359"/>
+<line class="l" x1="24" y1="328" x2="12" y2="328" fill="none"/>
+<line class="l" x1="12" y1="321" x2="12" y2="335" fill="none"/>
+<text x="12" y="316" text-anchor="middle">S</text>
+<polyline class="l2" points="72,328 75.2,322 78.4,334 81.6,322 84.8,334 88,322 91,328" fill="none"/>
+<rect class="pf" x="124" y="316" width="24" height="24"/>
+<rect class="pf" x="148" y="316" width="24" height="24"/>
+<line class="l2" x1="130" y1="338" x2="133.3" y2="327.6" fill="none"/>
+<polygon class="if" points="136,319 136.7,328.7 129.9,326.5"/>
+<line class="l2" x1="142" y1="340" x2="142" y2="332" fill="none"/>
+<line class="l2" x1="137" y1="332" x2="147" y2="332" fill="none"/>
+<line class="l2" x1="160" y1="318" x2="163.3" y2="328.4" fill="none"/>
+<polygon class="if" points="166,337 159.9,329.5 166.7,327.3"/>
+<line class="l2" x1="154" y1="340" x2="154" y2="332" fill="none"/>
+<line class="l2" x1="149" y1="332" x2="159" y2="332" fill="none"/>
+<line class="l" x1="160" y1="316" x2="160" y2="308" fill="none"/>
+<line class="l" x1="154" y1="340" x2="154" y2="348" fill="none"/>
+<line class="l" x1="166" y1="340" x2="166" y2="348" fill="none"/>
+<polygon class="pf" points="161,348 171,348 166,355"/>
+<circle class="pf" cx="154" cy="356" r="8"/>
+<polygon class="pf" points="154,351 149.5,359 158.5,359"/>
+<line class="l" x1="124" y1="328" x2="117" y2="328" fill="none"/>
+<line class="l" x1="117" y1="328" x2="112" y2="321" fill="none"/>
+<circle class="pf" cx="109" cy="318" r="4.5"/>
+<line class="l2" x1="121" y1="333" x2="115" y2="327" fill="none"/>
+<text x="109" y="308" text-anchor="middle">b0</text>
+<polyline class="l2" points="172,328 175.2,322 178.4,334 181.6,322 184.8,334 188,322 191,328" fill="none"/>
+<rect class="pf" x="334" y="316" width="24" height="24"/>
+<rect class="pf" x="358" y="316" width="24" height="24"/>
+<line class="l2" x1="340" y1="338" x2="343.3" y2="327.6" fill="none"/>
+<polygon class="if" points="346,319 346.7,328.7 339.9,326.5"/>
+<line class="l2" x1="352" y1="340" x2="352" y2="332" fill="none"/>
+<line class="l2" x1="347" y1="332" x2="357" y2="332" fill="none"/>
+<line class="l2" x1="370" y1="318" x2="373.3" y2="328.4" fill="none"/>
+<polygon class="if" points="376,337 369.9,329.5 376.7,327.3"/>
+<line class="l2" x1="364" y1="340" x2="364" y2="332" fill="none"/>
+<line class="l2" x1="359" y1="332" x2="369" y2="332" fill="none"/>
+<line class="l" x1="370" y1="316" x2="370" y2="308" fill="none"/>
+<line class="l" x1="364" y1="340" x2="364" y2="348" fill="none"/>
+<line class="l" x1="376" y1="340" x2="376" y2="348" fill="none"/>
+<polygon class="pf" points="371,348 381,348 376,355"/>
+<circle class="pf" cx="364" cy="356" r="8"/>
+<polygon class="pf" points="364,351 359.5,359 368.5,359"/>
+<line class="l" x1="334" y1="328" x2="326" y2="328" fill="none"/>
+<circle class="pf" cx="321" cy="328" r="5"/>
+<text x="321" y="317" text-anchor="middle">c1</text>
+<polyline class="l2" points="382,328 385.2,322 388.4,334 391.6,322 394.8,334 398,322 401,328" fill="none"/>
+<rect class="pf" x="544" y="316" width="24" height="24"/>
+<rect class="pf" x="568" y="316" width="24" height="24"/>
+<line class="l2" x1="550" y1="338" x2="553.3" y2="327.6" fill="none"/>
+<polygon class="if" points="556,319 556.7,328.7 549.9,326.5"/>
+<line class="l2" x1="562" y1="340" x2="562" y2="332" fill="none"/>
+<line class="l2" x1="557" y1="332" x2="567" y2="332" fill="none"/>
+<line class="l2" x1="580" y1="318" x2="583.3" y2="328.4" fill="none"/>
+<polygon class="if" points="586,337 579.9,329.5 586.7,327.3"/>
+<line class="l2" x1="574" y1="340" x2="574" y2="332" fill="none"/>
+<line class="l2" x1="569" y1="332" x2="579" y2="332" fill="none"/>
+<line class="l" x1="580" y1="316" x2="580" y2="308" fill="none"/>
+<line class="l" x1="574" y1="340" x2="574" y2="348" fill="none"/>
+<line class="l" x1="586" y1="340" x2="586" y2="348" fill="none"/>
+<polygon class="pf" points="581,348 591,348 586,355"/>
+<circle class="pf" cx="574" cy="356" r="8"/>
+<polygon class="pf" points="574,351 569.5,359 578.5,359"/>
+<line class="l" x1="544" y1="328" x2="536" y2="328" fill="none"/>
+<circle class="pf" cx="531" cy="328" r="5"/>
+<text x="531" y="317" text-anchor="middle">a0</text>
+<polyline class="l2" points="592,328 595.2,322 598.4,334 601.6,322 604.8,334 608,322 611,328" fill="none"/>
+<line class="l2 dash" x1="60" y1="308" x2="60" y2="268" fill="none"/>
+<polyline class="l2 dash" points="66,228 66,206 26,206 26,168 40,168" fill="none"/>
+<polyline class="l2 dash" points="250,228 250,168" fill="none"/>
+<polyline class="l2 dash" points="460,228 460,168" fill="none"/>
+<polyline class="l2 dash" points="160,308 160,168" fill="none"/>
+<polyline class="l2 dash" points="370,308 370,168" fill="none"/>
+<polyline class="l2 dash" points="580,308 580,168" fill="none"/>
+<text x="634" y="392" text-anchor="end" class="mali">S i c0 u nizu: A+ samo kad je C uvučen</text>
+</svg><figcaption><b>Slika V12.1</b> &mdash; Pneumatska shema slijeda A+ B+ C+ B− A− C−. U gornjem redu signalnih ventila su signali za izvlačenje (priključci 14), u donjem signali za uvlačenje (priključci 12). Jednosmjerni valjci a1 i b0 daju impuls samo u smjeru označenom strelicom.</figcaption></figure>
+<p>Razvodnik 3V1 dobiva signale b1 i a0 preko običnih valjaka. Pokušajte prije rješavanja pitanja 2 i 3 sami provjeriti zašto na njemu nije potreban jednosmjerni valjak.</p>
+</section>
+<section><h2>Postupak</h2><div class="crta"></div>
+<ol class="koraci">
+<li>Napišite tablicu uvjeta za šest koraka (pitanje 1) i nacrtajte dijagram put–korak sa signalima (pitanje 2).</li>
+<li>Montirajte cilindre i razvodnike. Obične valjke postavite tako da ih klipnjača pritisne u krajnjem položaju, jednosmjerne valjke a1 i b0 2–3 mm prije krajnjeg položaja u smjeru strelice.</li>
+<li>Spojite energetske vodove: razdjelnik → 1 na svakom razvodniku, 4 → strana klipa, 2 → strana klipnjače.</li>
+<li>Spojite upravljačke vodove prema shemi: S → ulaz 1 ventila c0, c0 → 14 na 1V1; b0 → 12 na 1V1; a1 → 14 na 2V1; c1 → 12 na 2V1; b1 → 14 na 3V1; a0 → 12 na 3V1.</li>
+<li>Postavite sve razvodnike u položaj uvlačenja (ručne pomoćne tipke) i otvorite zrak na 3 bar.</li>
+<li>Pokrenite jedan ciklus tipkalom S. Pratite gibanja i u dijagram na radnom listu upišite stvarni redoslijed.</li>
+<li>Namjerno zamijenite jednosmjerni valjak a1 običnim valjkom u krajnjem položaju. Zapišite u kojem se koraku sklop zaustavio. Vratite jednosmjerni valjak.</li>
+<li>Pri 6 bar izmjerite vrijeme od pritiska na S do povratka C u c0, pet puta, i izračunajte srednju vrijednost.</li>
+<li>Po želji izvedite dopunski zadatak s prigušnim ventilima (pitanje 8), zatim rastavite sklop bez tlaka.</li>
+</ol>
+</section>
+<section><h2>Pitanja i zadaci</h2><div class="crta"></div>
+<div class="pitanja">
+<div class="pitanje"><p><b>1.</b> Napišite za svaki korak slijeda A+ B+ C+ B− A− C− signal koji ga pokreće i priključak razvodnika na koji taj signal djeluje.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<div class="tablica-omot"><table><thead><tr><th>Korak</th><th>Gibanje</th><th>Signal</th><th>Priključak</th></tr></thead><tbody>
+<tr><td>1</td><td>A+</td><td>S · c0</td><td>14 na 1V1</td></tr>
+<tr><td>2</td><td>B+</td><td>a1</td><td>14 na 2V1</td></tr>
+<tr><td>3</td><td>C+</td><td>b1</td><td>14 na 3V1</td></tr>
+<tr><td>4</td><td>B−</td><td>c1</td><td>12 na 2V1</td></tr>
+<tr><td>5</td><td>A−</td><td>b0</td><td>12 na 1V1</td></tr>
+<tr><td>6</td><td>C−</td><td>a0</td><td>12 na 3V1</td></tr>
+</tbody></table></div>
+</div></details></div>
+
+<div class="pitanje"><p><b>2.</b> Nacrtajte dijagram put–korak za sva tri cilindra i ispod njega trake trajanja svih šest graničnih signala. Označite korake u kojima neki razvodnik istodobno dobiva signal za izvlačenje i za uvlačenje.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<figure class="crtez"><svg viewBox="0 0 640 385" role="img" aria-label="Slika V12.2: dijagram put-korak i trajanje signala za A+ B+ C+ B− A− C−">
+<line class="l2" x1="110" y1="30" x2="110" y2="166" fill="none"/>
+<text x="110" y="24" text-anchor="middle" class="mali">1</text>
+<line class="l2" x1="190" y1="30" x2="190" y2="166" fill="none"/>
+<text x="190" y="24" text-anchor="middle" class="mali">2</text>
+<line class="l2" x1="270" y1="30" x2="270" y2="166" fill="none"/>
+<text x="270" y="24" text-anchor="middle" class="mali">3</text>
+<line class="l2" x1="350" y1="30" x2="350" y2="166" fill="none"/>
+<text x="350" y="24" text-anchor="middle" class="mali">4</text>
+<line class="l2" x1="430" y1="30" x2="430" y2="166" fill="none"/>
+<text x="430" y="24" text-anchor="middle" class="mali">5</text>
+<line class="l2" x1="510" y1="30" x2="510" y2="166" fill="none"/>
+<text x="510" y="24" text-anchor="middle" class="mali">6</text>
+<line class="l2" x1="590" y1="30" x2="590" y2="166" fill="none"/>
+<text x="590" y="24" text-anchor="middle" class="mali">1</text>
+<text x="76" y="56" text-anchor="end">A</text>
+<text x="100" y="41" text-anchor="end" class="mali">1</text>
+<text x="100" y="69" text-anchor="end" class="mali">0</text>
+<polyline class="t" points="110,64 190,36 270,36 350,36 430,36 510,64 590,64" fill="none"/>
+<text x="76" y="104" text-anchor="end">B</text>
+<text x="100" y="89" text-anchor="end" class="mali">1</text>
+<text x="100" y="117" text-anchor="end" class="mali">0</text>
+<polyline class="t" points="110,112 190,112 270,84 350,84 430,112 510,112 590,112" fill="none"/>
+<text x="76" y="152" text-anchor="end">C</text>
+<text x="100" y="137" text-anchor="end" class="mali">1</text>
+<text x="100" y="165" text-anchor="end" class="mali">0</text>
+<polyline class="t" points="110,160 190,160 270,160 350,132 430,132 510,132 590,160" fill="none"/>
+<rect class="cf" x="98" y="178" width="24" height="156"/>
+<rect class="cf" x="338" y="178" width="24" height="156"/>
+<text x="76" y="197" text-anchor="end">a0</text>
+<line class="l2" x1="110" y1="192" x2="590" y2="192" fill="none"/>
+<rect class="tf" x="110" y="186" width="5" height="12"/>
+<rect class="tf" x="510" y="186" width="80" height="12"/>
+<text x="76" y="223" text-anchor="end">a1</text>
+<line class="l2" x1="110" y1="218" x2="590" y2="218" fill="none"/>
+<rect class="tf" x="190" y="212" width="240" height="12"/>
+<text x="76" y="249" text-anchor="end">b0</text>
+<line class="l2" x1="110" y1="244" x2="590" y2="244" fill="none"/>
+<rect class="tf" x="110" y="238" width="80" height="12"/>
+<rect class="tf" x="430" y="238" width="160" height="12"/>
+<text x="76" y="275" text-anchor="end">b1</text>
+<line class="l2" x1="110" y1="270" x2="590" y2="270" fill="none"/>
+<rect class="tf" x="270" y="264" width="80" height="12"/>
+<text x="76" y="301" text-anchor="end">c0</text>
+<line class="l2" x1="110" y1="296" x2="590" y2="296" fill="none"/>
+<rect class="tf" x="110" y="290" width="160" height="12"/>
+<rect class="tf" x="585.2" y="290" width="5" height="12"/>
+<text x="76" y="327" text-anchor="end">c1</text>
+<line class="l2" x1="110" y1="322" x2="590" y2="322" fill="none"/>
+<rect class="tf" x="350" y="316" width="160" height="12"/>
+<text x="98" y="350" text-anchor="start" class="mali">korak 1: b0 na 12 i S·c0 na 14 (1V1)</text>
+<text x="98" y="370" text-anchor="start" class="mali">korak 4: a1 na 14 i c1 na 12 (2V1)</text>
+</svg><figcaption><b>Slika V12.2</b> &mdash; Dijagram put–korak i trajanje signala. Preklapanje postoji u koraku 1 (razvodnik 1V1) i u koraku 4 (razvodnik 2V1).</figcaption></figure>
+<p>U koraku 1 signal b0 još traje (B je uvučen od kraja prošlog ciklusa), a S·c0 traži A+. U koraku 4 signal a1 još traje (A je izvučen), a c1 traži B−. Blokirajući signali su <b>b0</b> i <b>a1</b>. Na razvodniku 3V1 preklapanja nema: kad b1 traži C+, a0 ne postoji jer je A izvučen, a kad a0 traži C−, b1 ne postoji jer se B već vratio.</p>
+</div></details></div>
+
+<div class="pitanje"><p><b>3.</b> Signal koji pokreće neko gibanje traje sve dok se cilindar koji ga je dao ponovno ne pomakne. Na temelju te činjenice oblikujte pravilo za prepoznavanje blokirajućeg signala samo iz zapisa slijeda i provjerite ga za sva tri cilindra.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p><b>Pravilo:</b> gibanje X+ pokreće kraj gibanja nekog drugog cilindra Y. Ako se X− mora dogoditi <b>prije</b> nego što se Y ponovno pomakne, signal od Y još postoji kad treba X−, pa je blokirajući. Isto vrijedi obrnuto za signal koji pokreće X−.</p>
+<p>Provjera: B+ pokreće a1; B− (korak 4) dolazi prije A− (korak 5) → a1 je blokirajući. C+ pokreće b1; B se ponovno giba u koraku 4, prije C− u koraku 6 → nema blokade. A− pokreće b0 (korak 5); B se ponovno giba tek u koraku 2 sljedećeg ciklusa, a A+ dolazi već u koraku 1 → b0 je blokirajući. Ostali signali (c0, c1, a0) provjere se jednako i nisu blokirajući.</p></div></details></div>
+
+<div class="pitanje"><p><b>4.</b> Izračunajte stvarnu silu izvlačenja cilindra B pri 6 bar uz stupanj djelovanja 0,9. Kolika je rezerva prema potrebnih 800 N i koji je najmanji tlak pri kojem B još savija krak?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">A = π · 50² / 4 = 1963,5 mm² → F = 0,9 · 0,6 · 1963,5 ≈ 1060 N</p>
+<p>Rezerva: 1060 / 800 ≈ 1,33, tj. oko 33 %. Najmanji tlak: p = F / (η · A) = 800 / (0,9 · 1963,5) ≈ 0,453 N/mm² = 4,53 bar. Ispod oko 4,5 bar krak se neće potpuno saviti; to je podatak za namještanje tlačne sklopke ili za upute rukovatelju.</p>
+</div></details></div>
+
+<div class="pitanje"><p><b>5.</b> Izračunajte potrošnju zraka po ciklusu, u minuti pri 6 ciklusa/min i u smjeni od 7,5 sati neprekidnog rada. Zadano: 6 bar, 1,013 bar atmosferski tlak, promjeri i hodovi iz zadatka.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Omjer kompresije: (6 + 1,013) / 1,013 = 6,923.</p>
+<p>A: (804,2 + 691,2) mm² · 30 mm = 44 860 mm³ = 44,9 cm³ → 44,9 · 6,923 ≈ 0,31 Nl.</p>
+<p>B i C (svaki): (1963,5 + 1649,3) mm² · 60 mm = 216 770 mm³ = 216,8 cm³ → 216,8 · 6,923 ≈ 1,50 Nl.</p>
+<p>Ukupno ≈ 0,31 + 1,50 + 1,50 = 3,31 Nl po ciklusu → 3,31 · 6 ≈ 19,9 Nl/min → 19,9 · 60 · 7,5 ≈ 8 940 Nl ≈ 8,9 m³ po smjeni (bez gubitaka u cijevima i propuštanja).</p>
+</div></details></div>
+
+<div class="pitanje"><p><b>6.</b> Klipnjača A giba se brzinom 0,1 m/s, a klipnjače B i C brzinom 0,2 m/s u oba smjera. Svako prebacivanje razvodnika s punjenjem upravljačkog voda traje oko 30 ms. Procijenite trajanje ciklusa i provjerite može li se uz 7 s ručnog rukovanja ostvariti ritam od 6 komada u minuti.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Gibanja: A 2 · 30 mm / 100 mm/s = 0,6 s; B 2 · 60 / 200 = 0,6 s; C 0,6 s. Zbroj 1,8 s, uz 6 · 0,03 = 0,18 s prebacivanja → oko 2,0 s. S ručnim rukovanjem 2,0 + 7 = 9,0 s po komadu, a ritam 6 komada/min dopušta 10 s. Cilj je ostvariv uz rezervu od oko 1 s. Izmjereno vrijeme na ploči bit će nešto dulje zbog manjih cilindara, duljih vodova i prigušenja.</p></div></details></div>
+
+<div class="pitanje"><p><b>7.</b> U koraku 7 postupka umjesto jednosmjernog valjka a1 ugrađen je obični valjak. U kojem se koraku sklop zaustavlja, u kojem su položaju tada cilindri i kako biste taj kvar opisali serviseru koji ne zna shemu?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Sklop se zaustavlja na početku koraka 4: A, B i C su izvučeni, a B se ne vraća. Na 2V1 istodobno djeluju a1 (14) i c1 (12). Opis za servisera: „Nakon savijanja desnog kraka lijevi savijač ostaje naprijed; na razvodniku 2V1 tlak postoji na oba upravljačka priključka.“ Takav opis, s položajem svih cilindara i mjestom gdje je tlak, brže vodi do uzroka nego „naprava je stala“.</p></div></details></div>
+
+<div class="pitanje"><p><b>8.</b> Dopuna sheme: brzinu savijanja cilindra B treba smanjiti, a povrat ostaviti brzim. Na shemu V12.1 ucrtajte jednosmjerni prigušni ventil, označite na kojem vodu stoji i kako je okrenut nepovratni ventil.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Jednosmjerni prigušni ventil ugrađuje se u vod između priključka 2 razvodnika 2V1 i strane klipnjače cilindra B. Pri B+ zrak izlazi iz strane klipnjače kroz prigušnicu (prigušivanje odlaznog zraka), a nepovratni ventil je zatvoren. Pri B− zrak ulazi u stranu klipnjače kroz otvoreni nepovratni ventil, pa je povrat brz. Nepovratni ventil je dakle okrenut tako da propušta prema cilindru. Prigušivanje odlaznog zraka daje mirnije gibanje od prigušivanja dolaznog zraka jer je klip „uklješten“ između dva stupca zraka.</p></div></details></div>
+</div></section>
+<section><h2>Za nastavnika</h2><div class="crta"></div>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Vježba se nadovezuje na V11. Provjerite ima li svako radno mjesto tri cilindra i šest graničnih ventila, od toga dva jednosmjerna. Ako je pribora malo, cilindar C može se prikazati simulacijom na računalu, a na ploči spojiti samo A i B uz ručno zadani signal c0 i c1. Pripremite radni list s praznim dijagramom za šest koraka i šest signala.</p>
+<h4>Tijek sata</h4><ol>
+<li>0–10 min: ponavljanje blokirajućeg signala iz V11, zadatak i slijed.</li>
+<li>10–25 min: tablica uvjeta, dijagram signala, pravilo iz pitanja 3 (u parovima).</li>
+<li>25–60 min: spajanje i puštanje u rad pri 3 bar, pokus s običnim valjkom a1.</li>
+<li>60–75 min: mjerenje vremena ciklusa, računski zadaci 4–6.</li>
+<li>75–85 min: dopuna sheme prigušnim ventilom i provjera na ploči.</li>
+<li>85–90 min: rastavljanje i osvrt.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>Polaznik pronalazi oba blokirajuća signala i obrazlaže zašto 3V1 nema blokadu. Sklop radi u slijedu i staje u osnovnom položaju. Računski: 1060 N i najmanji tlak oko 4,5 bar, 3,31 Nl/ciklus i oko 8,9 m³ po smjeni, vrijeme ciklusa oko 2 s.</p>
+<h4>Česte pogreške</h4><ul>
+<li>jednosmjerni valjak stavljen i na mjesto a0 „za svaki slučaj“ — tada C− ovisi o kratkom impulsu i sklop postaje nepouzdan bez potrebe;</li>
+<li>zamjena signala a0 i c0 (oba su „početni“ položaji), pa A+ ovisi o A umjesto o C;</li>
+<li>u pravilu iz pitanja 3 promatra se samo sljedeći korak, a ne ciklički nastavak slijeda u novi ciklus;</li>
+<li>prigušni ventil ugrađen s okrenutim nepovratnim ventilom, pa se usporava povrat umjesto savijanja.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Tablica uvjeta i dijagram signala</td><td>4</td></tr>
+<tr><td>Pravilo za blokirajući signal i provjera za tri cilindra</td><td>3</td></tr>
+<tr><td>Sklop radi u slijedu, zaustavlja se u osnovnom položaju</td><td>5</td></tr>
+<tr><td>Računski zadaci 4–6</td><td>5</td></tr>
+<tr><td>Opis kvara (pitanje 7) i dopuna sheme (pitanje 8)</td><td>2</td></tr>
+<tr><td>Sigurnost i urednost</td><td>1</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="v11-vdma-dva-cilindra.html">&#8592; V11 VDMA metoda s dva cilindra — blokirajući signal</a><a class="gumb" href="v13-kaskadna-metoda.html">V13 Kaskadna metoda <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-pneumatika-i-hidraulika-v12-vdma-tri-cilindra-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>

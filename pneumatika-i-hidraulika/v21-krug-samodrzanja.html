@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V21 Krug samodržanja — Pneumatika i hidraulika | FORTRONIQ</title>
+<meta name="description" content="Kratkim pritiskom na tipkalo cilindar se izvlači i ostaje izvučen dok ga ne zaustavi tipkalo STOP — pamćenje signala preuzima relej s kontaktom samodržanja. U vježbi se…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v21-krug-samodrzanja.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v21-krug-samodrzanja.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/pneumatika-i-hidraulika/v21-krug-samodrzanja.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v21-krug-samodrzanja.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Vježba V21: Krug samodržanja">
+<meta property="og:description" content="Kratkim pritiskom na tipkalo cilindar se izvlači i ostaje izvučen dok ga ne zaustavi tipkalo STOP — pamćenje signala preuzima relej s kontaktom samodržanja. U vježbi se…">
+<meta property="og:url" content="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v21-krug-samodrzanja.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- pneumatika i hidraulika */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Pneumatika i hidraulika</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">V21 Krug samodržanja</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VJEŽBA V21 &middot; MODUL 4 &middot; ELEKTROPNEUMATIKA</p><p class="nadnaslov">Vježba V21 &middot; 2 sata</p><h1>Krug samodržanja</h1><p>Kratkim pritiskom na tipkalo cilindar se izvlači i ostaje izvučen dok ga ne zaustavi tipkalo STOP &mdash; pamćenje signala preuzima relej s kontaktom samodržanja. U vježbi se spajaju i uspoređuju dvije inačice kruga: s dominantnim isključivanjem i s dominantnim uključivanjem.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>spojiti krug samodržanja releja s dominantnim isključivanjem i provjeriti ga tablicom stanja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>preurediti isti krug u inačicu s dominantnim uključivanjem i opisati razliku u ponašanju</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>obrazložiti zašto se tipkalo STOP izvodi kao mirni (NC) kontakt</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>provjeriti ponašanje sklopa pri nestanku i povratku napona napajanja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati struju strujnih staza, silu cilindra i potrošnju zraka po ciklusu</span></li></ul></div></div></header><div class="omot"><section id="o-vjezbi"><h2>O vježbi</h2><div class="crta"></div><div class="oznake-vj"><span>Vježba V21</span><span>Trajanje: 2 sata</span><span>Modul 4</span></div><p>Prije vježbe proći gradivo: <a href="4-3-releji.html">4.3 Releji</a>, <a href="4-6-osnovni-ep-sklopovi.html">4.6 Osnovni elektropneumatski sklopovi i krug samodržanja</a>.</p><p>Pitanja i zadaci na ovoj stranici su bez odgovora. Rješenje s postupkom otvara se gumbom <em>Prikaži rješenje</em> ispod svakog pitanja, a upute za nastavnika nalaze se na dnu stranice.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div></section><section><h2>Zadatak</h2><div class="crta"></div>
+<p>Na liniji za doziranje plastičnog granulata ispod malog silosa nalazi se kosa zaklopka. Otvara je dvoradni cilindar <b>1A</b> promjera Ø40/16 mm i hoda 160 mm, a upravlja njime monostabilni elektromagnetski razvodnik 5/2 s oprugom (<b>1Y1</b>). Operater kratko pritisne zeleno tipkalo <b>S1</b> (START) i zaklopka se otvori te ostane otvorena, iako je prst već maknut s tipkala. Kad se u posudi skupi dovoljno granulata, operater pritisne crveno tipkalo <b>S2</b> (STOP) i zaklopka se zatvori. Signalna žaruljica <b>H1</b> svijetli dok je zaklopka otvorena.</p>
+<p>Tipkalo daje signal samo dok je pritisnuto, a monostabilni razvodnik drži položaj samo dok je svitak pod naponom. Između njih zato mora postojati element koji <b>pamti</b> kratki signal. Tu zadaću ima relej <b>K1</b> čiji radni kontakt premošćuje tipkalo START &mdash; to je <b>krug samodržanja</b>. Mreža stlačenog zraka je na 6 bar pretlaka, upravljački napon je 24 V DC. Svitak releja troši 1,2 W, elektromagnet razvodnika 2,5 W, a žaruljica 0,5 W.</p>
+<p>U vježbi se spajaju dvije inačice kruga: <b>dominantno isključivanje</b> (kad su oba tipkala pritisnuta, prevladava STOP) i <b>dominantno uključivanje</b> (prevladava START). Za obje se popunjava tablica stanja, a na kraju se odabire inačica prikladna za zaklopku i to se obrazlaže.</p>
+</section>
+<section><h2>Oprema i pribor</h2><div class="crta"></div>
+<ul>
+<li>izvor stlačenog zraka i pripremna grupa s regulatorom tlaka namještenim na 6 bar i manometrom;</li>
+<li>razdjelnik zraka s nepovratnim priključcima, pneumatske cijevi vanjskog promjera 4 mm ili 6 mm;</li>
+<li>dvoradni cilindar (na vježbenoj ploči npr. Ø20 mm do Ø40 mm, hod 100&ndash;200 mm);</li>
+<li>monostabilni elektromagnetski razvodnik 5/2 s povratnom oprugom i svjetlećim utikačem svitka, 24 V DC;</li>
+<li>modul napajanja 24 V DC s osiguračem i sklopkom za isključivanje u nuždi;</li>
+<li>modul tipkala: najmanje jedno tipkalo s radnim (NO) i jedno s mirnim (NC) kontaktom;</li>
+<li>relejni modul s najmanje tri radna i jednim mirnim kontaktom;</li>
+<li>signalna žaruljica 24 V, vodiči s laboratorijskim utikačima 4 mm u dvije boje (plava za 0 V, crvena za +24 V);</li>
+<li>digitalni multimetar i zapisnik s tablicom stanja.</li>
+</ul>
+</section>
+<section><h2>Sigurnost pri radu</h2><div class="crta"></div>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Električni i pneumatski dio spajajte samo kad je napajanje isključeno, a ventil na pripremnoj grupi zatvoren. Tlak uključujte tek kad su sve cijevi utaknute do kraja i kad je klipnjača slobodna &mdash; u njezinom se hodu ne smiju nalaziti ruke, alat ni vodiči. Cijev koja iskoči pod tlakom udara poput biča: prije uključivanja povucite svaku cijev da provjerite drži li. Ne spajajte vodiče dok je sklop pod naponom, čak ni pri 24 V, jer kratki spoj oštećuje izvor i kontakte releja.</p></div>
+<p>STOP tipkalo u ovoj vježbi nije zamjena za sklopku za isključivanje u nuždi. Uređaj za isključivanje u nuždi na modulu napajanja mora biti dostupan cijelo vrijeme i prije početka rada provjerite da stvarno prekida napajanje.</p>
+</section>
+<section><h2>Shema</h2><div class="crta"></div>
+<figure class="crtez"><svg viewBox="0 0 640 360" role="img" aria-label="Slika V21.1: pneumatski dio i strujne staze kruga samodržanja s dominantnim isključivanjem">
+<text class="mali" x="10" y="20">Pneumatski dio</text>
+<rect class="pf" x="40" y="50" width="150" height="30"/>
+<rect class="rf" x="58" y="52" width="6" height="26"/>
+<rect class="pf" x="64" y="61" width="166" height="8"/>
+<line class="l" fill="none" x1="52" y1="80" x2="52" y2="92"/>
+<line class="l" fill="none" x1="178" y1="80" x2="178" y2="92"/>
+<text x="34" y="71" text-anchor="end">1A</text>
+<rect class="pf" x="70" y="160" width="52" height="52"/>
+<rect class="pf" x="122" y="160" width="52" height="52"/>
+<line class="l2" fill="none" x1="148" y1="212" x2="161" y2="163"/><polygon class="if" points="161,163 162.1,169.5 156.9,168.1"/>
+<line class="l2" fill="none" x1="135" y1="160" x2="132.4" y2="209"/><polygon class="if" points="132.4,209 130,202.9 135.4,203.2"/>
+<line class="l2" fill="none" x1="96" y1="212" x2="83" y2="163"/><polygon class="if" points="83,163 87.1,168.1 81.9,169.5"/>
+<line class="l2" fill="none" x1="109" y1="160" x2="111.6" y2="209"/><polygon class="if" points="111.6,209 108.6,203.2 114,202.9"/>
+<line class="l" fill="none" x1="132.4" y1="212" x2="132.4" y2="218"/>
+<polygon class="pf" points="132.4,218 126.4,227 138.4,227"/>
+<line class="l" fill="none" x1="163.6" y1="212" x2="163.6" y2="218"/>
+<polygon class="pf" points="163.6,218 157.6,227 169.6,227"/>
+<rect class="pf" x="56" y="175" width="14" height="22"/>
+<line class="l2" fill="none" x1="56" y1="197" x2="70" y2="175"/>
+<text class="mali" x="52" y="191" text-anchor="end">1Y1</text>
+<polyline class="l2" fill="none" points="174,186 177,179 183,193 189,179 195,193 198,186"/>
+<text class="mali" x="131" y="156" text-anchor="end">4</text>
+<text class="mali" x="165" y="156">2</text>
+<text class="mali" x="145" y="228" text-anchor="end">1</text>
+<polyline class="l" fill="none" points="135,160 135,130 52,130 52,92"/>
+<polyline class="t" fill="none" points="161,160 161,120 178,120 178,92"/>
+<line class="t" fill="none" x1="148" y1="212" x2="148" y2="249"/>
+<circle class="pf" cx="148" cy="258" r="9"/>
+<polygon class="pf" points="148,251 143,261 153,261"/>
+<text class="mali" x="164" y="263">6 bar</text>
+<line class="l2 dash" fill="none" x1="262" y1="10" x2="262" y2="350"/>
+<text class="mali" x="280" y="20">Električni dio</text>
+<line class="l" fill="none" x1="280" y1="44" x2="630" y2="44"/>
+<line class="l" fill="none" x1="280" y1="318" x2="630" y2="318"/>
+<text class="mali" x="280" y="62">+24 V</text>
+<text class="mali" x="280" y="336">0 V</text>
+<line class="l2" fill="none" x1="330" y1="44" x2="330" y2="64"/>
+<line class="l2" fill="none" x1="330" y1="64" x2="330" y2="76"/>
+<line class="l2" fill="none" x1="330" y1="76" x2="339" y2="76"/>
+<line class="l" fill="none" x1="330" y1="92" x2="341" y2="73"/>
+<line class="l2" fill="none" x1="330" y1="92" x2="330" y2="104"/>
+<line class="l2 dash" fill="none" x1="335" y1="83" x2="321" y2="83"/>
+<line class="l" fill="none" x1="321" y1="76" x2="321" y2="90"/>
+<text class="mali" x="343" y="89">S2</text>
+<line class="l2" fill="none" x1="330" y1="104" x2="330" y2="124"/>
+<circle class="if" cx="330" cy="114" r="2.6"/>
+<line class="l2" fill="none" x1="330" y1="114" x2="374" y2="114"/>
+<line class="l2" fill="none" x1="374" y1="114" x2="374" y2="124"/>
+<line class="l2" fill="none" x1="330" y1="124" x2="330" y2="136"/>
+<line class="l" fill="none" x1="330" y1="152" x2="320" y2="134"/>
+<line class="l2" fill="none" x1="330" y1="152" x2="330" y2="164"/>
+<line class="l2 dash" fill="none" x1="325" y1="143" x2="311" y2="143"/>
+<line class="l" fill="none" x1="311" y1="136" x2="311" y2="150"/>
+<text class="mali" x="292" y="149" text-anchor="end">S1</text>
+<line class="l2" fill="none" x1="374" y1="124" x2="374" y2="136"/>
+<line class="l" fill="none" x1="374" y1="152" x2="364" y2="134"/>
+<line class="l2" fill="none" x1="374" y1="152" x2="374" y2="164"/>
+<text class="mali" x="387" y="149">K1</text>
+<line class="l2" fill="none" x1="374" y1="164" x2="374" y2="174"/>
+<line class="l2" fill="none" x1="374" y1="174" x2="330" y2="174"/>
+<circle class="if" cx="330" cy="174" r="2.6"/>
+<line class="l2" fill="none" x1="330" y1="164" x2="330" y2="200"/>
+<line class="l2" fill="none" x1="330" y1="200" x2="330" y2="211"/>
+<rect class="pf" x="319" y="211" width="22" height="18"/>
+<line class="l2" fill="none" x1="330" y1="229" x2="330" y2="240"/>
+<text class="mali" x="345" y="225">K1</text>
+<line class="l2" fill="none" x1="330" y1="240" x2="330" y2="318"/>
+<line class="l2" fill="none" x1="460" y1="44" x2="460" y2="124"/>
+<line class="l2" fill="none" x1="460" y1="124" x2="460" y2="136"/>
+<line class="l" fill="none" x1="460" y1="152" x2="450" y2="134"/>
+<line class="l2" fill="none" x1="460" y1="152" x2="460" y2="164"/>
+<text class="mali" x="473" y="149">K1</text>
+<line class="l2" fill="none" x1="460" y1="164" x2="460" y2="200"/>
+<line class="l2" fill="none" x1="460" y1="200" x2="460" y2="211"/>
+<rect class="pf" x="449" y="211" width="22" height="18"/>
+<line class="l2" fill="none" x1="460" y1="229" x2="460" y2="240"/>
+<line class="l2" fill="none" x1="449" y1="229" x2="471" y2="211"/>
+<text class="mali" x="475" y="225">1Y1</text>
+<line class="l2" fill="none" x1="460" y1="240" x2="460" y2="318"/>
+<line class="l2" fill="none" x1="570" y1="44" x2="570" y2="124"/>
+<line class="l2" fill="none" x1="570" y1="124" x2="570" y2="136"/>
+<line class="l" fill="none" x1="570" y1="152" x2="560" y2="134"/>
+<line class="l2" fill="none" x1="570" y1="152" x2="570" y2="164"/>
+<text class="mali" x="583" y="149">K1</text>
+<line class="l2" fill="none" x1="570" y1="164" x2="570" y2="200"/>
+<line class="l2" fill="none" x1="570" y1="200" x2="570" y2="211"/>
+<circle class="pf" cx="570" cy="220" r="9"/>
+<line class="l2" fill="none" x1="564" y1="214" x2="576" y2="226"/>
+<line class="l2" fill="none" x1="564" y1="226" x2="576" y2="214"/>
+<line class="l2" fill="none" x1="570" y1="229" x2="570" y2="240"/>
+<text class="mali" x="584" y="225">H1</text>
+<line class="l2" fill="none" x1="570" y1="240" x2="570" y2="318"/>
+<circle class="if" cx="330" cy="44" r="2.6"/>
+<circle class="if" cx="330" cy="318" r="2.6"/>
+<text class="mali" x="330" y="38" text-anchor="middle">1</text>
+<circle class="if" cx="460" cy="44" r="2.6"/>
+<circle class="if" cx="460" cy="318" r="2.6"/>
+<text class="mali" x="460" y="38" text-anchor="middle">2</text>
+<circle class="if" cx="570" cy="44" r="2.6"/>
+<circle class="if" cx="570" cy="318" r="2.6"/>
+<text class="mali" x="570" y="38" text-anchor="middle">3</text>
+</svg><figcaption><b>Slika V21.1</b> &mdash; Pneumatski dio (lijevo) i strujne staze (desno) kruga samodržanja s dominantnim isključivanjem. Razvodnik je nacrtan u osnovnom položaju: priključak 1 spojen je s 2, cilindar je uvučen.</figcaption></figure>
+<p>U <b>stazi 1</b> nalazi se mirni kontakt tipkala S2 u seriji s paralelnim spojem radnog kontakta tipkala S1 i radnog kontakta releja K1. Pritisak na S1 uključuje svitak K1; njegov kontakt u paraleli odmah zatvara drugi put struji pa relej ostaje uključen i nakon otpuštanja S1. <b>Staza 2</b> preko drugog kontakta K1 uključuje elektromagnet 1Y1, a <b>staza 3</b> preko trećeg kontakta žaruljicu H1. Budući da S2 prekida cijelu stazu prije točke grananja, pritisak na STOP uvijek isključuje relej &mdash; i onda kad je START istodobno pritisnut.</p>
+<p>Kod <b>dominantnog uključivanja</b> mijenja se samo staza 1: S2 se stavlja u seriju s kontaktom samodržanja K1, a tipkalo S1 spaja se paralelno toj seriji, izravno od +24 V do svitka. Kad su oba tipkala pritisnuta, struja prolazi kroz S1 mimo tipkala S2 i relej ostaje uključen.</p>
+<div class="tablica-omot"><table><thead><tr><th>S1 (START)</th><th>S2 (STOP)</th><th>K1 prije</th><th>K1 poslije &mdash; dominantno isključivanje</th><th>K1 poslije &mdash; dominantno uključivanje</th></tr></thead><tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1 (pamti)</td><td>1 (pamti)</td></tr>
+<tr><td>1</td><td>0</td><td>0 ili 1</td><td>1</td><td>1</td></tr>
+<tr><td>0</td><td>1</td><td>0 ili 1</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>0 ili 1</td><td>0</td><td>1</td></tr>
+</tbody></table></div>
+</section>
+<section><h2>Postupak</h2><div class="crta"></div>
+<ol class="koraci">
+<li>Provjerite da je napajanje isključeno, a zrak zatvoren. Pričvrstite cilindar, razvodnik i razdjelnik na vježbenu ploču.</li>
+<li>Spojite pneumatski dio prema slici V21.1: priključak 4 na stranu klipa, priključak 2 na stranu klipnjače, priključak 1 na razdjelnik. Otvorite zrak i provjerite je li cilindar uvučen.</li>
+<li>Spojite stazu 1 s dominantnim isključivanjem. Vodite računa da za S2 koristite <b>mirni</b> kontakt tipkala, a za S1 i K1 radne kontakte.</li>
+<li>Spojite staze 2 i 3. Prije uključivanja napajanja multimetrom (na mjernom području otpora) provjerite da između +24 V i 0 V nema kratkog spoja.</li>
+<li>Uključite napajanje. Kratko pritisnite S1: relej mora čujno privući, 1Y1 svijetli, cilindar se izvlači, H1 svijetli. Otpustite S1 &mdash; stanje se ne mijenja.</li>
+<li>Pritisnite S2: relej otpušta, cilindar se uvlači. Popunite tablicu stanja za sve kombinacije tipkala, uključivo istodobni pritisak obaju tipkala.</li>
+<li>Dok je cilindar izvučen, isključite napajanje na izvoru i ponovno ga uključite. Zapišite položaj cilindra i stanje releja nakon povratka napona.</li>
+<li>Isključite napajanje i preuredite stazu 1 u inačicu s dominantnim uključivanjem. Ponovite korake 5&ndash;7 i dopunite tablicu.</li>
+<li>Izmjerite napon na svitku K1 i na svitku 1Y1 dok su uključeni i upišite ga u zapisnik.</li>
+<li>Isključite napajanje i zrak, ispustite tlak iz sustava, rastavite spoj i pospremite vodiče i cijevi.</li>
+</ol>
+</section>
+<section><h2>Pitanja i zadaci</h2><div class="crta"></div>
+<div class="pitanja">
+<div class="pitanje"><p><b>1.</b> Objasnite zašto relej K1 ostaje uključen nakon što otpustite tipkalo S1. Koji element sklopa „pamti“ signal?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kad K1 privuče, zatvara se njegov radni kontakt spojen paralelno tipkalu S1. Struja do svitka tada teče kroz taj kontakt, pa otpuštanje S1 ne prekida krug. Signal pamti relej zajedno sa svojim kontaktom samodržanja; krug se prekida tek otvaranjem S2 ili nestankom napona.</p></div></details></div>
+<div class="pitanje"><p><b>2.</b> Što se u sklopu sa slike V21.1 događa kad su S1 i S2 istodobno pritisnuti? Zašto se ta inačica zove „dominantno isključivanje“?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Mirni kontakt S2 nalazi se u seriji ispred točke grananja pa njegovo otvaranje prekida i put kroz S1 i put kroz K1. Relej je isključen, cilindar se uvlači. Kad su oba signala prisutna, prevladava (dominira) naredba za isključivanje.</p></div></details></div>
+<div class="pitanje"><p><b>3.</b> Dopunite shemu: nacrtajte stazu 1 za inačicu s dominantnim uključivanjem, koristeći iste elemente S1, S2 i K1. Opišite put struje kad su pritisnuta oba tipkala.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Od +24 V vodi grana s mirnim kontaktom S2 u seriji s radnim kontaktom K1; paralelno cijeloj toj grani spojen je radni kontakt S1. Obje grane spajaju se ispred svitka K1, a svitak je na 0 V. Kad su pritisnuta oba tipkala, grana S2–K1 je prekinuta, ali struja teče kroz S1 izravno do svitka pa K1 ostaje uključen &mdash; prevladava uključivanje.</p></div></details></div>
+<div class="pitanje"><p><b>4.</b> Koju biste inačicu odabrali za zaklopku silosa, a koju za dizalicu koja drži teret? Obrazložite.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Za zaklopku je prikladno dominantno isključivanje: kad operater u zabuni pritisne oba tipkala, zaklopka se zatvara, a zatvorena zaklopka je sigurno stanje. Dominantno uključivanje primjenjuje se tamo gdje je isključivanje opasnije od uključivanja, npr. kad bi prekid signala spustio podignuti teret ili prekinuo hlađenje. U strojogradnji se za naredbe gibanja u pravilu bira dominantno isključivanje.</p></div></details></div>
+<div class="pitanje"><p><b>5.</b> Zašto se tipkalo STOP spaja kao mirni (NC) kontakt? Što bi se dogodilo s radnim kontaktom kad bi se vodič do tipkala prekinuo?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Mirni kontakt drži krug zatvorenim dok se ne pritisne. Prekid vodiča djeluje isto kao pritisak na STOP: relej otpusti i stroj se zaustavi, pa se kvar odmah vidi. Kad bi STOP bio radni kontakt koji bi uključivao neki relej za isključivanje, prekinut vodič ostao bi neprimijećen sve do trenutka kad STOP zatreba &mdash; a tada ne bi djelovao. To je načelo „sigurnog kvara“.</p></div></details></div>
+<div class="pitanje"><p><b>6.</b> Računski zadatak: kolika je struja u stazama 1, 2 i 3 dok je zaklopka otvorena i kolika je ukupna struja iz izvora 24 V? Je li izvor od 1 A dovoljan?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p class="formula">I = P / U</p><p>Staza 1: I = 1,2 W / 24 V = 0,050 A. Staza 2: I = 2,5 W / 24 V = 0,104 A. Staza 3: I = 0,5 W / 24 V = 0,021 A. Ukupno ≈ 0,175 A. Izvor od 1 A je dovoljan s velikom pričuvom; pri uključivanju svitka struja kratkotrajno raste, ali kod istosmjernih svitaka to nije presudno za odabir izvora.</p></div></details></div>
+<div class="pitanje"><p><b>7.</b> Računski zadatak: izračunajte teorijsku silu izvlačenja i uvlačenja cilindra Ø40/16 mm pri 6 bar, zatim stvarnu silu uz stupanj djelovanja 0,9. Kolika je potrošnja slobodnog zraka po jednom otvaranju i zatvaranju zaklopke (hod 160 mm)?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Površina klipa A = π · 40² / 4 = 1256,6 mm²; prstenasta površina A<sub>r</sub> = π · (40² − 16²) / 4 = 1055,6 mm². Pri 6 bar = 0,6 N/mm²: F<sub>izv</sub> = 0,6 · 1256,6 = 754 N, F<sub>uvl</sub> = 0,6 · 1055,6 = 633 N. Uz η = 0,9: 679 N i 570 N.</p><p>Volumen stlačenog zraka za oba hoda: V = (1256,6 + 1055,6) · 160 = 369 952 mm³ = 0,370 l. Omjer tlakova (6 + 1,013) / 1,013 = 6,923, pa je potrošnja ≈ 0,370 · 6,923 = 2,56 Nl po ciklusu (bez volumena cijevi).</p></div></details></div>
+<div class="pitanje"><p><b>8.</b> Zaklopka je otvorena i nestane napona napajanja. Što se dogodi s cilindrom i što nakon povratka napona? Zašto je to ponašanje poželjno?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Relej i elektromagnet ostanu bez napona, opruga vrati razvodnik u osnovni položaj i cilindar se uvuče &mdash; zaklopka se zatvori. Nakon povratka napona relej ostaje isključen jer je samodržanje prekinuto; za ponovno otvaranje potrebno je pritisnuti S1. Sklop se tako štiti od samopokretanja nakon prekida napajanja, što je temeljni sigurnosni zahtjev za strojeve.</p></div></details></div>
+<div class="pitanje"><p><b>9.</b> Kad bi se monostabilni razvodnik zamijenio bistabilnim (s dva elektromagneta), bi li krug samodržanja bio potreban? Što bi se promijenilo pri nestanku napona?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Bistabilni razvodnik sam pamti posljednji položaj, pa bi S1 mogao izravno uključivati elektromagnet za izvlačenje, a S2 elektromagnet za uvlačenje. Pri nestanku napona zaklopka bi, međutim, ostala otvorena, a istodobni pritisak obaju tipkala dao bi neodređen rezultat. Za sklop koji pri nestanku energije mora prijeći u sigurno stanje bolje je rješenje monostabilni razvodnik s relejnim samodržanjem.</p></div></details></div>
+</div></section>
+<section><h2>Za nastavnika</h2><div class="crta"></div>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4>
+<p>Prije sata provjerite relejne module: kontakti moraju biti označeni (radni i mirni), a svjetleći utikač svitka razvodnika ispravan. Na svaku radnu ploču postavite cilindar i razvodnik unaprijed kako bi se vrijeme potrošilo na električni dio. Regulator tlaka namjestite na 6 bar; za manje cilindre dovoljno je i 4 bar. Pripremite ispis prazne tablice stanja s pet redaka i stupcima za obje inačice. Prethodno znanje: rad releja, radni i mirni kontakti, spajanje monostabilnog razvodnika (jedinice 4.3 i 4.6).</p>
+<h4>Tijek sata</h4>
+<ol>
+<li>Uvod (10 min): problem kratkog signala tipkala i monostabilnog razvodnika; pitanje „kako zapamtiti pritisak na tipkalo“.</li>
+<li>Pneumatski dio i staza 1 s dominantnim isključivanjem (20 min).</li>
+<li>Ispitivanje i tablica stanja, nestanak napona (15 min).</li>
+<li>Preuređenje u dominantno uključivanje i ponovno ispitivanje (20 min).</li>
+<li>Računski zadaci 6 i 7, rasprava o izboru inačice (15 min).</li>
+<li>Pregled zapisnika, rastavljanje i pospremanje (10 min).</li>
+</ol>
+<h4>Očekivani rezultati</h4>
+<p>Studenti samostalno spajaju obje inačice, tablica stanja razlikuje se samo u retku s istodobnim pritiskom obaju tipkala. Izmjereni napon na svicima je 23&ndash;24 V. Računski rezultati: ukupna struja ≈ 0,175 A, sile 754 N i 633 N (679 N i 570 N uz η = 0,9), potrošnja ≈ 2,56 Nl po ciklusu. Student zna obrazložiti izbor dominantnog isključivanja za zaklopku i ponašanje pri nestanku napona.</p>
+<h4>Česte pogreške</h4>
+<ul>
+<li>Za S2 se uzme radni umjesto mirnog kontakta pa sklop „ne reagira“ ili se isključuje samo dok se S2 drži.</li>
+<li>Kontakt samodržanja spoji se paralelno svitku umjesto tipkalu S1 &mdash; nastaje kratki spoj izvora.</li>
+<li>Kod dominantnog uključivanja S1 se spoji samo paralelno kontaktu K1, a ne cijeloj seriji S2–K1, pa inačica ostaje dominantno isključivanje.</li>
+<li>Zamijenjeni priključci 2 i 4: cilindar je izvučen u mirovanju i uvlači se na START.</li>
+<li>Vodiči 0 V ne spoje se na zajedničku sabirnicu pa svitak ne dobije napon.</li>
+</ul>
+<h4>Vrednovanje</h4>
+<div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravno spojen pneumatski dio, cijevi pregledne i sigurne</td><td>2</td></tr>
+<tr><td>Ispravno spojena staza 1 s dominantnim isključivanjem, rad provjeren</td><td>4</td></tr>
+<tr><td>Ispravno preuređena staza za dominantno uključivanje</td><td>3</td></tr>
+<tr><td>Potpuna i točna tablica stanja, uključivo nestanak napona</td><td>3</td></tr>
+<tr><td>Točni računski zadaci (struja, sila, potrošnja)</td><td>4</td></tr>
+<tr><td>Obrazloženje izbora inačice i uloge mirnog kontakta STOP</td><td>2</td></tr>
+<tr><td>Rad u skladu s pravilima sigurnosti, pospremljeno radno mjesto</td><td>2</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="v20-ep-logicka-i.html">&#8592; V20 Logička funkcija I u elektropneumatici</a><a class="gumb" href="v22-relej-kasnjenje-ukapcanja.html">V22 Vremenski relej s kašnjenjem ukapčanja <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-pneumatika-i-hidraulika-v21-krug-samodrzanja-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>

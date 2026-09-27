@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V20 Logička funkcija I u elektropneumatici — Pneumatika i hidraulika | FORTRONIQ</title>
+<meta name="description" content="Pneumatska preša za utiskivanje oznaka radi samo dok su pritisnuta oba tipkala S1 i S2 i dok senzor B1 javlja da je obradak u prihvatu. Logičku funkciju I ostvarujete…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v20-ep-logicka-i.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v20-ep-logicka-i.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/pneumatika-i-hidraulika/v20-ep-logicka-i.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v20-ep-logicka-i.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Vježba V20: Logička funkcija I u elektropneumatici">
+<meta property="og:description" content="Pneumatska preša za utiskivanje oznaka radi samo dok su pritisnuta oba tipkala S1 i S2 i dok senzor B1 javlja da je obradak u prihvatu. Logičku funkciju I ostvarujete…">
+<meta property="og:url" content="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v20-ep-logicka-i.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- pneumatika i hidraulika */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Pneumatika i hidraulika</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">V20 Logička funkcija I u elektropneumatici</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VJEŽBA V20 &middot; MODUL 4 &middot; ELEKTROPNEUMATIKA</p><p class="nadnaslov">Vježba V20 &middot; 2 sata</p><h1>Logička funkcija I u elektropneumatici</h1><p>Pneumatska preša za utiskivanje oznaka radi samo dok su pritisnuta oba tipkala S1 i S2 i dok senzor B1 javlja da je obradak u prihvatu. Logičku funkciju I ostvarujete serijskim spojem kontakata, učite sustavno tražiti prekid mjerenjem napona i razlikujete jednostavan serijski spoj od propisanog dvoručnog uključivanja.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ostvariti logičku funkciju I serijskim spojem kontakata i napisati tablicu istinitosti za tri ulaza</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>spojiti elektropneumatski sklop s dva tipkala, senzorom prisutnosti obratka i relejem K1</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pronaći prekinuti kontakt u serijskom spoju mjerenjem napona po točkama</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati silu utiskivanja, sigurnosni razmak dvoručnog upravljanja i napon na svitku releja</span></li></ul></div></div></header><div class="omot"><section id="o-vjezbi"><h2>O vježbi</h2><div class="crta"></div><div class="oznake-vj"><span>Vježba V20</span><span>Trajanje: 2 sata</span><span>Modul 4</span></div><p>Prije vježbe proći gradivo: <a href="4-7-logicke-funkcije-ep.html">4.7 Logičke i vremenske funkcije u elektropneumatici</a>.</p><p>Pitanja i zadaci na ovoj stranici su bez odgovora. Rješenje s postupkom otvara se gumbom <em>Prikaži rješenje</em> ispod svakog pitanja, a upute za nastavnika nalaze se na dnu stranice.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div></section><section><h2>Zadatak</h2><div class="crta"></div>
+<p>Na maloj pneumatskoj preši u aluminijske pločice utiskuje se serijski broj. Žig nosi dvoradni cilindar <b>1A1</b> (Ø63/20 mm, hod 50 mm). Za čisto utisnutu oznaku potrebna je sila od 1500 N. Preša mora raditi samo kad su ispunjena <b>sva tri</b> uvjeta:</p>
+<ul>
+<li>rukovatelj drži lijevom rukom tipkalo <b>S1</b>,</li>
+<li>desnom rukom drži tipkalo <b>S2</b>,</li>
+<li>kapacitivni senzor <b>B1</b> javlja da je pločica u prihvatu (trožilni, izlaz PNP).</li>
+</ul>
+<p>Kontakti S1, S2 i B1 spojeni su u niz u stazi releja <b>K1</b>, a radni kontakt K1 uključuje svitak <b>Y1</b> monostabilnog razvodnika 5/2. Kad se otpusti bilo koje tipkalo ili se pločica izvadi, žig se odmah vraća. Logička jednadžba je K1 = S1 · S2 · B1.</p>
+<p>Ovakav serijski spoj pokazuje funkciju I, ali <b>nije</b> propisano dvoručno uključivanje u smislu norme za dvoručne upravljačke naprave (EN ISO 13851). Takva naprava mora, među ostalim, zahtijevati da se oba tipkala pritisnu gotovo istodobno (za najčešću izvedbu unutar 0,5 s) i da se za novi ciklus oba prije otpuste. To se ostvaruje ispitanim sigurnosnim modulom, a ne s dva obična kontakta. U vježbi zato učite logiku i ograničenja, a ne gradite zaštitnu napravu za stvarni stroj.</p>
+<p>Podaci: mreža 6 bar; relej K1 privlači pri najmanje 80 % nazivnog napona; pad napona na izlazu senzora B1 najviše 2,5 V; ukupno vrijeme od otpuštanja tipkala do zaustavljanja žiga, prema mjerenju, 0,12 s.</p>
+</section>
+<section><h2>Oprema i pribor</h2><div class="crta"></div>
+<ul>
+<li>ploča za spajanje s pripremnom grupom i razdjelnikom;</li>
+<li>dvoradni cilindar (za vježbu dopušten manji promjer), elektromagnetski razvodnik 5/2 monostabilni, 24 V DC;</li>
+<li>električna jedinica: napajanje 24 V DC, dva tipkala (NO), dva dodatna relejna modula za dopunski zadatak, relej K1;</li>
+<li>kapacitivni ili induktivni senzor, trožilni PNP, s nosačem i pločicom za pokazivanje obratka;</li>
+<li>multimetar s mjernim vrhovima, laboratorijski vodiči, cijevi Ø6 mm, radni list.</li>
+</ul>
+</section>
+<section><h2>Sigurnost pri radu</h2><div class="crta"></div>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Žig pri 6 bar pritišće silom od oko 1700 N — dovoljno za tešku ozljedu prsta. Ne pokušavajte „olakšati“ rad tako da jedno tipkalo zaglavite ili kratko spojite: to je upravo zloupotreba koju propisano dvoručno uključivanje mora spriječiti. Za mjerenje napona u stazi 1 sklop je pod naponom; mjernim vrhovima dodirujte samo stezaljke, a zrak prije mjerenja zatvorite, da se žig ne može spustiti. Vodiče spajajte bez napona.</p></div>
+</section>
+<section><h2>Shema</h2><div class="crta"></div>
+<figure class="crtez"><svg viewBox="0 0 640 400" role="img" aria-label="Slika V20.1: logička funkcija I s tipkalima S1, S2 i senzorom B1 u serijskom spoju, relej K1 i ventil Y1">
+<rect class="pf" x="60" y="60" width="120" height="30"/>
+<line class="l" x1="74" y1="62" x2="74" y2="88" fill="none"/>
+<rect class="pf" x="76" y="72" width="120" height="6"/>
+<text x="52" y="81" text-anchor="end">1A1</text>
+<line class="l" x1="70" y1="90" x2="70" y2="96" fill="none"/>
+<line class="l" x1="170" y1="90" x2="170" y2="96" fill="none"/>
+<rect class="pf" x="90" y="190" width="36" height="36"/>
+<rect class="pf" x="126" y="190" width="36" height="36"/>
+<line class="l2" x1="108" y1="224" x2="101.5" y2="201.6" fill="none"/>
+<polygon class="if" points="99,193 105,200.6 98.1,202.6"/>
+<line class="l2" x1="117" y1="192" x2="117" y2="214" fill="none"/>
+<polygon class="if" points="117,223 113.4,214 120.6,214"/>
+<line class="l2" x1="99" y1="226" x2="99" y2="218" fill="none"/>
+<line class="l2" x1="94" y1="218" x2="104" y2="218" fill="none"/>
+<line class="l2" x1="144" y1="224" x2="150.5" y2="201.6" fill="none"/>
+<polygon class="if" points="153,193 153.9,202.6 147,200.6"/>
+<line class="l2" x1="135" y1="192" x2="135" y2="214" fill="none"/>
+<polygon class="if" points="135,223 131.4,214 138.6,214"/>
+<line class="l2" x1="153" y1="226" x2="153" y2="218" fill="none"/>
+<line class="l2" x1="148" y1="218" x2="158" y2="218" fill="none"/>
+<line class="l" x1="135" y1="190" x2="135" y2="180" fill="none"/>
+<line class="l" x1="153" y1="190" x2="153" y2="180" fill="none"/>
+<line class="l" x1="135" y1="226" x2="135" y2="236" fill="none"/>
+<line class="l" x1="144" y1="226" x2="144" y2="248" fill="none"/>
+<line class="l" x1="153" y1="226" x2="153" y2="236" fill="none"/>
+<polygon class="pf" points="130,236 140,236 135,243"/>
+<polygon class="pf" points="148,236 158,236 153,243"/>
+<rect class="pf" x="76" y="199" width="14" height="18"/>
+<line class="l2" x1="76" y1="217" x2="90" y2="199" fill="none"/>
+<text x="72" y="213" text-anchor="end">Y1</text>
+<polyline class="l2" points="162,208 165.2,202 168.4,214 171.6,202 174.8,214 178,202 181,208" fill="none"/>
+<text x="90" y="184" class="mali">1V1</text>
+<polyline class="l" points="135,180 135,130 70,130 70,96" fill="none"/>
+<polyline class="l" points="153,180 153,140 170,140 170,96" fill="none"/>
+<circle class="pf" cx="144" cy="256" r="8"/>
+<polygon class="pf" points="144,251 139.5,259 148.5,259"/>
+<line class="l" x1="300" y1="50" x2="620" y2="50" fill="none"/>
+<line class="l" x1="300" y1="350" x2="620" y2="350" fill="none"/>
+<text x="300" y="42">+24 V</text>
+<text x="300" y="370">0 V</text>
+<text x="400" y="42" text-anchor="middle" class="mali">1</text>
+<line class="l" x1="400" y1="50" x2="400" y2="88" fill="none"/>
+<circle class="if" cx="400" cy="88" r="2.2"/>
+<circle class="if" cx="400" cy="112" r="2.2"/>
+<line class="l" x1="400" y1="112" x2="390" y2="91" fill="none"/>
+<line class="l2 dash" x1="395" y1="101" x2="376" y2="101" fill="none"/>
+<polyline class="l" points="380,96 376,96 376,106 380,106" fill="none"/>
+<text x="414" y="105">S1</text>
+<line class="l" x1="400" y1="112" x2="400" y2="153" fill="none"/>
+<circle class="if" cx="400" cy="153" r="2.2"/>
+<circle class="if" cx="400" cy="177" r="2.2"/>
+<line class="l" x1="400" y1="177" x2="390" y2="156" fill="none"/>
+<line class="l2 dash" x1="395" y1="166" x2="376" y2="166" fill="none"/>
+<polyline class="l" points="380,161 376,161 376,171 380,171" fill="none"/>
+<text x="414" y="170">S2</text>
+<line class="l" x1="400" y1="177" x2="400" y2="218" fill="none"/>
+<circle class="if" cx="400" cy="218" r="2.2"/>
+<circle class="if" cx="400" cy="242" r="2.2"/>
+<line class="l" x1="400" y1="242" x2="390" y2="221" fill="none"/>
+<line class="l2 dash" x1="395" y1="231" x2="382" y2="231" fill="none"/>
+<polygon class="pf" points="376,225 382,231 376,237 370,231"/>
+<text x="414" y="235">B1</text>
+<line class="l" x1="400" y1="242" x2="400" y2="291" fill="none"/>
+<rect class="pf" x="388" y="291" width="24" height="18"/>
+<text x="418" y="305">K1</text>
+<line class="l" x1="400" y1="309" x2="400" y2="350" fill="none"/>
+<circle class="if" cx="400" cy="50" r="2.6"/>
+<circle class="if" cx="400" cy="350" r="2.6"/>
+<text x="530" y="42" text-anchor="middle" class="mali">2</text>
+<line class="l" x1="530" y1="50" x2="530" y2="128" fill="none"/>
+<circle class="if" cx="530" cy="128" r="2.2"/>
+<circle class="if" cx="530" cy="152" r="2.2"/>
+<line class="l" x1="530" y1="152" x2="520" y2="131" fill="none"/>
+<text x="544" y="145">K1</text>
+<line class="l" x1="530" y1="152" x2="530" y2="271" fill="none"/>
+<rect class="pf" x="518" y="271" width="24" height="18"/>
+<line class="l2" x1="518" y1="289" x2="542" y2="271" fill="none"/>
+<text x="548" y="285">Y1</text>
+<line class="l" x1="530" y1="289" x2="530" y2="350" fill="none"/>
+<circle class="if" cx="530" cy="50" r="2.6"/>
+<circle class="if" cx="530" cy="350" r="2.6"/>
+<text x="400" y="372" text-anchor="middle" class="mali">2</text>
+</svg><figcaption><b>Slika V20.1</b> &mdash; Funkcija I: u stazi 1 tipkala S1 i S2 i senzor B1 spojeni su u niz prema svitku releja K1. Radni kontakt K1 u stazi 2 uključuje svitak Y1 monostabilnog razvodnika 1V1.</figcaption></figure>
+<p>U serijskom spoju struja prolazi kroz sve kontakte redom, pa svitak dobiva napon samo ako su svi kontakti zatvoreni. Senzor B1 nacrtan je kao kontakt sa simbolom senzora; u stvarnosti je to elektronički sklop s vlastitim napajanjem (smeđi vodič +24 V, plavi 0 V), a u niz se spaja njegov izlaz (crni vodič).</p>
+</section>
+<section><h2>Postupak</h2><div class="crta"></div>
+<ol class="koraci">
+<li>Spojite pneumatski dio: 1 na razdjelnik, 4 na stranu klipa, 2 na stranu klipnjače.</li>
+<li>Bez napona spojite stazu 1: +24 V → S1 → S2 → smeđi vodič (napajanje) senzora B1; plavi vodič senzora na 0 V; crni vodič (izlaz) na stezaljku A1 svitka K1, a A2 na 0 V. Senzor tako dobiva napon tek kad su oba tipkala pritisnuta.</li>
+<li>Alternativa koju također isprobajte: senzor stalno napajajte s +24 V i 0 V, a njegov izlaz upotrijebite za relej K2 čiji radni kontakt stoji u nizu sa S1 i S2. Zapišite razliku u odzivu (senzoru nakon uključenja napajanja treba kratko vrijeme spremnosti, reda veličine desetaka milisekundi).</li>
+<li>Spojite stazu 2: +24 V → radni kontakt K1 → Y1 → 0 V.</li>
+<li>Otvorite zrak na 3 bar, uključite napajanje i ispitajte svih osam kombinacija S1, S2, B1. Rezultate upišite u tablicu istinitosti.</li>
+<li>Pokus s neistodobnim pritiskom: pritisnite S1, pričekajte 2 s, zatim S2. Zapišite što se dogodilo.</li>
+<li>Zatvorite zrak. Nastavnik skriveno prekine jedan spoj u stazi 1. Mjerenjem napona prema 0 V po točkama pronađite prekid (pitanje 6).</li>
+<li>Isključite napon i zrak, rastavite sklop.</li>
+</ol>
+</section>
+<section><h2>Pitanja i zadaci</h2><div class="crta"></div>
+<div class="pitanja">
+<div class="pitanje"><p><b>1.</b> Napišite tablicu istinitosti za S1, S2, B1 i K1. U koliko redaka je K1 = 1?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<div class="tablica-omot"><table><thead><tr><th>S1</th><th>S2</th><th>B1</th><th>K1</th></tr></thead><tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+</tbody></table></div>
+<p>Tablica ima 2³ = 8 redaka, a K1 = 1 samo u jednome — kad su svi ulazi 1. To je obilježje funkcije I; funkcija ILI iz V19 ima izlaz 0 samo u jednom retku.</p></div></details></div>
+
+<div class="pitanje"><p><b>2.</b> Izračunajte stvarnu silu žiga Ø63 mm pri 6 bar (η = 0,9) i najmanji tlak pri kojem se oznaka još čisto utiskuje. Zašto se na preši preporučuje regulator tlaka uz manometar?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">A = π · 63² / 4 = 3117,2 mm² → F = 0,9 · 0,6 · 3117,2 ≈ 1683 N</p>
+<p>Najmanji tlak: p = 1500 / (0,9 · 3117,2) ≈ 0,535 N/mm² ≈ 5,3 bar. Rezerva je mala (oko 12 %), pa pad tlaka u mreži ispod oko 5,3 bar daje nečitke oznake. Regulator namješten npr. na 5,8 bar daje stalnu silu neovisnu o kolebanju mreže, a manometar omogućuje provjeru. Ako se želi i dojava, dodaje se tlačna sklopka.</p>
+</div></details></div>
+
+<div class="pitanje"><p><b>3.</b> Norma za postavljanje zaštitnih naprava daje za dvoručne upravljačke naprave najmanji razmak tipkala od opasnog mjesta S = K · T + C, gdje je K = 1600 mm/s brzina ruke, T ukupno vrijeme zaustavljanja, a C = 250 mm dodatak (smije biti 0 ako je dosezanje opasnog mjesta rukom spriječeno pokrovom tipkala). Izračunajte S za T = 0,12 s u oba slučaja.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">S = 1600 · 0,12 + 250 = 192 + 250 = 442 mm</p>
+<p>S pokrovima koji sprječavaju dosezanje: S = 192 mm. Tipkala moraju biti najmanje toliko daleko od žiga da ruka, kad se odmakne s tipkala, ne stigne do opasnog mjesta prije nego što se žig zaustavi. Račun pokazuje zašto je važno skratiti vrijeme zaustavljanja: brži ventil i kraći vodovi smanjuju potreban razmak. Prije primjene na stvarnom stroju treba provjeriti važeće izdanje norme.</p>
+</div></details></div>
+
+<div class="pitanje"><p><b>4.</b> Opišite rezultat pokusa s neistodobnim pritiskom (korak 6) i navedite dva zahtjeva koje propisana dvoručna naprava ispunjava, a ovaj sklop ne.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Žig se spustio čim je pritisnut S2, iako je S1 bio pritisnut 2 s ranije. Serijski spoj ne mjeri vrijeme — važno mu je samo da su oba kontakta zatvorena. Propisana naprava zahtijeva: (1) istodobnost — oba tipkala unutar zadanog vremena, tipično 0,5 s, inače nema gibanja; (2) ponovno uključivanje tek nakon otpuštanja obaju tipkala, pa zaglavljeno tipkalo onemogućuje rad. Uz to mora otkriti vlastiti kvar (npr. zalijepljeni kontakt) i spriječiti novi ciklus.</p></div></details></div>
+
+<div class="pitanje"><p><b>5.</b> Relej K1 pouzdano privlači pri najmanje 80 % nazivnog napona. Izračunajte napon na svitku K1 kad je u nizu jedan senzor s padom napona 2,5 V, a zatim kad bi u nizu bila dva takva senzora. Je li drugi slučaj prihvatljiv?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Najmanji napon privlačenja: 0,8 · 24 = 19,2 V.</p>
+<p>Jedan senzor: 24 − 2,5 = 21,5 V > 19,2 V — relej pouzdano privlači.</p>
+<p>Dva senzora: 24 − 2 · 2,5 = 19,0 V < 19,2 V — relej možda neće privući, osobito ako je i napajanje na donjoj granici tolerancije. Zato se senzori ne spajaju u dugačke nizove; svaki senzor uključuje svoj relej (ili ulaz PLC-a), a funkcija I izvodi se kontaktima releja.</p>
+</div></details></div>
+
+<div class="pitanje"><p><b>6.</b> U koraku 7 jedan je spoj u stazi 1 prekinut. Opišite postupak traženja prekida mjerenjem napona prema 0 V i objasnite kako iz rezultata zaključujete gdje je prekid.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Oba tipkala drže se pritisnuta, pločica je u prihvatu. Crni mjerni vrh stalno je na 0 V, a crvenim se redom mjeri: +24 V sabirnica, ulaz S1, izlaz S1, ulaz S2, izlaz S2, izlaz B1, stezaljka A1 svitka K1. Dok je pokazivanje oko 24 V, put do te točke je ispravan. <b>Prva točka na kojoj napon nestane</b> nalazi se iza prekida: prekid je između nje i prethodne točke (kontakt, vodič ili stezaljka). Ako napon postoji na A1, a relej ne privlači, prekinut je svitak ili spoj A2 prema 0 V. Postupak je sustavan i ne zahtijeva odspajanje vodiča.</p></div></details></div>
+
+<div class="pitanje"><p><b>7.</b> Dopuna sheme: nacrtajte izvedbu u kojoj S1 uključuje relej K2, S2 relej K3, B1 relej K4, a funkcija I ostvaruje se radnim kontaktima K2, K3 i K4 u nizu prema K1. Numerirajte staze i napišite kontaktne tablice.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Staza 1: +24 V → S1 → K2 → 0 V. Staza 2: +24 V → S2 → K3 → 0 V. Staza 3: +24 V → izlaz senzora B1 → K4 → 0 V. Staza 4: +24 V → radni K2 → radni K3 → radni K4 → K1 → 0 V. Staza 5: +24 V → radni K1 → Y1 → 0 V. Kontaktne tablice: K2, K3 i K4 — radni u stazi 4; K1 — radni u stazi 5. Prednosti: senzor i tipkala nose samo struju vlastitog releja, pad napona senzora ne zbraja se s ostalim elementima, a slobodni kontakti K2–K4 mogu služiti za signalizaciju ili za provjeru istodobnosti. Nedostatak: više elemenata i vrijeme privlačenja dvaju releja u nizu (oko 20 ms).</p></div></details></div>
+
+<div class="pitanje"><p><b>8.</b> Što se dogodi ako rukovatelj za vrijeme spuštanja žiga izvadi pločicu iz prihvata? Je li to ponašanje poželjno?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Senzor B1 prestane davati signal, staza 1 se prekine, K1 otpusti, Y1 ostaje bez napona i opruga vraća razvodnik — žig se odmah diže. Za kvalitetu je to poželjno (nema udarca žiga u prazan prihvat i oštećenja žiga), a za sigurnost je dodatna zaštita, ali ne i zamjena za propisanu zaštitnu napravu: senzor prisutnosti obratka nije sigurnosni element i ne otkriva ruku u zoni žiga.</p></div></details></div>
+</div></section>
+<section><h2>Za nastavnika</h2><div class="crta"></div>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Provjerite vrstu senzora (trožilni PNP) i njegov raspored vodiča. Za korak 7 pripremite način skrivenog prekida (npr. odspojen vodič ispod kućišta stezaljke ili neispravan laboratorijski vodič). Razgovor o dvoručnom uključivanju vodite kao razgovor o granicama: polaznici moraju izaći s jasnom porukom da serijski spoj dvaju tipkala nije zaštitna naprava.</p>
+<h4>Tijek sata</h4><ol>
+<li>0–10 min: funkcija I, serijski spoj, razlika prema V19.</li>
+<li>10–35 min: spajanje staza 1 i 2 (obje varijante senzora), ispitivanje osam kombinacija.</li>
+<li>35–45 min: pokus s neistodobnim pritiskom, rasprava o dvoručnom uključivanju (pitanja 3 i 4).</li>
+<li>45–60 min: traženje prekida mjerenjem napona (pitanje 6).</li>
+<li>60–80 min: računski zadaci 2, 3 i 5, dopuna s relejima K2–K4 (pitanje 7).</li>
+<li>80–90 min: rastavljanje, osvrt.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>Tablica istinitosti ispravna u svih osam redaka; polaznik samostalno pronalazi prekid u najviše pet mjerenja. Računski: 1683 N i najmanji tlak oko 5,3 bar, sigurnosni razmak 442 mm (192 mm s pokrovom), napon na svitku 21,5 V odnosno 19,0 V.</p>
+<h4>Česte pogreške</h4><ul>
+<li>izlaz senzora spojen na +24 V, a napajanje senzora na svitak — senzor ne radi;</li>
+<li>pri mjerenju napona crni vrh premješta se s točke na točku, pa se mjeri napon na kontaktu, a ne prema 0 V, i rezultati se krivo tumače;</li>
+<li>tablica istinitosti ispisana s nepotpunim kombinacijama;</li>
+<li>zaključak da je serijski spoj S1 · S2 „dvoručna zaštita“.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravno spojen sklop I sa senzorom, tablica istinitosti</td><td>5</td></tr>
+<tr><td>Traženje prekida mjerenjem napona</td><td>4</td></tr>
+<tr><td>Računski zadaci 2, 3 i 5</td><td>5</td></tr>
+<tr><td>Obrazloženje ograničenja serijskog spoja u odnosu na dvoručnu napravu</td><td>3</td></tr>
+<tr><td>Dopuna s relejima K2–K4</td><td>2</td></tr>
+<tr><td>Sigurnost i urednost</td><td>1</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="v19-ep-logicka-ili.html">&#8592; V19 Logička funkcija ILI u elektropneumatici</a><a class="gumb" href="v21-krug-samodrzanja.html">V21 Krug samodržanja <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-pneumatika-i-hidraulika-v20-ep-logicka-i-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>

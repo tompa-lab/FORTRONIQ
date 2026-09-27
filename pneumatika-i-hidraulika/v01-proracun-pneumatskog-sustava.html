@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V1 Proračun pneumatskog sustava — Pneumatika i hidraulika | FORTRONIQ</title>
+<meta name="description" content="Računska vježba u kojoj se za zadanu silu odabire promjer cilindra iz niza standardnih promjera, provjerava rezerva sile i najmanji dopušteni tlak te procjenjuje potrošnja…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v01-proracun-pneumatskog-sustava.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v01-proracun-pneumatskog-sustava.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/pneumatika-i-hidraulika/v01-proracun-pneumatskog-sustava.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v01-proracun-pneumatskog-sustava.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Vježba V1: Proračun pneumatskog sustava">
+<meta property="og:description" content="Računska vježba u kojoj se za zadanu silu odabire promjer cilindra iz niza standardnih promjera, provjerava rezerva sile i najmanji dopušteni tlak te procjenjuje potrošnja…">
+<meta property="og:url" content="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v01-proracun-pneumatskog-sustava.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- pneumatika i hidraulika */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Pneumatika i hidraulika</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">V1 Proračun pneumatskog sustava</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VJEŽBA V1 &middot; MODUL 2 &middot; PNEUMATSKE KOMPONENTE</p><p class="nadnaslov">Vježba V1 &middot; 1 sat</p><h1>Proračun pneumatskog sustava</h1><p>Računska vježba u kojoj se za zadanu silu odabire promjer cilindra iz niza standardnih promjera, provjerava rezerva sile i najmanji dopušteni tlak te procjenjuje potrošnja zraka. Na kraju se prema potrebnom protoku odabire veličina razvodnika.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati potrebnu površinu klipa i odabrati promjer cilindra iz niza standardnih promjera</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>provjeriti silu izvlačenja i uvlačenja odabranog cilindra uz stupanj djelovanja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odrediti najmanji radni tlak pri kojem cilindar još daje zadanu silu</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati potrošnju stlačenog zraka po ciklusu i u minuti</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odabrati veličinu razvodnika prema potrebnom protoku pri zadanoj brzini klipa</span></li></ul></div></div></header><div class="omot"><section id="o-vjezbi"><h2>O vježbi</h2><div class="crta"></div><div class="oznake-vj"><span>Vježba V1</span><span>Trajanje: 1 sat</span><span>Modul 2</span></div><p>Prije vježbe proći gradivo: <a href="2-2-dvoradni-cilindri.html">2.2 Dvoradni i specijalni cilindri</a>, <a href="1-8-razvodna-mreza.html">1.8 Razvodna mreža i strujanje zraka</a>.</p><p>Pitanja i zadaci na ovoj stranici su bez odgovora. Rješenje s postupkom otvara se gumbom <em>Prikaži rješenje</em> ispod svakog pitanja, a upute za nastavnika nalaze se na dnu stranice.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div></section><section><h2>Zadatak</h2><div class="crta"></div>
+<p>Na montažnoj liniji malih elektromotora gradi se <b>stanica za utiskivanje čahura</b>. Kućište motora ulaže se ručno u napravu, a cilindar <b>1A1</b> utiskuje brončanu kliznu čahuru u provrt kućišta. Nakon povrata klipnjače cilindar <b>2A1</b> izbacuje gotov sklop na odlagalište. Prema probnom utiskivanju na hidrauličkoj preši, za utiskivanje čahure s propisanim preklopom treba <b>1500 N</b>, a za izbacivanje sklopa <b>120 N</b>.</p>
+<p>Stanica se priključuje na pogonsku mrežu u kojoj pripremna grupa drži <b>6 bar</b> pretlaka. Za cilindar 1A1 uzmite stupanj djelovanja <b>η = 0,88</b>, a za manji cilindar 2A1 <b>η = 0,85</b> (kod malih promjera trenje brtvi ima relativno veći udio). Hod cilindra 1A1 je <b>60 mm</b>, hod cilindra 2A1 <b>40 mm</b>. Stanica radi <b>10 ciklusa u minuti</b>, a u svakom ciklusu svaki cilindar jednom izvlači i uvlači. Klipnjača 1A1 treba se izvlačiti brzinom oko <b>0,2 m/s</b>.</p>
+<p>Na raspolaganju su cilindri iz niza standardnih promjera <b>12, 16, 20, 25, 32, 40, 50, 63, 80 i 100 mm</b>. Uz promjer klipa 20 mm ide klipnjača 8 mm, uz 63 mm klipnjača 20 mm, a uz 80 mm klipnjača 25 mm. Za razvodnike 5/2 uzmimo da su u ponudi tri veličine s nazivnim protokom (pri 6 bar i padu tlaka 1 bar) od <b>180, 400 i 800 Nl/min</b>. Vaš je zadatak izračunati i obrazložiti izbor obaju cilindara i razvodnika za 1A1, te procijeniti potrošnju zraka cijele stanice.</p>
+<p>Za preračun potrošnje zraka na normalno stanje koristite omjer apsolutnih tlakova (6 + 1,013) / 1,013 = <b>6,923</b>. Tlak u svim zadacima je pretlak ako nije drugačije rečeno.</p>
+</section>
+<section><h2>Oprema i pribor</h2><div class="crta"></div>
+<ul>
+<li>džepno računalo ili proračunska tablica na računalu;</li>
+<li>tablica niza standardnih promjera cilindara i pripadnih promjera klipnjača (iz kataloga proizvođača po izboru);</li>
+<li>list s podacima o razvodnicima: nazivni protok, veličina priključka, najmanji upravljački tlak;</li>
+<li>simulacijski program za pneumatiku po izboru — za provjeru sheme i sile na kraju vježbe (nije obavezan);</li>
+<li>radni list za upis rezultata i skica sheme sa slike V1.1.</li>
+</ul>
+</section>
+<section><h2>Sigurnost pri radu</h2><div class="crta"></div>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Ovo je računska vježba, ali njezini rezultati kasnije određuju stvarnu napravu. Cilindar koji daje 1,6 kN može zgnječiti prst. Uz izbor promjera zato uvijek razmislite i o zaštiti: dvoručno uključivanje ili zaštitni poklopac, ograničenje brzine i mogućnost ispuštanja tlaka iz sustava. Sila se računa s najnižim tlakom koji se u mreži stvarno može pojaviti, a ne s tlakom kompresora pri isklopu.</p></div>
+</section>
+<section><h2>Shema</h2><div class="crta"></div>
+<p>Slika V1.1 prikazuje načelnu shemu stanice. Izvor stlačenog zraka 0Z napaja pripremnu grupu 0Z1, a iz nje se napajaju ručni razvodnici 5/2 s oprugom 1V1 i 2V1. U mirovanju je priključak 1 spojen s priključkom 2, pa su obje klipnjače uvučene; pritiskom na tipkalo razvodnik spaja 1 s 4 i klipnjača izlazi.</p>
+<figure class="crtez"><svg viewBox="0 0 640 370" role="img" aria-label="Slika V1.1: shema stanice za utiskivanje s cilindrima 1A1 i 2A1, razvodnicima 5/2 i pripremnom grupom"><rect x="90" y="40" width="170" height="34" class="pf"/><rect x="106" y="53" width="172" height="8" class="pf"/><rect x="100" y="41.2" width="6" height="31.6" class="rf"/><line x1="104" y1="74" x2="104" y2="82" class="l" fill="none"/><line x1="246" y1="74" x2="246" y2="82" class="l" fill="none"/><text x="80" y="63" text-anchor="end">1A1</text><rect x="400" y="44" width="110" height="28" class="pf"/><rect x="416" y="54" width="112" height="8" class="pf"/><rect x="410" y="45.2" width="6" height="25.6" class="rf"/><line x1="414" y1="72" x2="414" y2="80" class="l" fill="none"/><line x1="496" y1="72" x2="496" y2="80" class="l" fill="none"/><text x="390" y="64" text-anchor="end">2A1</text><text x="90" y="26" class="mali">Ø63/20, s = 60 mm, F = 1500 N</text><text x="400" y="30" class="mali">Ø20/8, s = 40 mm, F = 120 N</text><rect x="112" y="180" width="52" height="52" class="pf"/><line x1="138" y1="229" x2="128.7" y2="188.9" class="l" fill="none"/><polygon points="127.6,184 132.6,190 125.8,191.6" class="if"/><line x1="148.4" y1="183" x2="155.3" y2="223.1" class="l" fill="none"/><polygon points="156.2,228 151.6,221.7 158.5,220.5" class="if"/><line x1="119.8" y1="232" x2="119.8" y2="223" class="l" fill="none"/><line x1="114.8" y1="223" x2="124.8" y2="223" class="l" fill="none"/><rect x="164" y="180" width="52" height="52" class="pf"/><line x1="190" y1="229" x2="199.3" y2="188.9" class="l" fill="none"/><polygon points="200.4,184 202.2,191.6 195.4,190" class="if"/><line x1="179.6" y1="183" x2="172.7" y2="223.1" class="l" fill="none"/><polygon points="171.8,228 169.5,220.5 176.4,221.7" class="if"/><line x1="208.2" y1="232" x2="208.2" y2="223" class="l" fill="none"/><line x1="203.2" y1="223" x2="213.2" y2="223" class="l" fill="none"/><line x1="179.6" y1="180" x2="179.6" y2="172" class="l" fill="none"/><text x="183.6" y="177" class="mali">4</text><line x1="200.4" y1="180" x2="200.4" y2="172" class="l" fill="none"/><text x="204.4" y="177" class="mali">2</text><line x1="171.8" y1="232" x2="171.8" y2="240" class="l" fill="none"/><text x="175.8" y="243" class="mali">5</text><line x1="190" y1="232" x2="190" y2="240" class="l" fill="none"/><text x="194" y="243" class="mali">1</text><line x1="208.2" y1="232" x2="208.2" y2="240" class="l" fill="none"/><text x="212.2" y="243" class="mali">3</text><line x1="112" y1="206" x2="100" y2="206" class="l" fill="none"/><line x1="100" y1="198" x2="100" y2="214" class="l" fill="none"/><path d="M100 198 A8 8 0 0 0 100 214" class="l" fill="none"/><polyline points="216,206 220,199 224,213 228,199 232,213 236,199 242,206" class="l" fill="none"/><text x="82" y="211" text-anchor="end">1V1</text><rect x="407.6" y="180" width="52" height="52" class="pf"/><line x1="433.6" y1="229" x2="424.3" y2="188.9" class="l" fill="none"/><polygon points="423.2,184 428.2,190 421.4,191.6" class="if"/><line x1="444" y1="183" x2="450.9" y2="223.1" class="l" fill="none"/><polygon points="451.8,228 447.2,221.7 454.1,220.5" class="if"/><line x1="415.4" y1="232" x2="415.4" y2="223" class="l" fill="none"/><line x1="410.4" y1="223" x2="420.4" y2="223" class="l" fill="none"/><rect x="459.6" y="180" width="52" height="52" class="pf"/><line x1="485.6" y1="229" x2="494.9" y2="188.9" class="l" fill="none"/><polygon points="496,184 497.8,191.6 491,190" class="if"/><line x1="475.2" y1="183" x2="468.3" y2="223.1" class="l" fill="none"/><polygon points="467.4,228 465.1,220.5 472,221.7" class="if"/><line x1="503.8" y1="232" x2="503.8" y2="223" class="l" fill="none"/><line x1="498.8" y1="223" x2="508.8" y2="223" class="l" fill="none"/><line x1="475.2" y1="180" x2="475.2" y2="172" class="l" fill="none"/><text x="479.2" y="177" class="mali">4</text><line x1="496" y1="180" x2="496" y2="172" class="l" fill="none"/><text x="500" y="177" class="mali">2</text><line x1="467.4" y1="232" x2="467.4" y2="240" class="l" fill="none"/><text x="471.4" y="243" class="mali">5</text><line x1="485.6" y1="232" x2="485.6" y2="240" class="l" fill="none"/><text x="489.6" y="243" class="mali">1</text><line x1="503.8" y1="232" x2="503.8" y2="240" class="l" fill="none"/><text x="507.8" y="243" class="mali">3</text><line x1="407.6" y1="206" x2="395.6" y2="206" class="l" fill="none"/><line x1="395.6" y1="198" x2="395.6" y2="214" class="l" fill="none"/><path d="M395.6 198 A8 8 0 0 0 395.6 214" class="l" fill="none"/><polyline points="511.6,206 515.6,199 519.6,213 523.6,199 527.6,213 531.6,199 537.6,206" class="l" fill="none"/><text x="377.6" y="211" text-anchor="end">2V1</text><polyline points="179.6,172 179.6,136 104,136 104,82" class="l" fill="none"/><polyline points="200.4,172 200.4,118 246,118 246,82" class="l" fill="none"/><polyline points="475.2,172 475.2,136 414,136 414,80" class="l" fill="none"/><polyline points="496,172 496,80" class="l" fill="none"/><line x1="171.8" y1="240" x2="171.8" y2="244" class="l" fill="none"/><polygon points="165.8,244 177.8,244 171.8,253" class="pf"/><line x1="208.2" y1="240" x2="208.2" y2="244" class="l" fill="none"/><polygon points="202.2,244 214.2,244 208.2,253" class="pf"/><line x1="467.4" y1="240" x2="467.4" y2="244" class="l" fill="none"/><polygon points="461.4,244 473.4,244 467.4,253" class="pf"/><line x1="503.8" y1="240" x2="503.8" y2="244" class="l" fill="none"/><polygon points="497.8,244 509.8,244 503.8,253" class="pf"/><circle cx="40" cy="312" r="11" class="pf"/><polygon points="40,306 35,316 45,316" class="pf"/><text x="40" y="340" class="mali" text-anchor="middle">0Z</text><line x1="51" y1="312" x2="76" y2="312" class="l" fill="none"/><rect x="76" y="296" width="48" height="32" class="pf"/><polygon points="88,302 96,312 88,322 80,312" class="pf"/><line x1="80" y1="312" x2="96" y2="312" class="l2 dash" fill="none"/><rect x="102" y="303" width="16" height="18" class="pf"/><line x1="110" y1="319" x2="110" y2="310" class="l" fill="none"/><polygon points="110,305 113.5,312 106.5,312" class="if"/><text x="100" y="346" class="mali" text-anchor="middle">0Z1</text><line x1="124" y1="312" x2="485.6" y2="312" class="l" fill="none"/><circle cx="190" cy="312" r="3" class="if"/><line x1="190" y1="312" x2="190" y2="240" class="l" fill="none"/><line x1="485.6" y1="312" x2="485.6" y2="240" class="l" fill="none"/><text x="300" y="304" class="mali">p = 6 bar</text></svg><figcaption><b>Slika V1.1</b> &mdash; Shema stanice za utiskivanje čahura: 1A1 utiskuje čahuru, 2A1 izbacuje gotov sklop. Oba cilindra upravljaju se ručnim razvodnicima 5/2 s oprugom; napajanje ide preko pripremne grupe 0Z1 s regulatorom namještenim na 6 bar.</figcaption></figure>
+</section>
+<section><h2>Postupak</h2><div class="crta"></div>
+<ol class="koraci">
+<li>Iz zadane sile i stupnja djelovanja izračunajte potrebnu površinu klipa 1A1: A = F / (p · η). Tlak uvrstite u N/mm² (6 bar = 0,6 N/mm²).</li>
+<li>Iz površine izračunajte promjer, D = √(4A/π), i odaberite <b>prvi veći</b> promjer iz niza. Za odabrani promjer izračunajte stvarnu silu izvlačenja i uvlačenja te postotnu rezervu sile.</li>
+<li>Izračunajte najmanji tlak pri kojem odabrani cilindar još daje 1500 N. Usporedite ga s tlakom u mreži i zapišite zaključak.</li>
+<li>Ponovite korake 1 i 2 za izbacivač 2A1.</li>
+<li>Izračunajte potrošnju zraka po ciklusu za svaki cilindar: V = (A + A<sub>pr</sub>) · s · 6,923, gdje je A<sub>pr</sub> prstenasta površina. Zbrojite i preračunajte na minutu; dodajte 20 % za vodove, mrtve prostore i propuštanja.</li>
+<li>Iz brzine izvlačenja izračunajte trenutačni protok zraka za 1A1 u Nl/min i odaberite razvodnik iz ponude uz rezervu od najmanje 25 %.</li>
+<li>Rezultate upišite u tablicu radnog lista. Ako je dostupan simulacijski program, složite shemu sa slike V1.1 i provjerite silu na klipnjači pri 6 bar i pri 5 bar.</li>
+</ol>
+</section>
+<section><h2>Pitanja i zadaci</h2><div class="crta"></div>
+<div class="pitanja">
+<div class="pitanje"><p><b>1.</b> Izračunajte potrebnu površinu klipa cilindra 1A1 i odaberite promjer iz niza standardnih promjera.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A = F / (p · η) = 1500 N / (0,6 N/mm² · 0,88) = <b>2841 mm²</b>.</p><p>D = √(4 · 2841 / π) = <b>60,1 mm</b>. Prvi veći promjer u nizu je <b>63 mm</b>. Promjer 50 mm ne dolazi u obzir jer bi dao samo 1037 N.</p></div></details></div>
+<div class="pitanje"><p><b>2.</b> Kolika je stvarna sila izvlačenja i uvlačenja cilindra Ø63/20 pri 6 bar i η = 0,88? Kolika je rezerva sile pri utiskivanju?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A = π · 63² / 4 = 3117 mm²; F<sub>izv</sub> = 0,6 · 3117 · 0,88 = <b>1646 N</b>.</p><p>A<sub>pr</sub> = 3117 − π · 20² / 4 = 3117 − 314 = 2803 mm²; F<sub>uvl</sub> = 0,6 · 2803 · 0,88 = <b>1480 N</b>.</p><p>Rezerva: 1646 / 1500 = 1,097, dakle oko <b>10 %</b>. To je dovoljno za rasipanje preklopa čahura, ali ne i za veći pad tlaka u mreži (vidi zadatak 3).</p></div></details></div>
+<div class="pitanje"><p><b>3.</b> Koji je najmanji tlak pri kojem cilindar Ø63 još daje 1500 N? Što iz toga zaključujete o namještanju regulatora i o mreži?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>p<sub>min</sub> = F / (A · η) = 1500 / (3117 · 0,88) = 0,547 N/mm² = <b>5,47 bar</b>.</p><p>Tlak na ulazu u stanicu ne smije pasti ispod približno 5,5 bar ni u trenutku kada više potrošača u pogonu radi istodobno. Regulator se namješta na 6 bar i ne smije se spuštati; ako mjerenja pokažu padove ispod 5,5 bar, rješenje je lokalni spremnik uz stanicu ili veći cilindar (Ø80), a ne podizanje tlaka iznad dopuštenog.</p></div></details></div>
+<div class="pitanje"><p><b>4.</b> Odaberite promjer izbacivača 2A1 za silu 120 N uz η = 0,85. Zašto promjer 16 mm nije dovoljan iako je blizu izračunatoj vrijednosti?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A = 120 / (0,6 · 0,85) = 235 mm²; D = √(4 · 235 / π) = <b>17,3 mm</b>.</p><p>Ø16 ima površinu 201 mm² i daje samo 0,6 · 201 · 0,85 = <b>103 N</b>, što je manje od 120 N. Uvijek se bira prvi <b>veći</b> promjer, dakle <b>Ø20</b> (314 mm², 160 N). Zaokruživanje na bliži promjer je česta i skupa pogreška.</p></div></details></div>
+<div class="pitanje"><p><b>5.</b> Izračunajte potrošnju zraka stanice po ciklusu i u minuti (10 ciklusa/min), bez gubitaka i s dodatkom od 20 %. Koliki je to udio isporuke kompresora od 800 Nl/min?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>1A1: (3117 + 2803) mm² · 60 mm = 355 220 mm³ = 0,355 l; · 6,923 = <b>2,46 Nl</b>.</p><p>2A1: A = 314 mm², A<sub>pr</sub> = 314 − 50 = 264 mm²; (314 + 264) · 40 = 23 120 mm³; · 6,923 = <b>0,16 Nl</b>.</p><p>Ukupno 2,62 Nl po ciklusu, odnosno <b>26,2 Nl/min</b>; s dodatkom 20 % <b>31,4 Nl/min</b>. To je oko <b>4 %</b> isporuke kompresora od 800 Nl/min — stanica sama po sebi ne opterećuje kompresor, ali se njezina potrošnja zbraja s ostalim potrošačima.</p></div></details></div>
+<div class="pitanje"><p><b>6.</b> Koliki trenutačni protok zraka treba cilindru 1A1 pri izvlačenju brzinom 0,2 m/s? Koji razvodnik iz ponude odabirete?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Q = A · v = 3117 mm² · 200 mm/s = 623 450 mm³/s = 0,623 l/s = 37,4 l/min pri radnom tlaku; preračunato na normalno stanje: 37,4 · 6,923 = <b>259 Nl/min</b>.</p><p>Uz rezervu 25 %: 259 · 1,25 = 324 Nl/min. Razvodnik od 180 Nl/min je premalen (klip bi bio znatno sporiji), a razvodnik od <b>400 Nl/min</b> zadovoljava. Razvodnik od 800 Nl/min bio bi preskup i većih priključaka bez stvarne koristi. Napomena: ovo je gruba preporuka; točniji izbor uzima u obzir i otpor vodova te prigušnih ventila.</p></div></details></div>
+<div class="pitanje"><p><b>7.</b> Brzinu izvlačenja 1A1 treba ograničiti na 0,2 m/s. Dopunite shemu sa slike V1.1 prigušno-nepovratnim ventilom 1V2 tako da se prigušuje odlazni zrak.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Ventil 1V2 ugrađuje se u vod između priključka 2 razvodnika i prstenaste komore cilindra (strana klipnjače). Nepovratni ventil propušta zrak prema cilindru, a odlazni zrak iz prstenaste komore pri izvlačenju prolazi kroz prigušnicu. Klip se tako giba između dva zračna jastuka i hod je miran i pri promjenjivom otporu utiskivanja.</p>
+<figure class="crtez"><svg viewBox="0 0 640 370" role="img" aria-label="Slika V1.2: dopunjena shema s prigušno-nepovratnim ventilom 1V2 u vodu prema prstenastoj komori cilindra 1A1"><rect x="90" y="40" width="170" height="34" class="pf"/><rect x="106" y="53" width="172" height="8" class="pf"/><rect x="100" y="41.2" width="6" height="31.6" class="rf"/><line x1="104" y1="74" x2="104" y2="82" class="l" fill="none"/><line x1="246" y1="74" x2="246" y2="82" class="l" fill="none"/><text x="80" y="63" text-anchor="end">1A1</text><rect x="400" y="44" width="110" height="28" class="pf"/><rect x="416" y="54" width="112" height="8" class="pf"/><rect x="410" y="45.2" width="6" height="25.6" class="rf"/><line x1="414" y1="72" x2="414" y2="80" class="l" fill="none"/><line x1="496" y1="72" x2="496" y2="80" class="l" fill="none"/><text x="390" y="64" text-anchor="end">2A1</text><text x="90" y="26" class="mali">Ø63/20, s = 60 mm, F = 1500 N</text><text x="400" y="30" class="mali">Ø20/8, s = 40 mm, F = 120 N</text><rect x="112" y="180" width="52" height="52" class="pf"/><line x1="138" y1="229" x2="128.7" y2="188.9" class="l" fill="none"/><polygon points="127.6,184 132.6,190 125.8,191.6" class="if"/><line x1="148.4" y1="183" x2="155.3" y2="223.1" class="l" fill="none"/><polygon points="156.2,228 151.6,221.7 158.5,220.5" class="if"/><line x1="119.8" y1="232" x2="119.8" y2="223" class="l" fill="none"/><line x1="114.8" y1="223" x2="124.8" y2="223" class="l" fill="none"/><rect x="164" y="180" width="52" height="52" class="pf"/><line x1="190" y1="229" x2="199.3" y2="188.9" class="l" fill="none"/><polygon points="200.4,184 202.2,191.6 195.4,190" class="if"/><line x1="179.6" y1="183" x2="172.7" y2="223.1" class="l" fill="none"/><polygon points="171.8,228 169.5,220.5 176.4,221.7" class="if"/><line x1="208.2" y1="232" x2="208.2" y2="223" class="l" fill="none"/><line x1="203.2" y1="223" x2="213.2" y2="223" class="l" fill="none"/><line x1="179.6" y1="180" x2="179.6" y2="172" class="l" fill="none"/><text x="183.6" y="177" class="mali">4</text><line x1="200.4" y1="180" x2="200.4" y2="172" class="l" fill="none"/><text x="204.4" y="177" class="mali">2</text><line x1="171.8" y1="232" x2="171.8" y2="240" class="l" fill="none"/><text x="175.8" y="243" class="mali">5</text><line x1="190" y1="232" x2="190" y2="240" class="l" fill="none"/><text x="194" y="243" class="mali">1</text><line x1="208.2" y1="232" x2="208.2" y2="240" class="l" fill="none"/><text x="212.2" y="243" class="mali">3</text><line x1="112" y1="206" x2="100" y2="206" class="l" fill="none"/><line x1="100" y1="198" x2="100" y2="214" class="l" fill="none"/><path d="M100 198 A8 8 0 0 0 100 214" class="l" fill="none"/><polyline points="216,206 220,199 224,213 228,199 232,213 236,199 242,206" class="l" fill="none"/><text x="82" y="211" text-anchor="end">1V1</text><rect x="407.6" y="180" width="52" height="52" class="pf"/><line x1="433.6" y1="229" x2="424.3" y2="188.9" class="l" fill="none"/><polygon points="423.2,184 428.2,190 421.4,191.6" class="if"/><line x1="444" y1="183" x2="450.9" y2="223.1" class="l" fill="none"/><polygon points="451.8,228 447.2,221.7 454.1,220.5" class="if"/><line x1="415.4" y1="232" x2="415.4" y2="223" class="l" fill="none"/><line x1="410.4" y1="223" x2="420.4" y2="223" class="l" fill="none"/><rect x="459.6" y="180" width="52" height="52" class="pf"/><line x1="485.6" y1="229" x2="494.9" y2="188.9" class="l" fill="none"/><polygon points="496,184 497.8,191.6 491,190" class="if"/><line x1="475.2" y1="183" x2="468.3" y2="223.1" class="l" fill="none"/><polygon points="467.4,228 465.1,220.5 472,221.7" class="if"/><line x1="503.8" y1="232" x2="503.8" y2="223" class="l" fill="none"/><line x1="498.8" y1="223" x2="508.8" y2="223" class="l" fill="none"/><line x1="475.2" y1="180" x2="475.2" y2="172" class="l" fill="none"/><text x="479.2" y="177" class="mali">4</text><line x1="496" y1="180" x2="496" y2="172" class="l" fill="none"/><text x="500" y="177" class="mali">2</text><line x1="467.4" y1="232" x2="467.4" y2="240" class="l" fill="none"/><text x="471.4" y="243" class="mali">5</text><line x1="485.6" y1="232" x2="485.6" y2="240" class="l" fill="none"/><text x="489.6" y="243" class="mali">1</text><line x1="503.8" y1="232" x2="503.8" y2="240" class="l" fill="none"/><text x="507.8" y="243" class="mali">3</text><line x1="407.6" y1="206" x2="395.6" y2="206" class="l" fill="none"/><line x1="395.6" y1="198" x2="395.6" y2="214" class="l" fill="none"/><path d="M395.6 198 A8 8 0 0 0 395.6 214" class="l" fill="none"/><polyline points="511.6,206 515.6,199 519.6,213 523.6,199 527.6,213 531.6,199 537.6,206" class="l" fill="none"/><text x="377.6" y="211" text-anchor="end">2V1</text><polyline points="179.6,172 179.6,136 104,136 104,82" class="l" fill="none"/><polyline points="200.4,172 200.4,156 246,156 246,148" class="l" fill="none"/><rect x="224" y="98" width="44" height="44" class="l2 dash" fill="none"/><line x1="246" y1="92" x2="246" y2="104" class="l" fill="none"/><line x1="246" y1="136" x2="246" y2="148" class="l" fill="none"/><line x1="236" y1="104" x2="256" y2="104" class="l" fill="none"/><line x1="236" y1="136" x2="256" y2="136" class="l" fill="none"/><line x1="236" y1="104" x2="236" y2="112" class="l" fill="none"/><line x1="236" y1="128" x2="236" y2="136" class="l" fill="none"/><path d="M231 112 Q236 120 231 128" class="l" fill="none"/><path d="M241 112 Q236 120 241 128" class="l" fill="none"/><line x1="227" y1="130" x2="241.7" y2="113.7" class="l2" fill="none"/><polygon points="245,110 242.9,117.5 237.7,112.9" class="if"/><line x1="256" y1="104" x2="256" y2="115" class="l" fill="none"/><circle cx="256" cy="119" r="4" class="l" fill="none"/><path d="M250 119 L256 126 L262 119" class="l" fill="none"/><line x1="256" y1="126" x2="256" y2="136" class="l" fill="none"/><text x="274" y="125" class="mali">1V2</text><line x1="246" y1="92" x2="246" y2="82" class="l" fill="none"/><polyline points="475.2,172 475.2,136 414,136 414,80" class="l" fill="none"/><polyline points="496,172 496,80" class="l" fill="none"/><line x1="171.8" y1="240" x2="171.8" y2="244" class="l" fill="none"/><polygon points="165.8,244 177.8,244 171.8,253" class="pf"/><line x1="208.2" y1="240" x2="208.2" y2="244" class="l" fill="none"/><polygon points="202.2,244 214.2,244 208.2,253" class="pf"/><line x1="467.4" y1="240" x2="467.4" y2="244" class="l" fill="none"/><polygon points="461.4,244 473.4,244 467.4,253" class="pf"/><line x1="503.8" y1="240" x2="503.8" y2="244" class="l" fill="none"/><polygon points="497.8,244 509.8,244 503.8,253" class="pf"/><circle cx="40" cy="312" r="11" class="pf"/><polygon points="40,306 35,316 45,316" class="pf"/><text x="40" y="340" class="mali" text-anchor="middle">0Z</text><line x1="51" y1="312" x2="76" y2="312" class="l" fill="none"/><rect x="76" y="296" width="48" height="32" class="pf"/><polygon points="88,302 96,312 88,322 80,312" class="pf"/><line x1="80" y1="312" x2="96" y2="312" class="l2 dash" fill="none"/><rect x="102" y="303" width="16" height="18" class="pf"/><line x1="110" y1="319" x2="110" y2="310" class="l" fill="none"/><polygon points="110,305 113.5,312 106.5,312" class="if"/><text x="100" y="346" class="mali" text-anchor="middle">0Z1</text><line x1="124" y1="312" x2="485.6" y2="312" class="l" fill="none"/><circle cx="190" cy="312" r="3" class="if"/><line x1="190" y1="312" x2="190" y2="240" class="l" fill="none"/><line x1="485.6" y1="312" x2="485.6" y2="240" class="l" fill="none"/><text x="300" y="304" class="mali">p = 6 bar</text></svg><figcaption><b>Slika V1.2</b> &mdash; Rješenje zadatka 7: prigušno-nepovratni ventil 1V2 u vodu prema prstenastoj komori cilindra 1A1. Zrak prema cilindru prolazi slobodno kroz nepovratni ventil, a zrak koji pri izvlačenju izlazi iz prstenaste komore mora kroz prigušnicu.</figcaption></figure></div></details></div>
+<div class="pitanje"><p><b>8.</b> Kolega predlaže da se za 1A1 „za svaki slučaj" ugradi Ø80. Procijenite posljedice za potrošnju zraka i opremu.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Ø80/25: potrošnja po ciklusu (5027 + 4536) · 60 · 6,923 / 10⁶ = <b>3,97 Nl</b>, što je oko <b>1,6 puta</b> više nego za Ø63. Za istu brzinu trebao bi razvodnik od 800 Nl/min i veći vodovi, a sila od 2654 N gotovo je dvostruko veća od potrebne, pa i opasnija. Činjenica je da Ø80 radi i pri 3,4 bar; procjena je da je to opravdano samo ako mjerenja pokažu stalne padove tlaka u mreži — inače je bolji izbor Ø63 uz lokalni spremnik.</p></div></details></div>
+</div></section>
+<section><h2>Za nastavnika</h2><div class="crta"></div>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Vježba traje <b>1 sat (45 min)</b> i nadovezuje se na jedinice o dvoradnim cilindrima i o razvodnoj mreži. Pripremite radni list s tablicom za rezultate (promjer, površine, sile, potrošnja, protok, odabrani razvodnik) i ispis niza standardnih promjera s klipnjačama. Ako polaznici rade u simulacijskom programu, unaprijed složite shemu sa slike V1.1 kako bi provjera trajala nekoliko minuta, a ne pola sata.</p>
+<h4>Tijek sata</h4><ol>
+<li>Uvod i ponavljanje formula F = p · A · η i V = A · s · (p + p<sub>a</sub>) / p<sub>a</sub> — 5 min.</li>
+<li>Samostalni proračun zadataka 1–4 (sile i promjeri) — 15 min.</li>
+<li>Zadaci 5 i 6 (potrošnja i protok, izbor razvodnika) — 12 min.</li>
+<li>Zadatak 7 (dopuna sheme) i provjera u simulaciji — 8 min.</li>
+<li>Rasprava o zadatku 8 i zaključak — 5 min.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>1A1: A = 2841 mm², D = 60,1 mm → Ø63/20; F<sub>izv</sub> = 1646 N, F<sub>uvl</sub> = 1480 N, p<sub>min</sub> = 5,47 bar. 2A1: D = 17,3 mm → Ø20/8, 160 N. Potrošnja 2,62 Nl/ciklus, 26,2 Nl/min, s gubicima 31,4 Nl/min. Protok pri izvlačenju 259 Nl/min → razvodnik 400 Nl/min. Prigušno-nepovratni ventil na strani klipnjače, slobodan protok prema cilindru.</p>
+<h4>Česte pogreške</h4><ul>
+<li>Tlak se uvrštava u barima umjesto u N/mm² pa je sila deset puta prevelika ili premala.</li>
+<li>Promjer se zaokružuje na bliži umjesto na prvi veći (Ø16 umjesto Ø20).</li>
+<li>Kod potrošnje zaboravlja se prstenasta komora ili se ne preračunava na normalno stanje.</li>
+<li>Potrošnja po ciklusu miješa se s trenutačnim protokom pri izboru razvodnika — razvodnik se bira prema vršnom protoku, a ne prema prosjeku u minuti.</li>
+<li>Prigušno-nepovratni ventil crta se s nepovratnim ventilom okrenutim tako da prigušuje dovod umjesto odvoda.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravna površina, promjer i izbor iz niza za 1A1 i 2A1</td><td>4</td></tr>
+<tr><td>Sile izvlačenja i uvlačenja, rezerva sile i najmanji tlak</td><td>4</td></tr>
+<tr><td>Potrošnja zraka po ciklusu i u minuti, s gubicima</td><td>4</td></tr>
+<tr><td>Protok i obrazložen izbor razvodnika</td><td>3</td></tr>
+<tr><td>Ispravno dopunjena shema (smjer nepovratnog ventila, oznaka 1V2)</td><td>3</td></tr>
+<tr><td>Jedinice, zaokruživanje i pregledan zapis postupka</td><td>2</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="vjezbe.html">&#8592; Sve vježbe</a><a class="gumb" href="v02-direktno-upravljanje-jednoradnim.html">V2 Direktno upravljanje jednoradnim cilindrom <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-pneumatika-i-hidraulika-v01-proracun-pneumatskog-sustava-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>

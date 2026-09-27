@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V14 Taktna metoda s dva cilindra — Pneumatika i hidraulika | FORTRONIQ</title>
+<meta name="description" content="Stanicu za žigosanje kartonskih kutija s dva cilindra, u slijedu A+ B+ B− A−, upravljate taktnim lancem od četiri modula. Uspoređujete ga s VDMA i kaskadnom metodom te ga…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v14-taktna-metoda.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v14-taktna-metoda.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/pneumatika-i-hidraulika/v14-taktna-metoda.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v14-taktna-metoda.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Vježba V14: Taktna metoda s dva cilindra">
+<meta property="og:description" content="Stanicu za žigosanje kartonskih kutija s dva cilindra, u slijedu A+ B+ B− A−, upravljate taktnim lancem od četiri modula. Uspoređujete ga s VDMA i kaskadnom metodom te ga…">
+<meta property="og:url" content="https://dos.fortroniq.hr/pneumatika-i-hidraulika/v14-taktna-metoda.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- pneumatika i hidraulika */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Pneumatika i hidraulika</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">V14 Taktna metoda s dva cilindra</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VJEŽBA V14 &middot; MODUL 3 &middot; PNEUMATSKO UPRAVLJANJE</p><p class="nadnaslov">Vježba V14 &middot; 2 sata</p><h1>Taktna metoda s dva cilindra</h1><p>Stanicu za žigosanje kartonskih kutija s dva cilindra, u slijedu A+ B+ B− A−, upravljate taktnim lancem od četiri modula. Uspoređujete ga s VDMA i kaskadnom metodom te ga proširujete vremenskim članom i novim korakom.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti građu i logiku taktnog modula (memorija, funkcija I, funkcija ILI)</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odrediti broj modula i uvjete Xn za zadani slijed te spojiti taktni lanac</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pustiti lanac u rad, postaviti osnovno stanje i objasniti zašto nema blokirajućih signala</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati silu žiga, potrošnju zraka i vrijeme ciklusa te proširiti lanac novim korakom</span></li></ul></div></div></header><div class="omot"><section id="o-vjezbi"><h2>O vježbi</h2><div class="crta"></div><div class="oznake-vj"><span>Vježba V14</span><span>Trajanje: 2 sata</span><span>Modul 3</span></div><p>Prije vježbe proći gradivo: <a href="3-6-taktna-metoda.html">3.6 Taktna metoda</a>.</p><p>Pitanja i zadaci na ovoj stranici su bez odgovora. Rješenje s postupkom otvara se gumbom <em>Prikaži rješenje</em> ispod svakog pitanja, a upute za nastavnika nalaze se na dnu stranice.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div></section><section><h2>Zadatak</h2><div class="crta"></div>
+<p>Na kraju linije za pakiranje na svaku kartonsku kutiju utiskuje se datum pakiranja. Traka dovodi kutiju do stanice, a zatim:</p>
+<ul>
+<li>cilindar <b>A</b> (Ø25/10 mm, hod 150 mm) gura kutiju s trake do graničnika i drži je,</li>
+<li>cilindar <b>B</b> (Ø32/12 mm, hod 40 mm) spušta žig s bojom na poklopac kutije,</li>
+<li>B podiže žig, a A se vraća i oslobađa mjesto za sljedeću kutiju.</li>
+</ul>
+<p class="formula">A+ B+ B− A−</p>
+<p>Isti slijed riješen je u vježbi V11 VDMA metodom s jednosmjernim valjcima. Ovdje se rješava <b>taktnom metodom</b>: za svaki korak slijeda postoji jedan <b>taktni modul</b> (T1–T4). Moduli su povezani u lanac i u svakom trenutku aktivan je samo jedan. Aktivni modul daje signal za svoje gibanje i omogućuje sljedeći modul; sljedeći se modul aktivira tek kad stigne potvrda da je gibanje završeno (signal Xn), a tada briše prethodni.</p>
+<p>Zadani podaci: mreža 6 bar, potrebna sila žiga 300 N, ritam 12 kutija u minuti. Traka dovodi novu kutiju za 3,6 s. Ciklus pokreće tipkalo <b>S</b> (u pogonu bi ga zamijenio senzor kutije).</p>
+</section>
+<section><h2>Oprema i pribor</h2><div class="crta"></div>
+<ul>
+<li>ploča za spajanje s pripremnom grupom i razdjelnikom;</li>
+<li>dva dvoradna cilindra i dva razvodnika 5/2 s obostranim pneumatskim upravljanjem;</li>
+<li>četiri taktna modula ili, ako ih nema, za svaki modul: bistabilni ventil 3/2 kao memorija, ventil dvostrukog tlaka (I) i naizmjenični ventil (ILI);</li>
+<li>četiri granična ventila 3/2 s valjkom (a0, a1, b0, b1), ventil 3/2 s tipkalom (S) i ventil 3/2 s tipkalom za postavljanje osnovnog stanja (L);</li>
+<li>za dopunski zadatak pneumatski vremenski član s kašnjenjem ukapčanja (namjestiv 0–10 s);</li>
+<li>cijevi Ø4 i Ø6 mm, T-spojnice, čepovi, štoperica, radni list.</li>
+</ul>
+</section>
+<section><h2>Sigurnost pri radu</h2><div class="crta"></div>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Taktni lanac pamti stanje. Ako je nakon prethodnog rada ostao aktivan neki modul u sredini lanca, pri otvaranju zraka odmah će krenuti njegovo gibanje. Prije svakog puštanja u rad pritisnite <b>L</b> (postavljanje osnovnog stanja) tek kad ste provjerili da nitko nema ruke u zoni žiga. Žig ima malu silu, ali kutija se gura hodom od 150 mm: prste ne stavljajte između kutije i graničnika. Spajanje samo bez tlaka, uz zaštitne naočale.</p></div>
+</section>
+<section><h2>Shema</h2><div class="crta"></div>
+<figure class="crtez"><svg viewBox="0 0 640 420" role="img" aria-label="Slika V14.1: taktni lanac s četiri modula za slijed A+ B+ B− A−">
+<rect class="pf" x="60" y="40" width="130" height="30"/>
+<line class="l" x1="74" y1="42" x2="74" y2="68" fill="none"/>
+<rect class="pf" x="76" y="52" width="130" height="6"/>
+<text x="52" y="61" text-anchor="end">A</text>
+<line class="l2" x1="206" y1="38" x2="206" y2="26" fill="none"/>
+<text x="206" y="22" text-anchor="middle" class="mali">a0</text>
+<line class="l2" x1="266" y1="38" x2="266" y2="26" fill="none"/>
+<text x="266" y="22" text-anchor="middle" class="mali">a1</text>
+<line class="l" x1="70" y1="70" x2="70" y2="76" fill="none"/>
+<line class="l" x1="180" y1="70" x2="180" y2="76" fill="none"/>
+<rect class="pf" x="390" y="40" width="130" height="30"/>
+<line class="l" x1="404" y1="42" x2="404" y2="68" fill="none"/>
+<rect class="pf" x="406" y="52" width="130" height="6"/>
+<text x="382" y="61" text-anchor="end">B</text>
+<line class="l2" x1="536" y1="38" x2="536" y2="26" fill="none"/>
+<text x="536" y="22" text-anchor="middle" class="mali">b0</text>
+<line class="l2" x1="596" y1="38" x2="596" y2="26" fill="none"/>
+<text x="596" y="22" text-anchor="middle" class="mali">b1</text>
+<line class="l" x1="400" y1="70" x2="400" y2="76" fill="none"/>
+<line class="l" x1="510" y1="70" x2="510" y2="76" fill="none"/>
+<rect class="pf" x="90" y="150" width="36" height="36"/>
+<rect class="pf" x="126" y="150" width="36" height="36"/>
+<line class="l2" x1="108" y1="184" x2="101.5" y2="161.6" fill="none"/>
+<polygon class="if" points="99,153 105,160.6 98.1,162.6"/>
+<line class="l2" x1="117" y1="152" x2="117" y2="174" fill="none"/>
+<polygon class="if" points="117,183 113.4,174 120.6,174"/>
+<line class="l2" x1="99" y1="186" x2="99" y2="178" fill="none"/>
+<line class="l2" x1="94" y1="178" x2="104" y2="178" fill="none"/>
+<line class="l2" x1="144" y1="184" x2="150.5" y2="161.6" fill="none"/>
+<polygon class="if" points="153,153 153.9,162.6 147,160.6"/>
+<line class="l2" x1="135" y1="152" x2="135" y2="174" fill="none"/>
+<polygon class="if" points="135,183 131.4,174 138.6,174"/>
+<line class="l2" x1="153" y1="186" x2="153" y2="178" fill="none"/>
+<line class="l2" x1="148" y1="178" x2="158" y2="178" fill="none"/>
+<line class="l" x1="135" y1="150" x2="135" y2="140" fill="none"/>
+<line class="l" x1="153" y1="150" x2="153" y2="140" fill="none"/>
+<line class="l" x1="135" y1="186" x2="135" y2="196" fill="none"/>
+<line class="l" x1="144" y1="186" x2="144" y2="208" fill="none"/>
+<line class="l" x1="153" y1="186" x2="153" y2="196" fill="none"/>
+<polygon class="pf" points="130,196 140,196 135,203"/>
+<polygon class="pf" points="148,196 158,196 153,203"/>
+<rect class="pf" x="78" y="161" width="12" height="14"/>
+<polygon class="if" points="87,168 80,163.5 80,172.5"/>
+<line class="l2 dash" x1="78" y1="168" x2="66" y2="168" fill="none"/>
+<text x="64" y="161" text-anchor="end" class="mali">14</text>
+<rect class="pf" x="162" y="161" width="12" height="14"/>
+<polygon class="if" points="165,168 172,163.5 172,172.5"/>
+<line class="l2 dash" x1="174" y1="168" x2="186" y2="168" fill="none"/>
+<text x="188" y="161" text-anchor="start" class="mali">12</text>
+<text x="90" y="144" class="mali">1V1</text>
+<polyline class="l" points="135,140 135,110 70,110 70,76" fill="none"/>
+<polyline class="l" points="153,140 153,120 180,120 180,76" fill="none"/>
+<circle class="pf" cx="144" cy="216" r="8"/>
+<polygon class="pf" points="144,211 139.5,219 148.5,219"/>
+<rect class="pf" x="420" y="150" width="36" height="36"/>
+<rect class="pf" x="456" y="150" width="36" height="36"/>
+<line class="l2" x1="438" y1="184" x2="431.5" y2="161.6" fill="none"/>
+<polygon class="if" points="429,153 435,160.6 428.1,162.6"/>
+<line class="l2" x1="447" y1="152" x2="447" y2="174" fill="none"/>
+<polygon class="if" points="447,183 443.4,174 450.6,174"/>
+<line class="l2" x1="429" y1="186" x2="429" y2="178" fill="none"/>
+<line class="l2" x1="424" y1="178" x2="434" y2="178" fill="none"/>
+<line class="l2" x1="474" y1="184" x2="480.5" y2="161.6" fill="none"/>
+<polygon class="if" points="483,153 483.9,162.6 477,160.6"/>
+<line class="l2" x1="465" y1="152" x2="465" y2="174" fill="none"/>
+<polygon class="if" points="465,183 461.4,174 468.6,174"/>
+<line class="l2" x1="483" y1="186" x2="483" y2="178" fill="none"/>
+<line class="l2" x1="478" y1="178" x2="488" y2="178" fill="none"/>
+<line class="l" x1="465" y1="150" x2="465" y2="140" fill="none"/>
+<line class="l" x1="483" y1="150" x2="483" y2="140" fill="none"/>
+<line class="l" x1="465" y1="186" x2="465" y2="196" fill="none"/>
+<line class="l" x1="474" y1="186" x2="474" y2="208" fill="none"/>
+<line class="l" x1="483" y1="186" x2="483" y2="196" fill="none"/>
+<polygon class="pf" points="460,196 470,196 465,203"/>
+<polygon class="pf" points="478,196 488,196 483,203"/>
+<rect class="pf" x="408" y="161" width="12" height="14"/>
+<polygon class="if" points="417,168 410,163.5 410,172.5"/>
+<line class="l2 dash" x1="408" y1="168" x2="396" y2="168" fill="none"/>
+<text x="394" y="161" text-anchor="end" class="mali">14</text>
+<rect class="pf" x="492" y="161" width="12" height="14"/>
+<polygon class="if" points="495,168 502,163.5 502,172.5"/>
+<line class="l2 dash" x1="504" y1="168" x2="516" y2="168" fill="none"/>
+<text x="518" y="161" text-anchor="start" class="mali">12</text>
+<text x="420" y="144" class="mali">2V1</text>
+<polyline class="l" points="465,140 465,110 400,110 400,76" fill="none"/>
+<polyline class="l" points="483,140 483,120 510,120 510,76" fill="none"/>
+<circle class="pf" cx="474" cy="216" r="8"/>
+<polygon class="pf" points="474,211 469.5,219 478.5,219"/>
+<rect class="cf" x="40" y="256" width="110" height="38"/>
+<rect class="pf" x="40" y="256" width="110" height="38"/>
+<text x="74" y="281" text-anchor="middle">T1</text>
+<text x="120" y="281" text-anchor="middle" class="mali">A+</text>
+<rect class="cf" x="180" y="256" width="110" height="38"/>
+<rect class="pf" x="180" y="256" width="110" height="38"/>
+<text x="214" y="281" text-anchor="middle">T2</text>
+<text x="260" y="281" text-anchor="middle" class="mali">B+</text>
+<rect class="cf" x="320" y="256" width="110" height="38"/>
+<rect class="pf" x="320" y="256" width="110" height="38"/>
+<text x="354" y="281" text-anchor="middle">T3</text>
+<text x="400" y="281" text-anchor="middle" class="mali">B−</text>
+<rect class="cf" x="460" y="256" width="110" height="38"/>
+<rect class="pf" x="460" y="256" width="110" height="38"/>
+<text x="494" y="281" text-anchor="middle">T4</text>
+<text x="540" y="281" text-anchor="middle" class="mali">A−</text>
+<line class="l" x1="150" y1="275" x2="172.5" y2="275" fill="none"/>
+<polygon class="if" points="180,275 172.5,278 172.5,272"/>
+<line class="l" x1="290" y1="275" x2="312.5" y2="275" fill="none"/>
+<polygon class="if" points="320,275 312.5,278 312.5,272"/>
+<line class="l" x1="430" y1="275" x2="452.5" y2="275" fill="none"/>
+<polygon class="if" points="460,275 452.5,278 452.5,272"/>
+<line class="l" x1="570" y1="275" x2="592.5" y2="275" fill="none"/>
+<polygon class="if" points="600,275 592.5,278 592.5,272"/>
+<text x="606" y="280" class="mali">T1</text>
+<line class="l" x1="14" y1="275" x2="32.5" y2="275" fill="none"/>
+<polygon class="if" points="40,275 32.5,278 32.5,272"/>
+<text x="6" y="250" class="mali">iz T4</text>
+<polyline class="l2 dash" points="66,256 66,168" fill="none"/>
+<polyline class="l2 dash" points="270,256 270,238 380,238 380,168 396,168" fill="none"/>
+<polyline class="l2 dash" points="410,256 410,246 530,246 530,168 516,168" fill="none"/>
+<polyline class="l2 dash" points="480,256 480,230 200,230 200,168 186,168" fill="none"/>
+<circle class="if" cx="66" cy="256" r="2.6"/>
+<circle class="if" cx="270" cy="256" r="2.6"/>
+<circle class="if" cx="410" cy="256" r="2.6"/>
+<circle class="if" cx="480" cy="256" r="2.6"/>
+<rect class="pf" x="60" y="318" width="24" height="24"/>
+<rect class="pf" x="84" y="318" width="24" height="24"/>
+<line class="l2" x1="66" y1="340" x2="69.3" y2="329.6" fill="none"/>
+<polygon class="if" points="72,321 72.7,330.7 65.9,328.5"/>
+<line class="l2" x1="78" y1="342" x2="78" y2="334" fill="none"/>
+<line class="l2" x1="73" y1="334" x2="83" y2="334" fill="none"/>
+<line class="l2" x1="96" y1="320" x2="99.3" y2="330.4" fill="none"/>
+<polygon class="if" points="102,339 95.9,331.5 102.7,329.3"/>
+<line class="l2" x1="90" y1="342" x2="90" y2="334" fill="none"/>
+<line class="l2" x1="85" y1="334" x2="95" y2="334" fill="none"/>
+<line class="l" x1="96" y1="318" x2="96" y2="310" fill="none"/>
+<line class="l" x1="90" y1="342" x2="90" y2="350" fill="none"/>
+<line class="l" x1="102" y1="342" x2="102" y2="350" fill="none"/>
+<polygon class="pf" points="97,350 107,350 102,357"/>
+<line class="l" x1="60" y1="330" x2="52" y2="330" fill="none"/>
+<circle class="pf" cx="47" cy="330" r="5"/>
+<text x="47" y="319" text-anchor="middle">a0</text>
+<polyline class="l2" points="108,330 111.2,324 114.4,336 117.6,324 120.8,336 124,324 127,330" fill="none"/>
+<rect class="pf" x="54" y="358" width="24" height="24"/>
+<rect class="pf" x="78" y="358" width="24" height="24"/>
+<line class="l2" x1="60" y1="380" x2="63.3" y2="369.6" fill="none"/>
+<polygon class="if" points="66,361 66.7,370.7 59.9,368.5"/>
+<line class="l2" x1="72" y1="382" x2="72" y2="374" fill="none"/>
+<line class="l2" x1="67" y1="374" x2="77" y2="374" fill="none"/>
+<line class="l2" x1="90" y1="360" x2="93.3" y2="370.4" fill="none"/>
+<polygon class="if" points="96,379 89.9,371.5 96.7,369.3"/>
+<line class="l2" x1="84" y1="382" x2="84" y2="374" fill="none"/>
+<line class="l2" x1="79" y1="374" x2="89" y2="374" fill="none"/>
+<line class="l" x1="90" y1="358" x2="90" y2="350" fill="none"/>
+<line class="l" x1="84" y1="382" x2="84" y2="390" fill="none"/>
+<line class="l" x1="96" y1="382" x2="96" y2="390" fill="none"/>
+<polygon class="pf" points="91,390 101,390 96,397"/>
+<circle class="pf" cx="84" cy="398" r="8"/>
+<polygon class="pf" points="84,393 79.5,401 88.5,401"/>
+<line class="l" x1="54" y1="370" x2="42" y2="370" fill="none"/>
+<line class="l" x1="42" y1="363" x2="42" y2="377" fill="none"/>
+<text x="42" y="358" text-anchor="middle">S</text>
+<polyline class="l2" points="102,370 105.2,364 108.4,376 111.6,364 114.8,376 118,364 121,370" fill="none"/>
+<line class="l2 dash" x1="90" y1="350" x2="90" y2="350" fill="none"/>
+<line class="l2 dash" x1="96" y1="310" x2="96" y2="294" fill="none"/>
+<rect class="pf" x="194" y="318" width="24" height="24"/>
+<rect class="pf" x="218" y="318" width="24" height="24"/>
+<line class="l2" x1="200" y1="340" x2="203.3" y2="329.6" fill="none"/>
+<polygon class="if" points="206,321 206.7,330.7 199.9,328.5"/>
+<line class="l2" x1="212" y1="342" x2="212" y2="334" fill="none"/>
+<line class="l2" x1="207" y1="334" x2="217" y2="334" fill="none"/>
+<line class="l2" x1="230" y1="320" x2="233.3" y2="330.4" fill="none"/>
+<polygon class="if" points="236,339 229.9,331.5 236.7,329.3"/>
+<line class="l2" x1="224" y1="342" x2="224" y2="334" fill="none"/>
+<line class="l2" x1="219" y1="334" x2="229" y2="334" fill="none"/>
+<line class="l" x1="230" y1="318" x2="230" y2="310" fill="none"/>
+<line class="l" x1="224" y1="342" x2="224" y2="350" fill="none"/>
+<line class="l" x1="236" y1="342" x2="236" y2="350" fill="none"/>
+<polygon class="pf" points="231,350 241,350 236,357"/>
+<circle class="pf" cx="224" cy="358" r="8"/>
+<polygon class="pf" points="224,353 219.5,361 228.5,361"/>
+<line class="l" x1="194" y1="330" x2="186" y2="330" fill="none"/>
+<circle class="pf" cx="181" cy="330" r="5"/>
+<text x="181" y="319" text-anchor="middle">a1</text>
+<polyline class="l2" points="242,330 245.2,324 248.4,336 251.6,324 254.8,336 258,324 261,330" fill="none"/>
+<line class="l2 dash" x1="230" y1="310" x2="230" y2="294" fill="none"/>
+<rect class="pf" x="334" y="318" width="24" height="24"/>
+<rect class="pf" x="358" y="318" width="24" height="24"/>
+<line class="l2" x1="340" y1="340" x2="343.3" y2="329.6" fill="none"/>
+<polygon class="if" points="346,321 346.7,330.7 339.9,328.5"/>
+<line class="l2" x1="352" y1="342" x2="352" y2="334" fill="none"/>
+<line class="l2" x1="347" y1="334" x2="357" y2="334" fill="none"/>
+<line class="l2" x1="370" y1="320" x2="373.3" y2="330.4" fill="none"/>
+<polygon class="if" points="376,339 369.9,331.5 376.7,329.3"/>
+<line class="l2" x1="364" y1="342" x2="364" y2="334" fill="none"/>
+<line class="l2" x1="359" y1="334" x2="369" y2="334" fill="none"/>
+<line class="l" x1="370" y1="318" x2="370" y2="310" fill="none"/>
+<line class="l" x1="364" y1="342" x2="364" y2="350" fill="none"/>
+<line class="l" x1="376" y1="342" x2="376" y2="350" fill="none"/>
+<polygon class="pf" points="371,350 381,350 376,357"/>
+<circle class="pf" cx="364" cy="358" r="8"/>
+<polygon class="pf" points="364,353 359.5,361 368.5,361"/>
+<line class="l" x1="334" y1="330" x2="326" y2="330" fill="none"/>
+<circle class="pf" cx="321" cy="330" r="5"/>
+<text x="321" y="319" text-anchor="middle">b1</text>
+<polyline class="l2" points="382,330 385.2,324 388.4,336 391.6,324 394.8,336 398,324 401,330" fill="none"/>
+<line class="l2 dash" x1="370" y1="310" x2="370" y2="294" fill="none"/>
+<rect class="pf" x="474" y="318" width="24" height="24"/>
+<rect class="pf" x="498" y="318" width="24" height="24"/>
+<line class="l2" x1="480" y1="340" x2="483.3" y2="329.6" fill="none"/>
+<polygon class="if" points="486,321 486.7,330.7 479.9,328.5"/>
+<line class="l2" x1="492" y1="342" x2="492" y2="334" fill="none"/>
+<line class="l2" x1="487" y1="334" x2="497" y2="334" fill="none"/>
+<line class="l2" x1="510" y1="320" x2="513.3" y2="330.4" fill="none"/>
+<polygon class="if" points="516,339 509.9,331.5 516.7,329.3"/>
+<line class="l2" x1="504" y1="342" x2="504" y2="334" fill="none"/>
+<line class="l2" x1="499" y1="334" x2="509" y2="334" fill="none"/>
+<line class="l" x1="510" y1="318" x2="510" y2="310" fill="none"/>
+<line class="l" x1="504" y1="342" x2="504" y2="350" fill="none"/>
+<line class="l" x1="516" y1="342" x2="516" y2="350" fill="none"/>
+<polygon class="pf" points="511,350 521,350 516,357"/>
+<circle class="pf" cx="504" cy="358" r="8"/>
+<polygon class="pf" points="504,353 499.5,361 508.5,361"/>
+<line class="l" x1="474" y1="330" x2="466" y2="330" fill="none"/>
+<circle class="pf" cx="461" cy="330" r="5"/>
+<text x="461" y="319" text-anchor="middle">b0</text>
+<polyline class="l2" points="522,330 525.2,324 528.4,336 531.6,324 534.8,336 538,324 541,330" fill="none"/>
+<line class="l2 dash" x1="510" y1="310" x2="510" y2="294" fill="none"/>
+<text x="634" y="412" text-anchor="end" class="mali">X1 = S · a0, X2 = a1, X3 = b1, X4 = b0</text>
+</svg><figcaption><b>Slika V14.1</b> &mdash; Taktni lanac s četiri modula za slijed A+ B+ B− A−. Izlaz modula (odozgo) upravlja razvodnikom, ulaz Xn (odozdo) je potvrda završetka prethodnog koraka. Strelice pokazuju smjer lanca; T4 omogućuje T1 i lanac je zatvoren u krug.</figcaption></figure>
+<figure class="crtez"><svg viewBox="0 0 640 240" role="img" aria-label="Slika V14.2: logika taktnog modula n s memorijom, funkcijom I i funkcijom ILI">
+<rect class="pf" x="150" y="36" width="80" height="56"/>
+<text x="190" y="70" text-anchor="middle">&amp;</text>
+<rect class="pf" x="150" y="142" width="80" height="56"/>
+<text x="190" y="176" text-anchor="middle">≥1</text>
+<text x="16" y="57" class="mali">Yn iz Tn−1</text>
+<line class="l2" x1="110" y1="52" x2="144" y2="52" fill="none"/>
+<polygon class="bf" points="150,52 144,54.4 144,49.6"/>
+<text x="16" y="83" class="mali">Xn signal</text>
+<line class="l2" x1="110" y1="78" x2="144" y2="78" fill="none"/>
+<polygon class="bf" points="150,78 144,80.4 144,75.6"/>
+<text x="16" y="163" class="mali">Mn+1</text>
+<line class="l2" x1="110" y1="158" x2="144" y2="158" fill="none"/>
+<polygon class="bf" points="150,158 144,160.4 144,155.6"/>
+<text x="16" y="189" class="mali">L</text>
+<line class="l2" x1="110" y1="184" x2="144" y2="184" fill="none"/>
+<polygon class="bf" points="150,184 144,186.4 144,181.6"/>
+<rect class="pf" x="290" y="64" width="120" height="106"/>
+<text x="350" y="56" text-anchor="middle" class="mali">memorija</text>
+<text x="350" y="124" text-anchor="middle">Mn</text>
+<text x="300" y="102">S</text>
+<text x="300" y="162">R</text>
+<polyline class="l2" points="230,64 260,64 260,96 290,96" fill="none"/>
+<polygon class="bf" points="290,96 281,91.5 281,100.5"/>
+<polyline class="l2" points="230,170 260,170 260,156 290,156" fill="none"/>
+<polygon class="bf" points="290,156 281,151.5 281,160.5"/>
+<line class="l2" x1="410" y1="88" x2="464" y2="88" fill="none"/>
+<polygon class="bf" points="470,88 464,90.4 464,85.6"/>
+<text x="476" y="93" class="mali">An razvodniku</text>
+<line class="l2" x1="410" y1="118" x2="464" y2="118" fill="none"/>
+<polygon class="bf" points="470,118 464,120.4 464,115.6"/>
+<text x="476" y="123" class="mali">Yn+1 u Tn+1</text>
+<line class="l2" x1="410" y1="148" x2="464" y2="148" fill="none"/>
+<polygon class="bf" points="470,148 464,150.4 464,145.6"/>
+<text x="476" y="153" class="mali">reset Tn−1</text>
+<text x="16" y="226" class="mali">Za T4 se L spaja na S (postavljanje), za T1 do T3 na R (brisanje).</text>
+</svg><figcaption><b>Slika V14.2</b> &mdash; Logika jednog taktnog modula: memorija Mn postavlja se kad su aktivni prethodni modul i signal Xn (funkcija I), a briše se kad se aktivira sljedeći modul ili se pritisne L (funkcija ILI).</figcaption></figure>
+<p>Priključci napajanja modula i ventil L na shemi nisu nacrtani da crtež ostane čitljiv: svaki modul ima priključak za zrak iz razdjelnika, a L se razvodi na sve module. Granični ventili napajaju se izravno iz razdjelnika — u taktnoj metodi ne trebaju grupni vodovi.</p>
+</section>
+<section><h2>Postupak</h2><div class="crta"></div>
+<ol class="koraci">
+<li>Ispunite tablicu iz pitanja 1 i nacrtajte na radnom listu dijagram put–korak s retkom „aktivni modul“.</li>
+<li>Postavite taktne module jedan do drugoga i povežite ih u lanac (izlaz za sljedeći modul → ulaz sljedećeg, povratni signal za brisanje → prethodni). Zadnji modul povežite s prvim.</li>
+<li>Spojite napajanje svih modula i ventil L na ulaze za postavljanje osnovnog stanja.</li>
+<li>Spojite izlaze: T1 → 14 na 1V1, T2 → 14 na 2V1, T3 → 12 na 2V1, T4 → 12 na 1V1.</li>
+<li>Spojite ulaze: S i a0 u nizu na X1, a1 na X2, b1 na X3, b0 na X4.</li>
+<li>Otvorite zrak na 3 bar, pritisnite L i provjerite pokazivač stanja: aktivan mora biti samo T4.</li>
+<li>Pritisnite S i pratite pokazivače modula. U radni list zapišite koji je modul aktivan tijekom svakog gibanja.</li>
+<li>Pokus: tijekom koraka B+ ručno pritisnite valjak b0 (klipnjača B nije u b0). Zapišite reagira li sklop.</li>
+<li>Pri 6 bar izmjerite vrijeme ciklusa, zatim izvedite dopunski zadatak s vremenskim članom (pitanje 8) i rastavite sklop bez tlaka.</li>
+</ol>
+</section>
+<section><h2>Pitanja i zadaci</h2><div class="crta"></div>
+<div class="pitanja">
+<div class="pitanje"><p><b>1.</b> Koliko taktnih modula treba za slijed A+ B+ B− A−? Ispunite tablicu: modul, gibanje koje daje, uvjet Xn za njegovo postavljanje i modul koji pritom briše.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Broj modula jednak je broju koraka: 4.</p>
+<div class="tablica-omot"><table><thead><tr><th>Modul</th><th>Izlaz</th><th>Uvjet Xn</th><th>Briše</th></tr></thead><tbody>
+<tr><td>T1</td><td>A+ (14 na 1V1)</td><td>S · a0</td><td>T4</td></tr>
+<tr><td>T2</td><td>B+ (14 na 2V1)</td><td>a1</td><td>T1</td></tr>
+<tr><td>T3</td><td>B− (12 na 2V1)</td><td>b1</td><td>T2</td></tr>
+<tr><td>T4</td><td>A− (12 na 1V1)</td><td>b0</td><td>T3</td></tr>
+</tbody></table></div>
+<p>Uvjet za postavljanje modula n uvijek je: modul n − 1 aktivan <b>i</b> signal Xn.</p></div></details></div>
+
+<div class="pitanje"><p><b>2.</b> Opišite stanje lanca u osnovnom položaju i redom sve promjene od pritiska na S do povratka u osnovni položaj.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>U osnovnom položaju aktivan je <b>T4</b>: drži signal A− na 1V1 i omogućuje T1. Pritiskom na S (uz a0) postavlja se T1, koji briše T4 → A+. Na kraju hoda a1 postavlja T2, T2 briše T1 → B+. Signal b1 postavlja T3, T3 briše T2 → B−. Signal b0 postavlja T4, T4 briše T3 → A−. A se vraća u a0 i lanac čeka novi S. U svakom trenutku aktivan je samo jedan modul.</p></div></details></div>
+
+<div class="pitanje"><p><b>3.</b> U vježbi V11 signal b0 bio je blokirajući. Zašto u taktnom lancu b0 ne smeta, iako je pritisnut za vrijeme koraka A+? Što ste opazili u pokusu iz koraka 8 postupka?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Signal b0 ne djeluje izravno na razvodnik, nego na ulaz X4 modula T4. T4 se može postaviti samo ako je aktivan T3. Za vrijeme koraka A+ aktivan je T1, pa je b0 „zaključan“. Izlaz T4 prestao je djelovati na 12 razvodnika 1V1 u trenutku kad je T1 postavljen, pa na razvodniku nema dva istodobna signala. U pokusu ručni pritisak na b0 tijekom B+ nema nikakav učinak iz istog razloga. To je glavna prednost taktne metode: pogrešan ili preuranjen signal ne može preskočiti korak.</p></div></details></div>
+
+<div class="pitanje"><p><b>4.</b> Izračunajte stvarnu silu žiga (Ø32 mm) i silu guranja kutije (Ø25 mm) pri 6 bar uz stupanj djelovanja 0,9. Je li žig dovoljan za 300 N i pri kojem bi tlaku postao nedovoljan?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">B: A = π · 32² / 4 = 804,2 mm² → F = 0,9 · 0,6 · 804,2 ≈ 434 N</p>
+<p class="formula">A: A = π · 25² / 4 = 490,9 mm² → F = 0,9 · 0,6 · 490,9 ≈ 265 N</p>
+<p>Žig ima rezervu 434 / 300 ≈ 1,45. Najmanji tlak: p = 300 / (0,9 · 804,2) ≈ 0,414 N/mm² ≈ 4,1 bar. Sila guranja od 265 N višestruko je veća od sile trenja prazne kartonske kutije, pa bi se A mogao i smanjiti ili raditi pri nižem tlaku, čime bi se štedio zrak.</p>
+</div></details></div>
+
+<div class="pitanje"><p><b>5.</b> Izračunajte potrošnju zraka cilindara po ciklusu i u minuti pri 12 ciklusa/min (6 bar, 1,013 bar atmosferski tlak).</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>A: (490,9 + 412,3) mm² · 150 mm ≈ 135 500 mm³ = 135,5 cm³ → · 6,923 ≈ 0,94 Nl.</p>
+<p>B: (804,2 + 691,2) mm² · 40 mm ≈ 59 800 mm³ = 59,8 cm³ → · 6,923 ≈ 0,41 Nl.</p>
+<p>Ukupno ≈ 1,35 Nl po ciklusu, a pri 12 ciklusa/min ≈ 16,2 Nl/min. Zanimljivo: cilindar A, iako slabiji, troši dvostruko više zraka jer ima dug hod. Taktni moduli i upravljački vodovi troše dodatno malo zraka pri svakom prebacivanju.</p>
+</div></details></div>
+
+<div class="pitanje"><p><b>6.</b> Klipnjača A giba se brzinom 0,3 m/s, a klipnjača B 0,2 m/s, u oba smjera. Svako prebacivanje modula i razvodnika traje oko 40 ms. Može li stanica postići 12 kutija u minuti ako traka dovodi novu kutiju za 3,6 s?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Gibanja: A 2 · 150 / 300 = 1,0 s; B 2 · 40 / 200 = 0,4 s; prebacivanja 4 · 0,04 = 0,16 s. Ciklus ≈ 1,56 s. S dovođenjem kutije: 1,56 + 3,6 ≈ 5,2 s po kutiji → 60 / 5,2 ≈ 11,6 kutija/min. Cilj od 12 kutija/min (5 s po kutiji) <b>nije</b> postignut. Mogućnosti: brža traka, veća brzina A (veći presjek vodova, ventil za brzo odzračivanje) ili pokretanje trake već tijekom A−, a ne tek nakon povratka.</p></div></details></div>
+
+<div class="pitanje"><p><b>7.</b> Zašto je nakon uključenja zraka potrebno pritisnuti L i zašto se L na modulu T4 spaja na postavljanje, a na T1–T3 na brisanje? Što bi se dogodilo da je pri uključenju slučajno aktivan T2?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Lanac mora krenuti iz poznatog stanja. Osnovno stanje je „zadnji korak izveden“, tj. aktivan T4, jer on drži A uvučen i omogućuje T1 za prvi start. Zato L postavlja T4 i briše sve ostale. Da je pri uključenju aktivan T2, odmah bi krenuo B+ — žig bi se spustio bez kutije, a zatim bi lanac nastavio s B− i A− kao da je ciklus bio u tijeku. Neočekivano gibanje pri uključenju sigurnosni je rizik.</p></div></details></div>
+
+<div class="pitanje"><p><b>8.</b> Dopuna sheme: boja se mora zadržati na kartonu 0,4 s prije podizanja žiga. Ucrtajte na shemu V14.1 vremenski član i navedite na koji ulaz i s kojom funkcijom (kašnjenje ukapčanja ili iskapčanja) se spaja.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Vremenski član s <b>kašnjenjem ukapčanja</b> (normalno zatvoren) ugrađuje se između izlaza ventila b1 i ulaza X3: b1 → upravljački ulaz vremenskog člana, izlaz vremenskog člana → X3. Kad žig dođe u b1, spremnik vremenskog člana puni se kroz prigušnicu; nakon namještenih 0,4 s vremenski član propusti signal i postavi T3 (B−). Broj modula se ne mijenja jer zadržavanje nije gibanje nego uvjet za sljedeći korak. Vrijeme ciklusa naraste na oko 1,96 s.</p></div></details></div>
+
+<div class="pitanje"><p><b>9.</b> Stanici se dodaje izbacivač <b>C</b> koji gotovu kutiju gura na odvodnu traku, pa je novi slijed A+ B+ B− A− C+ C−. Koliko modula sad treba, koji su novi uvjeti i što se mijenja u postojećim spojevima?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Treba 6 modula. Dodaju se T5 (izlaz C+, uvjet X5 = a0) i T6 (izlaz C−, uvjet X6 = c1). Mijenjaju se: veza lanca (T6 omogućuje T1 umjesto T4), uvjet X1 = S · c0 (umjesto S · a0), a L sad postavlja T6. Spojevi T1–T4 prema razvodnicima ostaju isti. To je glavna prednost taktne metode: slijed se produljuje dodavanjem modula, bez preračunavanja grupa ili blokirajućih signala.</p></div></details></div>
+</div></section>
+<section><h2>Za nastavnika</h2><div class="crta"></div>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Ako na radnom mjestu nema gotovih taktnih modula, pripremite za svaki modul bistabilni ventil 3/2, ventil I i ventil ILI na zajedničkoj pločici i unaprijed ih označite T1–T4; spajanje unutrašnjosti modula tada je zaseban zadatak od oko 20 minuta. Provjerite ima li vremenski član namjestivo kašnjenje u području od 0,2 do 2 s. Polaznici trebaju poznavati slijed iz V11 da bi usporedili metode.</p>
+<h4>Tijek sata</h4><ol>
+<li>0–15 min: logika taktnog modula (slika V14.2), pitanja 1 i 2.</li>
+<li>15–50 min: spajanje lanca i izlaza, postavljanje osnovnog stanja, prvi ciklus pri 3 bar.</li>
+<li>50–60 min: pokus s ručnim signalom b0 (pitanje 3), pitanje 7.</li>
+<li>60–75 min: mjerenje vremena ciklusa, računski zadaci 4–6.</li>
+<li>75–87 min: dopuna s vremenskim članom (pitanje 8) i rasprava o proširenju (pitanje 9).</li>
+<li>87–90 min: rastavljanje i osvrt.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>Lanac radi u slijedu A+ B+ B− A−, nakon L aktivan je samo T4, ručni pritisak na b0 izvan reda nema učinka. Računski: 434 N i najmanji tlak oko 4,1 bar, 1,35 Nl/ciklus, oko 16,2 Nl/min, ciklus oko 1,56 s i zaključak da 12 kutija/min uz zadanu traku nije ostvarivo.</p>
+<h4>Česte pogreške</h4><ul>
+<li>lanac nije zatvoren (T4 ne omogućuje T1), pa se sklop pokrene samo jednom;</li>
+<li>signal Xn spojen na pogrešan modul, pomaknut za jedan korak — gibanje kreće prerano ili nikad;</li>
+<li>zaboravljeno postavljanje osnovnog stanja, pa je pri uključenju aktivno više modula ili nijedan;</li>
+<li>vremenski član ugrađen s kašnjenjem iskapčanja, pa se žig podiže odmah, a vrijeme djeluje na pogrešan brid signala.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Tablica modula i opis rada lanca</td><td>4</td></tr>
+<tr><td>Lanac spojen, osnovno stanje ispravno, slijed ispravan</td><td>6</td></tr>
+<tr><td>Obrazloženje izostanka blokirajućih signala i uloge L</td><td>3</td></tr>
+<tr><td>Računski zadaci 4–6</td><td>4</td></tr>
+<tr><td>Dopuna vremenskim članom i proširenje na šest koraka</td><td>2</td></tr>
+<tr><td>Sigurnost i urednost</td><td>1</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="v13-kaskadna-metoda.html">&#8592; V13 Kaskadna metoda</a><a class="gumb" href="v15-ep-direktno-dvoradni.html">V15 Elektropneumatika — direktno upravljanje dvoradnim cilindrom <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-pneumatika-i-hidraulika-v14-taktna-metoda-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>
