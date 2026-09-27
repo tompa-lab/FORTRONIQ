@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6.4 Modeli sklopova — Tehnička dokumentacija | FORTRONIQ</title>
+<meta name="description" content="Model sklopa povezuje modele dijelova relacijama koje oduzimaju stupnjeve slobode gibanja i time opisuju kako se dijelovi stvarno dodiruju i gibaju. Na pozicionirnoj osi PS-1…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/tehnicka-dokumentacija/6-4-modeli-sklopova.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/tehnicka-dokumentacija/6-4-modeli-sklopova.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/tehnicka-dokumentacija/6-4-modeli-sklopova.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/tehnicka-dokumentacija/6-4-modeli-sklopova.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="6.4 Modeli sklopova">
+<meta property="og:description" content="Model sklopa povezuje modele dijelova relacijama koje oduzimaju stupnjeve slobode gibanja i time opisuju kako se dijelovi stvarno dodiruju i gibaju. Na pozicionirnoj osi PS-1…">
+<meta property="og:url" content="https://dos.fortroniq.hr/tehnicka-dokumentacija/6-4-modeli-sklopova.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- dodaci DOS graditelja */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+figure.crtez .st{stroke-dasharray:14 4 2 4}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Tehnička dokumentacija</a><i aria-hidden="true">/</i><a href="m6-cad.html">6. Tehnička dokumentacija pomoću računala</a><i aria-hidden="true">/</i><span aria-current="page">6.4 Modeli sklopova</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 6 &middot; TEHNIČKA DOKUMENTACIJA POMOĆU RAČUNALA</p><p class="nadnaslov">Nastavna jedinica 6.4</p><h1>Modeli sklopova</h1><p>Model sklopa povezuje modele dijelova relacijama koje oduzimaju stupnjeve slobode gibanja i time opisuju kako se dijelovi stvarno dodiruju i gibaju. Na pozicionirnoj osi PS-1 slažemo postolje, nosače, vodilice, vreteno i klizač, zadajemo relaciju vreteno&ndash;matica i provjeravamo kolizije.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti razliku između modela dijela i modela sklopa te ulogu fiksnog prvog dijela</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>primijeniti osnovne relacije sklopa: koincidentnost, udaljenost, koncentričnost, paralelnost i kut</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>zadati mehaničke relacije zupčanika i vijka s vretenom</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>organizirati sklop u podsklopove i koristiti knjižnicu normiranih dijelova</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>provjeriti sklop na kolizije i prodore te izraditi rastavni prikaz</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati preostale stupnjeve slobode sklopa i pomak klizača iz okretaja vretena</span></li></ul></div></div></header><div class="omot"><section><h2>Od modela dijela do modela sklopa</h2><div class="crta"></div>
+<p>Model dijela opisuje geometriju jednog predmeta: skice, značajke, materijal i svojstva. Model sklopa ne sadrži novu geometriju, nego <strong>poveznice na modele dijelova</strong> i podatke o njihovu međusobnom položaju. Kad se u modelu dijela promijeni neka mjera, promjena se nakon osvježavanja vidi u svakom sklopu u kojem je taj dio upotrijebljen. Zato se datoteke dijelova i sklopa uvijek čuvaju zajedno, u istoj strukturi mapa, i nikad se ne preimenuju izvan CAD sustava ili sustava za upravljanje dokumentacijom — sklop bi tada izgubio vezu s dijelom.</p>
+<p>U praksi se koriste dva pristupa. Kod <strong>gradnje odozdo prema gore</strong> dijelovi se modeliraju zasebno, a zatim se umeću u sklop i povezuju. Kod <strong>gradnje odozgo prema dolje</strong> dio se modelira u kontekstu sklopa, pa se njegove mjere izvode iz susjednih dijelova (npr. provrt u nosaču prati promjer ležaja). Drugi pristup je brži u ranoj fazi razvoja, ali stvara vanjske reference koje treba nadzirati: dio koji ovisi o sklopu ne može se sigurno upotrijebiti u drugom proizvodu dok se reference ne prekinu ili zamrznu.</p>
+<p>Prvi dio umetnut u sklop redovito je <strong>fiksiran</strong> u ishodištu sklopa: njegove ravnine poklapaju se s ravninama sklopa i on nema nijedan stupanj slobode. Za prvi dio bira se onaj koji nosi ostale i koji se u stvarnosti ne giba — kod osi PS-1 to je postolje PS1-01-001. Takav izbor ima praktičnu posljedicu: koordinatni sustav sklopa podudara se s koordinatnim sustavom postolja, pa su položaji svih dijelova izraženi prema plohi na koju se os montira.</p>
+<div class="okvir"><h4>Zapamtite</h4><p>Samo jedan dio u sklopu treba biti fiksiran bez relacija. Ako se fiksira više dijelova, sklop se ne može gibati, a pogreške u položaju ostaju skrivene jer ih nijedna relacija ne provjerava.</p></div>
+</section>
+<section><h2>Stupnjevi slobode i relacije sklopa</h2><div class="crta"></div>
+<p>Slobodno kruto tijelo u prostoru ima <strong>šest stupnjeva slobode</strong>: tri pomaka duž osi x, y i z i tri zakreta oko tih osi. Svaki dio umetnut u sklop, osim fiksiranog, počinje sa svih šest. Relacije sklopa (u nekim sustavima zovu se spojevi ili ograničenja sklopa) oduzimaju stupnjeve slobode tako što propisuju odnos između dviju geometrijskih veličina: plohe, brida, osi, točke ili ravnine.</p>
+<figure class="crtez"><svg viewBox="0 0 640 320" role="img" aria-label="Slika 6.4.1: Šest stupnjeva slobode krutog tijela i tri tipične relacije">
+<path class="l" fill="none" d="M70 190 L150 150 L230 190 L150 230 Z M70 190 L70 250 L150 290 L150 230 M150 290 L230 250 L230 190"/>
+<line class="l2 st" x1="150" y1="210" x2="150" y2="70"/>
+<line class="l2 st" x1="150" y1="210" x2="40" y2="155"/>
+<line class="l2 st" x1="150" y1="210" x2="275" y2="150"/>
+<polygon class="if" points="150,62 144,76 156,76"/>
+<polygon class="if" points="33,151 47,152 42,162"/>
+<polygon class="if" points="283,146 269,147 274,158"/>
+<text x="162" y="74">z</text><text x="30" y="140">x</text><text x="268" y="136">y</text>
+<path class="t" fill="none" d="M132 92 A18 8 0 1 0 168 92"/>
+<polygon class="tf" points="168,92 160,84 174,86"/>
+<text class="mali" x="20" y="30">3 pomaka + 3 zakreta = 6 SS</text>
+<line class="l2" x1="315" y1="20" x2="315" y2="300"/>
+<circle class="pf" cx="360" cy="70" r="26"/>
+<circle class="cf" cx="360" cy="70" r="15"/>
+<line class="l2 st" x1="326" y1="70" x2="394" y2="70"/>
+<text x="410" y="66">koncentričnost</text>
+<text class="mali" x="410" y="88">oduzima 4 SS, ostaju</text>
+<text class="mali" x="410" y="106">pomak i zakret oko osi</text>
+<rect class="pf" x="334" y="140" width="56" height="20"/>
+<rect class="cf" x="342" y="160" width="40" height="18"/>
+<text x="410" y="156">koincidentnost ravnina</text>
+<text class="mali" x="410" y="178">oduzima 3 SS, ostaju 2 pomaka</text>
+<text class="mali" x="410" y="196">u ravnini i zakret oko normale</text>
+<path class="l" fill="none" d="M330 250 L336 238 L342 262 L348 238 L354 262 L360 238 L366 262 L372 238 L378 262 L384 250"/>
+<line class="l2 st" x1="324" y1="250" x2="392" y2="250"/>
+<text x="410" y="246">vijak i vreteno</text>
+<text class="mali" x="410" y="268">oduzima 1 SS: pomak postaje</text>
+<text class="mali" x="410" y="286">razmjeran zakretu (3 mm/okr)</text>
+</svg><figcaption><b>Slika 6.4.1</b> &mdash; Šest stupnjeva slobode krutog tijela (lijevo) i broj stupnjeva slobode koje oduzimaju tri tipične relacije (desno).</figcaption></figure>
+<div class="tablica-omot"><table><thead><tr><th>Relacija</th><th>Primjer na PS-1</th><th>Oduzeti SS (samostalno)</th><th>Što ostaje</th></tr></thead><tbody>
+<tr><td>koincidentnost dviju ravnina</td><td>donja ploha nosača na gornju plohu postolja</td><td>3</td><td>dva pomaka u ravnini, zakret oko normale</td></tr>
+<tr><td>udaljenost između ravnina</td><td>klizač 10 mm od čela nosača (radni položaj)</td><td>3</td><td>isto kao koincidentnost, uz razmak</td></tr>
+<tr><td>koncentričnost dviju valjkastih ploha</td><td>vodilica Ø12 u provrtu nosača</td><td>4</td><td>pomak duž osi i zakret oko osi</td></tr>
+<tr><td>paralelnost ravnina ili osi</td><td>os vretena paralelna s osi vodilice</td><td>2</td><td>tri pomaka i zakret oko zajedničke normale</td></tr>
+<tr><td>kut između ravnina</td><td>nagib nosača motora prema postolju</td><td>1</td><td>tri pomaka i dva zakreta</td></tr>
+<tr><td>mehanička relacija (zupčanik, vijak)</td><td>vreteno Tr12 × 3 i matica u klizaču</td><td>1</td><td>jedno spregnuto gibanje</td></tr>
+</tbody></table></div>
+<p>Brojevi u tablici vrijede kad relacija djeluje na dio koji još nema drugih ograničenja. Druga relacija na istom dijelu oduzima samo one stupnjeve slobode koji još nisu oduzeti. Primjer: vreteno je koncentrično s provrtom ležaja (oduzeta 4 SS); koincidentnost čela vretena sa čelom ležaja tada oduzima samo još pomak duž osi, dakle 1 SS, jer su zakreti okomiti na os već vezani. Vreteno ostaje s jednim stupnjem slobode — zakretom oko vlastite osi, upravo onako kako se giba u stvarnosti.</p>
+</section>
+<section><h2>Mehaničke relacije: zupčanik, vijak i vreteno</h2><div class="crta"></div>
+<p>Geometrijske relacije opisuju dodir, a mehaničke relacije <strong>prijenos gibanja</strong>. One ne mijenjaju položaj dijelova u mirovanju, nego sprežu dva gibanja koja su prije toga bila neovisna. Najčešće su:</p>
+<ul>
+<li><strong>zupčanik</strong> — zakreti dvaju vratila spregnuti su omjerom broja zubi ili diobenih promjera; zadaje se i smjer (vanjsko ozubljenje mijenja smjer vrtnje);</li>
+<li><strong>zupčasta letva</strong> — zakret zupčanika pretvara se u pomak letve, pomak po okretaju jednak je opsegu diobene kružnice;</li>
+<li><strong>vijak i vreteno</strong> — zakret vretena pretvara se u pomak matice, pomak po okretaju jednak je uspona navoja;</li>
+<li><strong>bregasti mehanizam</strong> i <strong>zglobni spoj</strong> — u sustavima koji ih podržavaju, za posebne mehanizme.</li>
+</ul>
+<p>Os PS-1 ima trapezno vreteno Tr12 × 3, jednovojno, pa je uspon jednak koraku: <strong>3 mm po okretaju</strong>. Relacija vijka zadaje se između valjkaste plohe vretena i provrta matice u klizaču, uz vrijednost 3 mm/okr i smjer navoja (desni). Pomak klizača tada slijedi iz kuta zakreta vretena:</p>
+<p class="formula">s = P<sub>h</sub> · φ / 360°</p>
+<p>gdje je P<sub>h</sub> uspon u mm, a φ kut zakreta u stupnjevima. Deset okretaja vretena pomiče klizač 30 mm, a cijeli hod od 300 mm traži 100 okretaja. Za pomak od 1 mm vreteno se zakrene 120°. Kad se u sklopu povuče klizač mišem, vreteno se okreće; kad se zakrene vreteno, klizač putuje. To je temelj provjere gibanja u jedinici 6.6.</p>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Mehanička relacija ne provjerava čvrstoću ni stvarni dodir bokova navoja. Model vretena u sklopu obično je valjak nazivnog promjera bez modeliranih zavojnica s kozmetičkim prikazom navoja. Relacija opisuje samo kinematiku; zazor u navoju, trenje i samokočnost treba riješiti proračunom, ne modelom.</p></div>
+</section>
+<section><h2>Slaganje sklopa osi PS-1 korak po korak</h2><div class="crta"></div>
+<p>Redoslijed slaganja u CAD sustavu dobro je vezati uz redoslijed montaže u radionici. Tako sklop odmah pokazuje može li se proizvod stvarno složiti, a stablo sklopa postaje podloga za upute za montažu.</p>
+<figure class="crtez"><svg viewBox="0 0 640 360" role="img" aria-label="Slika 6.4.2: Shematski tlocrt sklopa PS-1 s relacijama">
+<rect class="pf" x="66" y="110" width="548" height="168"/>
+<rect class="bf" x="14" y="160" width="52" height="68"/>
+<rect class="pf" x="66" y="150" width="14" height="88"/>
+<rect class="cf" x="88" y="182" width="24" height="24"/>
+<rect class="pf" x="120" y="120" width="22" height="148"/>
+<rect class="pf" x="572" y="120" width="22" height="148"/>
+<line class="l" x1="80" y1="194" x2="582" y2="194"/>
+<line class="l2 st" x1="10" y1="194" x2="630" y2="194"/>
+<line class="l" x1="131" y1="140" x2="583" y2="140"/>
+<line class="l" x1="131" y1="248" x2="583" y2="248"/>
+<rect class="cf" x="300" y="124" width="84" height="140"/>
+<rect class="l" fill="none" x="300" y="124" width="84" height="140"/>
+<rect class="bf" x="330" y="184" width="24" height="20"/>
+<text x="330" y="236">4</text>
+<text x="22" y="200">M</text>
+<line class="l2" x1="100" y1="182" x2="100" y2="72"/><circle class="if" cx="100" cy="182" r="3"/>
+<text class="mali" x="20" y="62">spojka: koncentrično</text>
+<line class="l2" x1="131" y1="120" x2="210" y2="72"/><circle class="if" cx="131" cy="120" r="3"/>
+<text class="mali" x="190" y="40">ležaj 6001: koncentrično</text>
+<text class="mali" x="190" y="58">+ koincidentnost čela</text>
+<line class="l2" x1="342" y1="184" x2="440" y2="72"/><circle class="if" cx="342" cy="184" r="3"/>
+<text class="mali" x="400" y="40">vijak i vreteno</text>
+<text class="mali" x="400" y="58">3 mm/okr, desni</text>
+<line class="l2" x1="300" y1="248" x2="230" y2="306"/><circle class="if" cx="300" cy="248" r="3"/>
+<text class="mali" x="100" y="324">klizač: koncentrično s vodilicom 1</text>
+<line class="l2" x1="384" y1="140" x2="440" y2="306"/><circle class="if" cx="384" cy="140" r="3"/>
+<text class="mali" x="380" y="324">vodilica 2: zakret oko osi 1</text>
+<line class="l2" x1="583" y1="268" x2="583" y2="340"/><circle class="if" cx="583" cy="268" r="3"/>
+<text class="mali" x="610" y="352" text-anchor="end">nosač: koincidentno s postoljem</text>
+<text class="mali" x="72" y="294">1 postolje (fiksno)</text>
+</svg><figcaption><b>Slika 6.4.2</b> &mdash; Shematski tlocrt sklopa PS-1: postolje (1, fiksno), nosači vretena, vodilice, vreteno, klizač (4) s maticom i motor sa spojkom; natpisi pokazuju relacije koje vežu dijelove.</figcaption></figure>
+<ol class="koraci">
+<li>Umetnite postolje PS1-01-001 i fiksirajte ga u ishodištu sklopa.</li>
+<li>Umetnite nosač vretena fiksnog kraja PS1-01-002: donja ploha koincidentna s gornjom plohom postolja, provrti za vijke koncentrični s navojnim provrtima postolja (prvi provrt 4 SS, drugi samo zakret koji preostaje).</li>
+<li>Na isti način postavite nosač slobodnog kraja PS1-01-003 i nosač motora PS1-01-007.</li>
+<li>Umetnite ležaj 6001 iz knjižnice normiranih dijelova: vanjski prsten koncentričan s provrtom Ø28 u nosaču, čelo prstena koincidentno s naslonom u provrtu.</li>
+<li>Umetnite vreteno PS1-01-006: koncentrično s unutarnjim prstenom ležaja, rukavac naslonjen na čelo prstena. Vreteno ostaje sa zakretom oko osi.</li>
+<li>Umetnite dvije vodilice PS1-01-005: koncentrične s provrtima u nosačima, čelo poravnato s vanjskom plohom nosača.</li>
+<li>Umetnite klizač PS1-01-004 s linearnim ležajevima: provrt prvog ležaja koncentričan s vodilicom 1. Za drugu vodilicu upotrijebite relaciju koja veže samo preostali zakret (npr. os provrta koincidentna s ravninom kroz os vodilice 2), a ne drugu koncentričnost.</li>
+<li>Dodajte relaciju vijka između vretena i matice klizača: 3 mm/okr. Na kraju umetnite motor i elastičnu spojku Ø25, koncentrične s osi vretena.</li>
+</ol>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Dvije koncentričnosti klizača na dvije paralelne vodilice matematički su <strong>preodređene</strong>: druga koncentričnost ponavlja ograničenja koja je prva već postavila. Ako razmak vodilica u postolju i u klizaču nije potpuno jednak, sustav javlja pogrešku ili sklop „zaključa“. U stvarnoj konstrukciji ista preodređenost znači da se klizač može zaglaviti — zato se razmaci provrta u oba dijela tolerira jednako strogo.</p></div>
+</section>
+<section><h2>Podsklopovi i knjižnice normiranih dijelova</h2><div class="crta"></div>
+<p>Veliki sklop postaje nepregledan ako su svi dijelovi na istoj razini stabla. Zato se dijelovi koji se montiraju zajedno i isporučuju kao cjelina grupiraju u <strong>podsklopove</strong>. Podsklop je zasebna datoteka sklopa koja se u glavni sklop umeće kao jedan element. Obično se ponaša kao <em>kruto tijelo</em>; ako unutar njega postoji gibanje koje se treba vidjeti u glavnom sklopu, podsklop se proglašava <em>fleksibilnim</em>, pa se njegove unutarnje relacije rješavaju zajedno s glavnim sklopom.</p>
+<figure class="crtez"><svg viewBox="0 0 640 260" role="img" aria-label="Slika 6.4.3: Stablo sklopa PS-1 s podsklopovima">
+<rect class="cf" x="230" y="20" width="180" height="36" rx="6"/>
+<text x="320" y="44" text-anchor="middle">PS1-00-000</text>
+<line class="l2" fill="none" x1="320" y1="56" x2="320" y2="80"/>
+<line class="l2" fill="none" x1="90" y1="80" x2="550" y2="80"/>
+<line class="l2" x1="90" y1="80" x2="90" y2="100"/><line class="l2" x1="250" y1="80" x2="250" y2="100"/>
+<line class="l2" x1="400" y1="80" x2="400" y2="100"/><line class="l2" x1="550" y1="80" x2="550" y2="100"/>
+<rect class="pf" x="30" y="100" width="120" height="34" rx="6"/><text class="mali" x="90" y="122" text-anchor="middle">postolje (fiks.)</text>
+<rect class="pf" x="180" y="100" width="140" height="34" rx="6"/><text class="mali" x="250" y="122" text-anchor="middle">podsklop pogona</text>
+<rect class="pf" x="340" y="100" width="120" height="34" rx="6"/><text class="mali" x="400" y="122" text-anchor="middle">podsklop klizača</text>
+<rect class="pf" x="480" y="100" width="140" height="34" rx="6"/><text class="mali" x="550" y="122" text-anchor="middle">vodilice, vijci</text>
+<line class="l2" x1="250" y1="134" x2="250" y2="236"/>
+<line class="l2" x1="250" y1="160" x2="270" y2="160"/><text class="mali" x="276" y="165">nosač 002, ležaj 6001</text>
+<line class="l2" x1="250" y1="190" x2="270" y2="190"/><text class="mali" x="276" y="195">vreteno 006</text>
+<line class="l2" x1="250" y1="220" x2="270" y2="220"/><text class="mali" x="276" y="225">nosač 007, spojka, motor</text>
+<line class="l2" x1="400" y1="134" x2="400" y2="200"/>
+<line class="l2 dash" x1="400" y1="170" x2="470" y2="170"/><text class="mali" x="476" y="175">klizač 004, matica</text>
+<line class="l2 dash" x1="400" y1="200" x2="470" y2="200"/><text class="mali" x="476" y="205">linearni ležajevi</text>
+<text class="mali" x="30" y="236">normirani dijelovi iz knjižnice</text>
+<text class="mali" x="30" y="254">ulaze u sastavnicu kao zasebne pozicije</text>
+</svg><figcaption><b>Slika 6.4.3</b> &mdash; Stablo sklopa PS-1: fiksno postolje, podsklop pogona, podsklop klizača i normirani dijelovi na prvoj razini.</figcaption></figure>
+<p>Stablo sklopa izravno određuje <strong>sastavnicu</strong>: svaki red na prvoj razini postaje pozicija na sklopnom crtežu. Zato se podsklopovi slažu prema tome kako će se proizvod naručivati, montirati i održavati, a ne prema tome kako je bilo najlakše modelirati. Podsklop pogona može se, primjerice, predati servisu kao cjelina.</p>
+<p><strong>Knjižnice normiranih dijelova</strong> sadrže parametarske modele vijaka, matica, podloški, ležajeva, zatika i uskočnika izrađene prema normama (npr. vijak s unutarnjim šesterokutom po ISO 4762, kuglični ležaj 6001 s mjerama 12 × 28 × 8). Dio se ne modelira, nego se odabere norma, veličina i duljina, a model se stvara s ispravnim svojstvima za sastavnicu: naziv, norma, materijal, razred čvrstoće. Mnogi sustavi nude i <em>pametno</em> umetanje, u kojem se vijak sam postavlja u odabrani provrt i odabire duljinu prema debljini spoja. Modeli iz kataloga proizvođača (linearni ležajevi, spojke, motori) preuzimaju se u neutralnom formatu, npr. STEP, i uvijek se provjeri odgovaraju li mjere tehničkom listu.</p>
+</section>
+<section><h2>Provjera kolizija i prodora, rastavni prikaz</h2><div class="crta"></div>
+<p>Sklop koji se lijepo vidi na zaslonu nije nužno ispravan. <strong>Provjera prodora</strong> (statička provjera kolizija) računa volumen u kojem se dva tijela preklapaju u trenutačnom položaju. Za PS-1 očekuje se:</p>
+<ul>
+<li>nijedan prodor između klizača i nosača, vijaka i susjednih ploha, spojke i nosača motora;</li>
+<li>dodir bez prodora na plohama koje naliježu (koincidentne ravnine);</li>
+<li>„prodor“ nula na dosjedima Ø28 H7 i Ø12 k6 — modeli su nacrtani nazivnim mjerama, pa sustav ne vidi preklop dosjeda. Preklop se provjerava proračunom iz tolerancijskih polja (modul 4), ne u CAD sklopu.</li>
+</ul>
+<p>Uz provjeru prodora koristi se i provjera <strong>zazora</strong>: traži se najmanji razmak između odabranih dijelova i uspoređuje sa zadanim, npr. razmak glave vijka do pokretnog klizača. Provjera kolizija tijekom gibanja obrađuje se u jedinici 6.6.</p>
+<p><strong>Rastavni prikaz</strong> (eksplodirani pogled) razmiče dijelove duž smjerova montaže, a da relacije ostaju sačuvane. Svaki korak razmicanja pamti se kao zaseban korak, a putanje se prikazuju tankim crtama. Rastavni prikaz koristi se u uputama za montažu, na sklopnim crtežima s pozicijama i u ponudama. Kod PS-1 logičan je redoslijed: motor i spojka ulijevo, vreteno ulijevo kroz nosač, klizač prema gore, vodilice udesno, nosači prema gore iznad postolja.</p>
+<div class="okvir"><h4>Zapamtite</h4><p>Provjeru prodora pokrenite prije izrade sklopnog crteža, a ne poslije. Svaki pronađeni prodor znači izmjenu modela dijela, a svaka izmjena dijela mijenja i crtež.</p></div>
+</section>
+<section><h2>Računski prikaz: stupnjevi slobode sklopa i pomak klizača</h2><div class="crta"></div>
+<p>Grubi broj preostalih stupnjeva slobode dobiva se kad se od šest stupnjeva slobode svakog pomičnog dijela oduzmu stupnjevi koje oduzimaju relacije. Nepokretni dijelovi koji su čvrsto vezani za postolje mogu se promatrati kao jedno tijelo s fiksiranim postoljem. Relacije koje na dio djeluju nakon prve upisuju se samo s onim stupnjevima slobode koje zaista dodaju.</p>
+<p class="formula">f = 6 · n − (4 · n<sub>konc</sub> + 3 · n<sub>ravn</sub> + 1 · n<sub>dop</sub> + 1 · n<sub>meh</sub>)</p>
+<div class="racun" id="r64"><div class="racun-h"><b>Stupnjevi slobode sklopa i pomak klizača</b><em>Računski prikaz</em></div><p>Procjena preostalih stupnjeva slobode iz broja pomičnih dijelova i relacija te pomak klizača za zadani broj okretaja vretena s usponom 3 mm/okr.</p><div class="polja"><div class="polje"><label for="r64-n">Broj pomičnih dijelova<output id="r64-n-out" for="r64-n" data-jed="">2</output></label><input type="range" id="r64-n" data-ulaz="n" min="1" max="10" step="1" value="2"></div><div class="polje"><label for="r64-konc">Koncentričnosti (4 SS)<output id="r64-konc-out" for="r64-konc" data-jed="">2</output></label><input type="range" id="r64-konc" data-ulaz="konc" min="0" max="10" step="1" value="2"></div><div class="polje"><label for="r64-ravn">Koincidentnosti ravnina (3 SS)<output id="r64-ravn-out" for="r64-ravn" data-jed="">0</output></label><input type="range" id="r64-ravn" data-ulaz="ravn" min="0" max="10" step="1" value="0"></div><div class="polje"><label for="r64-dop">Dopunske relacije (1 SS)<output id="r64-dop-out" for="r64-dop" data-jed="">2</output></label><input type="range" id="r64-dop" data-ulaz="dop" min="0" max="10" step="1" value="2"></div><div class="polje"><label for="r64-meh">Mehaničke relacije (1 SS)<output id="r64-meh-out" for="r64-meh" data-jed="">1</output></label><input type="range" id="r64-meh" data-ulaz="meh" min="0" max="5" step="1" value="1"></div><div class="polje"><label for="r64-okr">Okretaji vretena<output id="r64-okr-out" for="r64-okr" data-jed=" okr">10 okr</output></label><input type="range" id="r64-okr" data-ulaz="okr" min="0" max="100" step="1" value="10"></div></div><div class="ishod"><div class="ish"><span>Ukupno SS pomičnih dijelova</span><b id="r64-o-S0">&mdash;</b></div><div class="ish"><span>Oduzeto relacijama</span><b id="r64-o-U">&mdash;</b></div><div class="ish"><span>Preostali stupnjevi slobode</span><b id="r64-o-f">&mdash;</b></div><div class="ish"><span>Pomak klizača (3 mm/okr)</span><b id="r64-o-s">&mdash;</b></div></div><p class="poruka" id="r64-poruka"></p></div>
+<p>Za PS-1 pomični su vreteno i klizač, n = 2, dakle 12 stupnjeva slobode. Dvije koncentričnosti (vreteno u ležaju, klizač na vodilici 1) oduzimaju 8, dvije dopunske relacije (čelo vretena na ležaj, klizač uz vodilicu 2) oduzimaju 2, a relacija vijka još 1. Ostaje <strong>f = 1</strong>: sklop ima jedno pogonsko gibanje, kao stvarna os. Deset okretaja vretena pomiče klizač 30 mm. Ako račun daje negativan broj, relacije su prebrojane dvaput ili je sklop preodređen; ako daje više od 1, neki dio još slobodno „pluta“.</p>
+</section>
+<section><h2>Ključni pojmovi</h2><div class="crta"></div>
+<div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody>
+<tr><td>model sklopa</td><td>datoteka s poveznicama na modele dijelova i relacijama koje određuju njihov međusobni položaj</td></tr>
+<tr><td>fiksni dio</td><td>dio kojemu su oduzeti svi stupnjevi slobode; nosi koordinatni sustav sklopa</td></tr>
+<tr><td>stupanj slobode (SS)</td><td>neovisni pomak ili zakret tijela; slobodno kruto tijelo ima ih šest</td></tr>
+<tr><td>relacija sklopa</td><td>geometrijski uvjet između dviju ploha, osi ili točaka (koincidentnost, koncentričnost, udaljenost, kut, paralelnost)</td></tr>
+<tr><td>mehanička relacija</td><td>sprezanje dvaju gibanja omjerom, npr. zupčanik ili vijak s usponom 3 mm/okr</td></tr>
+<tr><td>preodređenost</td><td>stanje u kojem relacije ponavljaju već oduzete stupnjeve slobode i mogu biti proturječne</td></tr>
+<tr><td>podsklop</td><td>sklop umetnut u drugi sklop kao jedan element, krut ili fleksibilan</td></tr>
+<tr><td>knjižnica normiranih dijelova</td><td>zbirka parametarskih modela vijaka, ležajeva i drugih dijelova izrađenih po normama</td></tr>
+<tr><td>rastavni prikaz</td><td>prikaz sklopa s dijelovima razmaknutim duž smjerova montaže</td></tr>
+</tbody></table></div>
+</section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="4" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 1 od 4</p><p class="pit">Koji se dio sklopa PS-1 bira kao fiksni prvi dio?</p><div class="odg"><button type="button">klizač, jer nosi maticu</button><button type="button">postolje, jer nosi ostale dijelove i ne giba se</button><button type="button">vreteno, jer određuje hod</button><button type="button">motor, jer pokreće os</button></div><p class="obraz">Fiksira se dio koji nosi ostale i u stvarnosti miruje; kod PS-1 to je postolje PS1-01-001, pa se koordinatni sustav sklopa podudara s plohom za montažu.</p></div><div class="kviz" data-tocno="3"><p class="brojac">Pitanje 2 od 4</p><p class="pit">Koliko stupnjeva slobode oduzima koncentričnost dviju valjkastih ploha kad djeluje samostalno?</p><div class="odg"><button type="button">2</button><button type="button">3</button><button type="button">6</button><button type="button">4</button></div><p class="obraz">Koncentričnost veže dva pomaka i dva zakreta okomito na os; ostaju pomak duž osi i zakret oko osi.</p></div><div class="kviz" data-tocno="0"><p class="brojac">Pitanje 3 od 4</p><p class="pit">Vreteno PS-1 ima uspon 3 mm/okr. Koliko okretaja treba za hod od 300 mm?</p><div class="odg"><button type="button">100</button><button type="button">30</button><button type="button">900</button><button type="button">150</button></div><p class="obraz">Broj okretaja jednak je hodu podijeljenom s usponom: 300 / 3 = 100.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 4 od 4</p><p class="pit">Zašto sustav prijavljuje pogrešku kad se klizač veže koncentričnošću na obje paralelne vodilice?</p><div class="odg"><button type="button">jer koncentričnost nije dopuštena za linearne ležajeve</button><button type="button">jer druga koncentričnost ponavlja već oduzete stupnjeve slobode i sklop postaje preodređen</button><button type="button">jer vodilice moraju biti fiksirane</button><button type="button">jer mehanička relacija isključuje koncentričnost</button></div><p class="obraz">Druga koncentričnost ponavlja ograničenja prve; ako razmaci nisu potpuno jednaki, relacije su proturječne. Zato se za drugu vodilicu koristi relacija koja veže samo preostali zakret.</p></div><p class="rezultat">Odgovoreno 0 od 4.</p></div></section><section id="vjezbe-uz"><h2>Vježbe uz jedinicu</h2><div class="crta"></div><p>Gradivo ove jedinice priprema za sljedeće vježbe:</p><ul><li><a href="v13-cad-sklop-i-gibanje.html">V13 CAD: sklop, provjera gibanja i sklopni crtež</a> &middot; 2 sata</li></ul></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="6-3-3d-znacajke.html">&#8592; 6.3 3D značajke modela dijela</a><a class="gumb" href="6-5-crtez-na-racunalu.html">6.5 Oblikovanje tehničkog crteža na računalu <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-tehnicka-dokumentacija-6-4-modeli-sklopova-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+(function(){
+  var k = document.getElementById('r64'); if(!k) return;
+  var jedinice = {"S0": "", "U": "", "f": "", "s": "mm"};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){
+
+var S0 = 6 * v.n;
+var U = 4 * v.konc + 3 * v.ravn + v.dop + v.meh;
+var f = S0 - U;
+var s = 3 * v.okr;
+var p;
+if (f < 0) { p = 'Oduzeto je više stupnjeva slobode nego što postoji: relacije se ponavljaju, sklop je preodređen.'; }
+else if (f === 0) { p = 'Sklop je potpuno određen i ne može se gibati.'; }
+else if (f === 1) { p = 'Sklop ima jedno gibanje, kao stvarna os: zakret vretena i pomak klizača su spregnuti.'; }
+else { p = 'Ostaje više gibanja: neki dio nije dovoljno vezan i slobodno se pomiče u sklopu.'; }
+return { S0: S0.toFixed(0), U: U.toFixed(0), f: f.toFixed(0), s: s.toFixed(0), _poruka: p };
+
+  }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = {};
+    try { r = racunaj(v) || {}; } catch(err) { r = { _poruka: '' }; }
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r64-o-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small> ' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r64-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+
+</script>
+</body>
+</html>

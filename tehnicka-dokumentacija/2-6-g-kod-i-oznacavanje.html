@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2.6 Standardi i pravila označavanja u G-kodu — Tehnička dokumentacija | FORTRONIQ</title>
+<meta name="description" content="Kako se podaci s tehničkog crteža prenose u NC program: koordinatni sustav stroja i nul-točke, građa programa po ISO 6983, osnovni G i M kodovi te apsolutno i inkrementalno…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/tehnicka-dokumentacija/2-6-g-kod-i-oznacavanje.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/tehnicka-dokumentacija/2-6-g-kod-i-oznacavanje.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/tehnicka-dokumentacija/2-6-g-kod-i-oznacavanje.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/tehnicka-dokumentacija/2-6-g-kod-i-oznacavanje.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="2.6 Standardi i pravila označavanja u G-kodu">
+<meta property="og:description" content="Kako se podaci s tehničkog crteža prenose u NC program: koordinatni sustav stroja i nul-točke, građa programa po ISO 6983, osnovni G i M kodovi te apsolutno i inkrementalno…">
+<meta property="og:url" content="https://dos.fortroniq.hr/tehnicka-dokumentacija/2-6-g-kod-i-oznacavanje.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- dodaci DOS graditelja */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+figure.crtez .st{stroke-dasharray:14 4 2 4}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Tehnička dokumentacija</a><i aria-hidden="true">/</i><a href="m2-normizacija.html">2. Normizacija i osnovna pravila tehničkog crtanja</a><i aria-hidden="true">/</i><span aria-current="page">2.6 Standardi i pravila označavanja u G-kodu</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 2 &middot; NORMIZACIJA I OSNOVNA PRAVILA TEHNIČKOG CRTANJA</p><p class="nadnaslov">Nastavna jedinica 2.6</p><h1>Standardi i pravila označavanja u G-kodu</h1><p>Kako se podaci s tehničkog crteža prenose u NC program: koordinatni sustav stroja i nul-točke, građa programa po ISO 6983, osnovni G i M kodovi te apsolutno i inkrementalno programiranje. Uz to, kako kotiranje od baze olakšava programiranje i kako se program označava zaglavljem i komentarima.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti vezu između radioničkog crteža i NC programa</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>razlikovati nul-točku stroja, referentnu točku i nul-točku obratka</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>prepoznati građu NC programa po ISO 6983: riječ, adresu, blok i program</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>primijeniti osnovne G i M kodove za kretanje, vreteno, alat i hlađenje</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pretvoriti apsolutne koordinate u inkrementalne i obrnuto</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>povezati bazu kotiranja na crtežu s nul-točkom obratka u programu</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati duljinu putanje alata i vrijeme obrade konture iz posmaka</span></li></ul></div></div></header><div class="omot"><section><h2>Od crteža do NC programa</h2><div class="crta"></div>
+<p>Radionički crtež i NC program opisuju isti dio na dva jezika. Crtež je namijenjen čovjeku: pokazuje oblik u projekcijama, mjere kotama, dopuštena odstupanja tolerancijama i kakvoću površine oznakama hrapavosti. NC program namijenjen je upravljačkoj jedinici stroja: opisuje putanju vrha alata kao niz koordinata, uz naredbe za brzinu vrtnje vretena, posmak, izbor alata i hlađenje.</p>
+<p>Između ta dva dokumenta stoji tehnolog ili programer. S crteža on čita:</p>
+<ul>
+<li><strong>oblik i kote</strong> &mdash; iz njih nastaju koordinate točaka putanje;</li>
+<li><strong>bazu kotiranja</strong> &mdash; plohu ili os od koje se kotira, a koja postaje nul-točka obratka;</li>
+<li><strong>tolerancije i hrapavost</strong> &mdash; o njima ovisi izbor alata, režim obrade i broj prolaza (gruba i završna obrada);</li>
+<li><strong>materijal i sirovac</strong> iz zaglavlja &mdash; o njima ovise brzina rezanja, posmak i način stezanja;</li>
+<li><strong>broj crteža i indeks izmjene</strong> &mdash; oni se prepisuju u zaglavlje programa kako bi se znalo po kojoj je inačici crteža program napisan.</li>
+</ul>
+<p>Danas se program češće dobiva iz CAM sustava nego pisanjem rukom: CAM iz 3D modela i odabranih strategija obrade izračuna putanju, a postprocesor je pretvori u G-kod za određenu upravljačku jedinicu. Ipak, i CAM korisnik mora čitati G-kod: program se provjerava na stroju blok po blok, korigira se na licu mjesta, a jednostavni ciklusi (bušenje niza provrta, planiranje, kontura) i dalje se pišu ručno.</p>
+<div class="okvir"><h4>Zapamtite</h4><p>NC program je prijevod crteža u koordinate i naredbe. Programer s crteža preuzima oblik, kote, bazu kotiranja, tolerancije, hrapavost i materijal, a u zaglavlje programa broj crteža i indeks izmjene.</p></div>
+</section>
+
+<section><h2>Koordinatni sustav stroja i nul-točke</h2><div class="crta"></div>
+<p>Osi i smjerovi gibanja NC strojeva normirani su normom <strong>ISO 841</strong> (primjenjuje se važeće izdanje). Koristi se desni pravokutni koordinatni sustav: os <strong>Z</strong> je os glavnog vretena, a pozitivan smjer Z vodi od obratka prema alatu. Osi X i Y leže u ravnini okomitoj na Z; na vertikalnoj glodalici X je najčešće najdulji hod stola. Smjerovi se uvijek određuju kao da se giba alat, a obradak miruje, bez obzira na to pomiče li se na stvarnom stroju stol ili vreteno.</p>
+<p>U programiranju se koriste tri glavne točke:</p>
+<div class="tablica-omot"><table><thead><tr><th>Točka</th><th>Oznaka</th><th>Tko je određuje</th><th>Namjena</th></tr></thead><tbody>
+<tr><td>nul-točka stroja</td><td>M</td><td>proizvođač stroja</td><td>ishodište mjernog sustava stroja; ne mijenja se</td></tr>
+<tr><td>referentna točka</td><td>R</td><td>proizvođač stroja</td><td>točka koju stroj pronalazi nakon uključenja da bi uskladio mjerni sustav</td></tr>
+<tr><td>nul-točka obratka</td><td>W</td><td>programer</td><td>ishodište koordinata u programu; bira se prema bazi kotiranja na crtežu</td></tr>
+</tbody></table></div>
+<p>Nul-točku obratka W određuje programer, a na stroju je postavlja operater: dodiruje alatom ili mjernim ticalom plohe obratka i upisuje pomak od M do W u tablicu pomaka nul-točke. U programu se taj pomak poziva naredbom <strong>G54</strong> (i G55 do G59 za dodatne nul-točke, npr. kad je na stolu više obradaka). Program je tada neovisan o tome gdje je obradak stegnut.</p>
+<figure class="crtez"><svg viewBox="0 0 640 320" role="img" aria-label="Slika 2.11: klizač PS1-01-004 u tlocrtu s nul-točkom obratka W, programiranim točkama konture i putanjom središta glodala">
+<rect class="pf" x="120" y="58" width="240" height="192"/>
+<rect class="l" x="120" y="58" width="240" height="192" fill="none"/>
+<circle class="l2" cx="144" cy="226" r="8" fill="none"/><circle class="l2" cx="336" cy="226" r="8" fill="none"/>
+<circle class="l2" cx="336" cy="82" r="8" fill="none"/><circle class="l2" cx="144" cy="82" r="8" fill="none"/>
+<path class="l2 st" d="M132 226 H156 M144 214 V238 M324 226 H348 M336 214 V238 M324 82 H348 M336 70 V94 M132 82 H156 M144 70 V94" fill="none"/>
+<path class="t dash" d="M84 286 L108 262 V58 A12 12 0 0 1 120 46 H360 A12 12 0 0 1 372 58 V250 A12 12 0 0 1 360 262 H108" fill="none"/>
+<circle class="bf" cx="84" cy="286" r="4"/><circle class="if" cx="120" cy="262" r="4"/><circle class="if" cx="120" cy="58" r="4"/>
+<circle class="if" cx="360" cy="58" r="4"/><circle class="if" cx="360" cy="250" r="4"/><circle class="if" cx="108" cy="250" r="4"/>
+<circle class="pf" cx="120" cy="250" r="9"/><path class="if" d="M120 250 V241 A9 9 0 0 1 129 250 Z M120 250 V259 A9 9 0 0 1 111 250 Z"/>
+<text class="mali" x="54" y="304">P0</text><text class="mali" x="126" y="284">P1</text><text class="mali" x="80" y="40">P2</text>
+<text class="mali" x="380" y="40">P3</text><text class="mali" x="380" y="276">P4</text><text class="mali" x="80" y="240">P5</text>
+<text class="mali" x="90" y="266">W</text>
+<line class="l2" x1="120" y1="40" x2="120" y2="14" fill="none"/><line class="l2" x1="360" y1="40" x2="360" y2="14" fill="none"/>
+<line class="l2" x1="120" y1="22" x2="360" y2="22" fill="none"/>
+<polygon class="if" points="120,22 128,19 128,25"/><polygon class="if" points="360,22 352,19 352,25"/>
+<text class="mali" x="240" y="18" text-anchor="middle">100</text>
+<line class="l2" x1="378" y1="58" x2="412" y2="58" fill="none"/><line class="l2" x1="366" y1="250" x2="412" y2="250" fill="none"/>
+<line class="l2" x1="404" y1="58" x2="404" y2="250" fill="none"/>
+<polygon class="if" points="404,58 401,66 407,66"/><polygon class="if" points="404,250 401,242 407,242"/>
+<text class="mali" x="412" y="158">80</text>
+<line class="l" x1="470" y1="290" x2="540" y2="290" fill="none"/><polygon class="if" points="548,290 538,285 538,295"/>
+<line class="l" x1="470" y1="290" x2="470" y2="220" fill="none"/><polygon class="if" points="470,212 465,222 475,222"/>
+<circle class="l" cx="470" cy="290" r="6" fill="none"/><circle class="if" cx="470" cy="290" r="2"/>
+<text class="mali" x="552" y="295">X+</text><text class="mali" x="478" y="220">Y+</text><text class="mali" x="480" y="312">Z+ prema gledatelju</text>
+<text class="mali" x="440" y="100">puna crta: kontura</text>
+<text class="mali" x="440" y="122">crtkano: središte alata</text>
+<text class="mali" x="440" y="144">W: nul-točka obratka</text>
+</svg><figcaption><b>Slika 2.11</b> &mdash; Klizač PS1-01-004 u tlocrtu: nul-točka obratka W u donjem lijevom kutu gornje plohe, programirane točke konture P1&ndash;P5, početna točka P0 i putanja središta glodala Ø10 s korekcijom polumjera lijevo (G41), u smjeru kazaljke na satu.</figcaption></figure>
+<p>Na slici 2.11 nul-točka obratka W postavljena je u donji lijevi kut gornje plohe klizača. Tu je izbor lako objasniti: crtež klizača kotiran je od lijeve i donje plohe, a Z = 0 na gornjoj plohi znači da su sve dubine u programu negativne i odgovaraju dubinama s crteža.</p>
+</section>
+
+<section><h2>Građa programa po ISO 6983 i osnovni kodovi</h2><div class="crta"></div>
+<p>Oblik NC programa opisuje norma <strong>ISO 6983</strong> (primjenjuje se važeće izdanje), poznata kao G-kod. Program se sastoji od <strong>blokova</strong> (rečenica), a blok od <strong>riječi</strong>. Svaka riječ ima <strong>adresu</strong> (slovo) i <strong>vrijednost</strong> (broj): u riječi X100 adresa je X, a vrijednost 100.</p>
+<figure class="crtez"><svg viewBox="0 0 640 230" role="img" aria-label="Slika 2.12: građa NC bloka N100 G01 X100 Y80 F400 s adresama i vrijednostima">
+<rect class="pf" x="24" y="50" width="100" height="48"/><rect class="pf" x="136" y="50" width="90" height="48"/>
+<rect class="cf" x="238" y="50" width="110" height="48"/><rect class="l2" x="238" y="50" width="110" height="48" fill="none"/>
+<rect class="cf" x="360" y="50" width="100" height="48"/><rect class="l2" x="360" y="50" width="100" height="48" fill="none"/>
+<rect class="pf" x="472" y="50" width="144" height="48"/>
+<text x="74" y="80" text-anchor="middle">N100</text><text x="181" y="80" text-anchor="middle">G01</text>
+<text x="293" y="80" text-anchor="middle">X100</text><text x="410" y="80" text-anchor="middle">Y80</text><text x="544" y="80" text-anchor="middle">F400</text>
+<text class="mali" x="320" y="30" text-anchor="middle">jedan blok = jedan redak programa</text>
+<path class="l2" d="M24 108 V116 H124 V108 M136 108 V116 H226 V108 M238 108 V116 H460 V108 M472 108 V116 H616 V108" fill="none"/>
+<text class="mali" x="74" y="138" text-anchor="middle">broj bloka</text>
+<text class="mali" x="181" y="138" text-anchor="middle">uvjet puta</text>
+<text class="mali" x="400" y="138" text-anchor="middle">koordinate cilja</text>
+<text class="mali" x="544" y="138" text-anchor="middle">posmak mm/min</text>
+<line class="l2" x1="256" y1="98" x2="256" y2="176" fill="none"/><line class="l2" x1="310" y1="98" x2="310" y2="196" fill="none"/>
+<text class="mali" x="264" y="180">adresa X</text>
+<text class="mali" x="318" y="200">vrijednost 100</text>
+<text class="mali" x="480" y="190">G01: pravocrtno</text>
+<text class="mali" x="480" y="210">gibanje s posmakom</text>
+</svg><figcaption><b>Slika 2.12</b> &mdash; Građa bloka NC programa: broj bloka N, pripremna funkcija G (uvjet puta), koordinate cilja i posmak F; svaka riječ sastoji se od adrese i vrijednosti.</figcaption></figure>
+<div class="tablica-omot"><table><thead><tr><th>Adresa</th><th>Značenje</th><th>Primjer</th></tr></thead><tbody>
+<tr><td>N</td><td>broj bloka (redni broj rečenice)</td><td>N100</td></tr>
+<tr><td>G</td><td>pripremna funkcija: vrsta gibanja, ravnina, mjere, korekcije</td><td>G01, G90</td></tr>
+<tr><td>X, Y, Z</td><td>koordinate cilja po osima</td><td>X100 Y80 Z-3</td></tr>
+<tr><td>I, J, K</td><td>parametri središta kružnog luka</td><td>I5 J0</td></tr>
+<tr><td>F</td><td>posmak, najčešće u mm/min</td><td>F400</td></tr>
+<tr><td>S</td><td>brzina vrtnje vretena u min⁻¹</td><td>S3800</td></tr>
+<tr><td>T</td><td>broj alata</td><td>T1</td></tr>
+<tr><td>M</td><td>pomoćna funkcija: vreteno, izmjena alata, hlađenje, kraj programa</td><td>M03, M30</td></tr>
+<tr><td>D, H</td><td>broj registra korekcije polumjera, odnosno duljine alata</td><td>D1</td></tr>
+</tbody></table></div>
+<p>Najčešće pripremne i pomoćne funkcije:</p>
+<div class="tablica-omot"><table><thead><tr><th>Kod</th><th>Značenje</th><th>Kod</th><th>Značenje</th></tr></thead><tbody>
+<tr><td>G00</td><td>brzi hod bez obrade</td><td>M00</td><td>programirano zaustavljanje</td></tr>
+<tr><td>G01</td><td>pravocrtna interpolacija s posmakom</td><td>M03 / M04</td><td>vreteno desno / lijevo</td></tr>
+<tr><td>G02 / G03</td><td>kružna interpolacija u smjeru / suprotno od kazaljke</td><td>M05</td><td>zaustavljanje vretena</td></tr>
+<tr><td>G17</td><td>izbor ravnine XY</td><td>M06</td><td>izmjena alata</td></tr>
+<tr><td>G21</td><td>mjere u milimetrima</td><td>M08 / M09</td><td>hlađenje uključeno / isključeno</td></tr>
+<tr><td>G40 / G41 / G42</td><td>bez korekcije / korekcija polumjera lijevo / desno</td><td>M30</td><td>kraj programa s povratkom na početak</td></tr>
+<tr><td>G54</td><td>poziv prvog pomaka nul-točke</td><td>G90 / G91</td><td>apsolutne / inkrementalne mjere</td></tr>
+</tbody></table></div>
+<p>Većina naredbi je <strong>modalna</strong>: vrijedi dok je ne zamijeni druga naredba iste skupine. Nakon G01 svi sljedeći blokovi s koordinatama izvode se pravocrtno s posmakom sve do G00, G02 ili G03, pa se G01 ne ponavlja u svakom retku. Isto vrijedi za F i S. ISO 6983 daje okvir, a proizvođači upravljačkih jedinica dodaju vlastite cikluse i proširenja; zato isti program ne radi uvijek na dva različita stroja, a točno značenje kodova izvan osnovnog skupa uvijek se provjerava u uputi upravljačke jedinice.</p>
+</section>
+
+<section><h2>Apsolutno i inkrementalno programiranje</h2><div class="crta"></div>
+<p>Koordinate u programu mogu se zadavati na dva načina. Uz <strong>G90 (apsolutno)</strong> svaka koordinata je udaljenost od nul-točke obratka W. Uz <strong>G91 (inkrementalno)</strong> svaka koordinata je pomak od trenutačnog položaja alata. Isti obris može se opisati na oba načina, a upravljačka jedinica u oba slučaja vozi alat po istoj putanji.</p>
+<p>Za konturu klizača sa slike 2.11 vrijednosti su:</p>
+<div class="tablica-omot"><table><thead><tr><th>Točka</th><th>Apsolutno X</th><th>Apsolutno Y</th><th>Inkrementalno X</th><th>Inkrementalno Y</th></tr></thead><tbody>
+<tr><td>P0 (početak)</td><td>&minus;15</td><td>&minus;15</td><td>&mdash;</td><td>&mdash;</td></tr>
+<tr><td>P1</td><td>0</td><td>&minus;5</td><td>15</td><td>10</td></tr>
+<tr><td>P2</td><td>0</td><td>80</td><td>0</td><td>85</td></tr>
+<tr><td>P3</td><td>100</td><td>80</td><td>100</td><td>0</td></tr>
+<tr><td>P4</td><td>100</td><td>0</td><td>0</td><td>&minus;80</td></tr>
+<tr><td>P5</td><td>&minus;5</td><td>0</td><td>&minus;105</td><td>0</td></tr>
+</tbody></table></div>
+<p>Pravilo pretvorbe je jednostavno: inkrementalni pomak je razlika apsolutnih koordinata sadašnje i prethodne točke, ΔX = X<sub>i</sub> &minus; X<sub>i&minus;1</sub>. Obratno, apsolutna koordinata je zbroj svih prethodnih pomaka od početne točke. Za kontrolu, zbroj svih pomaka mora biti jednak razlici koordinata posljednje i početne točke: ΣΔX = 15 + 0 + 100 + 0 &minus; 105 = 10 = &minus;5 &minus; (&minus;15) i ΣΔY = 10 + 85 + 0 &minus; 80 + 0 = 15 = 0 &minus; (&minus;15). Kod zatvorene konture, koja završava u početnoj točki, oba zbroja su nula.</p>
+<p><strong>Kada koji način.</strong> Apsolutno programiranje je osnovno: pogreška u jednom bloku ostaje u tom bloku i ne prenosi se dalje, a koordinate se izravno uspoređuju s kotama crteža. Inkrementalno je prikladno za ponavljanje istog uzorka na više mjesta, npr. niz jednakih provrta ili isti utor na više obradaka, jer se isti potprogram poziva s različitih početnih točaka. Njegov je nedostatak što se pogreška u jednom pomaku prenosi na sve sljedeće točke.</p>
+<div class="okvir pazi"><h4>Pažnja</h4><p>G90 i G91 su modalni. Ako potprogram prijeđe na G91, a na kraju se ne vrati na G90, sljedeći blok glavnog programa izvest će se kao pomak umjesto kao položaj, pa alat može udariti u stezni pribor. Na početku svakog programa i nakon svakog potprograma zato se izričito zadaje G90.</p></div>
+</section>
+
+<section><h2>Kotiranje koje olakšava programiranje</h2><div class="crta"></div>
+<p>Način na koji je crtež kotiran izravno određuje koliko je lako i sigurno napisati program. Tri su osnovna načina, i svaki se drukčije prevodi u koordinate.</p>
+<ul>
+<li><strong>Paralelno kotiranje od baze</strong> &mdash; sve kote polaze od iste plohe ili osi. Ako je baza kotiranja ujedno nul-točka obratka W, svaka kota s crteža je gotova apsolutna koordinata. Četiri provrta klizača kotirana od lijevog i donjeg ruba (10 i 90 po X, 10 i 70 po Y) upisuju se u program bez ikakvog računa.</li>
+<li><strong>Lančano kotiranje</strong> &mdash; svaka kota polazi od prethodnog elementa. Kote su tada inkrementalni pomaci, ali odstupanja se zbrajaju: ako svaki od tri lančana razmaka ima dopušteno odstupanje ±0,1 mm, položaj posljednjeg provrta prema bazi može odstupati do ±0,3 mm.</li>
+<li><strong>Koordinatno kotiranje</strong> &mdash; položaji elemenata dani su u tablici koordinata X i Y od označenog ishodišta. To je gotovo izravan popis točaka za program i često se koristi za ploče s mnogo provrta.</li>
+</ul>
+<p>Za provrte klizača usporedba izgleda ovako: apsolutno (10, 10), (90, 10), (90, 70), (10, 70); inkrementalno od W (10, 10), zatim (80, 0), (0, 60), (&minus;80, 0). Kad je crtež kotiran lančano 10 &ndash; 80 &ndash; 10, programer mora zbrajati; kad je kotiran od baze 10 i 90, samo prepisuje.</p>
+<p>Nekoliko preporuka za crtež koji ide na NC stroj:</p>
+<ol class="koraci">
+<li>Kotirajte od funkcijske baze koja se može i steći na stroju: ploha koja naliježe na postolje, os provrta za ležaj.</li>
+<li>Označite bazu jasno i dosljedno u svim projekcijama; kod simetričnih dijelova kotirajte od simetrale, pa W stavite u središte.</li>
+<li>Ne ostavljajte kote koje se moraju računati iz drugih kota. Ako je potrebna i ukupna mjera, dajte je kao pomoćnu kotu u zagradi.</li>
+<li>Kod toleriranih mjera programer programira sredinu tolerancijskog polja: za provrt Ø21 H7 (21,000 do 21,021) to je 21,0105, u praksi 21,01, a ne nazivna mjera.</li>
+<li>Kote bez upisanog odstupanja vrijede prema općim tolerancijama iz zaglavlja; za kotu 80 klizača uz ISO 2768-m to je ±0,3 mm, što je za glodanje konture široko područje.</li>
+</ol>
+</section>
+
+<section><h2>Zaglavlje programa i komentari</h2><div class="crta"></div>
+<p>NC program je dio tehničke dokumentacije i označava se jednako strogo kao crtež. Na početku programa stoji <strong>zaglavlje programa</strong> u obliku komentara: broj programa, broj i indeks crteža, naziv dijela, materijal, položaj nul-točke, popis alata i datum. Komentari se po ISO 6983 pišu u okruglim zagradama i upravljačka ih jedinica ne izvodi; neke upravljačke jedinice koriste i znak točka-zarez.</p>
+<p>Program za jedan prolaz konture klizača, glodalom Ø10 s tri oštrice, glasi:</p>
+<div class="tablica-omot"><pre>%
+O2604 (PS1-01-004 KLIZAC KONTURA)
+(CRTEZ PS1-01-004 IZMJENA B)
+(MATERIJAL EN AW-6082)
+(W DONJI LIJEVI KUT, GORNJA PLOHA)
+(POMAK NUL-TOCKE G54)
+(T1 GLODALO D10, Z3)
+(VC 120 M/MIN, FZ 0,035)
+N10 G21 G17 G40 G90
+N20 G54
+N30 T1 M06
+N40 S3800 M03
+N50 G00 X-15 Y-15
+N60 G00 Z5 M08
+N70 G01 Z-3 F150
+N80 G41 D1 X0 Y-5 F400
+N90 Y80
+N100 X100
+N110 Y0
+N120 X-5
+N130 G40 G00 X-15 Y-15
+N140 G00 Z50 M09
+N150 M05
+N160 M30
+%</pre></div>
+<p>Brojevi u programu nisu slučajni. Brzina vrtnje S3800 dobivena je iz brzine rezanja 120 m/min za glodalo Ø10: n = 1000 · v<sub>c</sub> / (π · D) = 1000 · 120 / (π · 10) ≈ 3820 min⁻¹. Posmak F400 dobiven je iz posmaka po oštrici: F = f<sub>z</sub> · z · n = 0,035 · 3 · 3800 ≈ 400 mm/min. Blok N80 uključuje korekciju polumjera lijevo (G41) na prilaznom gibanju, a blok N130 je isključuje na odlaznom; kontura se zato programira točkama crteža, a upravljačka jedinica sama pomiče središte alata za polumjer.</p>
+<p><strong>Dobra praksa označavanja programa:</strong></p>
+<ul>
+<li>broj programa i ime datoteke povezani su s brojem crteža, tako da se iz jednoga pronađe drugo;</li>
+<li>komentari se pišu velikim slovima bez dijakritičkih znakova, jer ih mnoge upravljačke jedinice ne prikazuju;</li>
+<li>brojevi blokova rastu u koracima od 10, kako bi se pri korekciji na stroju mogli umetnuti blokovi;</li>
+<li>kad se crtež izmijeni, mijenja se i program: novi indeks crteža upisuje se u zaglavlje programa, a stari program se arhivira;</li>
+<li>na kraju programa alat se odmiče na sigurnu visinu prije zaustavljanja vretena i hlađenja.</li>
+</ul>
+<p>Naredbe za korekciju duljine alata i točan oblik izmjene alata razlikuju se među upravljačkim jedinicama, pa su u primjeru izostavljene; u stvarnom programu dopunjuju se prema uputi stroja.</p>
+</section>
+
+<section><h2>Računski prikaz: vrijeme obrade konture</h2><div class="crta"></div>
+<p>Vrijeme rezanja konture računa se iz duljine putanje alata i posmaka: <em>t = L / F</em>. Kod glodanja vanjske pravokutne konture s korekcijom polumjera središte alata prolazi ravne dionice duljine stranica i četiri četvrtine kruga polumjera R = D/2 oko uglova, pa je duljina jednog prolaza L = 2 · (a + b) + π · D. Kad je dubina veća od dubine rezanja po prolazu a<sub>p</sub>, broj prolaza je i = ⌈H / a<sub>p</sub>⌉.</p>
+<p class="formula">L₁ = 2 · (a + b) + π · D &nbsp;&nbsp;·&nbsp;&nbsp; i = ⌈H / a<sub>p</sub>⌉ &nbsp;&nbsp;·&nbsp;&nbsp; t = i · L₁ / F</p>
+<div class="racun" id="r26"><div class="racun-h"><b>Vrijeme glodanja vanjske konture</b><em>Računski prikaz</em></div><p>Računa duljinu putanje središta glodala oko pravokutne konture s korekcijom polumjera, broj prolaza po dubini i vrijeme rezanja iz posmaka.</p><div class="polja"><div class="polje"><label for="r26-a">Duljina konture a<output id="r26-a-out" for="r26-a" data-jed=" mm">100 mm</output></label><input type="range" id="r26-a" data-ulaz="a" min="20" max="400" step="5" value="100"></div><div class="polje"><label for="r26-b">Širina konture b<output id="r26-b-out" for="r26-b" data-jed=" mm">80 mm</output></label><input type="range" id="r26-b" data-ulaz="b" min="20" max="300" step="5" value="80"></div><div class="polje"><label for="r26-D">Promjer glodala D<output id="r26-D-out" for="r26-D" data-jed=" mm">10 mm</output></label><input type="range" id="r26-D" data-ulaz="D" min="2" max="25" step="1" value="10"></div><div class="polje"><label for="r26-H">Ukupna dubina H<output id="r26-H-out" for="r26-H" data-jed=" mm">15 mm</output></label><input type="range" id="r26-H" data-ulaz="H" min="1" max="40" step="1" value="15"></div><div class="polje"><label for="r26-ap">Dubina po prolazu<output id="r26-ap-out" for="r26-ap" data-jed=" mm">3 mm</output></label><input type="range" id="r26-ap" data-ulaz="ap" min="0.5" max="10" step="0.5" value="3"></div><div class="polje"><label for="r26-F">Posmak F<output id="r26-F-out" for="r26-F" data-jed=" mm/min">400 mm/min</output></label><input type="range" id="r26-F" data-ulaz="F" min="50" max="2000" step="10" value="400"></div></div><div class="ishod"><div class="ish"><span>Putanja jednog prolaza</span><b id="r26-o-L1">&mdash;</b></div><div class="ish"><span>Broj prolaza</span><b id="r26-o-i">&mdash;</b></div><div class="ish"><span>Ukupna putanja</span><b id="r26-o-L">&mdash;</b></div><div class="ish"><span>Vrijeme rezanja</span><b id="r26-o-t">&mdash;</b></div></div><p class="poruka" id="r26-poruka"></p></div>
+<p>Za klizač 100 × 80 i glodalo Ø10 duljina jednog prolaza je 2 · 180 + π · 10 = 391,4 mm. Uz dubinu 15 mm i 3 mm po prolazu potrebno je 5 prolaza, ukupno 1957 mm putanje. Uz posmak 400 mm/min vrijeme rezanja je 4,89 min, odnosno oko 4 min 54 s. Brzi hodovi G00, prilaz i odmak, izmjena alata i stezanje nisu uračunati, pa je stvarno vrijeme na stroju dulje. Udvostručenje dubine rezanja po prolazu na 6 mm smanjuje broj prolaza na 3 i vrijeme na 2,94 min, ali opterećenje glodala Ø10 u aluminiju tada treba provjeriti prema preporukama proizvođača alata.</p>
+</section>
+
+<section><h2>Ključni pojmovi</h2><div class="crta"></div>
+<div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody>
+<tr><td>G-kod</td><td>jezik NC programa po ISO 6983; program se sastoji od blokova, a blok od riječi s adresom i vrijednošću</td></tr>
+<tr><td>Nul-točka stroja M</td><td>ishodište mjernog sustava stroja koje određuje proizvođač</td></tr>
+<tr><td>Nul-točka obratka W</td><td>ishodište koordinata programa, bira se prema bazi kotiranja crteža i poziva s G54</td></tr>
+<tr><td>Modalna naredba</td><td>naredba koja vrijedi dok je ne zamijeni druga iz iste skupine (G01, G90, F, S)</td></tr>
+<tr><td>Apsolutne mjere G90</td><td>koordinate su udaljenosti od nul-točke obratka</td></tr>
+<tr><td>Inkrementalne mjere G91</td><td>koordinate su pomaci od trenutačnog položaja alata</td></tr>
+<tr><td>Korekcija polumjera G41/G42</td><td>upravljačka jedinica pomiče središte alata za polumjer lijevo ili desno od programirane konture</td></tr>
+<tr><td>Zaglavlje programa</td><td>komentari na početku programa s brojem crteža, indeksom izmjene, materijalom, nul-točkom i alatima</td></tr>
+</tbody></table></div>
+</section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="4" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="2"><p class="brojac">Pitanje 1 od 4</p><p class="pit">Što je nul-točka obratka W?</p><div class="odg"><button type="button">ishodište mjernog sustava stroja koje određuje proizvođač</button><button type="button">točka koju stroj traži nakon uključenja</button><button type="button">ishodište koordinata programa koje bira programer, najčešće prema bazi kotiranja</button><button type="button">vrh alata u trenutku izmjene alata</button></div><p class="obraz">Nul-točku obratka bira programer, obično na bazi kotiranja crteža, a na stroju se postavlja pomakom nul-točke koji se poziva s G54.</p></div><div class="kviz" data-tocno="2"><p class="brojac">Pitanje 2 od 4</p><p class="pit">Alat je u točki X0 Y80, a sljedeća točka je X100 Y80. Koji blok u inkrementalnom načinu dovodi alat u tu točku?</p><div class="odg"><button type="button">G91 X100 Y80</button><button type="button">G90 X100</button><button type="button">G91 X100 Y0</button><button type="button">G91 X-100</button></div><p class="obraz">Inkrementalni pomak je razlika koordinata: ΔX = 100 - 0 = 100, ΔY = 80 - 80 = 0, pa blok glasi G91 X100 Y0.</p></div><div class="kviz" data-tocno="0"><p class="brojac">Pitanje 3 od 4</p><p class="pit">Zašto je za NC obradu povoljno paralelno kotiranje od baze?</p><div class="odg"><button type="button">jer se svaka kota izravno upisuje kao apsolutna koordinata ako je baza ujedno nul-točka obratka</button><button type="button">jer se tako smanjuje broj kota na crtežu</button><button type="button">jer upravljačke jedinice ne podržavaju inkrementalne mjere</button><button type="button">jer se odstupanja tako zbrajaju</button></div><p class="obraz">Kad je baza kotiranja nul-točka obratka W, kote s crteža su gotove apsolutne koordinate i nema zbrajanja odstupanja kao kod lančanog kotiranja.</p></div><div class="kviz" data-tocno="3"><p class="brojac">Pitanje 4 od 4</p><p class="pit">Kontura ima putanju jednog prolaza 391,4 mm, a obrađuje se u 5 prolaza s posmakom 400 mm/min. Koliko je vrijeme rezanja?</p><div class="odg"><button type="button">0,98 min</button><button type="button">2,94 min</button><button type="button">9,79 min</button><button type="button">4,89 min</button></div><p class="obraz">t = 5 · 391,4 / 400 = 4,89 min, odnosno oko 4 min 54 s bez brzih hodova i izmjene alata.</p></div><p class="rezultat">Odgovoreno 0 od 4.</p></div></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="2-5-zaglavlje-i-sastavnica.html">&#8592; 2.5 Zaglavlje, sastavnica i označavanje dokumentacije</a><a class="gumb" href="m2-aktivnosti-za-samostalno-ucenje.html">Aktivnosti za samostalno učenje <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-tehnicka-dokumentacija-2-6-g-kod-i-oznacavanje-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+(function(){
+  var k = document.getElementById('r26'); if(!k) return;
+  var jedinice = {"L1": "mm", "i": "", "L": "mm", "t": "min"};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){
+
+var L1 = 2 * (v.a + v.b) + Math.PI * v.D;
+var ap = v.ap > 0 ? v.ap : 0.5;
+var i = Math.max(1, Math.ceil(v.H / ap - 1e-9));
+var L = i * L1;
+var F = v.F > 0 ? v.F : 1;
+var t = L / F;
+var min = Math.floor(t);
+var s = Math.round((t - min) * 60);
+if (s === 60) { min += 1; s = 0; }
+var p = 'Vrijeme rezanja je ' + min + ' min ' + s + ' s. ';
+p += ap > v.D ? 'Dubina po prolazu veća je od promjera glodala; provjerite preporuke za alat.' : 'Brzi hodovi, prilaz, odmak i izmjena alata nisu uračunati.';
+return { L1: L1.toFixed(1), i: String(i), L: L.toFixed(0), t: t.toFixed(2), _poruka: p };
+
+  }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = {};
+    try { r = racunaj(v) || {}; } catch(err) { r = { _poruka: '' }; }
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r26-o-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small> ' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r26-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+
+</script>
+</body>
+</html>
