@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3.4 Interakcija: hvatanje, puštanje i točke interesa — Virtualna stvarnost | FORTRONIQ</title>
+<meta name="description" content="Interakcija je razlog zašto je laboratorij VR-1 u virtualnoj stvarnosti, a ne na zaslonu: dijelovi robota uzimaju se rukom, prebacuju iz ruke u ruku i postavljaju na mjesto,…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/virtualna-stvarnost/3-4-interakcija.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/virtualna-stvarnost/3-4-interakcija.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/virtualna-stvarnost/3-4-interakcija.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/virtualna-stvarnost/3-4-interakcija.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="3.4 Interakcija: hvatanje, puštanje i točke interesa">
+<meta property="og:description" content="Interakcija je razlog zašto je laboratorij VR-1 u virtualnoj stvarnosti, a ne na zaslonu: dijelovi robota uzimaju se rukom, prebacuju iz ruke u ruku i postavljaju na mjesto,…">
+<meta property="og:url" content="https://dos.fortroniq.hr/virtualna-stvarnost/3-4-interakcija.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- dodaci DOS graditelja */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+figure.crtez .st{stroke-dasharray:14 4 2 4}
+pre{overflow-x:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.8rem 1rem;font-size:.86rem;line-height:1.45}
+pre code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Virtualna stvarnost</a><i aria-hidden="true">/</i><a href="m3-razvoj-okruzenja.html">3. Razvoj okruženja virtualne stvarnosti</a><i aria-hidden="true">/</i><span aria-current="page">3.4 Interakcija: hvatanje, puštanje i točke interesa</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 3 &middot; RAZVOJ OKRUŽENJA VIRTUALNE STVARNOSTI</p><p class="nadnaslov">Nastavna jedinica 3.4</p><h1>Interakcija: hvatanje, puštanje i točke interesa</h1><p>Interakcija je razlog zašto je laboratorij VR-1 u virtualnoj stvarnosti, a ne na zaslonu: dijelovi robota uzimaju se rukom, prebacuju iz ruke u ruku i postavljaju na mjesto, a točke interesa otkrivaju što koji dio radi. Jedinica pokazuje tok hvatanja i puštanja te načelo jedne logike točke interesa za sve ulaze &mdash; od miša do dodira prstom.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>razlikovati izravnu i daljinsku interakciju te ulogu onoga tko djeluje i predmeta na koji se djeluje</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izvesti tok hvatanja i puštanja s histerezom, pričvršćivanjem i predajom brzine</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>rasporediti funkcije na okidač, hvatište i dodirnu podlogu kontrolera</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ostvariti prebacivanje predmeta iz ruke u ruku bez pada i postavljanje na ciljno mjesto</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izraditi točku interesa s jednom logikom za lebdenje i odabir koju pozivaju različiti ulazi</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>povezati odabir točke interesa s porukom prema simulaciji robota</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati kutnu veličinu mete i pomak zrake zbog podrhtavanja ruke</span></li></ul></div></div></header><div class="omot"><section><h2>Tko djeluje i na što</h2><div class="crta"></div>
+<p>Svaka interakcija ima dvije strane. Na jednoj je ono <strong>što djeluje</strong> (engl. <em>interactor</em>): ruka, zraka iz kontrolera, pogled, vrh prsta, pokazivač miša. Na drugoj je <strong>predmet na koji se djeluje</strong> (engl. <em>interactable</em>): kotač koji se može uhvatiti, gumb na panelu, točka interesa na motoru. Razdvajanje tih dviju strana je temelj urednog projekta: kotač ne mora znati kojom ga je rukom korisnik uhvatio, a ruka ne mora znati je li u njoj kotač ili baterija.</p>
+<p>U laboratoriju VR-1 koriste se dvije vrste interakcije:</p>
+<ul>
+<li><strong>izravna</strong> (engl. <em>direct</em>, <em>near</em>) &mdash; predmet u dohvatu ruke, do 0,8 m od korisnika, uzima se rukom kao u stvarnosti;</li>
+<li><strong>daljinska</strong> (engl. <em>distance</em>, <em>ray</em>) &mdash; zraka iz kontrolera doseže do 3 m; služi za točke interesa, panele i dijelove koji su pali na drugi kraj stola.</li>
+</ul>
+<p>Obje vrste koriste iste akcije iz jedinice 3.3 (Uhvati, Odaberi), samo je način pronalaženja predmeta drukčiji: za izravnu se traži preklapanje male sfere na ruci s kolizijskim oblikom predmeta, a za daljinsku presjek zrake s kolizijskim oblikom (engl. <em>line trace</em>, <em>raycast</em>). Bez kolizijskog oblika predmet se ne može ni uhvatiti ni odabrati &mdash; to je prva stvar koju treba provjeriti kad „ništa ne reagira".</p>
+<p>U okruženju s nacrtima (npr. Unreal Engine) predložak VR projekta obično donosi komponentu za hvatanje koja se dodaje predmetu i logiku u pijunu koja traži najbliži takav predmet. U okruženju s C# skriptama (npr. Unity s paketom za XR interakciju) postoje gotove komponente za obje strane: na ruke se stavljaju komponente za izravnu interakciju i zraku, a na predmet komponenta predmeta koji se može uhvatiti. Nazivi i mogućnosti tih komponenti razlikuju se po inačici.</p>
+</section>
+
+<section><h2>Tok hvatanja i puštanja</h2><div class="crta"></div>
+<p>Hvatanje izgleda jednostavno, ali ima nekoliko koraka koji se moraju dogoditi točno ovim redom. Slika 3.4.1 prikazuje tok za jedan dio robota.</p>
+<figure class="crtez"><svg viewBox="0 0 640 400" role="img" aria-label="Slika 3.4.1: tok hvatanja i puštanja dijela od preklapanja sfere hvata do postavljanja na cilj ili otpuštanja s fizikom">
+<rect class="pf" x="20" y="30" width="130" height="56" rx="8"/><text x="30" y="54">Preklapanje</text><text class="mali" x="30" y="75">sfera hvata</text>
+<rect class="pf" x="175" y="30" width="130" height="56" rx="8"/><text x="185" y="54">Najbliži</text><text class="mali" x="185" y="75">dio u dosegu</text>
+<rect class="cf" x="330" y="30" width="130" height="56" rx="8"/><text x="340" y="54">Hvat &gt; 0,6?</text><text class="mali" x="340" y="75">pritisak</text>
+<rect class="pf" x="490" y="30" width="130" height="56" rx="8"/><text x="500" y="54">Pričvrsti</text><text class="mali" x="500" y="75">bez fizike</text>
+<rect class="cf" x="490" y="190" width="130" height="56" rx="8"/><text x="500" y="214">Hvat &lt; 0,4?</text><text class="mali" x="500" y="235">puštanje</text>
+<rect class="cf" x="330" y="190" width="130" height="56" rx="8"/><text x="340" y="214">Blizu cilja?</text><text class="mali" x="340" y="235">15 mm, 10°</text>
+<rect class="pf" x="175" y="190" width="130" height="56" rx="8"/><text x="185" y="214">Na cilj</text><text class="mali" x="185" y="235">Dio postavljen</text>
+<rect class="pf" x="330" y="320" width="130" height="56" rx="8"/><text x="340" y="344">Otpusti</text><text class="mali" x="340" y="365">fizika, brzina</text>
+<line class="t" x1="150" y1="58" x2="167" y2="58" fill="none"/><path class="if" d="M167 52 L175 58 L167 64 Z"/>
+<line class="t" x1="305" y1="58" x2="322" y2="58" fill="none"/><path class="if" d="M322 52 L330 58 L322 64 Z"/>
+<line class="t" x1="460" y1="58" x2="482" y2="58" fill="none"/><path class="if" d="M482 52 L490 58 L482 64 Z"/>
+<text class="mali" x="462" y="24">da</text>
+<line class="t" x1="555" y1="86" x2="555" y2="182" fill="none"/><path class="if" d="M549 182 L555 190 L561 182 Z"/>
+<line class="t" x1="490" y1="218" x2="468" y2="218" fill="none"/><path class="if" d="M468 212 L460 218 L468 224 Z"/>
+<text class="mali" x="464" y="184">da</text>
+<line class="t" x1="330" y1="218" x2="313" y2="218" fill="none"/><path class="if" d="M313 212 L305 218 L313 224 Z"/>
+<text class="mali" x="308" y="184">da</text>
+<line class="t" x1="395" y1="246" x2="395" y2="312" fill="none"/><path class="if" d="M389 312 L395 320 L401 312 Z"/>
+<text class="mali" x="404" y="286">ne</text>
+<polyline class="l2 dash" points="395,86 395,120 250,120" fill="none"/><text class="mali" x="176" y="140">ne: čekaj</text>
+<polyline class="l2 dash" points="620,218 632,218 632,140 575,140" fill="none"/><text class="mali" x="572" y="132">ne: drži</text>
+<text class="mali" x="20" y="300">druga ruka uhvati</text>
+<text class="mali" x="20" y="320">= prebacivanje</text>
+</svg><figcaption><b>Slika 3.4.1</b> &mdash; Tok hvatanja i puštanja dijela robota. Pragovi 0,6 i 0,4 daju histerezu, a tolerancija cilja uzeta je iz jedinice 3.2.</figcaption></figure>
+<ol class="koraci">
+<li><strong>Otkrivanje.</strong> Sfera na ruci (u primjeru VR-1 polumjera 12 cm, kao u vježbi V11) prijavljuje sve predmete s kojima se preklapa. Ako ih je više, bira se najbliži središtu sfere. Dobra praksa je istaknuti predmet koji bi bio uhvaćen, da korisnik zna što će uzeti.</li>
+<li><strong>Hvatanje.</strong> Kad vrijednost hvatišta prijeđe 0,6, predmet se pričvrsti na točku hvata ruke, a njegova se fizika isključi da ga gravitacija i sudari ne otimaju iz ruke. Pritom se bira način: predmet zadrži položaj u kojem je uhvaćen (prirodnije za velike dijelove poput šasije) ili se priljubi na unaprijed zadanu točku hvata (bolje za alate i dijelove s jasnim hvatištem).</li>
+<li><strong>Držanje.</strong> Predmet se svaki okvir kreće s rukom. Kratka vibracija kontrolera pri hvatanju potvrđuje da je predmet uhvaćen.</li>
+<li><strong>Puštanje.</strong> Kad hvatište padne ispod 0,4, predmet se odvoji. Ako je blizu ciljnog mjesta na šasiji, postavlja se na cilj i objavljuje se događaj „Dio postavljen" (jedinica 3.2). Inače se uključi fizika i predmetu se preda brzina ruke, izračunata kao prosjek zadnjih nekoliko okvira, da ga korisnik može i baciti.</li>
+</ol>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Kad se predmet pusti s isključenom predajom brzine, „zaleđuje" se u zraku ili pada okomito, što korisnik doživljava kao grešku. Kad se preda brzina samo zadnjeg okvira, bacanje je nepredvidljivo jer je zadnji okvir često trzaj pri otvaranju šake. Prosjek nekoliko okvira je stabilniji.</p></div>
+</section>
+
+<section><h2>Okidač, hvatište i dodirna podloga</h2><div class="crta"></div>
+<p>Kontroleri imaju slične tipke, ali ne i isti raspored. Zato se funkcije dodjeljuju ulaznim akcijama, a akcije tipkama. Za VR-1 dogovoren je raspored koji prati prirodni pokret ruke:</p>
+<div class="tablica-omot"><table><thead><tr><th>Element kontrolera</th><th>Pokret</th><th>Funkcija u VR-1</th></tr></thead><tbody>
+<tr><td>hvatište (engl. <em>grip</em>)</td><td>stiskanje srednjeg, prstenjaka i malog prsta</td><td>uhvati i drži dio; pusti otvaranjem šake</td></tr>
+<tr><td>okidač (engl. <em>trigger</em>)</td><td>savijanje kažiprsta</td><td>odabir točke interesa ili gumba na panelu; u ruci s alatom njegovo djelovanje</td></tr>
+<tr><td>dodirna podloga ili palčana palica (engl. <em>touchpad</em>, <em>thumbstick</em>)</td><td>palac</td><td>teleport i okretanje (jedinica 3.5); dok se drži dio, okretanje dijela</td></tr>
+<tr><td>tipke uz palac</td><td>pritisak palcem</td><td>prikaz ili skrivanje panela, vraćanje dijela na početno mjesto</td></tr>
+</tbody></table></div>
+<p>Kod kontrolera s dodirnom podlogom umjesto palice, podloga se dijeli na područja (npr. gornji dio za teleport, lijevi i desni za okret) ili se razlikuje dodir od pritiska. Takvo vezanje obavlja se u kontekstu mapiranja za taj profil interakcije, a logika hvatanja ostaje nepromijenjena.</p>
+<p>Dobra praksa: istu funkciju ne stavljati na dva elementa i ne mijenjati značenje tipke bez vidljivog znaka. Ako okidač u jednom trenutku odabire, a u drugom baca, korisnik će griješiti.</p>
+</section>
+
+<section><h2>Prebacivanje iz ruke u ruku i postavljanje na cilj</h2><div class="crta"></div>
+<p>Pri sklapanju robota korisnik često drži šasiju lijevom rukom, a desnom stavlja motor. Ponekad želi i predati dio iz jedne ruke u drugu. Pravilo koje to omogućuje je jednostavno: <strong>svaki predmet ima najviše jednog vlasnika</strong>. Predmet pamti koja ga ruka drži. Kad ga druga ruka uhvati, predmet najprije obavijesti prvu ruku da ga je izgubila, a zatim se pričvrsti na drugu. Između tih dvaju koraka fizika se ne uključuje, pa predmet ne padne.</p>
+<p>Alternativa je <strong>dvoručno hvatanje</strong>, kod kojeg obje ruke drže isti predmet i zajedno određuju njegov položaj i orijentaciju. Za dijelove robota MR-1 (najveći je šasija 220 × 180 mm) to nije potrebno; za duge predmete poput cijevi ili letve jest.</p>
+<p><strong>Postavljanje na cilj</strong> (engl. <em>snap</em>, <em>socket</em>) je završni korak sklapanja. Na šasiji su nevidljiva ciljna mjesta za motore, kotače, bateriju i ostale dijelove. Kad korisnik pusti dio unutar tolerancije, dio se glatko privuče na točan položaj, a na mjestu cilja se prije toga može prikazati prozirna „sjena" dijela kao vodilica. Ako je redoslijed važan (npr. poklopac tek nakon pločice), ciljno mjesto poklopca aktivira se tek kad je pločica postavljena.</p>
+<div class="okvir"><h4>Primjer iz ispitivanja VR-1</h4><p>Jedan od dvaju palih testnih slučajeva bio je hvatanje prekidača ispod ruba stola. Tipični uzroci takve greške, koje treba provjeriti redom: kolizijski oblik stola veći je od vidljive ploče pa sfera hvata ili zraka najprije pogađa stol; kolizijski oblik malog dijela premalen je za pouzdano otkrivanje; pri odabiru najbližeg statični objekt ima jednaku prednost kao dio. Odgovarajuća rješenja su kolizijski oblik stola prilagođen stvarnoj ploči, kolizijski oblik za hvatanje malih dijelova veći od njihove vidljive mreže i prednost dijelova pred statičnim objektima.</p></div>
+</section>
+
+<section><h2>Točke interesa: jedna logika, više ulaza</h2><div class="crta"></div>
+<p><strong>Točka interesa</strong> (engl. <em>point of interest</em>, POI) je mjesto na modelu koje reagira na pozornost korisnika: kad je pokazivač iznad nje, istakne se i prikaže natpis; kad je odabrana, otvori se panel s objašnjenjem, pusti animacija ili se pošalje naredba. VR-1 ima šest točaka interesa: motor, kotač, bateriju, upravljačku pločicu, senzor udaljenosti i prekidač.</p>
+<p>Ključno načelo: <strong>točka interesa ne zna ništa o ulazu</strong>. Ona je jedna komponenta s tri javne funkcije &mdash; <code>HoverEnter</code> (pokazivač je ušao), <code>HoverExit</code> (pokazivač je izašao) i <code>Select</code> (odabir). Miš, pogled, zraka kontrolera, zraka iz ruke i dodir prstom samo su različiti <em>ulazi</em> koji na pogođenoj točki pozivaju te iste tri funkcije.</p>
+<figure class="crtez"><svg viewBox="0 0 640 360" role="img" aria-label="Slika 3.4.2: pet ulaza poziva iste tri funkcije točke interesa, koja upravlja isticanjem, natpisom, panelom i porukom simulatoru">
+<rect class="pf" x="20" y="20" width="150" height="40" rx="6"/><text x="32" y="46">Miš</text>
+<rect class="pf" x="20" y="84" width="150" height="40" rx="6"/><text x="32" y="110">Pogled</text>
+<rect class="pf" x="20" y="148" width="150" height="40" rx="6"/><text x="32" y="174">Kontroler</text>
+<rect class="pf" x="20" y="212" width="150" height="40" rx="6"/><text x="32" y="238">Zraka iz ruke</text>
+<rect class="pf" x="20" y="276" width="150" height="40" rx="6"/><text x="32" y="302">Dodir prstom</text>
+<rect class="cf" x="230" y="80" width="180" height="180" rx="10"/><text x="244" y="112">Točka interesa</text>
+<text class="mali" x="244" y="150">HoverEnter()</text><text class="mali" x="244" y="180">HoverExit()</text><text class="mali" x="244" y="210">Select()</text>
+<text class="mali" x="244" y="240">brojač lebdenja</text>
+<line class="t" x1="200" y1="40" x2="200" y2="296" fill="none"/>
+<line class="t" x1="170" y1="40" x2="200" y2="40" fill="none"/>
+<line class="t" x1="170" y1="104" x2="200" y2="104" fill="none"/>
+<line class="t" x1="170" y1="168" x2="200" y2="168" fill="none"/>
+<line class="t" x1="170" y1="232" x2="200" y2="232" fill="none"/>
+<line class="t" x1="170" y1="296" x2="200" y2="296" fill="none"/>
+<line class="t" x1="200" y1="170" x2="222" y2="170" fill="none"/><path class="if" d="M222 164 L230 170 L222 176 Z"/>
+<rect class="pf" x="470" y="40" width="150" height="40" rx="6"/><text x="482" y="66">Isticanje</text>
+<rect class="pf" x="470" y="110" width="150" height="40" rx="6"/><text x="482" y="136">Natpis</text>
+<rect class="pf" x="470" y="180" width="150" height="40" rx="6"/><text x="482" y="206">Panel</text>
+<rect class="pf" x="470" y="250" width="150" height="40" rx="6"/><text x="482" y="276">Simulator</text>
+<polyline class="l" points="410,130 426,130 426,60 462,60" fill="none"/><path class="if" d="M462 55 L470 60 L462 65 Z"/>
+<polyline class="l" points="410,150 440,150 440,130 462,130" fill="none"/><path class="if" d="M462 125 L470 130 L462 135 Z"/>
+<polyline class="l" points="410,190 440,190 440,200 462,200" fill="none"/><path class="if" d="M462 195 L470 200 L462 205 Z"/>
+<polyline class="l" points="410,210 426,210 426,270 462,270" fill="none"/><path class="if" d="M462 265 L470 270 L462 275 Z"/>
+<text class="mali" x="20" y="346">ulazi: zamjenjivi</text>
+<text class="mali" x="244" y="290">jedna logika</text>
+<text class="mali" x="470" y="316">izlazi</text>
+</svg><figcaption><b>Slika 3.4.2</b> &mdash; Točka interesa kao jedna komponenta: svi ulazi pozivaju iste tri funkcije, a točka sama odlučuje što istaknuti, prikazati ili poslati.</figcaption></figure>
+<p>Nekoliko pravila čini logiku otpornom:</p>
+<ul>
+<li><strong>brojač lebdenja</strong> &mdash; više ulaza može istodobno biti na istoj točki (obje ruke, zraka i pogled). Točka broji ulaske i izlaske i gasi isticanje tek kad brojač padne na nulu;</li>
+<li><strong>jedan otvoren panel</strong> &mdash; odabir nove točke zatvara panel prethodne;</li>
+<li><strong>panel okrenut korisniku</strong> &mdash; natpis i panel svaki se okvir okreću prema kameri, ali samo oko okomite osi, da se tekst ne naginje;</li>
+<li><strong>globalna obavijest</strong> &mdash; pri odabiru točka objavi događaj sa svojom oznakom (npr. <code>POI_motor</code>) na koji se može prijaviti bilo tko, pa i most prema simulaciji robota.</li>
+</ul>
+<p>Oznake točaka interesa dobro je postaviti već u programu za slobodno modeliranje (npr. Blender) kao prazne objekte s jasnim imenima (<code>POI_motor</code>, <code>POI_senzor</code>). Pri izvozu u glTF ili FBX oni dolaze u razvojno okruženje kao prazni objekti na točnim položajima, pa se komponenta točke interesa samo doda na njih, uz kolizijski oblik.</p>
+</section>
+
+<section><h2>Ulazi: najprije miš, zatim XR</h2><div class="crta"></div>
+<p>Preporučeni redoslijed rada je: <strong>najprije inačica za računalo s mišem</strong>, dok logika točaka interesa ne radi besprijekorno, a <strong>tek onda XR ulazi</strong>. Tako se logika razvija i ispituje bez naočala, više polaznika može raditi istodobno, a kad se doda XR, jedina nova stvar je ulaz &mdash; ne i logika. Ulaz mišem je zraka iz kamere kroz položaj pokazivača na zaslonu; ona pogodi kolizijski oblik, a skripta na pogođenom objektu pozove funkcije točke interesa.</p>
+<p>Primjer u C# skriptama: jezgra točke interesa i ulaz mišem. <em>Kratki vlastiti primjer za razumijevanje, nije ispitan; provjerite ga u vlastitoj inačici okruženja. Položaj miša ovdje se čita starijim sustavom ulaza; u novijem sustavu ulaza čita se drugačije. Svaka klasa ide u vlastitu datoteku istog imena (TockaInteresa.cs, MisPokazivac.cs).</em></p>
+<pre><code>using UnityEngine;
+
+public class TockaInteresa : MonoBehaviour
+{
+    public string oznaka = "POI_motor";
+    public GameObject natpis, panel;
+    public static event System.Action&lt;TockaInteresa&gt; Odabrana;
+    int lebdenja = 0;
+
+    public void HoverEnter() { if (++lebdenja == 1 &amp;&amp; natpis) natpis.SetActive(true); }
+    public void HoverExit()  { lebdenja = Mathf.Max(0, lebdenja - 1);
+                               if (lebdenja == 0 &amp;&amp; natpis) natpis.SetActive(false); }
+    public void Select()     { if (panel) panel.SetActive(!panel.activeSelf); Odabrana?.Invoke(this); }
+}
+
+// --- MisPokazivac.cs (također počinje s using UnityEngine;) ---
+public class MisPokazivac : MonoBehaviour
+{
+    public Camera kamera;
+    TockaInteresa trenutna;
+
+    void Update()
+    {
+        TockaInteresa pogodak = null;
+        Ray zraka = kamera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(zraka, out RaycastHit hit, 10f))
+            pogodak = hit.collider.GetComponentInParent&lt;TockaInteresa&gt;();
+        if (pogodak != trenutna)
+        {
+            if (trenutna) trenutna.HoverExit();
+            trenutna = pogodak;
+            if (trenutna) trenutna.HoverEnter();
+        }
+        if (trenutna &amp;&amp; Input.GetMouseButtonDown(0)) trenutna.Select();
+    }
+}</code></pre>
+<p>Za XR se ne mijenja jezgra. U paketu za XR interakciju postoji jednostavan interaktivni objekt koji objavljuje događaje ulaska lebdenja, izlaska lebdenja i početka odabira; oni se u inspektoru ili kratkom skriptom-mostom spoje na <code>HoverEnter</code>, <code>HoverExit</code> i <code>Select</code>. Nakon toga točku okidaju zraka kontrolera s okidačem, zraka iz ruke s prstohvatom, dodir prstom i pogled. Kod pogleda odabir se radi <strong>zadržavanjem pogleda</strong> (engl. <em>dwell</em>), obično oko jedne sekunde uz vidljiv kružni pokazatelj, ili pogledom uz gestu. Točno trajanje odredite probom s korisnicima.</p>
+<p>U okruženju s nacrtima isto se postiže <strong>sučeljem</strong> (jedinica 3.2), npr. <code>BPI_TockaInteresa</code> s tri funkcije. Svaki ulaz &mdash; trag zrake iz kamere za miš, iz poze ciljanja za kontroler, iz sredine kamere za pogled &mdash; na pogođenom objektu provjeri ostvaruje li sučelje i pozove njegovu funkciju.</p>
+<p><strong>Veza sa simulacijom robota.</strong> Kad je točka odabrana, globalni događaj nosi njezinu oznaku. Mala komponenta-most prijavi se na taj događaj i pošalje poruku programu za simulaciju robota (npr. „POI_motor" ili „kreni na točku 3"), a simulator vraća kutove zglobova ili stanje po kojem se model u sceni pomakne. Most se izvodi u jedinici 3.6; ovdje je važno samo da ga točka interesa ne treba poznavati.</p>
+</section>
+
+<section><h2>Računski prikaz: veličina mete i podrhtavanje zrake</h2><div class="crta"></div>
+<p>Zraka iz ruke nikad nije potpuno mirna. Mali kutni nemir ruke na većoj udaljenosti postaje velik pomak točke na meti. Kutna veličina mete promjera D na udaljenosti L i pomak točke zrake zbog kutnog podrhtavanja φ računaju se ovako:</p>
+<p class="formula">α = 2 · arctg(D / 2L) &nbsp;·&nbsp; n<sub>px</sub> = α · PPD &nbsp;·&nbsp; s = L · tg φ</p>
+<div class="racun" id="r34"><div class="racun-h"><b>Kutna veličina mete i podrhtavanje zrake</b><em>Računski prikaz</em></div><p>Računa koliko je velika meta u stupnjevima i pikselima te koliko se točka zrake pomiče na meti zbog kutnog podrhtavanja ruke.</p><div class="polja"><div class="polje"><label for="r34-d">Promjer kolizijskog oblika mete<output id="r34-d-out" for="r34-d" data-jed=" mm">60 mm</output></label><input type="range" id="r34-d" data-ulaz="d" min="10" max="200" step="5" value="60"></div><div class="polje"><label for="r34-L">Udaljenost do mete<output id="r34-L-out" for="r34-L" data-jed=" m">3 m</output></label><input type="range" id="r34-L" data-ulaz="L" min="0.3" max="5" step="0.1" value="3.0"></div><div class="polje"><label for="r34-ppd">Piksela po stupnju<output id="r34-ppd-out" for="r34-ppd" data-jed="">21</output></label><input type="range" id="r34-ppd" data-ulaz="ppd" min="10" max="40" step="1" value="21"></div><div class="polje"><label for="r34-fi">Kutno podrhtavanje zrake<output id="r34-fi-out" for="r34-fi" data-jed=" °">0,5 °</output></label><input type="range" id="r34-fi" data-ulaz="fi" min="0.1" max="2" step="0.1" value="0.5"></div></div><div class="ishod"><div class="ish"><span>Kutna veličina mete</span><b id="r34-o-K">&mdash;</b></div><div class="ish"><span>Promjer mete na zaslonu</span><b id="r34-o-PX">&mdash;</b></div><div class="ish"><span>Pomak točke zrake na meti</span><b id="r34-o-S">&mdash;</b></div><div class="ish"><span>Omjer polumjera mete i pomaka</span><b id="r34-o-O">&mdash;</b></div></div><p class="poruka" id="r34-poruka"></p></div>
+<p>Za kolizijski oblik točke interesa promjera 60 mm na granici dosega zrake od 3 m meta zauzima 1,15°, odnosno oko 24 piksela na uređaju A (21 piksel po stupnju). Uz pretpostavljeno podrhtavanje od 0,5° točka zrake se pomiče oko 26 mm &mdash; gotovo koliko i polumjer mete od 30 mm, pa korisnik „promašuje" metu koju jasno vidi. Na 1,5 m isti oblik ima dvostruku rezervu, a na 0,8 m više od četverostruke. Zaključak za VR-1: kolizijski oblici točaka interesa smiju biti veći od vidljivog dijela, a za daleke mete zraku treba blago izgladiti ili meti dati „magnetizam". Vrijednost podrhtavanja od 0,5° je pretpostavka za primjer; stvarnu izmjerite na svojim korisnicima.</p>
+</section>
+
+<section><h2>Ključni pojmovi</h2><div class="crta"></div>
+<div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody>
+<tr><td>onaj koji djeluje (engl. <em>interactor</em>)</td><td>ruka, zraka, pogled ili pokazivač koji traži predmet i djeluje na njega</td></tr>
+<tr><td>predmet interakcije (engl. <em>interactable</em>)</td><td>objekt koji se može uhvatiti, odabrati ili pritisnuti</td></tr>
+<tr><td>hvatište (engl. <em>grip</em>)</td><td>bočna tipka kontrolera koja se stišće ostalim prstima; zadana tipka za hvatanje</td></tr>
+<tr><td>okidač (engl. <em>trigger</em>)</td><td>tipka pod kažiprstom; zadana tipka za odabir</td></tr>
+<tr><td>histereza (engl. <em>hysteresis</em>)</td><td>dva različita praga za uključenje i isključenje koji sprečavaju treperenje</td></tr>
+<tr><td>postavljanje na cilj (engl. <em>snap</em>, <em>socket</em>)</td><td>privlačenje puštenog dijela na točan položaj u sklopu unutar tolerancije</td></tr>
+<tr><td>točka interesa (engl. <em>point of interest</em>, POI)</td><td>mjesto na modelu koje na lebdenje i odabir prikazuje informaciju ili pokreće radnju</td></tr>
+<tr><td>lebdenje (engl. <em>hover</em>)</td><td>stanje kad je pokazivač, zraka ili pogled na predmetu, prije odabira</td></tr>
+<tr><td>zadržavanje pogleda (engl. <em>dwell</em>)</td><td>odabir pogledom koji se aktivira nakon zadanog vremena gledanja u metu</td></tr>
+</tbody></table></div>
+</section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="4" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="0"><p class="brojac">Pitanje 1 od 4</p><p class="pit">Zašto se za hvatanje koriste dva praga hvatišta, npr. 0,6 za hvatanje i 0,4 za puštanje?</p><div class="odg"><button type="button">da predmet ne treperi između uhvaćenog i puštenog kad je vrijednost blizu praga</button><button type="button">da se smanji broj poziva za crtanje</button><button type="button">jer OpenXR zahtijeva dva praga</button><button type="button">da se predmet može baciti dalje</button></div><p class="obraz">Histereza: kad vrijednost oscilira oko jednog praga, stanje bi se mijenjalo u svakom okviru; razmak između pragova to sprečava.</p></div><div class="kviz" data-tocno="2"><p class="brojac">Pitanje 2 od 4</p><p class="pit">Druga ruka uhvati dio koji drži prva ruka. Što je ispravno ponašanje?</p><div class="odg"><button type="button">dio padne pa ga druga ruka uhvati</button><button type="button">dio ostane u obje ruke bez vlasnika</button><button type="button">dio obavijesti prvu ruku da ga je izgubila i bez uključivanja fizike pričvrsti se na drugu</button><button type="button">hvatanje se odbije dok prva ruka ne pusti</button></div><p class="obraz">Svaki predmet ima najviše jednog vlasnika; predaja se radi bez uključivanja fizike pa predmet ne padne.</p></div><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 3 od 4</p><p class="pit">Što je temeljno načelo točke interesa u VR-1?</p><div class="odg"><button type="button">svaki ulaz ima svoju točku interesa</button><button type="button">jedna komponenta s funkcijama HoverEnter, HoverExit i Select koju pozivaju svi ulazi</button><button type="button">točka interesa sama čita miš i kontrolere</button><button type="button">točka interesa radi samo s pogledom</button></div><p class="obraz">Logika je jedna; miš, pogled, kontroler, zraka iz ruke i dodir prstom samo su ulazi koji pozivaju iste funkcije.</p></div><div class="kviz" data-tocno="3"><p class="brojac">Pitanje 4 od 4</p><p class="pit">Meta promjera 60 mm je na 3 m, a zraka podrhtava 0,5°. Koliki je približni pomak točke zrake na meti?</p><div class="odg"><button type="button">2,6 mm</button><button type="button">60 mm</button><button type="button">13 mm</button><button type="button">26 mm</button></div><p class="obraz">s = L · tg φ = 3000 mm · tg 0,5° ≈ 3000 · 0,00873 ≈ 26 mm, gotovo koliko i polumjer mete od 30 mm.</p></div><p class="rezultat">Odgovoreno 0 od 4.</p></div></section><section id="vjezbe-uz"><h2>Vježbe uz jedinicu</h2><div class="crta"></div><p>Gradivo ove jedinice priprema za sljedeće vježbe:</p><ul><li><a href="v11-hvatanje-objekata.html">V11 Hvatanje, puštanje i prebacivanje iz ruke u ruku</a> &middot; 2 sata</li><li><a href="v12-tocke-interesa.html">V12 Točke interesa: miš, pogled, kontroler i geste</a> &middot; 2 sata</li></ul></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="3-3-kamera-kontroleri-ruke.html">&#8592; 3.3 Hardverski segmenti u sceni: kamera, kontroleri i ruke</a><a class="gumb" href="3-5-kretanje.html">3.5 Kretanje u sceni i udobnost <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-virtualna-stvarnost-3-4-interakcija-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+(function(){
+  var k = document.getElementById('r34'); if(!k) return;
+  var jedinice = {"K": "°", "PX": "px", "S": "mm", "O": ""};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){
+
+var L = Math.max(v.L, 0.01);
+var K = 2 * Math.atan(v.d / 2000 / L) * 180 / Math.PI;
+var PX = K * v.ppd;
+var S = L * 1000 * Math.tan(v.fi * Math.PI / 180);
+var O = S > 0 ? (v.d / 2) / S : 0;
+var p;
+if (O < 1) { p = 'Podrhtavanje je veće od polumjera mete: korisnik će promašivati. Povećajte kolizijski oblik ili smanjite udaljenost.'; }
+else if (O < 2) { p = 'Meta je pogodljiva, ali tijesna. Razmislite o većem kolizijskom obliku ili blagom izglađivanju zrake.'; }
+else { p = 'Meta ima dovoljnu rezervu za mirno ciljanje.'; }
+return { K: K.toFixed(2), PX: PX.toFixed(0), S: S.toFixed(1), O: O.toFixed(2), _poruka: p };
+
+  }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = {};
+    try { r = racunaj(v) || {}; } catch(err) { r = { _poruka: '' }; }
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r34-o-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small> ' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r34-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+
+</script>
+</body>
+</html>

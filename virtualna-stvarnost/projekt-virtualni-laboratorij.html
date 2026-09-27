@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projektni zadatak: virtualni laboratorij VR-1 — Virtualna stvarnost | FORTRONIQ</title>
+<meta name="description" content="Timski projektni zadatak u četiri faze na zajedničkom primjeru područja: virtualnom laboratoriju VR-1, u kojem korisnik uz radni stol rukama sklapa mobilni robot MR-1, na…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/virtualna-stvarnost/projekt-virtualni-laboratorij.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/virtualna-stvarnost/projekt-virtualni-laboratorij.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/virtualna-stvarnost/projekt-virtualni-laboratorij.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/virtualna-stvarnost/projekt-virtualni-laboratorij.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Projektni zadatak: virtualni laboratorij VR-1">
+<meta property="og:description" content="Timski projektni zadatak u četiri faze na zajedničkom primjeru područja: virtualnom laboratoriju VR-1, u kojem korisnik uz radni stol rukama sklapa mobilni robot MR-1, na…">
+<meta property="og:url" content="https://dos.fortroniq.hr/virtualna-stvarnost/projekt-virtualni-laboratorij.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- dodaci DOS graditelja */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+figure.crtez .st{stroke-dasharray:14 4 2 4}
+pre{overflow-x:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.8rem 1rem;font-size:.86rem;line-height:1.45}
+pre code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Virtualna stvarnost</a><i aria-hidden="true">/</i><span aria-current="page">Projektni zadatak: virtualni laboratorij VR-1</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VIRTUALNA STVARNOST</p><p class="nadnaslov">Projekt</p><h1>Projektni zadatak: virtualni laboratorij VR-1</h1><p>Timski projektni zadatak u četiri faze na zajedničkom primjeru područja: virtualnom laboratoriju VR-1, u kojem korisnik uz radni stol rukama sklapa mobilni robot MR-1, na točkama interesa doznaje čemu služi koji dio i na kraju pušta robota da vozi po stolu. Projekt vodi od CAD modela i budžeta trokuta preko scene, hvatanja i kretanja do ispitivanja prema 18 testnih slučajeva, izvješća i obrane.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pripremiti 12 dijelova mobilnog robota za prikaz u stvarnom vremenu u mjerilu 1 : 1, s budžetom trokuta, razinama detalja, materijalima i kolizijskim oblicima</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izgraditi scenu laboratorija s urednom hijerarhijom objekata, hvatanjem, puštanjem, prebacivanjem iz ruke u ruku i šest točaka interesa</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ostvariti udobno kretanje teleportom i okretanjem u koracima te obrazložiti izbor zadanog načina kretanja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izvesti aplikaciju za PC-VR i za samostalne naočale i izmjeriti vrijeme okvira, pozive za crtanje i broj trokuta</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>provesti 18 testnih slučajeva na dva uređaja, dokumentirati pogreške i ispravke te napisati izvješće o ispitivanju</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati i obrazložiti budžet okvira, gustoću piksela, memoriju tekstura i parametre luka teleporta</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>predati projekt u propisanom obliku i obraniti tehnička rješenja pred povjerenstvom</span></li></ul></div></div></header><div class="omot"><section id="upute"><h2>Kako koristiti ovu stranicu</h2><div class="crta"></div><p>Zadaci i pitanja su bez odgovora. Rješenje s postupkom otvara se gumbom <em>Prikaži rješenje</em> ispod svakog zadatka; najprije riješite sami, a tek onda provjerite.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div></section><section><h2>Opis laboratorija VR-1 i zahtjevi</h2><div class="crta"></div>
+
+<p class="uvodni">Virtualni laboratorij VR-1 je aplikacija virtualne stvarnosti za učenje. Korisnik s naočalama stoji uz radni stol u laboratoriju veličine 8 × 6 m. Na stolu su razasuti dijelovi malog mobilnog robota MR-1. Korisnik ih uzima rukama, okreće, prebacuje iz ruke u ruku i slaže na šasiju; na šest točaka interesa (engl. <em>point of interest</em>, POI) doznaje što koji dio radi. Kad je robot sklopljen, korisnik ga uključuje prekidačem i robot vozi po stolu, a senzori ga zaustavljaju prije ruba.</p>
+<p>Isti primjer provlači se kroz cijelo područje: u jedinicama se na njemu objašnjavalo modeliranje, percepcija, praćenje, logika i interakcija, a u ovom projektu gradi se cijela aplikacija &mdash; od STEP datoteke iz CAD sustava do izvješća o ispitivanju. Projekt se radi <strong>timski, u skupini od tri osobe, šest tjedana</strong>, u četiri faze: modeli, scena i interakcija, kretanje i udobnost, ispitivanje i izvješće.</p>
+<p>Podaci u tablici su <em>početni projektni podaci</em>. Nisu nepogrešivi: dio projekta upravo je provjera jesu li međusobno usklađeni i ostvarivi na oba uređaja. Ako mjerenjem ili računom utvrdite da neki zahtjev ne može biti ispunjen, ne mijenjate ga prešutno, nego predlažete izmjenu u izvješću, s obrazloženjem i brojem.</p>
+<div class="tablica-omot"><table><thead><tr><th>Stavka</th><th>Početni podatak</th><th>Napomena</th></tr></thead><tbody>
+<tr><td>Scena</td><td>laboratorij 8 × 6 m, visina 3 m; radni stol 1600 × 800 mm, visina 750 mm</td><td>sve u mjerilu 1 : 1</td></tr>
+<tr><td>Prostor za igru</td><td>preporučeno 3,0 × 2,5 m, najmanje 2,0 × 1,5 m</td><td>granica sigurnosti 0,3 m od zida ili namještaja</td></tr>
+<tr><td>Robot MR-1</td><td>220 × 180 × 110 mm, 1,2 kg, 12 dijelova</td><td>šasija, poklopac, 2 kotača Ø65 mm, 2 motora s reduktorom, kuglični oslonac, baterija 7,4 V / 2200 mAh, upravljačka pločica, ultrazvučni senzor udaljenosti, modul s dva IR senzora linije, prekidač</td></tr>
+<tr><td>CAD izvor</td><td>STEP 38 MB; fina teselacija 312 000 trokuta</td><td>ulazni podatak faze 1</td></tr>
+<tr><td>Ciljani model</td><td>LOD0 28 000, LOD1 9 000 (od 1,5 m), LOD2 2 500 trokuta (od 4 m)</td><td>cijeli robot, zbroj 12 dijelova</td></tr>
+<tr><td>Teksture i datoteka</td><td>2048 → 1024 px, jedan materijal po dijelu; glTF 3,2 MB</td><td>mape boje, normala i kombinirana mapa hrapavosti, metalnosti i zasjenjenja</td></tr>
+<tr><td>Uređaj A (PC-VR)</td><td>vanjsko praćenje s dvije bazne stanice; 2 × 2448 × 2448 px; 90 Hz (do 120 Hz); vidno polje oko 116° vodoravno; IPD 58&ndash;72 mm</td><td>računalo s grafičkom karticom 8 GB i 32 GB RAM-a</td></tr>
+<tr><td>Uređaj B (samostalne naočale)</td><td>unutarnje praćenje (4 kamere), prolaz slike u boji; 2 × 2064 × 2208 px; 90 Hz; vidno polje oko 110° vodoravno</td><td>može se spojiti na računalo; aplikacija se izvodi i samostalno</td></tr>
+<tr><td>Interakcija</td><td>6 točaka interesa: motor, kotač, baterija, pločica, senzor udaljenosti, prekidač</td><td>hvatanje rukom do 0,8 m, zrakom do 3 m; prebacivanje iz ruke u ruku</td></tr>
+<tr><td>Kretanje</td><td>teleport lukom do 4 m; okretanje u koracima od 30°</td><td>kontinuirano kretanje 1,5 m/s samo uz vinjetu, kao izborna postavka</td></tr>
+</tbody></table></div>
+
+<h3>Zahtjevi</h3>
+<p>Zahtjevi imaju oznaku <strong>Z01&ndash;Z12</strong>. Svaki zahtjev mora biti pokriven barem jednim testnim slučajem u fazi 4; stupac <em>Provjera</em> pokazuje kojim.</p>
+<div class="tablica-omot"><table><thead><tr><th>Oznaka</th><th>Zahtjev</th><th>Provjera</th></tr></thead><tbody>
+<tr><td>Z01</td><td>Stabilnih 90 sl/s na oba uređaja, vrijeme okvira 11,1 ms; GPU i CPU ≤ 9,0 ms</td><td>T16, T17</td></tr>
+<tr><td>Z02</td><td>Vrijeme od pokreta do fotona ≤ 20 ms</td><td>T16 (procjena iz alata za profiliranje i podataka pokretača)</td></tr>
+<tr><td>Z03</td><td>Scena ≤ 750 000 trokuta i ≤ 1000 poziva za crtanje (A); ≤ 300 000 trokuta i ≤ 150 poziva (B)</td><td>T16, T17</td></tr>
+<tr><td>Z04</td><td>Pokretanje ≤ 10 s; paket ≤ 1,5 GB (A), ≤ 500 MB (B)</td><td>T01</td></tr>
+<tr><td>Z05</td><td>Mjerilo 1 : 1: stol 750 mm, robot 220 mm, kamera na stvarnoj visini očiju</td><td>T02</td></tr>
+<tr><td>Z06</td><td>Prostor za igru i granica sigurnosti postavljeni i vidljivi</td><td>T03, T04</td></tr>
+<tr><td>Z07</td><td>Ruke prate kontrolere i animiraju se prema tipkama</td><td>T05</td></tr>
+<tr><td>Z08</td><td>Hvatanje rukom do 0,8 m i zrakom do 3 m, prebacivanje iz ruke u ruku, puštanje s fizikom</td><td>T06&ndash;T09</td></tr>
+<tr><td>Z09</td><td>Sklapanje 12 dijelova na priključne točke; robot vozi i staje prije ruba stola</td><td>T10, T15</td></tr>
+<tr><td>Z10</td><td>Šest točaka interesa s jednom logikom za više ulaza (kontroler, pogled, miš)</td><td>T11</td></tr>
+<tr><td>Z11</td><td>Teleport do 4 m, okretanje u koracima 30°, kontinuirano kretanje samo uz vinjetu</td><td>T12&ndash;T14</td></tr>
+<tr><td>Z12</td><td>Udobnost: nijedan ispitanik ne prekida zbog mučnine pri zadanim postavkama</td><td>T18</td></tr>
+</tbody></table></div>
+
+<figure class="crtez"><svg viewBox="0 0 640 320" role="img" aria-label="Slika P.1: tlocrt virtualnog laboratorija s ucrtanim prostorom za igru, radnim stolom, baznim stanicama i ciljevima teleporta">
+<rect x="30" y="60" width="320" height="240" class="pf"/>
+<line x1="30" y1="45" x2="350" y2="45" class="l2" fill="none"/><line x1="30" y1="39" x2="30" y2="51" class="l2" fill="none"/><line x1="350" y1="39" x2="350" y2="51" class="l2" fill="none"/>
+<text x="190" y="38" class="mali" text-anchor="middle">8 m</text>
+<line x1="362" y1="60" x2="362" y2="300" class="l2" fill="none"/><line x1="356" y1="60" x2="368" y2="60" class="l2" fill="none"/><line x1="356" y1="300" x2="368" y2="300" class="l2" fill="none"/>
+<text x="368" y="185" class="mali">6 m</text>
+<text x="38" y="80" class="mali">LABORATORIJ</text>
+<rect x="230" y="64" width="90" height="16" class="bf"/>
+<rect x="328" y="90" width="18" height="170" class="bf"/>
+<rect x="36" y="190" width="24" height="100" class="bf"/>
+<rect x="78" y="128" width="144" height="124" class="l2 dash" fill="none"/>
+<rect x="90" y="140" width="120" height="100" class="cf"/>
+<rect x="118" y="150" width="64" height="32" class="pf"/><rect x="118" y="150" width="64" height="32" class="l" fill="none"/>
+<rect x="146" y="158" width="9" height="7" class="tf"/>
+<text x="150" y="178" class="mali" text-anchor="middle">stol</text>
+<circle cx="150" cy="205" r="6" class="tf"/>
+<path d="M150 190 L145 198 L155 198 Z" class="if"/>
+<text x="150" y="234" class="mali" text-anchor="middle">prostor za igru</text>
+<text x="150" y="268" class="mali" text-anchor="middle">stvarna prostorija</text>
+<text x="150" y="284" class="mali" text-anchor="middle">≥ 3,6 × 3,1 m</text>
+<rect x="74" y="124" width="8" height="8" class="if"/><rect x="218" y="248" width="8" height="8" class="if"/>
+<line x1="82" y1="132" x2="140" y2="180" class="l2 dash" fill="none"/><line x1="218" y1="248" x2="160" y2="200" class="l2 dash" fill="none"/>
+<text x="70" y="122" class="mali" text-anchor="end">BS1</text>
+<text x="230" y="266" class="mali">BS2</text>
+<path d="M150 205 Q 200 110 280 135" class="t dash" fill="none"/>
+<path d="M150 205 Q 230 200 295 262" class="t dash" fill="none"/>
+<path d="M150 205 Q 90 110 55 95" class="t dash" fill="none"/>
+<circle cx="280" cy="135" r="5" class="tf"/><circle cx="295" cy="262" r="5" class="tf"/><circle cx="55" cy="95" r="5" class="tf"/>
+<text x="295" y="286" class="mali" text-anchor="middle">cilj teleporta</text>
+<text x="405" y="80">Legenda</text>
+<rect x="405" y="90" width="14" height="14" class="cf"/><text x="427" y="102" class="mali">prostor za igru 3,0 × 2,5 m</text>
+<line x1="405" y1="120" x2="419" y2="120" class="l2 dash" fill="none"/><text x="427" y="125" class="mali">granica: 0,3 m od zida</text>
+<rect x="405" y="138" width="14" height="14" class="pf"/><rect x="405" y="138" width="14" height="14" class="l" fill="none"/><text x="427" y="150" class="mali">radni stol 1600 × 800 mm</text>
+<rect x="407" y="164" width="10" height="8" class="tf"/><text x="427" y="174" class="mali">robot MR-1 na stolu</text>
+<circle cx="412" cy="192" r="6" class="tf"/><text x="427" y="198" class="mali">korisnik, pogled na stol</text>
+<rect x="408" y="212" width="8" height="8" class="if"/><text x="427" y="222" class="mali">bazna stanica (uređaj A)</text>
+<circle cx="412" cy="240" r="5" class="tf"/><text x="427" y="246" class="mali">cilj teleporta, luk ≤ 4 m</text>
+<line x1="405" y1="276" x2="445" y2="276" class="l" fill="none"/><line x1="405" y1="270" x2="405" y2="282" class="l2" fill="none"/><line x1="445" y1="270" x2="445" y2="282" class="l2" fill="none"/>
+<text x="452" y="281" class="mali">1 m</text>
+</svg><figcaption><b>Slika P.1</b> &mdash; Tlocrt laboratorija VR-1 u mjerilu. Stol stoji unutar prostora za igru, pa ga korisnik može fizički obići; ostatak laboratorija (police, ormar, stol za alat) doseže se teleportom. Iscrtkano je prikazana stvarna prostorija, a bazne stanice uređaja A postavljene su dijagonalno.</figcaption></figure>
+<div class="okvir"><h4>Zapamtite</h4><p>Radni stol namjerno je smješten <em>unutar</em> prostora za igru. Dijelovi robota uzimaju se i slažu stvarnim hodom oko stola, bez ijednog teleporta; teleport služi samo za odlazak do ostatka laboratorija. Tako je glavna radnja projekta ujedno i najudobnija, jer tijelo osjeti svaki pokret koji oko vidi.</p></div>
+</section>
+
+<section><h2>Organizacija i rokovi</h2><div class="crta"></div>
+<p>Projekt traje <strong>šest tjedana</strong>, a radi ga tim od <strong>tri osobe</strong>. Svaka osoba ima glavnu ulogu, ali svi rade u istom projektu razvojnog okruženja i svaki član na obrani mora znati objasniti cijelu aplikaciju, ne samo svoj dio. Preporuka je jedan zajednički pregled tjedno (kontrolna točka) i dnevni kratki dogovor o tome tko što mijenja, da se izbjegnu sukobi u istoj razini (sceni).</p>
+<div class="tablica-omot"><table><thead><tr><th>Uloga</th><th>Glavna zaduženja</th><th>Dokumenti</th></tr></thead><tbody>
+<tr><td><strong>M</strong> &mdash; modelar</td><td>priprema 12 dijelova iz STEP datoteke, teselacija, decimacija, razine detalja, UV mape, materijali, kolizijski oblici, ishodišta; okoliš laboratorija</td><td>VR1-D01, VR1-D02</td></tr>
+<tr><td><strong>P</strong> &mdash; programer interakcije</td><td>projekt i predložak, XR ishodište, kamera, kontroleri i ruke, hvatanje, točke interesa, sklapanje, kretanje, veza sa simulacijom robota</td><td>VR1-D03, VR1-D04, VR1-D05</td></tr>
+<tr><td><strong>I</strong> &mdash; integrator i voditelj ispitivanja</td><td>postavljanje uređaja A i B, izgradnja paketa, profiliranje, plan ispitivanja, provedba testnih slučajeva s ispitanicima, izvješće, vođenje popisa pogrešaka</td><td>VR1-D06, VR1-D07</td></tr>
+</tbody></table></div>
+<div class="tablica-omot"><table><thead><tr><th>Tjedan</th><th>Faza</th><th>Rezultat tjedna</th><th>Kontrolna točka</th></tr></thead><tbody>
+<tr><td>1.</td><td>Faza 1</td><td>projekt postavljen na oba uređaja; STEP otvoren, teselacija i prva decimacija; protokol izvoza</td><td>KT1: prazna scena radi na A i B na 90 sl/s</td></tr>
+<tr><td>2.</td><td>Faza 1 / 2</td><td>12 dijelova s LOD0&ndash;LOD2, materijalima i kolizijom; okoliš laboratorija; hijerarhija scene</td><td>KT2: robot u sceni u mjerilu 1 : 1, budžet D01 ispunjen</td></tr>
+<tr><td>3.</td><td>Faza 2</td><td>ruke, hvatanje, puštanje, prebacivanje, zraka; točke interesa</td><td>&mdash;</td></tr>
+<tr><td>4.</td><td>Faza 2 / 3</td><td>sklapanje na priključne točke, vožnja robota; teleport, okretanje u koracima, vinjeta</td><td>KT3: cijeli tijek od prvog dijela do vožnje radi na A</td></tr>
+<tr><td>5.</td><td>Faza 3 / 4</td><td>paket za B, optimizacija, profiliranje; prvi krug ispitivanja</td><td>KT4: T01&ndash;T18 provedeni barem jednom</td></tr>
+<tr><td>6.</td><td>Faza 4</td><td>ispravci, ponovljeno ispitivanje, izvješće, video, predaja</td><td>predaja i obrana</td></tr>
+</tbody></table></div>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Najčešći uzrok kašnjenja nije programiranje, nego to što se aplikacija prvi put pokrene na samostalnim naočalama tek u petom tjednu. Zato KT1 traži da već <em>prazna</em> scena radi na oba uređaja. Svaki tjedan izgradite paket za B i pogledajte vrijeme okvira &mdash; problem otkriven u drugom tjednu košta sat, u šestom cijeli vikend.</p></div>
+</section>
+
+<section><h2>Faza 1: modeli</h2><div class="crta"></div>
+<p>Cilj faze je da 12 dijelova robota MR-1 i okoliš laboratorija uđu u razvojno okruženje kao lagani, ispravno orijentirani modeli u mjerilu 1 : 1, s razinama detalja, materijalima, teksturama i kolizijskim oblicima. Zajedničke osnove modeliranja opisane su u jedinicama prvog modula; ovdje se primjenjuju iz kuta VR-a: sve se iscrtava dvaput (za svako oko), 90 puta u sekundi, a korisnik dijelove drži u ruci na 30&ndash;50 cm od očiju.</p>
+<h3>Dokumenti koje treba izraditi</h3>
+<ul>
+<li><strong>VR1-D01 Popis dijelova i budžet modela</strong> &mdash; tablica 12 dijelova: naziv, broj trokuta LOD0, LOD1 i LOD2, materijal i razlučivost tekstura, kolizijski oblik (kutija, valjak, kugla ili konveksna ljuska), položaj ishodišta, masa za fiziku, pripada li dijelu točka interesa.</li>
+<li><strong>VR1-D02 Protokol izvoza</strong> &mdash; jedinice u CAD sustavu, u programu za mrežu i u razvojnom okruženju; koja je os gore i koja naprijed; format izvoza (glTF ili FBX) i postavke; pravila imenovanja (npr. <code>MR1_Kotac_L</code>, <code>MR1_Kotac_L_LOD1</code>, <code>MR1_Kotac_L_COL</code>); snimka zaslona dijela u sceni pored mjernog objekta od 1 m.</li>
+</ul>
+<h3>Tijek rada</h3>
+<ol class="koraci">
+<li>Otvorite STEP u CAD sustavu, uklonite unutarnje dijelove koji se nikad ne vide (navoji, unutrašnjost reduktora, sitni elementi pločice ispod 1 mm) i provjerite da je sklop u milimetrima.</li>
+<li>Izvezite svaki od 12 dijelova zasebno, s finom teselacijom; zapišite broj trokuta (ukupno oko 312 000).</li>
+<li>U programu za slobodno modeliranje (npr. Blender) smanjite mrežu na budžet D01 (decimacija ili ručna retopologija za zaobljene dijelove), postavite ishodišta i provjerite normale.</li>
+<li>Izradite LOD1 i LOD2, UV mape (prva za teksture, druga za svjetlo gdje je potrebno), ispecite mape normala s fine mreže na grubu.</li>
+<li>Izvezite u glTF ili FBX, uvezite u razvojno okruženje i provjerite mjerilo mjernim objektom od 1 m i visinom stola od 750 mm.</li>
+<li>Dodijelite kolizijske oblike i masu (zbroj masa 1,2 kg) te zapišite sve u D01.</li>
+</ol>
+<h3>Zadaci s rješenjem</h3>
+<p>Zadaci su dio projekta: njihovi rezultati ulaze u D01 i u izvješće. Rješenja vrijede za osnovne podatke iz tablice.</p>
+<div class="pitanja">
+<div class="pitanje"><p><b>A1.</b> Budžet trokuta po dijelovima. Fina teselacija daje 312 000 trokuta, a cilj za cijeli robot je 28 000 na LOD0. Za koliko se posto mreža mora smanjiti? Raspodijelite 28 000 trokuta na 12 dijelova i obrazložite raspodjelu. Koliki su udjeli LOD1 i LOD2 u odnosu na LOD0?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">smanjenje = 1 − 28 000 / 312 000 = 1 − 0,0897 = 0,910 → 91,0 % (omjer oko 11 : 1)</p>
+<p>Raspodjela ne smije biti jednaka po dijelovima. Više trokuta dobivaju dijelovi koji su veliki, zaobljeni i koje korisnik drži blizu očiju (kotači, pločica s komponentama, šasija, poklopac); manje dobivaju mali i ravni dijelovi (prekidač, oslonac). Jedna od ispravnih raspodjela:</p>
+<div class="tablica-omot"><table><thead><tr><th>Dio</th><th>LOD0 (trokuta)</th><th>Obrazloženje</th></tr></thead><tbody>
+<tr><td>šasija</td><td>4 000</td><td>velika ploha s provrtima i rubovima</td></tr>
+<tr><td>poklopac</td><td>3 500</td><td>zaobljeni rubovi, najveći vidljivi dio</td></tr>
+<tr><td>kotač L, kotač D</td><td>2 × 3 000</td><td>obod Ø65 mm je vidljiva silueta; gazna površina iz mape normala</td></tr>
+<tr><td>motor L, motor D</td><td>2 × 1 800</td><td>valjak s reduktorom, dio skriven u šasiji</td></tr>
+<tr><td>kuglični oslonac</td><td>600</td><td>mali, ispod šasije</td></tr>
+<tr><td>baterija</td><td>1 200</td><td>kvadar sa zaobljenjima; natpis iz teksture</td></tr>
+<tr><td>upravljačka pločica</td><td>4 800</td><td>točka interesa, gleda se izbliza; komponente kao niski kvadri</td></tr>
+<tr><td>ultrazvučni senzor</td><td>2 400</td><td>dva valjka pretvornika, točka interesa</td></tr>
+<tr><td>modul IR senzora</td><td>1 400</td><td>mala pločica, dva senzora</td></tr>
+<tr><td>prekidač</td><td>500</td><td>mali dio, oblik iz teksture</td></tr>
+<tr><td><strong>ukupno</strong></td><td><strong>28 000</strong></td><td></td></tr>
+</tbody></table></div>
+<p class="formula">LOD1 / LOD0 = 9 000 / 28 000 = 32,1 %; &nbsp; LOD2 / LOD0 = 2 500 / 28 000 = 8,9 %</p>
+<p>Na LOD2 (od 4 m) robot zauzima samo oko 3° vidnog polja (2 · arctg(0,11 / 4) ≈ 3,2°, oko 66 piksela na uređaju A), pa je dobra praksa najmanje dijelove (prekidač, oslonac) na toj razini potpuno izostaviti ili spojiti s šasijom.</p></div></details></div>
+
+<div class="pitanje"><p><b>A2.</b> Razlučivost teksture. Dio šasije dug 220 mm pokriven je jednom teksturom. Korisnik ga drži na 0,5 m od očiju u uređaju A (2448 px na 116°). Koliko piksela zaslona pada na 1 mm površine? Je li 1024 px dovoljno, a je li 512 px dovoljno? Zašto nije potrebna 2048 px?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">gustoća piksela A = 2448 / 116 ≈ 21,1 piksela po stupnju</p>
+<p class="formula">kut 1 mm na 0,5 m = 2 · arctg(0,5 / 500) = 0,115° → 0,115 · 21,1 ≈ 2,4 piksela po mm</p>
+<p>Gustoća teksela na šasiji: 512 / 220 = 2,3 teksela/mm; 1024 / 220 = 4,7 teksela/mm; 2048 / 220 = 9,3 teksela/mm.</p>
+<p>Uz 512 px tekstura je na granici (2,3 teksela na 2,4 piksela) i izbliza bi djelovala mutno. Uz 1024 px na svaki piksel zaslona dolaze oko dva teksela, što je dovoljno i ostavlja rezervu za pogled s 0,3 m. Tekstura 2048 px daje četiri teksela po pikselu koje zaslon ne može prikazati, a zauzima četiri puta više memorije &mdash; zato je u početnim podacima propisano smanjenje 2048 → 1024 px. Za uređaj B (2064 / 110 ≈ 18,8 piksela po stupnju) zaključak je isti.</p></div></details></div>
+
+<div class="pitanje"><p><b>A3.</b> Memorija tekstura. Svaki od 12 dijelova ima jedan materijal s tri mape (boja, normale, kombinirana mapa). Koliko memorije grafičke kartice zauzimaju teksture robota uz 2048 px i uz 1024 px, bez kompresije i s blokovnom kompresijom od 8 bita po pikselu? Mip-razine povećavaju zauzeće za trećinu. Zašto je glTF datoteka od 3,2 MB mnogo manja od toga?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">1024 × 1024 × 4 B = 4 MB; s mip-razinama 4 · 4/3 ≈ 5,3 MB po mapi</p>
+<p class="formula">2048 × 2048 × 4 B = 16 MB; s mip-razinama ≈ 21,3 MB po mapi</p>
+<p>Broj mapa je 12 · 3 = 36.</p>
+<div class="tablica-omot"><table><thead><tr><th>Razlučivost</th><th>Bez kompresije</th><th>Blokovna kompresija (1 B/px)</th></tr></thead><tbody>
+<tr><td>2048 px</td><td>36 · 21,3 = 768 MB</td><td>36 · 5,3 = 192 MB</td></tr>
+<tr><td>1024 px</td><td>36 · 5,3 = 192 MB</td><td>36 · 1,33 = 48 MB</td></tr>
+</tbody></table></div>
+<p>Uz 1024 px i kompresiju robot zauzima oko 48 MB, što je malo i za karticu od 8 GB i za memoriju samostalnih naočala koju dijele sustav, aplikacija i zasloni. Datoteka glTF od 3,2 MB manja je jer su u njoj slike spremljene u formatima za prijenos (npr. PNG ili JPEG) koji se pri učitavanju raspakiraju; veličina na disku i zauzeće memorije nisu isto. (MB se ovdje računa kao 1024 × 1024 B.)</p></div></details></div>
+
+<div class="pitanje"><p><b>A4.</b> Mjerilo, osi i ishodište kotača. CAD model je u milimetrima s osi Z prema gore. Razvojno okruženje A radi u centimetrima (npr. Unreal Engine), a razvojno okruženje B u metrima (npr. Unity). Kolik je robot u sceni ako se model u milimetrima uveze bez pretvorbe? Gdje mora biti ishodište kotača i zašto? Koliki je polumjer kotača u jedinicama obaju okruženja?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Bez pretvorbe broj 220 (mm) čita se kao 220 jedinica: u okruženju s centimetrima robot je dug 220 cm = 2,2 m (deset puta prevelik), a u okruženju s metrima 220 m (tisuću puta prevelik). U VR-u se to odmah vidi: robot veći od stola ili stol koji seže do koljena. Zato se pretvorba upisuje u protokol D02 i provjerava mjernim objektom od 1 m.</p>
+<p class="formula">polumjer kotača r = 65 / 2 = 32,5 mm = 3,25 cm = 0,0325 m</p>
+<p>Ishodište kotača mora biti na osi vrtnje, u središtu glavine. Tada se kotač okreće oko vlastite osi i skripta može zadati kut izravno iz simulacije. Ako ostane ishodište cijelog sklopa iz CAD sustava (npr. kut šasije), kotač se pri vrtnji „ljulja“ oko pogrešne točke. Os gore mora se uskladiti s okruženjem (mnoga okruženja imaju drugu os prema gore nego CAD sustav); nakon uvoza robot mora stajati na kotačima, ne na boku.</p></div></details></div>
+</div>
+</section>
+
+<section><h2>Faza 2: scena i interakcija</h2><div class="crta"></div>
+<p>U drugoj fazi gradi se laboratorij i sve što korisnik radi rukama. Načela su neovisna o alatu: scena se sastoji od objekata s komponentama, a ponašanje se pokreće događajima (pritisak tipke, ulazak ruke u zonu, sudar). Primjer izvedbe je okruženje s nacrtima (npr. Unreal Engine s predloškom za VR); u okruženju s C# skriptama (npr. Unity s paketom za XR interakciju) iste uloge imaju komponente za hvatanje i interaktore. Nazivi predložaka i komponenata mogu se razlikovati po inačici.</p>
+<h3>Dokumenti koje treba izraditi</h3>
+<ul>
+<li><strong>VR1-D03 Hijerarhija scene</strong> &mdash; stablo objekata (kao na slici P.2), uloga svakog objekta (okoliš, interaktivni, informacijski, avatar), koji su objekti statični, a koji pomični, i gdje se nalaze varijable stanja.</li>
+<li><strong>VR1-D04 Opis interakcija</strong> &mdash; dijagram toka hvatanja (kao na slici P.3), tablica priključnih točaka za 12 dijelova s dopuštenim odstupanjem, tekstovi šest točaka interesa (do 60 riječi svaki), način kako isti tekst otvaraju kontroler, pogled i miš.</li>
+</ul>
+<figure class="crtez"><svg viewBox="0 0 640 380" role="img" aria-label="Slika P.2: hijerarhija scene laboratorija VR-1 s okolišem, XR ishodištem, robotom i logikom">
+<rect x="200" y="14" width="240" height="32" class="cf"/><text x="320" y="36" text-anchor="middle">VR1_Laboratorij</text>
+<line x1="320" y1="46" x2="320" y2="60" class="l" fill="none"/><line x1="83" y1="60" x2="563" y2="60" class="l" fill="none"/>
+<line x1="83" y1="60" x2="83" y2="75" class="l" fill="none"/><line x1="243" y1="60" x2="243" y2="75" class="l" fill="none"/><line x1="403" y1="60" x2="403" y2="75" class="l" fill="none"/><line x1="563" y1="60" x2="563" y2="75" class="l" fill="none"/>
+<rect x="8" y="75" width="150" height="30" class="pf"/><text x="83" y="96" text-anchor="middle">Okoliš</text>
+<rect x="168" y="75" width="150" height="30" class="pf"/><text x="243" y="96" text-anchor="middle">XR ishodište</text>
+<rect x="328" y="75" width="150" height="30" class="pf"/><text x="403" y="96" text-anchor="middle">Robot MR-1</text>
+<rect x="488" y="75" width="150" height="30" class="pf"/><text x="563" y="96" text-anchor="middle">Logika</text>
+<line x1="22" y1="105" x2="22" y2="221" class="l2" fill="none"/>
+<line x1="22" y1="125" x2="32" y2="125" class="l2" fill="none"/><text x="36" y="130" class="mali">pod i zidovi</text>
+<line x1="22" y1="149" x2="32" y2="149" class="l2" fill="none"/><text x="36" y="154" class="mali">radni stol</text>
+<line x1="22" y1="173" x2="32" y2="173" class="l2" fill="none"/><text x="36" y="178" class="mali">kolizija stola</text>
+<line x1="22" y1="197" x2="32" y2="197" class="l2" fill="none"/><text x="36" y="202" class="mali">police, ormar</text>
+<line x1="22" y1="221" x2="32" y2="221" class="l2" fill="none"/><text x="36" y="226" class="mali">svjetla</text>
+<line x1="182" y1="105" x2="182" y2="269" class="l2" fill="none"/>
+<line x1="182" y1="125" x2="192" y2="125" class="l2" fill="none"/><text x="196" y="130" class="mali">kamera (glava)</text>
+<line x1="182" y1="149" x2="192" y2="149" class="l2" fill="none"/><text x="196" y="154" class="mali">kontroler L</text>
+<line x1="200" y1="158" x2="200" y2="173" class="l2" fill="none"/><line x1="200" y1="173" x2="210" y2="173" class="l2" fill="none"/><text x="214" y="178" class="mali">ruka L</text>
+<line x1="182" y1="197" x2="192" y2="197" class="l2" fill="none"/><text x="196" y="202" class="mali">kontroler D</text>
+<line x1="200" y1="206" x2="200" y2="221" class="l2" fill="none"/><line x1="200" y1="221" x2="210" y2="221" class="l2" fill="none"/><text x="214" y="226" class="mali">ruka D</text>
+<line x1="182" y1="245" x2="192" y2="245" class="l2" fill="none"/><text x="196" y="250" class="mali">luk teleporta</text>
+<line x1="182" y1="269" x2="192" y2="269" class="l2" fill="none"/><text x="196" y="274" class="mali">vinjeta</text>
+<line x1="342" y1="105" x2="342" y2="125" class="l2" fill="none"/><line x1="342" y1="125" x2="352" y2="125" class="l2" fill="none"/>
+<rect x="352" y="113" width="118" height="20" class="cf"/><text x="358" y="128" class="mali">šasija (korijen)</text>
+<line x1="364" y1="133" x2="364" y2="317" class="l2" fill="none"/>
+<line x1="364" y1="149" x2="374" y2="149" class="l2" fill="none"/><text x="378" y="154" class="mali">poklopac</text>
+<line x1="364" y1="173" x2="374" y2="173" class="l2" fill="none"/><text x="378" y="178" class="mali">kotači L i D</text>
+<line x1="364" y1="197" x2="374" y2="197" class="l2" fill="none"/><text x="378" y="202" class="mali">motori L i D</text>
+<line x1="364" y1="221" x2="374" y2="221" class="l2" fill="none"/><text x="378" y="226" class="mali">baterija</text>
+<line x1="364" y1="245" x2="374" y2="245" class="l2" fill="none"/><text x="378" y="250" class="mali">pločica</text>
+<line x1="364" y1="269" x2="374" y2="269" class="l2" fill="none"/><text x="378" y="274" class="mali">senzori (2)</text>
+<line x1="364" y1="293" x2="374" y2="293" class="l2" fill="none"/><text x="378" y="298" class="mali">prekidač</text>
+<line x1="364" y1="317" x2="374" y2="317" class="l2" fill="none"/><text x="378" y="322" class="mali">oslonac</text>
+<line x1="502" y1="105" x2="502" y2="221" class="l2" fill="none"/>
+<line x1="502" y1="125" x2="512" y2="125" class="l2" fill="none"/><text x="516" y="130" class="mali">upravljač igre</text>
+<line x1="502" y1="149" x2="512" y2="149" class="l2" fill="none"/><text x="516" y="154" class="mali">stanje sklopa</text>
+<line x1="502" y1="173" x2="512" y2="173" class="l2" fill="none"/><text x="516" y="178" class="mali">POI × 6</text>
+<line x1="502" y1="197" x2="512" y2="197" class="l2" fill="none"/><text x="516" y="202" class="mali">zvuk i poruke</text>
+<line x1="502" y1="221" x2="512" y2="221" class="l2" fill="none"/><text x="516" y="226" class="mali">veza simulatora</text>
+<text x="320" y="360" class="mali" text-anchor="middle">pomak roditelja pomiče svu djecu; ishodište sklopa je ishodište šasije</text>
+</svg><figcaption><b>Slika P.2</b> &mdash; Hijerarhija scene VR-1. Prikazan je sklopljeni robot: na početku su dijelovi samostalni objekti na stolu, a pri sklapanju svaki postaje dijete šasije. Kamera i kontroleri su djeca XR ishodišta, pa teleport pomiče samo ishodište.</figcaption></figure>
+
+<figure class="crtez"><svg viewBox="0 0 640 420" role="img" aria-label="Slika P.3: dijagram toka hvatanja, držanja, prebacivanja i puštanja dijela">
+<rect x="220" y="12" width="200" height="32" class="pf"/><text x="320" y="33" class="mali" text-anchor="middle">pritisak tipke hvata</text>
+<line x1="320" y1="44" x2="320" y2="70" class="l" fill="none"/><path d="M320 76 L315 68 L325 68 Z" class="if"/>
+<path d="M320 76 L420 100 L320 124 L220 100 Z" class="pf"/><text x="320" y="105" class="mali" text-anchor="middle">dio ≤ 0,8 m?</text>
+<line x1="420" y1="100" x2="452" y2="100" class="l" fill="none"/><path d="M458 100 L450 95 L450 105 Z" class="if"/><text x="436" y="92" class="mali" text-anchor="middle">ne</text>
+<path d="M540 78 L624 100 L540 122 L458 100 Z" class="pf"/><text x="541" y="105" class="mali" text-anchor="middle">zraka ≤ 3 m?</text>
+<line x1="540" y1="122" x2="540" y2="146" class="l" fill="none"/><path d="M540 152 L535 144 L545 144 Z" class="if"/><text x="552" y="140" class="mali">da</text>
+<rect x="470" y="152" width="140" height="30" class="pf"/><text x="540" y="172" class="mali" text-anchor="middle">privuci u ruku</text>
+<line x1="320" y1="124" x2="320" y2="146" class="l" fill="none"/><path d="M320 152 L315 144 L325 144 Z" class="if"/><text x="332" y="140" class="mali">da</text>
+<rect x="230" y="152" width="180" height="30" class="pf"/><text x="320" y="172" class="mali" text-anchor="middle">pričvrsti na ruku</text>
+<line x1="320" y1="182" x2="320" y2="206" class="l" fill="none"/><path d="M320 212 L315 204 L325 204 Z" class="if"/>
+<polyline points="540,182 540,228 416,228" class="l" fill="none"/><path d="M410 228 L418 223 L418 233 Z" class="if"/>
+<rect x="224" y="212" width="192" height="32" class="cf"/><text x="320" y="233" text-anchor="middle">DRŽI (fizika isklj.)</text>
+<line x1="224" y1="228" x2="158" y2="228" class="t" fill="none"/><path d="M150 228 L158 223 L158 233 Z" class="tf"/><text x="187" y="220" class="mali" text-anchor="middle">druga ruka</text>
+<rect x="20" y="212" width="130" height="32" class="pf"/><text x="85" y="233" class="mali" text-anchor="middle">prebaci ruku</text>
+<polyline points="85,244 85,262 280,262 280,250" class="t" fill="none"/><path d="M280 244 L275 252 L285 252 Z" class="tf"/>
+<line x1="360" y1="244" x2="360" y2="286" class="l" fill="none"/><path d="M360 292 L355 284 L365 284 Z" class="if"/><text x="372" y="272" class="mali">tipka otpuštena</text>
+<path d="M360 292 L470 318 L360 344 L250 318 Z" class="pf"/><text x="360" y="323" class="mali" text-anchor="middle">cilj ≤ 15 mm, 10°?</text>
+<line x1="250" y1="318" x2="196" y2="318" class="l" fill="none"/><path d="M190 318 L198 313 L198 323 Z" class="if"/><text x="222" y="310" class="mali" text-anchor="middle">da</text>
+<rect x="20" y="302" width="170" height="32" class="cf"/><text x="105" y="323" class="mali" text-anchor="middle">uskoči, sklop +1</text>
+<line x1="470" y1="318" x2="494" y2="318" class="l" fill="none"/><path d="M500 318 L492 313 L492 323 Z" class="if"/><text x="482" y="310" class="mali" text-anchor="middle">ne</text>
+<rect x="500" y="302" width="130" height="32" class="pf"/><text x="565" y="323" class="mali" text-anchor="middle">fizika, pada</text>
+<line x1="565" y1="334" x2="565" y2="360" class="l2 dash" fill="none"/><text x="565" y="378" class="mali" text-anchor="middle">ispod 0,70 m:</text><text x="565" y="396" class="mali" text-anchor="middle">vrati na stol</text>
+<line x1="540" y1="78" x2="540" y2="60" class="l2" fill="none"/><text x="540" y="54" class="mali" text-anchor="middle">ne: haptički trzaj</text>
+</svg><figcaption><b>Slika P.3</b> &mdash; Tok hvatanja u VR-1. Blizu se hvata rukom, dalje zrakom; dio koji se drži nema fiziku, a pri puštanju ili uskoči u priključnu točku ili padne s uključenom fizikom. Dio koji padne ispod visine stola vraća se na polazno mjesto (ispravak nakon pada testa T09).</figcaption></figure>
+
+<h3>Zadaci s rješenjem</h3>
+<div class="pitanja">
+<div class="pitanje"><p><b>B1.</b> Pozivi za crtanje na uređaju B. U prvoj izvedbi uređaj B postiže 72 sl/s uz 214 poziva za crtanje (okoliš 168, dijelovi robota i njihovi prozirni ciljni položaji 24, ruke i kontroleri 4, oznake i ploče točaka interesa 12, izbornik 4, luk teleporta 2). Granica za B je 150 poziva. Predložite mjere i izračunajte stanje nakon njih, ako se okoliš spajanjem statičkih mreža i atlasom tekstura svede na 98 poziva, ploče točaka interesa zamijene jednom zajedničkom pločom koja se prikazuje samo za aktivnu točku, a izbornik smanji na 3 poziva.</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">prije: 168 + 24 + 4 + 12 + 4 + 2 = 214 poziva</p>
+<p class="formula">poslije: 98 + 24 + 4 + (6 + 1) + 3 + 2 = 138 poziva ≤ 150 ✓</p>
+<p>Smanjenje ukupno (214 − 138) / 214 = 35,5 %; sam okoliš (168 − 98) / 168 = 41,7 %. Iskorištenje granice 138 / 150 = 92 %, uz rezervu od 12 poziva.</p>
+<p>Dijelovi robota ostaju odvojeni (24 poziva) jer se svaki zasebno hvata i giba; spajati se smiju samo objekti koji se nikad ne pomiču. Pozivi se broje u alatu za profiliranje, u pogledu u kojem je vidljivo najviše objekata, a ne u prosjeku. Uz jednoprolazno iscrtavanje za oba oka (engl. <em>single-pass</em> ili <em>multiview</em>) jedan poziv crta objekt za oba oka; bez njega broj se praktički udvostručuje, pa je provjera te postavke u projektu prvi korak optimizacije.</p></div></details></div>
+
+<div class="pitanje"><p><b>B2.</b> Dohvat i visina. Korisnik je visok 1,75 m; oči su mu na oko 1,64 m, a ruka s kontrolerom u opuštenom položaju na oko 1,05 m. Stol je visok 750 mm i dubok 800 mm; korisnik stoji uz dužu stranicu. Može li dosegnuti dio na suprotnom rubu stola rukom (granica hvatanja 0,8 m) i zašto je visina kamere u sceni zadana praćenjem, a ne fiksnim brojem?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Uz pretpostavku da je šaka pri hvatanju blizu ruba stola na strani korisnika, vodoravna udaljenost do suprotnog ruba je 0,8 m, a visinska razlika oko 1,05 − 0,75 = 0,30 m:</p>
+<p class="formula">d = √(0,8² + 0,3²) = √0,73 ≈ 0,85 m &gt; 0,8 m</p>
+<p>Dio na samom suprotnom rubu nije dohvatljiv hvatanjem rukom iz opuštenog položaja; korisnik se nagne (tada je dostupan) ili upotrijebi zraku do 3 m. Zaključak za projekt: dijelove na početku postavite u pojas do 0,5 m od ruba na strani korisnika, a zraku ostavite za dijelove koji su se otkotrljali.</p>
+<p>Visinu kamere daje praćenje glave u odnosu na pod prostora za igru (ishodište na razini poda). Kad bi se kamera postavila na fiksnih npr. 1,70 m, niži bi korisnik vidio stol niže nego što ga osjeća rukom, a mjerilo 1 : 1 za njega ne bi vrijedilo. Fiksna visina ima smisla samo u načinu rada sjedeći, i tada se jasno označuje.</p></div></details></div>
+
+<div class="pitanje"><p><b>B3.</b> Jedna logika točke interesa, više ulaza. Opišite komponentu točke interesa tako da je istu logiku moguće pokrenuti mišem (bez naočala), pogledom (zadržavanje pogleda 1 s), zrakom kontrolera i gestom ruke. Koje stanje i koji događaji su potrebni i gdje je pogreška ako svaki ulaz ima svoju kopiju teksta?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Komponenta točke interesa ima tri događaja: <em>ulazak</em> (pokazivač je nad točkom: istakni oznaku), <em>izlazak</em> (ukloni isticanje) i <em>odabir</em> (otvori ploču s tekstom, pusti zvuk, zapiši u stanje da je točka posjećena). Stanje: <code>posjecena</code> (logička varijabla) i <code>tekst</code> (jedan niz po točki). Ulazi su samo izvori tih događaja: miš zrakom iz kamere zaslona, pogled zrakom iz središta kamere naočala uz odbrojavanje od 1 s, kontroler svojom zrakom i tipkom, gesta prstohvata (engl. <em>pinch</em>), dodira vrhova palca i kažiprsta.</p>
+<p>Ako svaki ulaz ima svoju kopiju teksta i svoju logiku, izmjena teksta mora se napraviti četiri puta, a pogreške se razlikuju po ulazu (npr. pogled otvara ploču, a ne bilježi posjet). Ispravno je: jedna komponenta, jedan tekst, više izvora događaja. Tako se cijela logika ispituje mišem na računalu, bez naočala, a u XR-u se samo dodaju ulazi.</p></div></details></div>
+
+<div class="pitanje"><p><b>B4.</b> Prebacivanje iz ruke u ruku i fizika. Kotač se drži lijevom rukom. Desna ruka ga uhvati. Nabrojite korake koje logika mora izvesti i navedite dvije pogreške koje nastaju ako se neki korak izostavi. Kolika je masa kotača za fiziku ako se ukupna masa 1,2 kg raspodijeli tako da baterija ima 0,12 kg, motori po 0,10 kg, šasija 0,35 kg, poklopac 0,15 kg, pločica 0,06 kg, a ostatak se jednako podijeli na kotače, oslonac, oba senzora i prekidač?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Koraci: (1) desna ruka javlja hvatanje dijela koji je već držan; (2) lijeva ruka otpušta dio <em>bez</em> uključivanja fizike; (3) dio se pričvršćuje na desnu ruku s istim relativnim položajem kakav je imao u trenutku hvata (bez skoka); (4) animacija lijeve ruke vraća se u otvoreni položaj; (5) varijabla „tko drži“ mijenja se u desnu ruku.</p>
+<p>Ako se izostavi korak 2, dio je istodobno dijete obiju ruku i trza se između njih. Ako se u koraku 2 uključi fizika, dio na jedan okvir padne i „propadne“ kroz desnu ruku ili odskoči.</p>
+<p class="formula">ostatak = 1,20 − (0,12 + 2 · 0,10 + 0,35 + 0,15 + 0,06) = 1,20 − 0,88 = 0,32 kg</p>
+<p>Ostatak se dijeli na 6 dijelova (2 kotača, oslonac, 2 senzora, prekidač): 0,32 / 6 ≈ 0,053 kg, pa kotač u fizici ima oko 0,05 kg. Zbroj svih masa mora biti 1,2 kg, jer se sklopljeni robot u fizici vožnje ponaša kao jedno tijelo te mase (jedinica 3.6).</p></div></details></div>
+</div>
+</section>
+
+<section><h2>Faza 3: kretanje i udobnost</h2><div class="crta"></div>
+<p>Kretanje je dio VR aplikacije koji najviše utječe na kinetozu (bolest simulatora). Uzrok je nesklad: oči vide gibanje, a vestibularni sustav u unutarnjem uhu ne osjeća ubrzanje. Teleport i okretanje u koracima taj nesklad izbjegavaju jer nema prividnog kontinuiranog gibanja; kontinuirano kretanje ga stvara, pa se nudi samo kao izborna postavka uz vinjetu koja sužava vidno polje za vrijeme gibanja.</p>
+<h3>Dokument koji treba izraditi</h3>
+<ul>
+<li><strong>VR1-D05 Postavke kretanja i udobnosti</strong> &mdash; zadani način kretanja i obrazloženje; najveća duljina luka teleporta i pravila za valjani cilj (pod, ne stol, ne izvan laboratorija, ne bliže od 0,3 m zidu); korak okretanja; brzina kontinuiranog kretanja i postavke vinjete; način sjedeći i stojeći; što se mijenja u izborniku postavki.</li>
+</ul>
+<figure class="crtez"><svg viewBox="0 0 640 360" role="img" aria-label="Slika P.4: bočni prikaz luka teleporta od kontrolera na 1,1 m do cilja na 4 m">
+<line x1="30" y1="300" x2="610" y2="300" class="l" fill="none"/>
+<circle cx="52" cy="112" r="11" class="pf"/><line x1="52" y1="123" x2="52" y2="220" class="l" fill="none"/><line x1="52" y1="220" x2="40" y2="300" class="l" fill="none"/><line x1="52" y1="220" x2="64" y2="300" class="l" fill="none"/><line x1="52" y1="150" x2="70" y2="179" class="l" fill="none"/>
+<circle cx="70" cy="179" r="4" class="tf"/>
+<polyline points="70.0,179.0 92.0,158.4 114.0,140.6 136.0,125.6 158.0,113.4 180.0,104.1 202.0,97.5 224.0,93.7 246.0,92.8 268.0,94.6 290.0,99.3 312.0,106.7 334.0,117.0 356.0,130.0 378.0,145.9 400.0,164.6 422.0,186.0 444.0,210.3 466.0,237.4 488.0,267.3 510.0,300.0" class="t" fill="none"/>
+<line x1="70" y1="179" x2="130" y2="119" class="l2 dash" fill="none"/><text x="136" y="161" class="mali">45°</text>
+<line x1="70" y1="179" x2="140" y2="179" class="l2" fill="none"/>
+<ellipse cx="510" cy="300" rx="26" ry="6" class="cf"/><circle cx="510" cy="300" r="4" class="tf"/>
+<line x1="243" y1="93" x2="243" y2="300" class="l2 dash" fill="none"/>
+<text x="243" y="76" class="mali" text-anchor="middle">vrh 1,88 m</text>
+<line x1="70" y1="325" x2="510" y2="325" class="l2" fill="none"/><line x1="70" y1="318" x2="70" y2="332" class="l2" fill="none"/><line x1="510" y1="318" x2="510" y2="332" class="l2" fill="none"/>
+<text x="290" y="348" class="mali" text-anchor="middle">domet 4,0 m po podu</text>
+<line x1="100" y1="179" x2="100" y2="300" class="l2" fill="none"/><text x="106" y="245" class="mali">1,1 m</text>
+<text x="249" y="292" class="mali">1,57 m</text>
+<text x="600" y="210" class="mali" text-anchor="end">v ≈ 5,55 m/s</text>
+<text x="600" y="230" class="mali" text-anchor="end">g = 9,81 m/s²</text>
+<text x="600" y="270" class="mali" text-anchor="end">cilj teleporta</text>
+</svg><figcaption><b>Slika P.4</b> &mdash; Luk teleporta kao parabola kosog hica. Kontroler je na 1,1 m, luk kreće pod 45°, a početna brzina od oko 5,55 m/s daje domet od 4,0 m po podu (zadatak C1). Luk se crta kao niz kratkih dužina i na svakoj se provjerava sudar sa scenom.</figcaption></figure>
+
+<h3>Zadaci s rješenjem</h3>
+<div class="pitanja">
+<div class="pitanje"><p><b>C1.</b> Luk teleporta. Luk se računa kao kosi hitac iz kontrolera na visini h = 1,1 m (kao u jedinici 3.5 i vježbi V13), pod kutom α = 45°. Kolika mora biti početna brzina v da domet po podu bude točno 4,0 m? Na kojoj je udaljenosti i visini vrh luka? Zašto se u izvedbi domet ograničava i provjerom duljine, a ne samo brzinom?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">x(t) = v · cos α · t; &nbsp; y(t) = h + v · sin α · t − g · t² / 2</p>
+<p class="formula">domet: R = (v · cos α / g) · (v · sin α + √((v · sin α)² + 2 · g · h))</p>
+<p>Uz R = 4,0 m, h = 1,1 m, α = 45° jednadžba se rješava numerički (npr. raspolavljanjem u Pythonu ili tabličnom kalkulatoru): <strong>v ≈ 5,55 m/s</strong>, vrijeme leta t ≈ 1,02 s. Provjera: 5,55 · 0,707 = 3,92 m/s; √(3,92² + 2 · 9,81 · 1,1) = √(15,39 + 21,58) = 6,08; R = 3,92 / 9,81 · (3,92 + 6,08) = 0,400 · 10,00 = 4,0 m ✓.</p>
+<p class="formula">vrh: x = v² · sin 2α / (2g) = 5,55² / 19,62 ≈ 1,57 m; &nbsp; y = h + (v · sin α)² / (2g) = 1,1 + 15,39 / 19,62 ≈ 1,88 m</p>
+<p>Kad korisnik podigne kontroler više ili ga nagne pod drugim kutom, domet se mijenja (npr. pod 45° iz visine 1,6 m domet je veći od 4 m). Zato se luk računa do najviše 4 m vodoravne udaljenosti ili do sudara, a cilj izvan toga označuje se kao nevaljan (luk mijenja izgled, teleport se ne izvodi). Bez visine (h = 0) za isti domet trebalo bi v = √(R · g) = 6,26 m/s &mdash; razlika pokazuje zašto se visina kontrolera ne smije zanemariti. Računski prikaz jedinice 3.5 sa zadanih 5,5 m/s daje 3,94 m, dakle nešto ispod granice.</p></div></details></div>
+
+<div class="pitanje"><p><b>C2.</b> Kontinuirano kretanje i okretanje. Koliki je pomak po okviru pri kontinuiranom kretanju od 1,5 m/s uz 90 Hz i koliko traje prelazak laboratorija po duljini od 8 m? Koliko koraka od 30° treba za okret od 360° i koliko bi isti okret trajao kontinuiranim okretanjem od 90°/s?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">pomak po okviru = 1,5 m/s / 90 Hz = 0,0167 m = 16,7 mm</p>
+<p class="formula">prelazak 8 m: t = 8 / 1,5 = 5,3 s (po širini 6 m: 4,0 s)</p>
+<p class="formula">okret 360°: 360 / 30 = 12 koraka; glatko: 360 / 90 = 4 s</p>
+<p>Pomak od 16,7 mm po okviru je glatko gibanje koje oko jasno opaža, a tijelo ne osjeća &mdash; zato je taj način izborni i ide uz vinjetu. Okretanje u koracima izvodi se trenutačno (u jednom okviru, po potrebi uz kratko zatamnjenje), pa nema prividne kutne brzine. Dvanaest pritisaka za puni okret je puno, ali u VR-1 korisnik se ionako okreće tijelom: stol je u prostoru za igru, a koraci služe samo nakon teleporta.</p></div></details></div>
+
+<div class="pitanje"><p><b>C3.</b> Zadani način kretanja. U ispitivanju je sudjelovalo 8 ispitanika. Jedan je pri kontinuiranom kretanju osjetio blagu mučninu, pri teleportu nitko. Koliki je to udio i koji zaključak slijedi za zadane postavke? Zašto se kontinuirano kretanje ipak ne uklanja?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">udio = 1 / 8 = 0,125 = 12,5 %</p>
+<p>Uzorak od 8 osoba premalen je za statistički zaključak o populaciji, ali dovoljan za projektnu odluku: ako i jedan od osam korisnika ima teškoće s nekim načinom, taj način ne smije biti zadan. Zato je <strong>teleport zadani način</strong>, a kontinuirano kretanje ostaje izborna postavka s uključenom vinjetom. Iskusni korisnici često ga preferiraju jer je prirodniji za kratke pomake, a uklanjanje bi smanjilo pristupačnost za one koji teleport doživljavaju kao dezorijentirajući. Odluka se upisuje u D05 i u izvješće, s brojem ispitanika i opisom uvjeta.</p></div></details></div>
+</div>
+</section>
+
+<section><h2>Faza 4: ispitivanje i izvješće</h2><div class="crta"></div>
+<p>U zadnjoj fazi aplikacija se ispituje prema planu, na oba uređaja, s mjerenjem performansi i s ispitanicima. Ispitivanje nije „probali smo i radi“, nego provedba unaprijed zapisanih testnih slučajeva: svaki ima oznaku, uvjet, postupak, očekivani rezultat i zapis stvarnog rezultata. Test koji padne ne briše se, nego se zapisuje pogreška, ispravak i ponovljeni test.</p>
+<h3>Dokumenti koje treba izraditi</h3>
+<ul>
+<li><strong>VR1-D06 Plan i izvješće o ispitivanju</strong> &mdash; tablica testnih slučajeva T01&ndash;T18 sa stvarnim rezultatima za uređaje A i B; popis pogrešaka s ispravcima; mjerenja iz alata za profiliranje (vrijeme okvira CPU i GPU, najmanji broj sl/s, pozivi za crtanje, trokuti u najzahtjevnijem pogledu); sažetak udobnosti ispitanika; prijedlozi izmjena zahtjeva.</li>
+<li><strong>VR1-D07 Izvedbene datoteke</strong> &mdash; paket za A i paket za B, upute za instalaciju i pokretanje, video u trajanju od 2 do 3 minute snimljen iz naočala.</li>
+</ul>
+<h3>Testni slučajevi</h3>
+<p>Stupac <em>Referentna izvedba</em> prikazuje rezultat prvog kruga ispitivanja primjerne izvedbe projekta: prošlo je 16 od 18 testova. Vaš projekt ima vlastite rezultate; tablica pokazuje oblik i razinu detalja koja se očekuje.</p>
+<div class="tablica-omot"><table><thead><tr><th>Oznaka</th><th>Što se ispituje</th><th>Postupak i uvjet</th><th>Očekivani rezultat</th><th>Uređaj</th><th>Referentna izvedba</th></tr></thead><tbody>
+<tr><td>T01</td><td>instalacija i pokretanje (Z04)</td><td>instalirati paket, pokrenuti, mjeriti do prve slike scene</td><td>≤ 10 s; paket ≤ 1,5 GB (A), ≤ 500 MB (B)</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T02</td><td>mjerilo i visina (Z05)</td><td>virtualnim metrom izmjeriti stol i robot; stvarnom rukom dotaknuti rub stola</td><td>stol 750 mm, robot 220 mm, ruka na rubu</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T03</td><td>granica sigurnosti (Z06)</td><td>prići granici prostora za igru</td><td>granica vidljiva, 0,3 m od zida</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T04</td><td>praćenje u prostoru (Z06)</td><td>obići stol, sagnuti se do poda, ruke iza leđa i iznad glave</td><td>glava bez skokova; kratki gubitak kontrolera bez pada aplikacije</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T05</td><td>ruke i tipke (Z07)</td><td>pritisnuti okidač i tipku hvata na oba kontrolera</td><td>ruka se zatvara razmjerno pritisku</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T06</td><td>hvatanje rukom (Z08)</td><td>uhvatiti svih 12 dijelova rukom s udaljenosti do 0,8 m</td><td>12 / 12 dijelova se hvata</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T07</td><td>hvatanje zrakom (Z08)</td><td>uhvatiti dio zrakom s 1, 2 i 3 m</td><td>dio dolazi u ruku; na 3,5 m ne</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T08</td><td>prebacivanje (Z08)</td><td>prebaciti kotač iz lijeve u desnu ruku 10 puta</td><td>bez skoka i bez pada dijela</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T09</td><td>dio ispod ruba stola (Z08)</td><td>ispustiti prekidač da padne uz rub stola; pokušati ga uhvatiti</td><td>dio se može uhvatiti ili se vraća na stol</td><td>A, B</td><td><strong>pad</strong>: ruka udara u koliziju ploče stola, prekidač se ne može uhvatiti</td></tr>
+<tr><td>T10</td><td>sklapanje (Z09)</td><td>složiti svih 12 dijelova na šasiju</td><td>svaki dio uskoči u svoju točku; brojač 12 / 12</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T11</td><td>točke interesa (Z10)</td><td>otvoriti 6 točaka kontrolerom, pogledom i mišem (bez naočala)</td><td>isti tekst na sva tri ulaza; posjet zabilježen</td><td>A, B, PC</td><td>prolaz</td></tr>
+<tr><td>T12</td><td>teleport (Z11)</td><td>ciljati pod na 2 i 4 m, stol, zid i prostor izvan laboratorija</td><td>teleport na pod do 4 m; ostali ciljevi nevaljani</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T13</td><td>okretanje u koracima (Z11)</td><td>12 puta okrenuti udesno</td><td>točno 360°, bez glatke rotacije</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T14</td><td>kontinuirano kretanje (Z11)</td><td>uključiti u postavkama, kretati se 10 s</td><td>1,5 m/s, vinjeta uključena; po zadanom isključeno</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T15</td><td>vožnja robota (Z09)</td><td>uključiti prekidač sklopljenog robota</td><td>robot vozi i staje prije ruba stola</td><td>A, B</td><td>prolaz</td></tr>
+<tr><td>T16</td><td>performanse A (Z01&ndash;Z03)</td><td>profilirati 60 s najzahtjevnijeg pogleda</td><td>90 sl/s, GPU i CPU ≤ 9,0 ms, najmanje 85 sl/s</td><td>A</td><td>prolaz: 90 sl/s, GPU 7,8 ms, najmanje 88 sl/s</td></tr>
+<tr><td>T17</td><td>performanse B (Z01, Z03)</td><td>profilirati 60 s, uključujući pogled na cijeli laboratorij iz kuta</td><td>90 sl/s, ≤ 300 000 trokuta, ≤ 150 poziva</td><td>B</td><td><strong>pad</strong>: 76 sl/s pri pogledu na cijeli laboratorij</td></tr>
+<tr><td>T18</td><td>udobnost (Z12)</td><td>8 ispitanika, 10 min rada, upitnik nakon rada</td><td>nitko ne prekida zbog mučnine uz zadane postavke</td><td>A, B</td><td>prolaz; 1 od 8 blaga mučnina samo pri kontinuiranom kretanju</td></tr>
+</tbody></table></div>
+<p><strong>Ispravci u referentnoj izvedbi.</strong> T09: dijelovi koji padnu ispod visine 0,70 m vraćaju se na polazno mjesto na stolu, a zona hvata ruke više se ne sudara s kolizijom ploče stola; ponovljeni test prošao. T17: okolišu (police, ormar, stol za alat) dodane su razine detalja; ponovljeni test pokazao je 90 sl/s, 138 poziva i 262 000 trokuta u najzahtjevnijem pogledu. Nakon ispravaka prolaz je 18 / 18.</p>
+
+<figure class="crtez"><svg viewBox="0 0 640 300" role="img" aria-label="Slika P.5: budžet vremena okvira za uređaj A i uređaj B prije i nakon uvođenja razina detalja">
+<line x1="438" y1="48" x2="438" y2="228" class="l2 dash" fill="none"/><text x="438" y="40" class="mali" text-anchor="middle">granica 9,0 ms</text>
+<line x1="506" y1="30" x2="506" y2="228" class="t" fill="none"/><text x="520" y="22" class="mali" text-anchor="middle">okvir 90 Hz: 11,1 ms</text>
+<text x="10" y="80">A · GPU</text>
+<rect x="150" y="60" width="250" height="30" class="cf"/><text x="160" y="80" class="mali">7,8 ms (70 % okvira)</text>
+<rect x="400" y="60" width="38" height="30" class="l2 dash" fill="none"/><text x="419" y="108" class="mali" text-anchor="middle">rezerva 1,2 ms</text>
+<text x="10" y="140">B · prije LOD</text>
+<rect x="150" y="120" width="356" height="30" class="pf"/><rect x="506" y="120" width="65" height="30" class="if"/><text x="160" y="140" class="mali">76 sl/s = 13,2 ms</text>
+<text x="578" y="140" class="mali">+2,0</text>
+<text x="10" y="200">B · nakon LOD</text>
+<rect x="150" y="180" width="356" height="30" class="cf"/><text x="160" y="200" class="mali">90 sl/s = 11,1 ms</text>
+<line x1="150" y1="228" x2="598" y2="228" class="l" fill="none"/>
+<line x1="150" y1="228" x2="150" y2="236" class="l2" fill="none"/><text x="150" y="252" class="mali" text-anchor="middle">0</text>
+<line x1="214" y1="228" x2="214" y2="236" class="l2" fill="none"/><text x="214" y="252" class="mali" text-anchor="middle">2</text>
+<line x1="278" y1="228" x2="278" y2="236" class="l2" fill="none"/><text x="278" y="252" class="mali" text-anchor="middle">4</text>
+<line x1="342" y1="228" x2="342" y2="236" class="l2" fill="none"/><text x="342" y="252" class="mali" text-anchor="middle">6</text>
+<line x1="406" y1="228" x2="406" y2="236" class="l2" fill="none"/><text x="406" y="252" class="mali" text-anchor="middle">8</text>
+<line x1="470" y1="228" x2="470" y2="236" class="l2" fill="none"/><text x="470" y="252" class="mali" text-anchor="middle">10</text>
+<line x1="534" y1="228" x2="534" y2="236" class="l2" fill="none"/><text x="534" y="252" class="mali" text-anchor="middle">12</text>
+<line x1="598" y1="228" x2="598" y2="236" class="l2" fill="none"/><text x="598" y="252" class="mali" text-anchor="middle">14</text>
+<text x="374" y="280" class="mali" text-anchor="middle">vrijeme okvira u ms (1 ms = 32 px)</text>
+</svg><figcaption><b>Slika P.5</b> &mdash; Budžet vremena okvira. Uređaj A troši 7,8 ms GPU vremena i ima 1,2 ms rezerve do granice od 9,0 ms. Uređaj B pri pogledu na cijeli laboratorij prije uvođenja razina detalja treba 13,2 ms po okviru (76 sl/s) i prekoračuje okvir od 11,1 ms za oko 2 ms; nakon ispravka drži 90 sl/s.</figcaption></figure>
+
+<h3>Zadaci s rješenjem</h3>
+<div class="pitanja">
+<div class="pitanje"><p><b>D1.</b> Budžet okvira na uređaju A. Izračunajte vrijeme okvira za 90 Hz i 120 Hz. Koliki je udio izmjerenog GPU vremena od 7,8 ms u okviru i u granici od 9,0 ms? Može li se uz isti sadržaj prijeći na 120 Hz, ako granica i dalje iznosi 81 % okvira?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">T(90 Hz) = 1000 / 90 = 11,1 ms; &nbsp; T(120 Hz) = 1000 / 120 = 8,33 ms</p>
+<p class="formula">7,8 / 11,1 = 70 % okvira; &nbsp; 7,8 / 9,0 = 86,7 % granice; rezerva 9,0 − 7,8 = 1,2 ms</p>
+<p>Granica od 9,0 ms je 9,0 / 11,1 = 81 % okvira; ostatak je rezerva za pokretač, sastavljanje slike i korekciju izobličenja leća. Za 120 Hz ista granica bila bi 0,81 · 8,33 = 6,75 ms. Izmjereno GPU vrijeme od 7,8 ms veće je od toga za oko 1,05 ms, pa uz isti sadržaj 120 Hz nije ostvarivo bez dodatne optimizacije (npr. manja razlučivost iscrtavanja, jednostavnije sjene). Projekt zato ostaje na 90 Hz, što je i zahtjev Z01.</p></div></details></div>
+
+<div class="pitanje"><p><b>D2.</b> Pad na uređaju B. Pri pogledu na cijeli laboratorij uređaj B pada na 76 sl/s. Koliko je vrijeme okvira i za koliko prekoračuje okvir od 90 Hz? Prije uvođenja razina detalja u okolišu u tom je pogledu bilo 410 000 trokuta (podatak za zadatak), a nakon 262 000. Je li zahtjev Z03 sada ispunjen i koliko je smanjenje?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">T(76) = 1000 / 76 = 13,16 ms; &nbsp; prekoračenje 13,16 − 11,11 = 2,05 ms</p>
+<p class="formula">smanjenje trokuta = 1 − 262 000 / 410 000 = 36,1 %; &nbsp; 262 000 / 300 000 = 87,3 % granice ✓</p>
+<p>Prije ispravka zahtjev Z03 nije bio ispunjen ni po broju trokuta (410 000 &gt; 300 000). Kad okvir ne stigne na vrijeme, mnogi pokretači prikazuju reprojicirani prethodni okvir ili prelaze na polovičnu frekvenciju, pa korisnik vidi trzaje pri okretanju glave &mdash; zato se ne mjeri prosjek, nego najzahtjevniji pogled. Robot sam (28 000 trokuta) zauzima samo 9,3 % granice za B; problem je bio okoliš, koji se u prvoj izvedbi iscrtavao u punoj razlučivosti i s udaljenosti od 7 m.</p></div></details></div>
+
+<div class="pitanje"><p><b>D3.</b> Vrijeme od pokreta do fotona. Pojednostavljeni model lanca na uređaju A: očitanje i obrada praćenja 2 ms, jedan okvir iscrtavanja 11,1 ms i prikaz do sredine zaslona pola okvira. Je li zahtjev Z02 (≤ 20 ms) ispunjen? Kolika bi bila kutna pogreška slike pri okretanju glave od 100°/s kad bi kašnjenje bilo točno 20 ms i koliko je to piksela?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">t = 2 + 11,1 + 11,1 / 2 = 18,7 ms ≤ 20 ms ✓</p>
+<p class="formula">pogreška = 100 °/s · 0,020 s = 2,0°; &nbsp; 2,0 · 21,1 ≈ 42 piksela</p>
+<p>Pomak slike od 42 piksela bio bi jasno vidljiv kao „plivanje“ scene. U stvarnosti ga pokretač smanjuje predviđanjem položaja glave za trenutak prikaza i kasnom korekcijom slike neposredno prije slanja na zaslon. Model u zadatku je procjena, a ne mjerenje: stvarne vrijednosti daju alati pokretača i profiliranja. Pri spajanju uređaja B na računalo lancu se dodaje kodiranje i prijenos slike, pa se Z02 za taj način rada provjerava zasebno.</p></div></details></div>
+
+<div class="pitanje"><p><b>D4.</b> Prolaznost i ponovljeno ispitivanje. U prvom krugu prošlo je 16 od 18 testova. Koliki je to udio? Nakon ispravaka za T09 i T17 koje testove treba ponoviti i zašto ne samo ta dva?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">prolaznost = 16 / 18 = 88,9 %</p>
+<p>Ispravak za T09 mijenja kolizije i logiku hvatanja, pa se osim T09 ponavljaju T06&ndash;T08 i T10 (hvatanje, prebacivanje, sklapanje). Ispravak za T17 dodaje razine detalja okolišu, što može promijeniti izgled i kolizije okoliša, pa se ponavljaju T16, T17 i T12 (teleport cilja pod i namještaj). Takvo ponavljanje zove se regresijsko ispitivanje: provjerava da ispravak jedne pogreške nije stvorio novu. Tek nakon toga u izvješće se upisuje prolaz 18 / 18, uz datum oba kruga.</p></div></details></div>
+</div>
+</section>
+
+<section><h2>Oblik predaje</h2><div class="crta"></div>
+<p>Projekt se predaje kao jedna mapa (sažeta u arhivu ili na zajedničkom spremištu) s ovim ustrojem. Nazivi su malim slovima, bez dijakritičkih znakova i razmaka.</p>
+<pre><code>vr1-tim-oznaka/
+  01-modeli/        izvorne datoteke programa za mrežu, glTF ili FBX izvoz, teksture
+  02-projekt/       projekt razvojnog okruženja (bez privremenih mapa za izgradnju)
+  03-paketi/        vr1-pcvr (uređaj A), vr1-samostalno (uređaj B)
+  04-dokumenti/     VR1-D01 ... VR1-D06 u PDF-u
+  05-video/         vr1-video.mp4, 2 do 3 minute, snimka iz naočala
+  procitaj.txt      članovi tima i uloge, inačica razvojnog okruženja, upute za pokretanje</code></pre>
+<ul>
+<li>Izvješće VR1-D06 ima naslovnu stranicu (naziv projekta, oznaka tima, datum), sadržaj, poglavlja po fazama, tablicu T01&ndash;T18 s rezultatima oba kruga i prilog s mjerenjima.</li>
+<li>Video prikazuje cijeli tijek bez rezova: pokretanje, hvatanje, prebacivanje, jednu točku interesa, teleport, sklapanje i vožnju robota.</li>
+<li>Projekt se predaje bez privremenih mapa koje razvojno okruženje samo ponovno izgradi (međuspremnici, izvedene datoteke); njihovi nazivi razlikuju se po okruženju i inačici.</li>
+</ul>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Paket za samostalne naočale ispitajte na naočalama <em>bez</em> spajanja na računalo prije predaje. Paket koji radi samo dok su naočale spojene kabelom nije paket za uređaj B, nego PC-VR u drugom obliku.</p></div>
+</section>
+
+<section><h2>Kontrolna lista prije predaje</h2><div class="crta"></div>
+<ul>
+<li>Robot u sceni mjeri 220 mm, stol 750 mm; snimka s mjernim objektom od 1 m je u D02.</li>
+<li>Svih 12 dijelova ima LOD0&ndash;LOD2, kolizijski oblik, ishodište na funkcijskoj točki i masu; zbroj masa je 1,2 kg.</li>
+<li>Zbroj trokuta LOD0 je najviše 28 000; teksture su 1024 px, jedan materijal po dijelu.</li>
+<li>Hijerarhija scene u D03 odgovara stvarnoj sceni; nema objekata „Novi objekt (3)“ i sličnih naziva.</li>
+<li>Hvatanje rukom do 0,8 m i zrakom do 3 m, prebacivanje iz ruke u ruku i vraćanje palog dijela rade na oba uređaja.</li>
+<li>Šest točaka interesa ima isti tekst za kontroler, pogled i miš.</li>
+<li>Teleport je zadani način; luk ne dopušta cilj izvan 4 m, na stolu ni izvan laboratorija; okretanje je 30°.</li>
+<li>Kontinuirano kretanje je po zadanom isključeno i radi samo s vinjetom.</li>
+<li>Na oba uređaja 90 sl/s u najzahtjevnijem pogledu; broj trokuta i poziva unutar granica Z03; mjerenja su u D06.</li>
+<li>Paket A ≤ 1,5 GB, paket B ≤ 500 MB, pokretanje ≤ 10 s.</li>
+<li>T01&ndash;T18 provedeni, pali testovi ispravljeni i ponovljeni, regresija zapisana.</li>
+<li>Video, <code>procitaj.txt</code> i svi PDF dokumenti su u mapi; nazivi odgovaraju propisanima.</li>
+</ul>
+</section>
+
+<section><h2>Vrednovanje</h2><div class="crta"></div>
+<p>Projekt nosi <strong>100 bodova</strong>. Za prolaz je potrebno ukupno najmanje 50 bodova i najmanje polovina bodova u svakoj fazi. Tim dobiva zajedničke bodove za faze 1&ndash;4 i predaju, a obrana se boduje pojedinačno.</p>
+<div class="tablica-omot"><table><thead><tr><th>Dio</th><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td rowspan="4">Faza 1: modeli (20)</td><td>budžet trokuta i razine detalja prema D01, obrazložena raspodjela</td><td>8</td></tr>
+<tr><td>materijali, UV mape, teksture 1024 px, ispečene normale</td><td>5</td></tr>
+<tr><td>mjerilo 1 : 1, osi, ishodišta, protokol izvoza D02</td><td>4</td></tr>
+<tr><td>kolizijski oblici i mase</td><td>3</td></tr>
+<tr><td rowspan="4">Faza 2: scena i interakcija (25)</td><td>hijerarhija i struktura scene, nazivi, D03</td><td>5</td></tr>
+<tr><td>hvatanje, puštanje, zraka, prebacivanje iz ruke u ruku</td><td>8</td></tr>
+<tr><td>šest točaka interesa s jednom logikom za više ulaza</td><td>6</td></tr>
+<tr><td>sklapanje na priključne točke i vožnja robota</td><td>6</td></tr>
+<tr><td rowspan="3">Faza 3: kretanje i udobnost (15)</td><td>teleport s provjerom valjanog cilja do 4 m</td><td>6</td></tr>
+<tr><td>okretanje u koracima, kontinuirano kretanje s vinjetom</td><td>6</td></tr>
+<tr><td>obrazložene zadane postavke u D05</td><td>3</td></tr>
+<tr><td rowspan="3">Faza 4: ispitivanje i izvješće (20)</td><td>provedba T01&ndash;T18 na oba uređaja, regresija</td><td>8</td></tr>
+<tr><td>profiliranje i ispunjenje Z01&ndash;Z03</td><td>6</td></tr>
+<tr><td>izvješće D06: jasnoća, brojevi, prijedlozi izmjena</td><td>6</td></tr>
+<tr><td rowspan="2">Predaja i obrana (20)</td><td>oblik predaje, paketi, video, kontrolna lista</td><td>5</td></tr>
+<tr><td>obrana (pojedinačno): objašnjenje rješenja i odgovori na pitanja</td><td>15</td></tr>
+<tr><td></td><td><strong>Ukupno</strong></td><td><strong>100</strong></td></tr>
+</tbody></table></div>
+<div class="tablica-omot"><table><thead><tr><th>Bodovi</th><th>Ocjena (prijedlog)</th></tr></thead><tbody>
+<tr><td>90&ndash;100</td><td>izvrstan (5)</td></tr><tr><td>80&ndash;89</td><td>vrlo dobar (4)</td></tr><tr><td>65&ndash;79</td><td>dobar (3)</td></tr><tr><td>50&ndash;64</td><td>dovoljan (2)</td></tr><tr><td>0&ndash;49 ili manje od polovine u nekoj fazi</td><td>nedovoljan (1)</td></tr>
+</tbody></table></div>
+</section>
+
+<section><h2>Pitanja za obranu</h2><div class="crta"></div>
+<p>Na obrani svaki član tima dobiva tri do četiri pitanja, barem jedno izvan svoje uloge. Odgovor se pokazuje na vlastitoj aplikaciji ili dokumentu, ne napamet.</p>
+<div class="pitanja">
+<div class="pitanje"><p><b>O1.</b> Zašto je teleport zadani način kretanja u VR-1, iako je kontinuirano kretanje prirodnije?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kontinuirano kretanje stvara nesklad između vida (gibanje) i vestibularnog sustava (nema ubrzanja), što uzrokuje kinetozu. U ispitivanju je 1 od 8 ispitanika osjetio mučninu samo pri kontinuiranom kretanju. Teleport i okretanje u koracima nemaju prividnog gibanja. Kontinuirano kretanje ostaje izborno, uz vinjetu, za korisnike koji ga podnose.</p></div></details></div>
+<div class="pitanje"><p><b>O2.</b> Pokažite gdje je ishodište kotača i objasnite što bi se dogodilo da je ostalo ishodište iz CAD sklopa.</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Ishodište je u središtu glavine, na osi vrtnje. S ishodištem sklopa kotač bi se okretao oko pogrešne točke i opisivao krug umjesto vrtnje na mjestu; kut iz simulacije ne bi se mogao izravno primijeniti. Ishodište određuje i točku za koju se kotač drži u ruci i točku koja uskače u priključno mjesto na motoru.</p></div></details></div>
+<div class="pitanje"><p><b>O3.</b> Koliko piksela po stupnju ima uređaj A, a koliko B, i što to znači za najmanji čitljivi tekst na točki interesa?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A: 2448 / 116 ≈ 21,1; B: 2064 / 110 ≈ 18,8 piksela po stupnju. Ljudsko oko razlučuje oko 60 piksela po stupnju (jedna kutna minuta), pa je VR slika znatno grublja od stvarnosti. Tekst mora biti krupniji nego na zaslonu računala: slovo visoko npr. 20 piksela treba na B oko 1,1°, što na udaljenosti od 1 m iznosi oko 19 mm. Zato su ploče točaka interesa kratke i krupnog pisma.</p></div></details></div>
+<div class="pitanje"><p><b>O4.</b> Zašto se dijelovi robota ne spajaju u jednu mrežu radi manje poziva za crtanje, a okoliš se spaja?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Spojena mreža giba se kao cjelina. Dijelovi robota hvataju se i gibaju zasebno, pa moraju ostati zasebni objekti. Okoliš (zidovi, police, ormar) nikad se ne pomiče, pa spajanje i atlas tekstura smanjuju pozive bez gubitka funkcije. U referentnoj izvedbi okoliš je sveden sa 168 na 98 poziva.</p></div></details></div>
+<div class="pitanje"><p><b>O5.</b> Objasnite ispravak testa T09 i zašto nije bio dovoljan samo veći doseg ruke.</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Prekidač je pao uz rub, ispod ploče stola, a zona hvata ruke zapinjala je o koliziju ploče pa do dijela nije mogla doći. Veći doseg ne rješava problem jer zona i dalje udara u ploču, a povećava rizik da se nehotice uhvati susjedni dio. Ispravak ima dva dijela: zona hvata ne sudara se s kolizijom stola, a dio koji padne ispod 0,70 m vraća se na polazno mjesto, pa zadatak ostaje rješiv i kad korisnik ne može do dijela.</p></div></details></div>
+<div class="pitanje"><p><b>O6.</b> Kako ste izmjerili da aplikacija drži 90 sl/s i zašto prosjek nije dovoljan?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Alatom za profiliranje razvojnog okruženja ili pokretača, 60 s u najzahtjevnijem pogledu, uz zapis vremena CPU i GPU po okviru i najmanje vrijednosti. Prosjek od 90 sl/s može skrivati kratke padove od kojih korisnik vidi trzaje; zato zahtjev traži i najmanju vrijednost. Na B je pad na 76 sl/s nastao samo pri pogledu na cijeli laboratorij, što se u prosjeku ne bi vidjelo.</p></div></details></div>
+<div class="pitanje"><p><b>O7.</b> Što znači da je točka interesa „jedna logika, više ulaza“ i kako to pokazujete bez naočala?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Jedna komponenta s događajima ulaska, izlaska i odabira i s jednim tekstom; miš, pogled, kontroler i geste samo pozivaju te događaje. Bez naočala pokazuje se mišem: pokazivač nad točkom je istakne, klik otvori ploču, posjet se zabilježi. U XR-u ista točka radi zrakom kontrolera i zadržavanjem pogleda, bez promjene logike.</p></div></details></div>
+<div class="pitanje"><p><b>O8.</b> Zašto je teksturna mapa smanjena s 2048 na 1024 px i koliko je memorije time ušteđeno?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Na 0,5 m od očiju uređaj A daje oko 2,4 piksela po mm, a 1024 px na 220 mm daje 4,7 teksela po mm &mdash; dovoljno. Uz 36 mapa s blokovnom kompresijom i mip-razinama zauzeće pada sa 192 MB na 48 MB, dakle za 144 MB (75 %). Na samostalnim naočalama ta memorija treba sustavu i ostatku scene.</p></div></details></div>
+<div class="pitanje"><p><b>O9.</b> Kako se robot u VR-1 pokreće: tko računa gibanje kotača i što ide u kojem smjeru?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kad se prekidač uključi, aplikacija šalje naredbu (brzine lijevog i desnog kotača) simulatoru robota ili ugrađenom kinematskom modelu, a natrag dobiva položaj robota i kutove kotača. Pri brzini od npr. 0,2 m/s kotač Ø65 mm (opseg 204 mm) okreće se oko 0,98 okretaja u sekundi, odnosno oko 3,9° po okviru pri 90 Hz. Ako simulator šalje podatke 50 puta u sekundi, na jednu poruku dolazi 1,8 okvira, pa se položaj između poruka interpolira da gibanje bude glatko. Senzori linije zaustavljaju robot prije ruba stola.</p></div></details></div>
+<div class="pitanje"><p><b>O10.</b> Po čemu se razlikuju vanjsko praćenje uređaja A i unutarnje praćenje uređaja B u vašem ispitivanju?</p><details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A: bazne stanice na zidovima definiraju prostor; praćenje je stabilno i kad su ruke iza leđa ili iznad glave, dok ih vidi barem jedna stanica, ali sustav traži postavljanje i kalibraciju. B: četiri kamere na naočalama prate prostor i kontrolere; nema postavljanja stanica, ali kontroler izvan vidnog polja kamera (iza leđa, blizu naočala) praćenje nakratko nadomješta inercijskim mjernim jedinicama i procjenom. U T04 zato se posebno ispituju ruke iza leđa i iznad glave.</p></div></details></div>
+</div>
+</section>
+
+<section><h2>Za nastavnika</h2><div class="crta"></div>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4>
+<p>Prije početka pripremite STEP datoteku robota MR-1 (ili drugog sklopa od desetak dijelova sličnog opsega), provjerite da se prazan VR projekt izgrađuje za oba uređaja i da na svakom računalu radi pokretač OpenXR. Oprema po timu: jedno računalo s grafičkom karticom za VR, uređaj A ili B (idealno pristup obama barem u petom i šestom tjednu) i označen prostor za igru od najmanje 2,0 × 1,5 m. Pripremite pribor za higijenu (jednokratne ili perive obloge za lice, sredstvo za čišćenje) i pravila za uporabu u skupini.</p>
+<h4>Tijek i kontrolne točke</h4>
+<ol>
+<li><strong>1. tjedan:</strong> podjela uloga, dogovor o nazivima i spremištu; KT1 &mdash; prazna scena na oba uređaja na 90 sl/s.</li>
+<li><strong>2. tjedan:</strong> KT2 &mdash; robot u sceni u mjerilu, D01 popunjen. Tko ima robot od 2,2 m, dobiva uputu da ponovi provjeru mjernim objektom; rješenje se ne kazuje.</li>
+<li><strong>3.&ndash;4. tjedan:</strong> interakcija i kretanje; KT3 &mdash; cijeli tijek na A.</li>
+<li><strong>5. tjedan:</strong> KT4 &mdash; prvi krug T01&ndash;T18; tražite tablicu sa stvarnim, a ne očekivanim rezultatima.</li>
+<li><strong>6. tjedan:</strong> ispravci, regresija, predaja i obrana (oko 15 minuta po timu i 5 minuta pitanja po članu).</li>
+</ol>
+<h4>Očekivani rezultati</h4>
+<p>Funkcionalna aplikacija na barem jednom uređaju u punom opsegu i na drugom s dokumentiranim ograničenjima, D01&ndash;D06 s brojevima iz vlastitih mjerenja, video bez rezova. Očekuje se da barem jedan test u prvom krugu padne; tim koji prijavi 18 / 18 u prvom krugu vjerojatno nije ispitivao najzahtjevnije uvjete (pogled na cijeli laboratorij, dio koji padne s ruba, ruke iza leđa).</p>
+<h4>Česte pogreške</h4>
+<ul>
+<li>Uvoz bez pretvorbe jedinica: robot 10 ili 1000 puta prevelik; ili se mjerilo „popravi“ skaliranjem objekta u sceni umjesto u izvozu.</li>
+<li>Ishodišta ostavljena iz CAD sklopa; kotači se okreću oko kuta šasije.</li>
+<li>Kolizija generirana iz vidljive mreže (tisuće trokuta) umjesto jednostavnih oblika.</li>
+<li>Fizika uključena na dijelu dok ga ruka drži; dio podrhtava ili propada kroz ruku.</li>
+<li>Kamera postavljena na fiksnu visinu; kod nižih korisnika stol „lebdi“.</li>
+<li>Ploče točaka interesa pune teksta sitnim slovima koje se na 19 piksela po stupnju ne može pročitati.</li>
+<li>Performanse mjerene samo na A ili samo u uređivaču, bez paketa za B.</li>
+<li>Pali testovi izbrisani iz tablice umjesto da su zapisani s ispravkom.</li>
+</ul>
+<h4>Inačica bez naočala</h4>
+<p>Ako tim nema stalan pristup naočalama, fazu 2 i dio faze 3 radi u načinu s mišem ili sa simulatorom uređaja koji nudi razvojno okruženje; točke interesa, hvatanje zrakom i teleport mogu se potpuno ispitati mišem. Testovi T02&ndash;T05, T16&ndash;T18 zahtijevaju naočale i provode se u terminu dogovorenom unaprijed.</p>
+<h4>Sigurnost i higijena</h4>
+<p>Tijekom ispitivanja s ispitanicima uz korisnika uvijek stoji promatrač koji pazi na kabel i prepreke. Ispitanik smije prekinuti u svakom trenutku bez obrazloženja; ispitivanje traje najviše 10 minuta po osobi, s pauzom. Naočale i kontroleri čiste se nakon svake osobe.</p>
+<h4>Vrednovanje obrane</h4>
+<div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>objašnjava vlastiti dio na aplikaciji ili dokumentu, s brojevima</td><td>5</td></tr>
+<tr><td>odgovara na pitanje izvan svoje uloge</td><td>4</td></tr>
+<tr><td>obrazlaže jednu projektnu odluku (npr. zadani način kretanja, raspodjelu trokuta)</td><td>3</td></tr>
+<tr><td>služi se stručnim nazivljem, uključujući engleske nazive (LOD, draw call, motion-to-photon, snap turn)</td><td>3</td></tr>
+<tr><td><strong>Ukupno</strong></td><td><strong>15</strong></td></tr>
+</tbody></table></div>
+</div></details>
+</section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="vjezbe.html">&#8592; Vježbe</a><a class="gumb" href="ispitna-pitanja.html">Ispitna pitanja <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-virtualna-stvarnost-projekt-virtualni-laboratorij-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>
