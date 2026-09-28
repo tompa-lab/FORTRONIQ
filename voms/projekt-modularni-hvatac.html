@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projektni zadatak: modularni pneumatski hvatač MPH-1 — Virtualno oblikovanje mehatroničkih sustava | FORTRONIQ</title>
+<meta name="description" content="Projektni zadatak provodi cijelo područje kroz jedan sklop: modularni pneumatski hvatač MPH-1, u četiri faze tijekom četiri tjedna rada u timu od dvije osobe. Rezultat je…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/voms/projekt-modularni-hvatac.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/voms/projekt-modularni-hvatac.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/voms/projekt-modularni-hvatac.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/voms/projekt-modularni-hvatac.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Projektni zadatak: modularni pneumatski hvatač MPH-1">
+<meta property="og:description" content="Projektni zadatak provodi cijelo područje kroz jedan sklop: modularni pneumatski hvatač MPH-1, u četiri faze tijekom četiri tjedna rada u timu od dvije osobe. Rezultat je…">
+<meta property="og:url" content="https://dos.fortroniq.hr/voms/projekt-modularni-hvatac.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- dodaci DOS graditelja */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+figure.crtez .st{stroke-dasharray:14 4 2 4}
+pre{overflow-x:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.8rem 1rem;font-size:.86rem;line-height:1.45}
+pre code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Virtualno oblikovanje mehatroničkih sustava</a><i aria-hidden="true">/</i><span aria-current="page">Projektni zadatak: modularni pneumatski hvatač MPH-1</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VIRTUALNO OBLIKOVANJE MEHATRONIČKIH SUSTAVA</p><p class="nadnaslov">Projekt</p><h1>Projektni zadatak: modularni pneumatski hvatač MPH-1</h1><p>Projektni zadatak provodi cijelo područje kroz jedan sklop: modularni pneumatski hvatač MPH-1, u četiri faze tijekom četiri tjedna rada u timu od dvije osobe. Rezultat je potpuno određen sklop s cjevovodom i ožičenjem, dokumentiran nacrtima i renderiranim prikazom te provjeren osnovnom kinematičkom simulacijom.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>primijeniti parametarsko i feature-based modeliranje na izradi dijelova hvatača MPH-1</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izraditi zavarenu konstrukciju podnožja i cjevovod pneumatskog dijela sklopa</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>sklopiti dijelove u potpuno određen sklop pravilnim odabirom veza</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izraditi ožičenje induktivnog senzora do razvodnog ormara</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izraditi tehničku dokumentaciju sklopa: nacrte, sastavnicu, renderirani prikaz i osnovnu kinematičku simulaciju</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>organizirati timski rad u zadanom roku i argumentirano braniti donesene odluke</span></li></ul></div></div></header><div class="omot"><section id="upute"><h2>Kako koristiti ovu stranicu</h2><div class="crta"></div><p>Zadaci i pitanja su bez odgovora. Rješenje s postupkom otvara se gumbom <em>Prikaži rješenje</em> ispod svakog zadatka; najprije riješite sami, a tek onda provjerite.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div></section><section><h2>Opis hvatača MPH-1 i zahtjevi</h2><div class="crta"></div>
+<p class="uvodni">Projektni zadatak nije nova vježba nego sažetak cijelog područja u jednom sklopu. Sve što je odrađeno kroz module i vježbe &mdash; parametarsko modeliranje, obrada limova, zavarene konstrukcije, cjevovod, sklapanje, nacrti, renderiranje i osnovna simulacija &mdash; ovdje se povezuje u jedan funkcionalni proizvod: <strong>modularni pneumatski hvatač MPH-1</strong>.</p>
+<p>MPH-1 je hvatač s dva prsta namijenjen malom mobilnom robotu ili robotskoj ruci, za rukovanje sitnim dijelovima u proizvodnom ili laboratorijskom okruženju. Konstrukcija je namjerno &bdquo;modularna&ldquo; u smislu da je svaki dio izrađen zasebnom proizvodnom tehnologijom, tako da sklop pokrije sve tehnike koje je područje obradilo: <strong>tijelo hvatača</strong> i <strong>dva prsta</strong> su strojno obrađeni aluminijski dijelovi modelirani ekstrudiranjem, rupama, zaobljenjima i skošenjima; <strong>nosač</strong> je savijeni lim; <strong>podnožje</strong> je zavarena čelična konstrukcija od profila; prsti se pokreću <strong>dvoradnim pneumatskim cilindrom</strong> preko cjevovoda sa spojnicama; prisutnost predmeta u čeljusti javlja <strong>induktivni senzor</strong> ožičen do razvodnog ormara.</p>
+<p>Zahtjevi na sklop, koji vrijede za cijeli projekt i na koje se poziva svaka faza, dani su tablicom. Brojevi se ne smiju mijenjati &mdash; oni su ulazni podatak zadatka, jednak za sve timove, kako bi rezultati bili usporedivi.</p>
+<div class="tablica-omot"><table><thead><tr><th>Veličina</th><th>Zahtjev</th></tr></thead><tbody>
+<tr><td>Tijelo hvatača</td><td>aluminij, 80 &times; 60 &times; 40 mm, masa 0,26 kg</td></tr>
+<tr><td>Prsti (2 kom)</td><td>aluminij, hod svakog 15 mm, najveći razmak čeljusti 70 mm, masa po prstu 0,05 kg</td></tr>
+<tr><td>Vodilice prstiju</td><td>uklop H7/g6, opća tolerancija ISO 2768-m</td></tr>
+<tr><td>Pneumatski cilindar</td><td>dvoradni, klip &oslash;20 mm, hod 20 mm, radni tlak 6 bar</td></tr>
+<tr><td>Savijeni nosač</td><td>lim debljine 3 mm, razvijeni oblik 120 &times; 80 mm, savijanje pod 90&deg;, radijus savijanja 3 mm</td></tr>
+<tr><td>Zavarena podnožna konstrukcija</td><td>čelični profil 20 &times; 20 &times; 2 mm, 4 kutna zavara, masa 2,4 kg</td></tr>
+<tr><td>Cjevovod</td><td>poliuretanska cijev &oslash;6 &times; 4 mm, duljina 1,5 m, 2 brza spojnika</td></tr>
+<tr><td>Senzor i ožičenje</td><td>induktivni senzor, PNP, 24 V DC, dvožilni kabel do razvodnog ormara, duljina 2 m</td></tr>
+<tr><td>Standardni dijelovi</td><td>4 vijka M5 &times; 16, 2 vodeća zatika &oslash;6 h7</td></tr>
+<tr><td>Broj dijelova sklopa</td><td>14 (tijelo, 2 prsta, nosač, podnožje, cilindar, 2 spojnika, senzor, 4 vijka, 2 zatika)</td></tr>
+<tr><td>Ukupna masa sklopa</td><td>1,8 kg</td></tr>
+<tr><td>Nacrt</td><td>mjerilo 1&nbsp;:&nbsp;1, list A3, opća tolerancija prema ISO 2768-m</td></tr>
+<tr><td>Renderiranje</td><td>1920 &times; 1080 px, aluminij eloksiran (srebrni), podnožje čelik crni lak</td></tr>
+<tr><td>Kinematička simulacija</td><td>otvaranje/zatvaranje prstiju, hod 15 mm, vrijeme ciklusa 0,4 s</td></tr>
+</tbody></table></div>
+<p>Načelo rada pneumatskog dvoradnog cilindra (razvod zraka, uloga dvoradnog i jednoradnog izvedbe, brzina gibanja klipa) nije predmet ovog područja &mdash; obrađeno je u području <a href="../pneumatika-i-hidraulika/index.html">Pneumatika i hidraulika</a>. Ovdje se cilindar promatra isključivo kao gotova komponenta koju treba <em>modelirati kao standardni dio</em>, spojiti cjevovodom i sklopiti vezom koja dopušta jedan stupanj slobode gibanja (translacija klipa).</p>
+<figure class="crtez"><svg viewBox="0 0 640 300" role="img" aria-label="Slika P.1: presjek hvatača MPH-1 s tijelom, prstima, vodilicama i kotama hoda i razmaka čeljusti"><rect x="220" y="90" width="200" height="120" class="l" fill="none"/><line x1="235" y1="100" x2="255" y2="90" class="l2"/><line x1="235" y1="120" x2="275" y2="90" class="l2"/><line x1="235" y1="140" x2="295" y2="90" class="l2"/><line x1="235" y1="160" x2="315" y2="90" class="l2"/><line x1="235" y1="180" x2="335" y2="90" class="l2"/><line x1="245" y1="200" x2="355" y2="90" class="l2"/><line x1="150" y1="150" x2="220" y2="150" class="l"/><rect x="140" y="140" width="14" height="20" class="pf"/><rect x="420" y="105" width="100" height="22" class="l" fill="none"/><rect x="420" y="173" width="100" height="22" class="l" fill="none"/><line x1="330" y1="105" x2="420" y2="105" class="l2 dash"/><line x1="330" y1="195" x2="420" y2="195" class="l2 dash"/><line x1="560" y1="106" x2="560" y2="194" class="l2 dash"/><line x1="552" y1="106" x2="568" y2="106" class="l2"/><line x1="552" y1="194" x2="568" y2="194" class="l2"/><polygon points="560,112 556,122 564,122" class="if"/><polygon points="560,188 556,178 564,178" class="if"/><text x="575" y="153" class="mali">70 mm</text><line x1="430" y1="88" x2="430" y2="60" class="l2 dash"/><line x1="470" y1="88" x2="470" y2="60" class="l2 dash"/><line x1="430" y1="66" x2="470" y2="66" class="l2"/><polygon points="436,66 446,62 446,70" class="if"/><polygon points="464,66 454,62 454,70" class="if"/><text x="450" y="56" text-anchor="middle" class="mali">hod 15 mm</text><text x="320" y="115" text-anchor="middle">Tijelo (Al)</text><text x="320" y="240" text-anchor="middle" class="mali">presjek A-A, šrafura pod 45&deg;</text><text x="470" y="120" text-anchor="middle" class="mali">Prst (2&times;)</text><text x="470" y="195" text-anchor="middle" class="mali">vodilica H7/g6</text></svg><figcaption><b>Slika P.1</b> &mdash; presjek hvatača MPH-1: tijelo u presjeku, dva prsta na vodilicama uklopa H7/g6, kota hoda i najvećeg razmaka čeljusti.</figcaption></figure>
+<p>Sila hvatanja nije posebno zadana &mdash; izvodi se iz tlaka i promjera klipa cilindra, po istom obrascu koji se koristi u jedinici o cjevovodu: A = &pi;&middot;D&sup2;/4, F = p&middot;A. Za klip &oslash;20 mm i tlak 6 bar: A = &pi;&middot;20&sup2;/4 &asymp; 314,16 mm&sup2;, F = 0,6 N/mm&sup2; &middot; 314,16 mm&sup2; &asymp; 188,5 N. Ta se vrijednost koristi kao referentna u zadacima faze 2 i u pitanjima za obranu &mdash; nije potrebno, niti dopušteno, mijenjati je pretpostavljanjem drugog tlaka ili promjera klipa.</p>
+<figure class="crtez"><svg viewBox="0 0 640 260" role="img" aria-label="Slika P.2: dijagram sile hvatanja u ovisnosti o radnom tlaku za klip promjera 20 milimetara"><line x1="60" y1="20" x2="60" y2="220" class="l"/><line x1="60" y1="220" x2="580" y2="220" class="l"/><line x1="140" y1="30" x2="140" y2="220" class="l2 dash"/><line x1="300" y1="30" x2="300" y2="220" class="l2 dash"/><line x1="460" y1="30" x2="460" y2="220" class="l2 dash"/><line x1="60" y1="126" x2="580" y2="126" class="l2 dash"/><path d="M60 220 L580 41" class="t" fill="none"/><circle cx="580" cy="41" r="4" class="tf"/><text x="20" y="55" class="mali">F [N]</text><text x="585" y="234" class="mali" text-anchor="end">p [bar]</text><text x="55" y="128" class="mali" text-anchor="end">100</text><text x="55" y="30" class="mali" text-anchor="end">200</text><text x="140" y="234" class="mali" text-anchor="middle">2</text><text x="300" y="234" class="mali" text-anchor="middle">4</text><text x="460" y="234" class="mali" text-anchor="middle">6</text><text x="572" y="32" class="mali" text-anchor="end">188,5 N pri 6 bar</text></svg><figcaption><b>Slika P.2</b> &mdash; sila hvatanja raste linearno s tlakom pri stalnom promjeru klipa; pri radnom tlaku 6 bar iznosi oko 188,5 N.</figcaption></figure>
+</section>
+
+<section><h2>Organizacija i rokovi</h2><div class="crta"></div>
+<p>Projekt traje <strong>četiri tjedna</strong> i radi ga <strong>tim od dvije osobe</strong>. Podjela rada nije po dijelovima nego po vrsti aktivnosti, jer se u sklopu na kraju sve mora poklopiti u zajedničkim referencama (koordinatni sustav sklopa, sučelja između dijelova, jedinstvena sastavnica) &mdash; zato obje osobe rade u istoj sklopnoj datoteci od početka, uz jasno dogovorene uloge:</p>
+<div class="tablica-omot"><table><thead><tr><th>Uloga</th><th>Težište rada</th><th>Odgovornost u fazama</th></tr></thead><tbody>
+<tr><td>Voditelj/ica modeliranja i dokumentacije</td><td>dijelovi (tijelo, prsti, nosač, podnožje), nacrti, sastavnica</td><td>faza 1 (nositelj), faza 4 &mdash; nacrti</td></tr>
+<tr><td>Voditelj/ica sklopa i simulacije</td><td>standardni dijelovi, cjevovod, ožičenje, veze sklopa, simulacija</td><td>faza 2 i 3 (nositelj), faza 4 &mdash; renderiranje i simulacija</td></tr>
+</tbody></table></div>
+<p>Podjela je radna, ne isključiva &mdash; obje osobe moraju znati objasniti cijeli sklop na obrani, jer se pitanja za obranu (posljednji odjeljak ove stranice) postavljaju bez obzira na to tko je koji dio izradio. Tjedni raspored koji se preporučuje:</p>
+<ul>
+<li><strong>1. tjedan &mdash; faza 1.</strong> Modeliranje dijelova, savijenog nosača i pripreme podnožja; dogovor o koordinatnom sustavu sklopa i referentnim ravninama koje će koristiti oba dijela tima.</li>
+<li><strong>2. tjedan &mdash; faza 2.</strong> Izrada zavarene konstrukcije podnožja, modeliranje cjevovoda i prvo sklapanje (tijelo, nosač, podnožje, cilindar).</li>
+<li><strong>3. tjedan &mdash; faza 3, početak faze 4.</strong> Ožičenje senzora, provjera potpuno određenog sklopa (nula preostalih stupnjeva slobode gibanja osim namjernog hoda prstiju), početak nacrta.</li>
+<li><strong>4. tjedan &mdash; faza 4 i predaja.</strong> Dovršetak nacrta, renderiranje, osnovna kinematička simulacija, izvješće, kontrola prema kontrolnoj listi i priprema za obranu.</li>
+</ul>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Najčešća organizacijska pogreška nije tehnička nego proceduralna: svaka osoba radi dio u &bdquo;svojoj&ldquo; datoteci pa se sklop sastavlja tek zadnji dan. Reference i vanjske skice se tada ne poklapaju, a ispravljanje unatrag oduzima više vremena nego što bi oduzelo dogovaranje sučelja na početku. Zajednička sklopna datoteka i dogovorene referentne ravnine od 1. tjedna nisu birokracija nego ušteda vremena.</p></div>
+</section>
+
+<section><h2>Faza 1: modeliranje dijelova, nosača i podnožja</h2><div class="crta"></div>
+<p>Cilj prve faze je skup samostalnih, potpuno određenih part dokumenata koji zajedno čine 14 dijelova sklopa iz tablice zahtjeva. Svaki dio mora poštovati namjeru dizajna postavljenu u modulu 1: vodeće dimenzije koje se lako mijenjaju (hod prsta, razmak čeljusti, debljina lima, dužina profila) moraju biti definirane jednom, u skici ili preko jednadžbe, a ne prepisane na više mjesta u modelu.</p>
+<figure class="crtez"><svg viewBox="0 0 640 360" role="img" aria-label="Slika P.3: stablo značajki sklopa MPH-1 s popisom dijelova i mapom veza"><circle cx="20" cy="28" r="9" class="cf"/><text x="36" y="33">MPH-1 &ndash; sklop hvatača (14 dijelova)</text><line x1="20" y1="38" x2="20" y2="300" class="l2 dash"/><line x1="20" y1="58" x2="34" y2="58" class="l2"/><rect x="36" y="51" width="14" height="14" rx="2" class="pf"/><text x="58" y="63" class="mali">Tijelo hvatača &mdash; aluminij</text><line x1="20" y1="82" x2="34" y2="82" class="l2"/><rect x="36" y="75" width="14" height="14" rx="2" class="pf"/><text x="58" y="87" class="mali">Prst lijevi &mdash; aluminij</text><line x1="20" y1="106" x2="34" y2="106" class="l2"/><rect x="36" y="99" width="14" height="14" rx="2" class="pf"/><text x="58" y="111" class="mali">Prst desni &mdash; aluminij</text><line x1="20" y1="130" x2="34" y2="130" class="l2"/><rect x="36" y="123" width="14" height="14" rx="2" class="pf"/><text x="58" y="135" class="mali">Savijeni nosač &mdash; lim 3 mm</text><line x1="20" y1="154" x2="34" y2="154" class="l2"/><rect x="36" y="147" width="14" height="14" rx="2" class="pf"/><text x="58" y="159" class="mali">Podnožje &mdash; zavarena konstrukcija</text><line x1="20" y1="178" x2="34" y2="178" class="l2"/><rect x="36" y="171" width="14" height="14" rx="2" class="pf"/><text x="58" y="183" class="mali">Pneumatski cilindar &oslash;20, hod 20</text><line x1="20" y1="202" x2="34" y2="202" class="l2"/><rect x="36" y="195" width="14" height="14" rx="2" class="pf"/><text x="58" y="207" class="mali">Brzi spojnik (2&times;)</text><line x1="20" y1="226" x2="34" y2="226" class="l2"/><rect x="36" y="219" width="14" height="14" rx="2" class="pf"/><text x="58" y="231" class="mali">Induktivni senzor M12 PNP</text><line x1="20" y1="250" x2="34" y2="250" class="l2"/><rect x="36" y="243" width="14" height="14" rx="2" class="pf"/><text x="58" y="255" class="mali">Vijak M5&times;16 (4&times;)</text><line x1="20" y1="274" x2="34" y2="274" class="l2"/><rect x="36" y="267" width="14" height="14" rx="2" class="pf"/><text x="58" y="279" class="mali">Vodeći zatik &oslash;6h7 (2&times;)</text><line x1="20" y1="298" x2="34" y2="298" class="l2"/><rect x="36" y="291" width="14" height="14" rx="2" class="cf"/><text x="58" y="303" class="mali">Veze (mates)</text><line x1="20" y1="322" x2="34" y2="322" class="l2"/><rect x="36" y="315" width="14" height="14" rx="2" class="cf"/><text x="58" y="327" class="mali">Jednadžbe i materijali</text></svg><figcaption><b>Slika P.3</b> &mdash; stablo značajki (engl. <em>FeatureManager design tree</em>) sklopa MPH-1: 14 dijelova pod korijenom sklopa, mapa veza i zajedničke jednadžbe na dnu.</figcaption></figure>
+<div class="pitanja">
+<div class="pitanje"><p><b>A1.</b> Modelirajte <strong>tijelo hvatača</strong> (aluminij, 80 &times; 60 &times; 40 mm, ciljna masa 0,26 kg) kao parametarski dio: bazna značajka ekstrudiranjem, zatim rupe za vodilice prstiju i pričvrsne vijke, zaobljenja na vanjskim bridovima. Provjerite računom koliko materijala treba ukloniti značajkama (džepovi, ljuska) da se s pune šipke dođe na zadanu masu, i predložite raspored tih značajki.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Masa punog bloka 80 &times; 60 &times; 40 mm od aluminija gustoće 2700 kg/m&sup3;: V = 0,080 &middot; 0,060 &middot; 0,040 = 1,92 &middot; 10&#8315;&#8308; m&sup3;, m = 2700 &middot; 1,92 &middot; 10&#8315;&#8308; = 0,518 kg. Zadana masa gotovog tijela je 0,26 kg, dakle značajkama treba ukloniti (0,518 &minus; 0,26) / 0,518 &asymp; 50&nbsp;% volumena.</p>
+<p>To se u praksi ne postiže jednim džepom nego redoslijedom nekoliko značajki koje redom &bdquo;jedu&ldquo; materijal s mjesta koja ne nose opterećenje: prolazna ljuska (shell) kroz sredinu tijela ostavljajući čvrste stijenke oko rupa za vodilice i pričvrsne vijke, zatim rasterećujući džepovi na bočnim stranicama, na kraju zaobljenja na vanjskim bridovima radi sigurnosti rukovanja. Redoslijed je bitan zbog roditelj-dijete odnosa: rupe za vodilice modeliraju se prije ljuske i džepova, jer inače naredba ljuske gubi referencu na već postojeće otvore.</p>
+</div></details></div>
+<div class="pitanje"><p><b>A2.</b> Modelirajte <strong>oba prsta</strong> (aluminij, masa 0,05 kg po prstu) kao dva zasebna dijela s istom osnovnom geometrijom, ali zrcaljeni jedan o drugi. Kako biste u parametarskom modelu osigurali da promjena hoda (trenutno 15 mm) automatski ažurira i razmak čeljusti (trenutno najviše 70 mm) bez ručnog prepravljanja obje skice?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Ispravan pristup je izraditi jedan model prsta s vodećim dimenzijama hoda i početnog razmaka upisanim kao jednadžbe (npr. <code>hod = 15 mm</code>, <code>razmak_max = 70 mm</code>), a drugi prst dobiti zrcaljenjem (naredba za zrcaljenje dijela preko referentne ravnine sklopa) umjesto ručnim modeliranjem iznova. Time postoji samo jedan izvor istine za dimenzije prsta; promjena jednadžbe <code>hod</code> promijeni geometriju vodilice na oba prsta jer je zrcaljena kopija asocijativna s originalom.</p>
+<p>Pogrešan pristup &mdash; kopiranje dijela &bdquo;Spremi kao&ldquo; i ručno zrcaljenje skice &mdash; stvara dva neovisna modela; promjena hoda na jednom ne prenosi se na drugi, što je upravo suprotno namjeri dizajna iz modula 1.</p>
+</div></details></div>
+<div class="pitanje"><p><b>A3.</b> Izradite <strong>savijeni nosač</strong> u obradi limova: debljina 3 mm, razvijeni oblik 120 &times; 80 mm, savijanje pod 90&deg; s radijusom savijanja 3 mm. Izračunajte razvijenu duljinu (bend allowance) za taj savoj uz K-faktor 0,44 i obrazložite čemu ta vrijednost služi pri prijelazu iz savijenog u razvijeni oblik.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Bend allowance (dodatak za savijanje) računa se izrazom BA = &alpha; &middot; (R + K&middot;T), gdje je &alpha; kut savijanja u radijanima, R unutarnji radijus savijanja, T debljina lima, K faktor položaja neutralne linije. Za &alpha; = 90&deg; = &pi;/2 rad, R = 3 mm, T = 3 mm, K = 0,44: BA = (&pi;/2) &middot; (3 + 0,44&middot;3) = (&pi;/2) &middot; 4,32 &asymp; 6,79 mm.</p>
+<p>Ta vrijednost je duljina materijala u savoju mjerena po neutralnoj liniji, i CAD sustav je koristi automatski pri prijelazu između savijenog modela i razvijenog oblika (flat pattern) &mdash; upisuje se kao svojstvo tablice savijanja dijela, ne kao ručni izračun u skici. Zadatak modelara je zadati ispravan K-faktor ili radijus/debljinu iz kojih ga sustav izvodi, ne ručno mijenjati razvijeni oblik dok se ne &bdquo;poklopi&ldquo;.</p>
+</div></details></div>
+<div class="pitanje"><p><b>A4.</b> Pripremite skicu profila za <strong>zavarenu podnožnu konstrukciju</strong> (čelični profil 20 &times; 20 &times; 2 mm, gustoća čelika 7850 kg/m&sup3;, ciljna masa 2,4 kg). Prije prelaska u zavarenu značajku (faza 2), izračunajte ukupnu duljinu profila koja odgovara zadanoj masi, kao provjeru da skica okvira ima smislenu veličinu za hvatač ove klase.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Površina poprečnog presjeka stijenke šupljeg profila 20 &times; 20 &times; 2 mm: vanjski presjek 20 &times; 20 = 400 mm&sup2;, unutarnji (20 &minus; 2&middot;2) &times; (20 &minus; 2&middot;2) = 16 &times; 16 = 256 mm&sup2;, površina stijenke A = 400 &minus; 256 = 144 mm&sup2;.</p>
+<p>Volumen iz mase: V = m/&rho; = 2,4 / 7850 = 3,057 &middot; 10&#8315;&#8308; m&sup3; = 305&nbsp;732 mm&sup3;. Ukupna duljina profila: L = V/A = 305&nbsp;732 / 144 &asymp; 2123 mm &asymp; 2,12 m. Za podnožje veličine reda 150 &times; 100 mm s četiri noge to je realan zbroj duljina svih segmenata profila (obodni okvir plus noge plus ukrute) &mdash; ako bi skica dala znatno manju ukupnu duljinu, znak je da presjek ili broj segmenata treba preispitati prije zavarivanja.</p>
+</div></details></div>
+</div>
+</section>
+
+<section><h2>Faza 2: zavarena konstrukcija, cjevovod i sklapanje</h2><div class="crta"></div>
+<p>Druga faza pretvara skicu profila iz faze 1 u stvarnu <strong>zavarenu konstrukciju</strong> (weldment): profile se reže na duljinu (cut list), na mjestima spoja dodaju se oznake kutnog zavara, a zavarena konstrukcija se tretira kao jedan sastavni dio s vlastitom sastavnicom profila unutar sastavnice sklopa. Usporedno se modelira <strong>cjevovod</strong> pneumatskog dijela i radi prvo <strong>sklapanje</strong> glavnih dijelova.</p>
+<figure class="crtez"><svg viewBox="0 0 640 380" role="img" aria-label="Slika P.4: shema cjevovoda pneumatskog dijela i ožičenja induktivnog senzora do razvodnog ormara"><line x1="320" y1="20" x2="320" y2="360" class="l2 dash"/><text x="150" y="30" text-anchor="middle">Pneumatski dio</text><text x="480" y="30" text-anchor="middle">Električni dio</text><circle cx="60" cy="70" r="18" class="pf"/><text x="60" y="75" text-anchor="middle" class="mali">6 bar</text><text x="60" y="102" text-anchor="middle" class="mali">Izvor zraka</text><rect x="120" y="50" width="60" height="40" class="pf"/><line x1="135" y1="60" x2="165" y2="80" class="l2"/><line x1="135" y1="80" x2="165" y2="60" class="l2"/><text x="150" y="105" text-anchor="middle" class="mali">Razvodnik 5/2</text><path d="M180 60 C 200 60, 200 110, 220 110" class="t" fill="none"/><path d="M180 80 C 200 80, 200 178, 220 178" class="t" fill="none"/><circle cx="220" cy="110" r="4" class="if"/><circle cx="220" cy="178" r="4" class="if"/><rect x="220" y="100" width="90" height="34" class="l" fill="none"/><rect x="220" y="168" width="90" height="34" class="l" fill="none"/><line x1="310" y1="117" x2="300" y2="117" class="l2"/><line x1="310" y1="185" x2="300" y2="185" class="l2"/><text x="265" y="122" text-anchor="middle" class="mali">Cilindar &oslash;20</text><text x="265" y="190" text-anchor="middle" class="mali">hod 20 mm</text><text x="150" y="150" text-anchor="middle" class="mali">PU cijev &oslash;6&times;4, l = 1,5 m</text><rect x="360" y="60" width="44" height="26" class="pf"/><text x="382" y="102" text-anchor="middle" class="mali">Senzor M12 PNP</text><path d="M404 73 C 460 73, 460 90, 520 90" class="t" fill="none"/><text x="470" y="70" text-anchor="middle" class="mali">2-žilni kabel, l = 2 m, 24 V DC</text><rect x="520" y="40" width="80" height="110" class="l" fill="none"/><line x1="530" y1="60" x2="590" y2="60" class="l2"/><line x1="530" y1="80" x2="590" y2="80" class="l2"/><line x1="530" y1="100" x2="590" y2="100" class="l2"/><line x1="530" y1="120" x2="590" y2="120" class="l2"/><text x="560" y="165" text-anchor="middle" class="mali">Razvodni ormar</text></svg><figcaption><b>Slika P.4</b> &mdash; shema cjevovoda pneumatskog dijela (razvodnik, cilindar, brzi spojnici) i ožičenja induktivnog senzora do razvodnog ormara.</figcaption></figure>
+<div class="pitanja">
+<div class="pitanje"><p><b>B1.</b> Izradite zavarenu konstrukciju podnožja od profila 20 &times; 20 &times; 2 mm prema skici iz zadatka A4, s 4 kutna zavara na mjestima spoja nogu i okvira. Koju informaciju daje sastavnica profila (cut list) zavarene konstrukcije, i zašto se ta sastavnica ne smije ručno prepisivati u sastavnicu cijelog sklopa u fazi 4?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Sastavnica profila (cut list) zavarene konstrukcije popisuje svaki rezani komad profila s njegovom duljinom, presjekom i materijalom &mdash; to je unutarnja sastavnica same zavarene konstrukcije, odvojena od sastavnice cijelog sklopa. U sastavnici sklopa podnožje se pojavljuje kao <em>jedan</em> redak (jedan zavareni sastavni dio, masa 2,4 kg), a cut list se prilaže kao zaseban list nacrta podnožja ili zasebna tablica.</p>
+<p>Ako se sadržaj cut lista ručno prepiše u glavnu sastavnicu, gubi se asocijativnost: promjena duljine profila u skici (npr. zbog izmjene veličine podnožja) automatski ažurira cut list, ali ne i ručno prepisan tekst u drugoj tablici, pa dokumentacija prestaje odgovarati modelu.</p>
+</div></details></div>
+<div class="pitanje"><p><b>B2.</b> Modelirajte cjevovod (routing) između razvodnika i oba priključka dvoradnog cilindra: poliuretanska cijev &oslash;6 &times; 4 mm, ukupna duljina 1,5 m, 2 brza spojnika. Obrazložite zašto se za savitljivu cijev ovog presjeka u routingu ne definira fiksni radijus savijanja poput onog kod krutih cijevi.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Savitljiva (fleksibilna) cijev nema jedan propisan minimalni radijus savijanja kao kruta metalna cijev s definiranom debljinom stijenke &mdash; njezina putanja u routingu prati stvarni raspored komponenata i kanala unutar sklopa, a granični radijus zadaje se kao svojstvo materijala cijevi (podatak proizvođača), ne kao kruta geometrijska značajka modela. U CAD sustavu se zato savitljiva cijev obično modelira kao ravna referentna putanja između priključaka uz naknadnu provjeru najmanjeg radijusa koji putanja poštuje, dok se kruta cijev modelira segmentima s eksplicitno definiranim radijusima savoja i duljinama ravnih dionica.</p>
+<p>Za MPH-1 to znači: ukupna duljina cijevi od 1,5 m raspoređuje se na dvije grane (do svakog priključka cilindra) preko brzih spojnika na razvodniku, s dovoljnom rezervom duljine da cijev prati gibanje bez zatezanja pri punom hodu klipa.</p>
+</div></details></div>
+<div class="pitanje"><p><b>B3.</b> Sklopite tijelo, savijeni nosač, podnožje i cilindar prvim vezama sklopa (mates): koje vrste veza (i koliko stupnjeva slobode gibanja svaka ukida) biste odabrali da nosač i podnožje budu kruto pričvršćeni na tijelo, a cilindar zadrži samo jedan stupanj slobode gibanja (translaciju klipa)?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Nosač na tijelo i podnožje na nosač: veza sukladnosti (coincident) između dodirnih ravnina plus veza sukladnosti dviju osi provrta za vijke &mdash; kombinacija ukida svih 6 stupnjeva slobode gibanja (3 translacije, 3 rotacije), dio postaje kruto vezan. Cilindar u tijelo: koncentrična veza (concentric) između cilindrične površine klipnjače i provrta u tijelu ukida 4 stupnja slobode (2 translacije okomito na os, 2 rotacije oko tih osi), plus jedna veza sukladnosti ravnina koja ukida rotaciju oko osi klipnjače (cilindar se pri hodu ne smije zakretati) &mdash; ukupno 5 od 6 stupnjeva slobode, a preostaje točno jedan: translacija duž osi klipnjače, koja i predstavlja hod od 20 mm. Taj jedan namjerno preostali stupanj slobode gibanja je razlog zašto se u fazi 3 govori o &bdquo;potpuno određenom sklopu&ldquo; unatoč tome što jedan dio sklopa ostaje pokretljiv &mdash; potpuno određen znači nula <em>nenamjernih</em> stupnjeva slobode.</p>
+</div></details></div>
+</div>
+</section>
+
+<section><h2>Faza 3: ožičenje i potpuno određen sklop</h2><div class="crta"></div>
+<p>Treća faza dovršava sklop s dvije zadaće: <strong>ožičenje</strong> induktivnog senzora do razvodnog ormara (shema ožičenja prikazana je zajedno s cjevovodom na slici P.4 u prethodnom odjeljku) i provjera da je sklop <strong>potpuno određen</strong> u smislu stupnjeva slobode gibanja, uz jedini namjerno preostali stupanj slobode koji ostvaruju prsti u vođenju cilindra (zadatak B3).</p>
+<p>Senzor je induktivni, izvedbe PNP, napajanje 24 V DC, spojen dvožilnim kablom duljine 2 m do razvodnog ormara. U CAD sustavu se kabel modelira kao elektro-ruta (electrical routing) slično cjevovodu iz faze 2: definira se početna i krajnja točka priključka, put kroz kabelske kanale ili slobodno kroz prostor sklopa, a duljina i broj žila upisuju se kao svojstva rute koja se kasnije mogu izvesti u popis vodiča.</p>
+<div class="pitanja">
+<div class="pitanje"><p><b>C1.</b> Modelirajte ožičenje senzora do razvodnog ormara (2 m, dvožilni kabel, 24 V DC). Koje je najmanje dvije informacije potrebno upisati u model rute da bi se iz nje kasnije mogao izvesti smislen popis vodiča (jedinica 3.6)?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Najmanje: (1) oznaku i presjek/broj žila kabela (ovdje dvožilni vod za PNP izlaz i napajanje senzora), i (2) stvarnu duljinu rute kroz sklop, ne zračnu udaljenost između priključaka &mdash; jer se ta duljina koristi za narudžbu materijala i za provjeru da kabel s rezervom dosegne razvodni ormar bez zatezanja. Korisno je uz to upisati i oznake priključaka na oba kraja (senzor &mdash; stezaljka u ormaru) kako bi popis vodiča bio čitljiv bez dodatnog objašnjenja.</p>
+</div></details></div>
+<div class="pitanje"><p><b>C2.</b> Nakon ožičenja, provjerite status sklopa MPH-1. Objasnite postupak provjere potpuno određenog sklopa i navedite što provjera treba pokazati za MPH-1 s obzirom na hod prstiju.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Provjera se radi u sklopnom dokumentu: sustav označava stanje svakog dijela kao potpuno određen, nedovoljno određen (preostali stupnjevi slobode) ili prekomjerno određen (proturječne veze). Za ispravan sklop svi dijelovi osim namjerno pokretnih moraju biti potpuno određeni; broj preostalih stupnjeva slobode gibanja provjerava se alatom za analizu gibanja ili jednostavnim pokušajem ručnog pomicanja dijela u prostoru sklopa.</p>
+<p>Za MPH-1 provjera treba pokazati: tijelo, nosač, podnožje, senzor, spojnici i standardni dijelovi &mdash; potpuno određeni (nula stupnjeva slobode); cilindar &mdash; jedan preostali stupanj slobode (translacija klipnjače, hod 20 mm); oba prsta &mdash; po jedan preostali stupanj slobode svaki (translacija duž vodilice, hod 15 mm), pri čemu su prsti mehanički vezani uz gibanje klipnjače istim vezama kao u zadatku B3, samo primijenjenima na sučelje klipnjača&ndash;prst umjesto klipnjača&ndash;tijelo. Svaki drugi preostali stupanj slobode gibanja znači nedovršenu vezu i mora se ispraviti prije faze 4.</p>
+</div></details></div>
+</div>
+</section>
+
+<section><h2>Faza 4: nacrti, renderiranje i osnovna simulacija</h2><div class="crta"></div>
+<p>Posljednja faza pretvara gotov sklop u dokumentaciju koju bi netko izvan tima mogao koristiti bez pristupa 3D modelu: <strong>nacrt sklopa</strong> s pogledima, kotama i sastavnicom, <strong>fotorealistični prikaz</strong> za predstavljanje proizvoda, i <strong>osnovna kinematička simulacija</strong> koja dokazuje da hod prstiju odgovara zadanom vremenu ciklusa. Norme kotiranja, tolerancija i rasporeda pogleda na listu nacrta nisu predmet ovog područja i primjenjuju se onako kako su obrađene u području <a href="../tehnicka-dokumentacija/index.html">Tehnička dokumentacija</a>; ovdje se te norme primjenjuju kroz CAD sustav (predložak lista, automatsko kotiranje, generiranje sastavnice).</p>
+<figure class="crtez"><svg viewBox="0 0 640 420" role="img" aria-label="Slika P.5: list nacrta sklopa MPH-1 s rasporedom pogleda, poljem za sastavnicu i zaglavljem"><rect x="10" y="10" width="620" height="400" class="l" fill="none"/><rect x="25" y="25" width="590" height="370" class="l2" fill="none"/><rect x="50" y="50" width="220" height="160" class="l2 dash" fill="none"/><text x="160" y="135" text-anchor="middle" class="mali">Pogled sprijeda</text><rect x="50" y="230" width="220" height="100" class="l2 dash" fill="none"/><text x="160" y="285" text-anchor="middle" class="mali">Tlocrt</text><rect x="300" y="50" width="140" height="160" class="l2 dash" fill="none"/><text x="370" y="135" text-anchor="middle" class="mali">Bokocrt</text><rect x="460" y="50" width="140" height="140" class="l2 dash" fill="none"/><line x1="470" y1="170" x2="500" y2="150" class="l"/><line x1="500" y1="150" x2="560" y2="150" class="l"/><line x1="560" y1="150" x2="590" y2="170" class="l"/><line x1="470" y1="170" x2="500" y2="190" class="l"/><line x1="500" y1="190" x2="560" y2="190" class="l"/><line x1="560" y1="190" x2="590" y2="170" class="l"/><line x1="500" y1="150" x2="500" y2="190" class="l2 dash"/><line x1="560" y1="150" x2="560" y2="190" class="l2 dash"/><text x="530" y="70" text-anchor="middle" class="mali">Izometrija</text><rect x="460" y="200" width="140" height="90" class="l2" fill="none"/><line x1="460" y1="218" x2="600" y2="218" class="l2"/><line x1="460" y1="236" x2="600" y2="236" class="l2"/><line x1="460" y1="254" x2="600" y2="254" class="l2"/><line x1="460" y1="272" x2="600" y2="272" class="l2"/><text x="530" y="212" text-anchor="middle" class="mali">Sastavnica</text><rect x="300" y="230" width="300" height="100" class="l" fill="none"/><line x1="300" y1="255" x2="600" y2="255" class="l2"/><line x1="300" y1="280" x2="600" y2="280" class="l2"/><line x1="300" y1="305" x2="600" y2="305" class="l2"/><line x1="450" y1="230" x2="450" y2="330" class="l2"/><text x="310" y="248" class="mali">Naziv: MPH-1</text><text x="310" y="273" class="mali">Mjerilo 1:1, list A3</text><text x="310" y="298" class="mali">Opća tolerancija ISO 2768-m</text><text x="310" y="323" class="mali">Masa sklopa: 1,8 kg</text><text x="460" y="248" class="mali">Broj dijelova: 14</text><text x="460" y="273" class="mali">Materijal: Al, čelik</text></svg><figcaption><b>Slika P.5</b> &mdash; list nacrta sklopa MPH-1: raspored osnovnih pogleda i izometrije, polje sastavnice i zaglavlje s mjerilom, tolerancijom i masom.</figcaption></figure>
+<div class="pitanja">
+<div class="pitanje"><p><b>D1.</b> Izradite nacrt sklopa MPH-1: list A3, mjerilo 1:1, opća tolerancija ISO 2768-m, sastavnica svih 14 dijelova. Koja tri pogleda uz izometriju smatrate obvezno potrebnima za sklop ove složenosti, i zašto presječni pogled ovdje ima smisla iako se radi o sklopu, ne o dijelu?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Za sklop poput MPH-1 dovoljna su tri osnovna pogleda (sprijeda, tlocrt, bokocrt) plus izometrija za brzo razumijevanje oblika, uz uvjet da pogled sprijeda pokaže hvatač u položaju u kojem se najbolje vidi odnos prstiju i tijela. Presječni pogled sklopa ima smisla jer skriva unutrašnjost tijela (kanal za klipnjaču, provrte za vodilice) koja se ne vidi iz vanjskih pogleda niti na dijelu tijela samog, pa presjek zajedno s pozicijskim brojevima i sastavnicom jasno pokazuje kako su unutarnji dijelovi (klipnjača, vodilice) uklopljeni u tijelo.</p>
+</div></details></div>
+<div class="pitanje"><p><b>D2.</b> Renderirajte sklop u rezoluciji 1920 &times; 1080 px: aluminijski dijelovi eloksirani srebrni, podnožje čelik s crnim lakom. Objasnite razliku između dodjele materijala/izgleda dijelu za potrebe mase (fizička svojstva) i dodjele izgleda za potrebe renderiranja (vizualna svojstva), i zašto ta razlika ovdje nije samo formalnost.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Fizičko svojstvo materijala (gustoća, čvrstoća) koristi se za izračun mase i za analize, dok je vizualni izgled (boja, sjaj, hrapavost površine) zaseban podatak koji utječe samo na prikaz, ne na masu. Razlika nije formalnost jer se za isti materijal mogu zadati različiti izgledi (npr. eloksirano srebrno ili eloksirano crno aluminijsko tijelo) bez ikakvog utjecaja na masu iz zahtjeva &mdash; da su ta dva svojstva spojena u jedno, promjena boje radi predstavljanja proizvoda mogla bi neopaženo promijeniti izračunatu masu sklopa, što bi ugrozilo vjerodostojnost tablice zahtjeva iz uvoda.</p>
+</div></details></div>
+<div class="pitanje"><p><b>D3.</b> Izradite osnovnu kinematičku simulaciju otvaranja/zatvaranja prstiju (hod 15 mm, vrijeme ciklusa 0,4 s) i u kratkom izvješću (najviše jedna stranica) navedite izračunatu prosječnu brzinu pomaka prsta te usporedite je s vremenom ciklusa iz zahtjeva.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Vrijeme ciklusa 0,4 s pokriva puni ciklus otvaranje + zatvaranje, pa jedan smjer hoda (15 mm) traje polovicu toga, t = 0,2 s. Prosječna brzina pomaka prsta: v = hod/t = 15 mm / 0,2 s = 75 mm/s (0,075 m/s).</p>
+<p>Izvješće treba potvrditi da simulacija u softveru, pri zadanom vremenskom profilu gibanja klipnjače, daje upravo ovaj ukupni ciklus od 0,4 s za puni hod prstiju od 15 mm u oba smjera; ako simulirano vrijeme znatno odstupa, uzrok je najčešće pogrešno zadana brzina ili ubrzanje motora simulacije, ne geometrija sklopa, jer je hod i razmak čeljusti geometrijski fiksiran već u fazi 1.</p>
+</div></details></div>
+</div>
+</section>
+
+<section><h2>Oblik predaje</h2><div class="crta"></div>
+<p>Predaje se jedna mapa s podmapama po fazi, imenovana prema timu (dogovoreno na početku projekta), koja sadrži sljedeće:</p>
+<ul>
+<li><strong>Dijelovi</strong> &mdash; svih 14 part dokumenata (tijelo, 2 prsta, nosač, podnožje, cilindar, 2 spojnika, senzor, vijak, zatik) svaki kao zasebna datoteka dijela.</li>
+<li><strong>Sklop</strong> &mdash; jedna sklopna datoteka s ugrađenim vezama, cjevovodom i ožičenjem prema fazama 2 i 3.</li>
+<li><strong>Nacrti</strong> &mdash; nacrt sklopa i nacrt zavarene konstrukcije podnožja (s cut listom), svaki kao datoteka nacrta i izvezen u PDF.</li>
+<li><strong>Renderirani prikaz</strong> &mdash; najmanje jedna slika 1920 &times; 1080 px prema zahtjevima izgleda iz faze 4.</li>
+<li><strong>Simulacija</strong> &mdash; snimka ili izvoz animacije kinematičke simulacije hoda prstiju, uz kratko pisano izvješće (zadatak D3).</li>
+<li><strong>Izvješće</strong> &mdash; sažetak odluka po fazama (najviše dvije stranice): koje su veze korištene u sklapanju, kako je riješen bend allowance nosača, koliki je izračunat profil podnožja, rezultat provjere potpuno određenog sklopa i rezultat simulacije.</li>
+</ul>
+<p>Nazivi datoteka slijede isti obrazac kao i imenovanje mapa i stranica područja: mala slova, bez znakova s kvačicama, riječi odvojene crticom (npr. <code>mph1-tijelo-hvatača</code> postaje <code>mph1-tijelo-hvataca.sldprt</code>), kako bi se izbjegli problemi pri razmjeni datoteka između različitih sustava.</p>
+</section>
+
+<section><h2>Kontrolna lista prije predaje</h2><div class="crta"></div>
+<p>Prije predaje tim samostalno prolazi sljedeću listu; svaka neispunjena stavka razlog je da se projekt ne predaje još.</p>
+<ul>
+<li>Svih 14 dijelova otvara se bez pogrešaka u stablu značajki (nema crvenih oznaka).</li>
+<li>Sve skice u dijelovima su potpuno određene, nijedna nije nedovoljno ili prekomjerno određena.</li>
+<li>Vodeće dimenzije (hod, razmak čeljusti, debljina lima, duljina profila) upisane su kao jednadžbe ili imenovane dimenzije, ne kao slučajni brojevi u skici.</li>
+<li>Savijeni nosač ima ispravan razvijeni oblik (flat pattern) bez pogrešaka savijanja.</li>
+<li>Zavarena konstrukcija podnožja ima sve 4 kutne zavarne oznake i točan cut list.</li>
+<li>Cjevovod i ožičenje povezuju ispravne priključke bez preklapanja s ostalim dijelovima sklopa.</li>
+<li>Sklop je potpuno određen osim namjerno preostalih stupnjeva slobode gibanja prstiju i klipnjače (zadatak C2).</li>
+<li>Nacrt sklopa ima sastavnicu sa svih 14 stavki, ispravno mjerilo, list A3 i opću toleranciju ISO 2768-m.</li>
+<li>Renderirana slika ima traženu rezoluciju i materijale prema zahtjevu izgleda.</li>
+<li>Simulacija pokazuje vrijeme ciklusa u skladu s izračunom iz zadatka D3.</li>
+<li>Sve datoteke su izvezene i u neutralni format (npr. STEP za sklop, PDF za nacrte) radi provjere neovisno o inačici CAD sustava.</li>
+<li>Nazivi datoteka i mapa poštuju dogovorenu shemu imenovanja bez kvačica i razmaka.</li>
+</ul>
+</section>
+
+<section><h2>Vrednovanje</h2><div class="crta"></div>
+<p>Projekt se vrednuje sa 100 bodova, raspoređenih po fazama rada i obrani. Bodovi unutar svake faze prate ispravnost modela (poklapa li se s tablicom zahtjeva), poštivanje namjere dizajna (mogu li se vodeće dimenzije mijenjati bez rušenja modela) i potpunost dokumentacije te faze.</p>
+<div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Što se ocjenjuje</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Faza 1</td><td>parametarski dijelovi, namjera dizajna, savijeni nosač, priprema podnožja</td><td>20</td></tr>
+<tr><td>Faza 2</td><td>zavarena konstrukcija, cjevovod, prvo sklapanje</td><td>20</td></tr>
+<tr><td>Faza 3</td><td>ožičenje, potpuno određen sklop</td><td>15</td></tr>
+<tr><td>Faza 4</td><td>nacrt, sastavnica, renderiranje, simulacija i izvješće</td><td>25</td></tr>
+<tr><td>Obrana projekta</td><td>točnost i obrazloženost odgovora na pitanja za obranu</td><td>15</td></tr>
+<tr><td>Urednost i rokovi</td><td>imenovanje datoteka, struktura predaje, poštivanje četverotjednog roka</td><td>5</td></tr>
+<tr><td><strong>Ukupno</strong></td><td></td><td><strong>100</strong></td></tr>
+</tbody></table></div>
+<p>Prag prolaza i način zaokruživanja bodova u konačnu ocjenu određuje se prema pravilima koja vrijede za kolegij u cjelini, izvan ove stranice; ovdje je definirana samo raspodjela bodova unutar samog projektnog zadatka.</p>
+</section>
+
+<section><h2>Pitanja za obranu</h2><div class="crta"></div>
+<p>Obrana projekta provjerava razumijevanje odluka, ne sposobnost čitanja gotovog modela naglas &mdash; obje osobe u timu trebaju znati odgovoriti na svako od sljedećih pitanja, neovisno o tome koji je dio svatko izradio.</p>
+<div class="pitanja">
+<div class="pitanje"><p><b>1.</b> Zašto je tijelo hvatača modelirano kao šuplji, rasterećeni oblik umjesto punog bloka, i koliko je otprilike volumena uklonjeno u odnosu na puni blok istih vanjskih dimenzija?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Radi smanjenja mase pokretnog dijela sustava (manja masa znači manju tromost i manje opterećenje mehanizma koji hvatač nosi); prema izračunu iz zadatka A1, uklonjeno je oko 50&nbsp;% volumena punog bloka (0,518 kg puni blok, 0,26 kg gotovo tijelo).</p></div></details></div>
+<div class="pitanje"><p><b>2.</b> Kojom vezom sklopa je ostvaren hod klipnjače cilindra od 20 mm, i koliko stupnjeva slobode gibanja ta veza ukida u odnosu na potpuno slobodno tijelo u prostoru?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kombinacijom koncentrične veze (klipnjača &mdash; provrt u tijelu) i veze sukladnosti ravnina koja sprječava rotaciju oko osi klipnjače; ukupno se ukida 5 od 6 stupnjeva slobode gibanja, preostaje jedan &mdash; translacija duž osi, ograničena hodom od 20 mm (zadatak B3).</p></div></details></div>
+<div class="pitanje"><p><b>3.</b> Kolika je sila hvatanja pri radnom tlaku od 6 bar, i kako bi se ta sila promijenila kad bi se promjer klipa povećao s 20 na 25 mm uz isti tlak?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Pri &oslash;20 mm i 6 bar sila iznosi oko 188,5 N (A = &pi;&middot;20&sup2;/4 &asymp; 314,16 mm&sup2;, F = 0,6&middot;314,16). Sila raste s kvadratom promjera: za &oslash;25 mm površina je A = &pi;&middot;25&sup2;/4 &asymp; 490,9 mm&sup2;, pa bi sila pri istom tlaku bila F = 0,6&middot;490,9 &asymp; 294,5 N &mdash; porast od oko 56&nbsp;%, iako je promjer povećan samo za 25&nbsp;%.</p></div></details></div>
+<div class="pitanje"><p><b>4.</b> Objasnite razliku između uklopa H7/g6 na vodilicama prstiju i standardnog dijela &oslash;6h7 (vodeći zatik). Zašto se za pomično vođenje prsta ne bi koristio isti uklop kao za nepomični pozicijski zatik?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>H7/g6 je labaviji, klizni uklop namijenjen relativnom gibanju (prst se mora slobodno pomicati po vodilici uz hod), dok se pozicijski zatik &oslash;6h7 koristi u nepomičnom spoju za precizno pozicioniranje dijelova jednih prema drugima prije pritezanja vijcima &mdash; tu je cilj nulti ili minimalni zazor, ne gibanje. Kad bi se na vodilici prstiju koristio pretijesan uklop poput onog za pozicijski zatik, prst bi se zaglavljivao ili trošio pri svakom ciklusu.</p></div></details></div>
+<div class="pitanje"><p><b>5.</b> Koji je razvijeni (bend allowance) dodatak za savoj nosača od 90&deg; pri radijusu 3 mm, debljini 3 mm i K-faktoru 0,44, i što bi se dogodilo s razvijenim oblikom kad bi se radijus savijanja pogrešno zadao dvostruko većim?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>BA = (&pi;/2)&middot;(3 + 0,44&middot;3) &asymp; 6,79 mm (zadatak A3). Veći radijus savijanja pomiče neutralnu liniju dalje od unutarnje stijenke, pa bi izračunati bend allowance bio veći, a razvijeni (flat pattern) oblik lima ispao bi duži nego što odgovara stvarnom dijelu &mdash; posljedica je da bi izrezani lim nakon savijanja bio prevelik ili bi se savijeni oblik dijela razlikovao od modeliranog.</p></div></details></div>
+<div class="pitanje"><p><b>6.</b> Zašto se cut list zavarene konstrukcije podnožja ne prepisuje ručno u glavnu sastavnicu sklopa nego se prilaže kao zaseban prikaz?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Jer bi ručno prepisivanje prekinulo asocijativnu vezu s modelom &mdash; svaka izmjena duljine profila u skici zavarene konstrukcije automatski ažurira cut list, ali ne i tekst ručno prepisan u drugu tablicu, pa bi dokumentacija mogla prestati odgovarati stvarnom modelu (zadatak B1).</p></div></details></div>
+<div class="pitanje"><p><b>7.</b> Kolika je izračunata ukupna duljina profila podnožja, i na temelju kojih je podataka ta duljina dobivena bez izravnog mjerenja skice?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Oko 2,12 m (2123 mm), izvedeno iz zadane mase 2,4 kg, gustoće čelika 7850 kg/m&sup3; i površine poprečnog presjeka stijenke profila 20 &times; 20 &times; 2 mm (144 mm&sup2;): L = m / (&rho;&middot;A) (zadatak A4).</p></div></details></div>
+<div class="pitanje"><p><b>8.</b> Objasnite razliku između fizičkog materijala dodijeljenog dijelu i izgleda dodijeljenog za renderiranje, na primjeru eloksiranog aluminijskog tijela hvatača.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Fizički materijal (aluminijska legura određene gustoće) određuje masu i mehanička svojstva korištena u izračunima; izgled (eloksirano srebrno) je zaseban, čisto vizualni podatak za renderiranje koji se može promijeniti (npr. u eloksirano crno) bez ikakvog utjecaja na izračunatu masu sklopa (zadatak D2).</p></div></details></div>
+<div class="pitanje"><p><b>9.</b> Kolika je prosječna brzina pomaka prsta pri zadanom vremenu ciklusa, i zašto se pri izračunu koristi polovica ukupnog vremena ciklusa, a ne cijelo vrijeme?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>v = 75 mm/s. Vrijeme ciklusa od 0,4 s obuhvaća puni ciklus otvaranja <em>i</em> zatvaranja, pa jedan smjer hoda od 15 mm traje polovicu tog vremena, 0,2 s; brzina se stoga računa kao 15 mm / 0,2 s, ne 15 mm / 0,4 s (zadatak D3).</p></div></details></div>
+</div>
+</section>
+
+<section><h2>Za nastavnika</h2><div class="crta"></div>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4>
+<p>Prije početka projekta polaznici moraju imati odrađene sve nastavne jedinice modula 1 i 2 te barem vježbe do uključivo obrade limova, zavarenih konstrukcija i cjevovoda (V01&ndash;V09), jer se projekt oslanja izravno na te postupke bez ponovnog objašnjavanja. Korisno je unaprijed pripremiti predložak sklopne datoteke sa zajedničkim referentnim ravninama, kako bi se izbjegla organizacijska pogreška opisana u okviru &bdquo;Pažnja&ldquo; u odjeljku Organizacija i rokovi.</p>
+<h4>Tijek rada</h4>
+<ol>
+<li>Uvodni sastanak: podjela u timove od dvije osobe, dodjela uloga, dogovor o zajedničkoj datoteci i referentnim ravninama.</li>
+<li>1. tjedan: nadzor faze 1, provjera da su vodeće dimenzije doista upisane kao jednadžbe, ne kao slučajni brojevi.</li>
+<li>2. tjedan: nadzor faze 2, provjera ispravnosti veza pri prvom sklapanju prije prelaska na fazu 3.</li>
+<li>3. tjedan: nadzor faze 3, obavezna provjera potpuno određenog sklopa prije nego tim krene na nacrte.</li>
+<li>4. tjedan: predaja prema odjeljku Oblik predaje, zatim obrana prema pitanjima iz odgovarajućeg odjeljka.</li>
+</ol>
+<h4>Očekivani rezultati</h4>
+<p>Tim koji je pratio namjeru dizajna iz faze 1 može na obrani uživo promijeniti jednu vodeću dimenziju (npr. hod prstiju) i pokazati da se model, nacrt i simulacija ažuriraju bez rušenja značajki &mdash; to je najbrža provjera kvalitete cijelog projekta i vrijedi zatražiti je na samoj obrani, bez najave, kao dodatnu provjeru uz pripremljena pitanja.</p>
+<h4>Česte pogreške</h4>
+<ul>
+<li>Odvojeno modeliranje dijelova bez zajedničkih referenci, pa se sklop &bdquo;ne poklapa&ldquo; u zadnjem tjednu.</li>
+<li>Ručno prepisivanje cut lista zavarene konstrukcije u glavnu sastavnicu umjesto povezanog prikaza (zadatak B1).</li>
+<li>Uklop H7/g6 zamijenjen prečvrstim uklopom, pa prst nakon sklapanja ne klizi slobodno.</li>
+<li>Cilindar sklopljen s više preostalih stupnjeva slobode gibanja nego jedan (npr. zaboravljena veza koja sprječava rotaciju), što se na obrani odmah vidi pokušajem ručnog pomicanja dijela.</li>
+<li>Brzina pomaka prsta izračunata dijeljenjem hoda s cijelim vremenom ciklusa umjesto s polovicom (zadatak D3), što daje dvostruko premalu vrijednost.</li>
+</ul>
+<h4>Vrednovanje</h4>
+<div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Faza 1</td><td>20</td></tr>
+<tr><td>Faza 2</td><td>20</td></tr>
+<tr><td>Faza 3</td><td>15</td></tr>
+<tr><td>Faza 4</td><td>25</td></tr>
+<tr><td>Obrana projekta</td><td>15</td></tr>
+<tr><td>Urednost i rokovi</td><td>5</td></tr>
+<tr><td><strong>Ukupno</strong></td><td><strong>100</strong></td></tr>
+</tbody></table></div>
+</div></details>
+</section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="vjezbe.html">&#8592; Vježbe</a><a class="gumb" href="ispitna-pitanja.html">Ispitna pitanja <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-voms-projekt-modularni-hvatac-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>
