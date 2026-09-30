@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V7 Kinematika mobilnog robota diferencijalne konfiguracije — Osnove mobilnih robota | FORTRONIQ</title>
+<meta name="description" content="Na „praznoj“ slici mobilnog robota (koju ćete skicirati, prema slici u nastavku) ucrtati sve parametre koji se koriste kod definiranje kinematike robota.">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/mobilna-robotika/v07-kinematika-diferencijalnog-robota.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/mobilna-robotika/v07-kinematika-diferencijalnog-robota.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/mobilna-robotika/v07-kinematika-diferencijalnog-robota.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/mobilna-robotika/v07-kinematika-diferencijalnog-robota.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Vježba V7: Kinematika mobilnog robota diferencijalne konfiguracije">
+<meta property="og:description" content="Na „praznoj“ slici mobilnog robota (koju ćete skicirati, prema slici u nastavku) ucrtati sve parametre koji se koriste kod definiranje kinematike robota.">
+<meta property="og:url" content="https://dos.fortroniq.hr/mobilna-robotika/v07-kinematika-diferencijalnog-robota.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- dodaci DOS graditelja */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+figure.crtez .st{stroke-dasharray:14 4 2 4}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+
+/* dodatak: slike i formule iz izvornika vježbi */
+figure.slika{margin:1.1rem 0 1.5rem;text-align:center}
+figure.slika img{display:inline-block;max-width:100%;height:auto;border:1px solid var(--rule);border-radius:10px;background:#fff}
+figure.slika figcaption{font-size:.85rem;color:var(--body);margin-top:.45rem}
+math[display="block"]{display:block;overflow-x:auto;overflow-y:hidden;margin:.9rem 0;padding:.2rem 0;font-size:1.08em}
+.postupak ul,.postupak ol{margin:.4rem 0 1rem 1.2rem}
+.postupak li{margin:.3rem 0}
+.postupak h3{margin:1.6rem 0 .6rem}
+main section a{overflow-wrap:anywhere}
+.pitanje .bez{color:var(--body);font-size:.9rem;margin:.2rem 0 0}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Osnove mobilnih robota</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">V7 Kinematika mobilnog robota diferencijalne konfiguracije</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VJEŽBA V7 &middot; MODUL 3 &middot; KINEMATIKA</p><p class="nadnaslov">Vježba V7 &middot; 2 sata</p><h1>Kinematika mobilnog robota diferencijalne konfiguracije</h1><p>Na „praznoj“ slici mobilnog robota (koju ćete skicirati, prema slici u nastavku) ucrtati sve parametre koji se koriste kod definiranje kinematike robota. Uz naznačene parametre navesti što oni znače i mjerne jedinice.</p></div></header>
+<div class="omot"><section id="o-vjezbi"><h2>O vježbi</h2><div class="crta"></div><div class="oznake-vj"><span>Vježba V7</span><span>Trajanje: 2 sata</span><span>Modul 3</span></div><p>Prije vježbe proći gradivo: <a href="3-1-kinematicki-modeli.html">3.1 Kinematički modeli</a>, <a href="3-2-manevrabilnost.html">3.2 Manevrabilnost</a>, <a href="3-3-radni-prostor.html">3.3 Radni prostor</a>.</p><p>Pitanja i zadaci na ovoj stranici su bez odgovora. Rješenje se otvara gumbom <em>Prikaži rješenje</em> ispod pitanja, pa se najprije odgovara samostalno, a tek onda provjerava.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div></section>
+<section><h2>Zadatak</h2><div class="crta"></div>
+<h3>Kinematika mobilnog robota diferencijalne konfiguracije</h3>
+<p>Na „praznoj“ slici <strong>mobilnog robota (koju ćete skicirati,
+prema slici u nastavku)</strong> ucrtati sve <strong>parametre</strong>
+koji se koriste kod definiranje <strong>kinematike robota</strong>. Uz
+naznačene parametre navesti što oni <strong>znače</strong> i
+<strong>mjerne jedinice</strong>. Radi se o diferencijalnoj strukturi
+mobilnog robota, sa dva pogonska kotača, i, jednim Caster-kotačom.
+Prepišite s razumijevanjem jednadžbe kinematike robota iz nastavka.</p>
+</section>
+<section class="postupak"><h2>Postupak</h2><div class="crta"></div>
+<p><strong>Kinematikom</strong> opisujemo <strong>kretanja</strong> i
+ponašanja mehaničkih sustava, bez razmatranja <strong>sila</strong> koje
+uzrokuju takvo gibanje. Opisivanje kretanja je bitno kako bi mogli
+opisivati <strong>ponašanje</strong> mobilnog robota i prema tom
+ponašanju stvoriti prikladan <strong>upravljački sustav.</strong>
+Proučavanje kinematike započimo <strong>robotskom rukom</strong>, koja
+je u upotrebi duže od mobilnih robota. Robotske ruke, iako stacionarne u
+prostoru (mogu biti i mobilne), također su mehanički i kinematički
+kompleksne za opisati. Obično robotske ruke imaju 5-7 stupnjeva slobode
+gibanja, što ih čini podjednako izazovnima za proračun i analizu, kao i
+pojedine mobilne robote. Stupnjevi slobode gibanja kod robotske ruke
+određeni su <strong>zglobovima.</strong></p>
+<p>Problematika kinematike je slična u oba slučaja. <strong>Robotska
+ruka</strong> je stacionarna u prostoru, sa jedne strane, postoljem je
+<strong>vezana za okolinu</strong>. Pozicija druge strane robotske ruke
+najčešće je poznata, odnosno, to je <strong>odredišna točka.</strong>
+<strong>Kinematika definira</strong> koje pozicije mora zauzeti svaki od
+stupnjeva slobode gibanja kao bi se druga strana robota
+<strong>pozicionirala</strong> u <strong>odredišnu točku</strong>. Bitan
+segment kod opisivanja robotske ruke je <strong>radni prostor,</strong>
+koji je određen prostor, a govori nam <strong>gdje se sve može
+nalaziti</strong> <strong>odredišna točka,</strong> pa time i svaki od
+zglobova robota.</p>
+<p><strong>Kinematički modeli i ograničenja</strong></p>
+<p>Proces analize robota započinje od analize kotača, utjecaj kotača na
+kretanje i ograničenja robota. Povezivanje kotača kroz geometriju
+robota, rasporedom kotača na šasiji robota ograničenja pojedinih kotača
+(jer su povezana) tvore ukupno ograničenje robota koje utječe na
+kretanje robota.</p>
+<p>Kako bi uspješno proveli opisivanje „prirode robota“ i ograničenja,
+potrebno je definirati <strong>koordinatne sustave</strong> i njihove
+<strong>odnose</strong>. Definiranje koordinatnih sustava, ili, lokalnih
+područja proučavanja robota i okoline. <strong>1. koordinatni
+sustav</strong> vezan je za sam kotač, lokalno. Iako ga najčešće ne
+nazivamo koordinatnim sustavom, može pomoći slična terminologija za
+bolje razumijevanje kinematike kotača, koja uključuje promjer kotača,
+poziciju kotača i brzinu vrtnje kotača. <strong>2. koordinatni
+sustav</strong> vezan je za robota i naziva se <strong>lokalni</strong>
+ili <strong>robotski koordinatni sustav</strong>. Ishodište je
+postavljeno na neku geometrijsku značajku robota, kao središte tlocrtne
+geometrijske projekcije robota. Razumijevanjem kretanja ili rotacija
+pojedinih kotača, njihov odnos definiran je geometrijskim rasporedom na
+robotu. Konačno, za opisivanje kretanja robota ili koordinatnog sustava
+robota, mora se definirati <strong>3. referentni</strong> ili
+<strong>globalni</strong> koordinatni sustav.</p>
+<p><strong>Predstavljanje položaja robota</strong></p>
+<p>Kako bi olakšali proračun i daljnje analiziranje kretanja robota,
+robota promatramo kao kruto tijelo bez mogućnosti deformacije koje se
+kreće po ravnoj plohi. Takav robot posjeduje <strong>tri stupnja slobode
+gibanja (3 SSG)</strong>; dva <strong>translacijska</strong> - X i Y
+udaljenosti od referentnog koordinatnog sustava, te jednu
+<strong>rotaciju</strong> (gdje je os rotacije okomita na plohu).</p>
+<figure class="slika"><img alt="Slika V7.1" height="598" loading="lazy" src="data:image/webp;base64,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" width="669"/></figure>
+<p>Diferencijalna struktura mobilnog robota, sa dva pogonska kotača, i,
+jednim Caster-kotačom:</p>
+<ul>
+<li><p>Globalni referentni (<strong>Točka 0</strong>) i</p></li>
+<li><p>robotski lokalni (<strong>Točka C</strong>) koordinatni sustav
+opisani pomoću kinematskog modela mobilnog robota diferencijalne
+konfiguracije.</p></li>
+</ul>
+<p><strong>Značenje oznaka na slici:</strong></p>
+<ul>
+<li><p>L [m] je širina između pogonskih kotača robota;</p></li>
+<li><p>R [m] je promjer kotača;</p></li>
+<li><p>C je težište robota;</p></li>
+<li><p>P je središnja točka na osi pogonskih kotača robota;</p></li>
+<li><p>d [m] je udaljenost između točaka P i C;</p></li>
+<li><p>(0, X, Y) je referentni koordinatni sustav;</p></li>
+<li><p>(0, x, y) je pomak lokalnog u odnosu na referentni koordinatni
+sustav;</p></li>
+<li><p>θ [rad] je orijentacija robota u odnosu na X-os;</p></li>
+<li><p>x [m], y [m],
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
+[rad] su parametri kinematike robota;</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>v</mi><mi>R</mi></msub><annotation encoding="application/x-tex">v_{R}</annotation></semantics></math>
+[m/s],
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>v</mi><mi>L</mi></msub><annotation encoding="application/x-tex">v_{L}</annotation></semantics></math>
+[m/s] su linearne brzine desnog, odnosno lijevog pogonskog kotača
+robota;</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ω</mi><mi>R</mi></msub><annotation encoding="application/x-tex">\omega_{R}</annotation></semantics></math>
+[rad/s],
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ω</mi><mi>L</mi></msub><annotation encoding="application/x-tex">\omega_{L}</annotation></semantics></math>
+[rad/s] su kutne brzine desnog, odnosno lijevog pogonskog kotača
+robota.</p></li>
+</ul>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th><p><strong>ZAPAMTITE!</strong></p>
+<p>Kao ogledniprimjer proučavamo diferencijalnu strukturu robota, sa dva
+pogonska kotača, straga, i jedan slobodno rotirajući Caster-ov kotač,
+naprijed, koji služi kao oslonac. Upravljanje, odnosno skretanje se
+izvodi <strong>isključivo</strong> različitom brzinom lijevog i desnog
+kotača.</p></th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p>Pomoću ovih relacija možemo opisati gdje se robot nalazi u prostoru.
+Iako, stvarni model robota je puno kompleksniji, sa dodanim osima
+rotacije kotača, vertikalne i glavne osi rotacije Castorovog kotača.
+Ovdje se samo koncentriramo na kučište (šasiju) robota kao kruto tijelo
+- <strong>bez dodatnih osi</strong>.</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th><p><strong>ZAPAMTITE!</strong></p>
+<p>Za daljnje razmatranje potrebno je odrediti još dva
+<strong>ograničenja</strong> kotača:</p>
+<p>1. Proklizavanje robota nije moguće - jedan puni okretaj kotača
+prevalit će udaljenost koja je jednaka opsegu kotača</p>
+<p>2. Kotači se ne mogu kretati bočno (lateralno).</p></th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p>Sa prethodne slike dodatno se može još postaviti lokalni koordinatni
+sustav sa ishodištem u točki P. X os bi bila u smjeru vektora V, a Y os
+bi bila okomita na X os, prema desnokretnom karetezijskom koordinatnom
+sustavu. Time bi definirali osi lokalnog robotskog koordinatnog
+sustava.</p>
+<p>Položaj robota u odnosu na referentni koordinatni sustav, po poziciji
+definiran je koordinatama x i y, te orijentacijom θ.</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th><p><strong>NAPOMENA!</strong></p>
+<p>Mobilni robot, koji se kreće u ravnini, ima tri stupanja slobode
+gibanja, dva translacijska gibanja (X i Y) i jedno rotacijsko gibanje
+(θ), što je definirao koordinatnim sustavom (vidi prethodnu
+sliku).</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prije izvođenja jednadžbi kinematike, potrebno je pojasniti koja je
+svrha izvođenja i proučavanja kinematike robota. Koji je cilj
+definiranja kinematike, cilj izvođenja jednadžbi?</td>
+</tr>
+<tr>
+<td><strong>Svrha proučavanja kinematike i izvođenja jednadžbi je
+definiranje utjecaja brzine svakog kotača na ukupno kretanje robota, što
+moramo povezati jednadžbama.</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Pozicija i orijentacija robota u prostoru, u odnosu na referentni
+koordinatni sustav, definirana je vektorom koji definira lokalni
+koordinatni sustav, u odnosu na globalni koordinatni sustav:</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><msup><mrow><mo form="prefix" stretchy="false">[</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>θ</mi><mo form="postfix" stretchy="false">]</mo></mrow><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">Q = {\lbrack x,y,\theta\rbrack}^{T}</annotation></semantics></math></th>
+<th>(1)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p>Matricom (1) opisujemo gdje se robot nalazi u prostoru u odnosu na
+ishodište referentnog koordinatnog sustava.</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th><p><strong>NAPOMENA:</strong></p>
+<p>Zbog učestalog ponavljanja riječi koordinatni sustav, dalje koristimo
+kraticu k.s.</p></th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p>Kako bi povezali referentni koordinatni sustav sa lokalnim
+koordinatnim sustavom koristimo ortogonalnu rotacijsku matricu.</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th><p>Što je <strong>ortogonalna rotacijska matrica</strong>?</p>
+<p>Matematički alat kojim dovodimo vektor, koji je dio lokalnog k.s., u
+vezu sa globalnim k.s. - želimo isti vektor opisati drugim k.s., koje je
+zarotiran za kut θ.</p>
+<p>Ortogonalna rotacijska matrica R služi za pretvorbu vektora, u
+globalnom k.s., na komponente u odnosu na lokalni k.s.</p>
+<p><img alt="Slika V7.2" height="444" loading="lazy" src="data:image/webp;base64,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" width="680"/>Slikom su prikazana dva k.s.,
+te povezana ortogonalnom rotacijskom matricom. Komponente vektora za oba
+k.s. dovedeni su u odnos prema slijedećem zapisu:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>x</mi><mi>r</mi></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>y</mi><mi>r</mi></msub></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mo>=</mo><mspace width="0.222em"></mspace><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>c</mi><mi>o</mi><mi>s</mi><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>s</mi><mi>i</mi><mi>n</mi><mi>θ</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mo>−</mo><mi>s</mi><mi>i</mi><mi>n</mi><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>c</mi><mi>o</mi><mi>s</mi><mi>θ</mi></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mrow><mo form="prefix" stretchy="true">[</mo><mfrac linethickness="0"><msub><mi>X</mi><mi>r</mi></msub><msub><mi>Y</mi><mi>r</mi></msub></mfrac><mo form="postfix" stretchy="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix}
+x_{r} \\
+y_{r}
+\end{bmatrix} = \ \begin{bmatrix}
+cos\theta &amp; sin\theta \\
+ - sin\theta &amp; cos\theta
+\end{bmatrix}\genfrac{[}{]}{0pt}{}{X_{r}}{Y_{r}}</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">→</mo></mover><mspace width="0.222em"></mspace><mo>=</mo><mi>R</mi><mspace width="0.222em"></mspace><mover><mi>X</mi><mo accent="true">→</mo></mover></mrow><annotation encoding="application/x-tex">\overrightarrow{x}\  = R\ \overrightarrow{X}</annotation></semantics></math></p>
+<p><strong>Prikazane relacije vrijede samo za 2D
+slučaj!</strong></p></th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p>Pomoću ortogonalne rotacijske matrice možemo zapisati komponente
+vektora brzine iz globalnog k.s. u komponente kretanja u lokalnom k.s.,
+koji je dan slijedećim zapisom (2).</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mi>R</mi><mrow><mo form="prefix" stretchy="true">(</mo><mi>θ</mi><mo form="postfix" stretchy="true">)</mo></mrow><msup><mrow><mspace width="0.222em"></mspace><mo form="prefix" stretchy="false">[</mo><mover><mi>x</mi><mo accent="true">̇</mo></mover><mo>,</mo><mover><mi>y</mi><mo accent="true">̇</mo></mover><mo>,</mo><mover><mi>θ</mi><mo accent="true">̇</mo></mover><mo form="postfix" stretchy="false">]</mo></mrow><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">q = R(\theta){\ \lbrack\dot{x},\dot{y},\dot{\theta}\rbrack}^{T}</annotation></semantics></math></th>
+<th>(2)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p>U slučaju brzine u globalnom k.s., možemo izračunati komponente
+kretanja robota unutar lokalnog k.s.</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>q</mi><mo accent="true">̇</mo></mover><mo>=</mo><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>c</mi><mi>o</mi><mi>s</mi><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>s</mi><mi>i</mi><mi>n</mi><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mo>−</mo><mi>s</mi><mi>i</mi><mi>n</mi><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>c</mi><mi>o</mi><mi>s</mi><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mspace width="0.222em"></mspace><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>x</mi><mo accent="true">̇</mo></mover></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>y</mi><mo accent="true">̇</mo></mover></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>θ</mi><mo accent="true">̇</mo></mover></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\dot{q} = \begin{bmatrix}
+cos\theta &amp; sin\theta &amp; 0 \\
+ - sin\theta &amp; cos\theta &amp; 0 \\
+0 &amp; 0 &amp; 1
+\end{bmatrix}\ \begin{bmatrix}
+\dot{x} \\
+\dot{y} \\
+\dot{\theta}
+\end{bmatrix}</annotation></semantics></math></th>
+<th>(3)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th><p><strong>POKUŠAJTE!</strong></p>
+<p>Pokušajte uvrstiti neke kuteve orijentacije θ (0°, 90°, 180°) robota
+pa izračunati komponente brzine.</p>
+<p>Kako će izgledati komponente brzine u lokalnom k.s.?</p></th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p>Proces može biti i suprotan, odnosno, inverzan. Brzina robota je
+zadana u odnosu na lokalni koordinatni sustav. Relacijom su prikazane
+komponente kretanja u globalnom k.s. korištenjem inverzne ortogonalne
+rotacijske matrice.</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>Q</mi><mo accent="true">̇</mo></mover><mo>=</mo><mspace width="0.222em"></mspace><msup><mrow><mi>R</mi><mrow><mo form="prefix" stretchy="true">(</mo><mi>θ</mi><mo form="postfix" stretchy="true">)</mo></mrow></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup><mspace width="0.222em"></mspace><mover><mi>q</mi><mo accent="true">̇</mo></mover></mrow><annotation encoding="application/x-tex">\dot{Q} = \ {R(\theta)}^{- 1}\ \dot{q}</annotation></semantics></math></th>
+<th>(4)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p><strong>Kinematika prema naprijed</strong></p>
+<p>Pomoću direktne kinematike, ili, kinematike prema naprijed,
+procjenjuje se pozicija (i orijentacija) ili kretanje robota zadavanjem
+kutne, ili, linearne brzine.</p>
+<p>Na kretanje robota utječu kutne brzine ( ω<sub>r</sub>, ω<sub>l</sub>
+) ili, linearne brzine ( v<sub>r</sub>, v<sub>l</sub> ) lijevog i desnog
+kotača. Nadalje, utječu i geometrijske karakteristike kotača robota –
+polumjer kotača robota R. Također, i geometrijske karakteristike kučišta
+(šasije) robota - udaljenost između kotača l. Na kretanje robota još
+utječe i orijentacija kučišta (šasije) u prostoru. Odnosi navedenih
+varijabli biti će dane slijedećim relacijama.</p>
+<p>Odnos linearne brzine v i kutne brzine ω povezuje polumjer rotiranog
+objekta R, prikazana je jednadžbom (5). Kretanje robota moguće je
+opisati linearnom brzinom v i kutnom brzinom ω.</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo>=</mo><mi>ω</mi><mo>•</mo><mi>R</mi></mrow><annotation encoding="application/x-tex">v = \omega \bullet R</annotation></semantics></math></th>
+<th>(5)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p>Stoga je moguće povezati linearne brzine v pojedinih kotača,
+jednadžbe (6) i (7), sa kutnim brzina kotača, gdje je R radijus
+pogonskih upravljivih kotača robota. Kretanje robota je rezultat
+upravljanja brzinama kotača.</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>R</mi></msub><mo>=</mo><msub><mi>ω</mi><mi>R</mi></msub><mo>•</mo><mi>R</mi></mrow><annotation encoding="application/x-tex">v_{R} = \omega_{R} \bullet R</annotation></semantics></math></th>
+<th>(6)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>L</mi></msub><mo>=</mo><msub><mi>ω</mi><mi>L</mi></msub><mo>•</mo><mi>R</mi></mrow><annotation encoding="application/x-tex">v_{L} = \omega_{L} \bullet R</annotation></semantics></math></td>
+<td>(7)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Zatim možemo izvesti linearnu brzinu robota, v (8), i kutnu brzinu
+robota, ω (9). Kutna brzina robota ω je razlika linearnih brzina robota,
+podijeljena sa udaljenosti između kotača, L. Linearna brzina v robota je
+zbroj polovine brzina oba kotača.</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Ω</mi><mo>=</mo><mfrac><mrow><msub><mi>v</mi><mi>R</mi></msub><mo>−</mo><msub><mi>v</mi><mi>L</mi></msub></mrow><mi>L</mi></mfrac></mrow><annotation encoding="application/x-tex">\Omega = \frac{v_{R} - v_{L}}{L}</annotation></semantics></math></th>
+<th>(8)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo>=</mo><mfrac><mrow><msub><mi>v</mi><mi>R</mi></msub><mo>+</mo><msub><mi>v</mi><mi>L</mi></msub></mrow><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">v = \frac{v_{R} + v_{L}}{2}</annotation></semantics></math></td>
+<td>(9)</td>
+</tr>
+</tbody>
+</table></div>
+<p>S obzirom da je diferencijalna struktura robota
+<strong>neholonomski</strong> sustav, ne dopušta se lateralno pomicanje
+robota (podsjetite se u prijašnjem poglavlju što je to -
+neholonomski!).</p>
+<p>Prijašnje dvije jednadžbe možemo zapisati kao:</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>v</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>ω</mi></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mo>=</mo><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mfrac><mn>1</mn><mn>2</mn></mfrac></mtd><mtd columnalign="center" style="text-align: center"><mfrac><mn>1</mn><mn>2</mn></mfrac></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mfrac><mn>1</mn><mi>L</mi></mfrac></mtd><mtd columnalign="center" style="text-align: center"><mo>−</mo><mfrac><mn>1</mn><mi>L</mi></mfrac></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>v</mi><mi>R</mi></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>v</mi><mi>L</mi></msub></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix}
+v \\
+\omega
+\end{bmatrix} = \begin{bmatrix}
+\frac{1}{2} &amp; \frac{1}{2} \\
+\frac{1}{L} &amp; - \frac{1}{L}
+\end{bmatrix}\begin{bmatrix}
+v_{R} \\
+v_{L}
+\end{bmatrix}</annotation></semantics></math></th>
+<th>(10)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p>Slijedeće jednadžbe određuju brzinu prema komponentama pojedinih osi.
+Linearnu brzinu moramo rastaviti na komponente prema osima. Kutna brzina
+nema komponente.</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mover><mi>x</mi><mo accent="true">̇</mo></mover><mo>=</mo><mi>v</mi><mo>•</mo><mi>c</mi><mi>o</mi><mi>s</mi><mi>θ</mi></mrow><annotation encoding="application/x-tex">\ \ \ \ \ \ \ \ \ \ \ \frac{dx}{dt} = \dot{x} = v \bullet cos\theta</annotation></semantics></math></th>
+<th>(11)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mover><mi>y</mi><mo accent="true">̇</mo></mover><mo>=</mo><mi>v</mi><mo>•</mo><mi>s</mi><mi>i</mi><mi>n</mi><mi>θ</mi></mrow><annotation encoding="application/x-tex">\ \ \ \ \ \ \ \ \ \ \frac{dy}{dt} = \dot{y} = v \bullet sin\theta</annotation></semantics></math></td>
+<td>(12)</td>
+</tr>
+<tr>
+<td></td>
+<td><blockquote>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>d</mi><mi>θ</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mover><mi>θ</mi><mo accent="true">̇</mo></mover><mo>=</mo><mi>ω</mi></mrow><annotation encoding="application/x-tex">\frac{d\theta}{dt} = \dot{\theta} = \omega</annotation></semantics></math></p>
+</blockquote></td>
+<td>(13)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Kinematička jednadžba mobilnog robota na dva kotača</strong>
+prikazana je slijedećom relacijom, gdje su prethodne tri jednadžbe
+pretvorene u matrični zapis:</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>Q</mi><mo accent="true">̇</mo></mover><mo>=</mo><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>x</mi><mo accent="true">̇</mo></mover></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>y</mi><mo accent="true">̇</mo></mover></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>θ</mi><mo accent="true">̇</mo></mover></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mo>=</mo><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mo>cos</mo><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mo>sin</mo><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>v</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>ω</mi></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\dot{Q} = \begin{bmatrix}
+\dot{x} \\
+\dot{y} \\
+\dot{\theta}
+\end{bmatrix} = \begin{bmatrix}
+\cos\theta &amp; 0 \\
+\sin\theta &amp; 0 \\
+0 &amp; 1
+\end{bmatrix}\begin{bmatrix}
+v \\
+\omega
+\end{bmatrix}</annotation></semantics></math></th>
+<th>(14)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+<p>Komponente linearne (v) i kutne brzine (ω) moguće je zapisati pomoću
+kutnih brzina oba kotača ω<sub>r</sub>, ω<sub>l.</sub></p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">̇</mo></mover><mo>=</mo><mfrac><mi>R</mi><mn>2</mn></mfrac><mrow><mo form="prefix" stretchy="true">(</mo><msub><mi>ω</mi><mi>R</mi></msub><mo>+</mo><msub><mi>ω</mi><mi>L</mi></msub><mo form="postfix" stretchy="true">)</mo></mrow><mo>•</mo><mi>c</mi><mi>o</mi><mi>s</mi><mi>θ</mi></mrow><annotation encoding="application/x-tex">\dot{x} = \frac{R}{2}(\omega_{R} + \omega_{L}) \bullet cos\theta</annotation></semantics></math></th>
+<th>(15)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>y</mi><mo accent="true">̇</mo></mover><mo>=</mo><mfrac><mi>R</mi><mn>2</mn></mfrac><mrow><mo form="prefix" stretchy="true">(</mo><msub><mi>ω</mi><mi>R</mi></msub><mo>+</mo><msub><mi>ω</mi><mi>L</mi></msub><mo form="postfix" stretchy="true">)</mo></mrow><mo>•</mo><mi>s</mi><mi>i</mi><mi>n</mi><mi>θ</mi></mrow><annotation encoding="application/x-tex">\dot{y} = \frac{R}{2}(\omega_{R} + \omega_{L}) \bullet sin\theta</annotation></semantics></math></td>
+<td>(16)</td>
+</tr>
+<tr>
+<td></td>
+<td><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>θ</mi><mo accent="true">̇</mo></mover><mo>=</mo><mfrac><mi>R</mi><mi>L</mi></mfrac><mrow><mo form="prefix" stretchy="true">(</mo><msub><mi>ω</mi><mi>R</mi></msub><mo>−</mo><msub><mi>ω</mi><mi>L</mi></msub><mo form="postfix" stretchy="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">\dot{\theta} = \frac{R}{L}(\omega_{R} - \omega_{L})</annotation></semantics></math></td>
+<td>(17)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Kinematki model mobilnog robota, u matričnom zapisu, izražen preko
+kutnih brzina kotača ω<sub>r</sub>, ω<sub>l,</sub> ili, linearnih brzina
+kotača v<sub>r</sub>, v<sub>l</sub>:</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>x</mi><mo accent="true">̇</mo></mover></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>y</mi><mo accent="true">̇</mo></mover></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>θ</mi><mo accent="true">̇</mo></mover></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mo>=</mo><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mfrac><mi>R</mi><mn>2</mn></mfrac><mo>cos</mo><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mfrac><mi>R</mi><mn>2</mn></mfrac><mo>cos</mo><mi>θ</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mfrac><mi>R</mi><mn>2</mn></mfrac><mo>sin</mo><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mfrac><mi>R</mi><mn>2</mn></mfrac><mo>sin</mo><mi>θ</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mfrac><mi>R</mi><mi>L</mi></mfrac></mtd><mtd columnalign="center" style="text-align: center"><mo>−</mo><mfrac><mi>R</mi><mi>L</mi></mfrac></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>ω</mi><mi>R</mi></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>ω</mi><mi>L</mi></msub></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix}
+\dot{x} \\
+\dot{y} \\
+\dot{\theta}
+\end{bmatrix} = \begin{bmatrix}
+\frac{R}{2}\cos\theta &amp; \frac{R}{2}\cos\theta \\
+\frac{R}{2}\sin\theta &amp; \frac{R}{2}\sin\theta \\
+\frac{R}{L} &amp; - \frac{R}{L}
+\end{bmatrix}\begin{bmatrix}
+\omega_{R} \\
+\omega_{L}
+\end{bmatrix}</annotation></semantics></math></th>
+<th>(18)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>x</mi><mo accent="true">̇</mo></mover></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>y</mi><mo accent="true">̇</mo></mover></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>θ</mi><mo accent="true">̇</mo></mover></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mo>=</mo><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mfrac><mrow><mo>cos</mo><mi>θ</mi></mrow><mn>2</mn></mfrac></mtd><mtd columnalign="center" style="text-align: center"><mfrac><mrow><mo>cos</mo><mi>θ</mi></mrow><mn>2</mn></mfrac></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mfrac><mrow><mo>sin</mo><mi>θ</mi></mrow><mn>2</mn></mfrac></mtd><mtd columnalign="center" style="text-align: center"><mfrac><mrow><mo>sin</mo><mi>θ</mi></mrow><mn>2</mn></mfrac></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mfrac><mn>1</mn><mi>L</mi></mfrac></mtd><mtd columnalign="center" style="text-align: center"><mo>−</mo><mfrac><mn>1</mn><mi>L</mi></mfrac></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>v</mi><mi>R</mi></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>v</mi><mi>L</mi></msub></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{bmatrix}
+\dot{x} \\
+\dot{y} \\
+\dot{\theta}
+\end{bmatrix} = \begin{bmatrix}
+\frac{\cos\theta}{2} &amp; \frac{\cos\theta}{2} \\
+\frac{\sin\theta}{2} &amp; \frac{\sin\theta}{2} \\
+\frac{1}{L} &amp; - \frac{1}{L}
+\end{bmatrix}\begin{bmatrix}
+v_{R} \\
+v_{L}
+\end{bmatrix}</annotation></semantics></math></td>
+<td>(19)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Prethodne jednadžbe moguće je potvrditi i korištenjem inverzne
+matrice transformacije. Prisjetite se zapisa za komponente kretanja u
+globalnom k.s., koje su dane relacijom (20). Slijedećom relacijom možemo
+izvesti komponente brzina za globalni k.s.:</p>
+<div class="tablica-omot"><table>
+<colgroup>
+<col/>
+<col/>
+<col/>
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>Q</mi><mo accent="true">̇</mo></mover><mo>=</mo><msup><mi>R</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mspace width="0.222em"></mspace><mover><mi>q</mi><mo accent="true">̇</mo></mover></mrow><annotation encoding="application/x-tex">\dot{Q} = R^{- 1}\ \dot{q}</annotation></semantics></math></th>
+<th>(20)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>Q</mi><mo accent="true">̇</mo></mover><mo>=</mo><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>c</mi><mi>o</mi><mi>s</mi><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mo>−</mo><mi>s</mi><mi>i</mi><mi>n</mi><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>s</mi><mi>i</mi><mi>n</mi><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>c</mi><mi>o</mi><mi>s</mi><mi>θ</mi></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow><mrow><mo form="prefix" stretchy="true">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>v</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>ω</mi></mtd></mtr></mtable><mo form="postfix" stretchy="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\dot{Q} = \begin{bmatrix}
+cos\theta &amp; - sin\theta &amp; 0 \\
+sin\theta &amp; cos\theta &amp; 0 \\
+0 &amp; 0 &amp; 1
+\end{bmatrix}\begin{bmatrix}
+v \\
+0 \\
+\omega
+\end{bmatrix}</annotation></semantics></math></td>
+<td>(21)</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section><h2>Pitanja i zadaci</h2><div class="crta"></div>
+<div class="pitanja">
+<div class="pitanje"><p><b>1.</b> Što je kinematika mobilnog robota?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kinematika mobilnog robota opisuje vezu između gibanja kotača i gibanja tijela robota, bez razmatranja sila koje to gibanje uzrokuju. Iz brzina kotača računa se brzina i položaj robota (izravna kinematika), a iz željenog gibanja robota brzine kotača (obratna kinematika).</p></div></details></div>
+<div class="pitanje"><p><b>2.</b> Koje kinematičke modele i ograničenja možete nabrojati?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kinematički model povezuje brzinu robota u globalnom koordinatnom sustavu [ẋ, ẏ, θ̇] s brzinama kotača, preko rotacijske matrice R(θ). Ograničenja su ograničenje kotrljanja (kotač se kotrlja bez proklizavanja u smjeru gibanja) i ograničenje bočnog klizanja (kotač ne klizi okomito na svoju ravninu). Za diferencijalni pogon model glasi v = (v<sub>R</sub> + v<sub>L</sub>)/2 i ω = (v<sub>R</sub> − v<sub>L</sub>)/L.</p></div></details></div>
+<div class="pitanje"><p><b>3.</b> Koja kinematska ograničenja kotača možete nabrojati?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Za svaki kotač postavljaju se dva ograničenja: ograničenje kotrljanja (gibanje u ravnini kotača jednako je obodnoj brzini R · φ̇) i ograničenje bočnog klizanja (komponenta brzine okomita na ravninu kotača jednaka je nuli). Švedski i sferni kotač nemaju ograničenje bočnog klizanja za tijelo robota.</p></div></details></div>
+<div class="pitanje"><p><b>4.</b> Opišite kinematska svojstva fiksnog standardnog kotača.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Nepomični standardni kotač ima stalan položaj i kut prema tijelu robota. Na tijelo nameće oba ograničenja: kotrljanje u svojoj ravnini i zabranu bočnog klizanja. Ne pridonosi upravljivosti, ali ograničava mobilnost.</p></div></details></div>
+<div class="pitanje"><p><b>5.</b> Opišite kinematska svojstva upravljanog standardnog
+kotača.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Upravljani standardni kotač ima ista dva ograničenja kao nepomični, ali se kut kotača β mijenja zakretanjem oko okomite osi kroz dodirnu točku. Zato ograničenje ovisi o vremenu, a kotač pridonosi upravljivosti robota (npr. prednji kotači automobila).</p></div></details></div>
+<div class="pitanje"><p><b>6.</b> Opišite kinematska svojstva Castor kotača.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Castor kotač se zakreće oko okomite osi koja je pomaknuta za udaljenost d od dodirne točke. Zakretanjem se ograničenje bočnog klizanja uvijek može zadovoljiti, pa Castor kotač ne nameće ograničenje gibanju tijela robota. Zato ne mijenja mobilnost i služi kao oslonac.</p></div></details></div>
+<div class="pitanje"><p><b>7.</b> Opišite kinematska svojstva švedskog kotača.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Švedski kotač ima slobodne valjke na obodu, pa se gibanje okomito na ravninu kotača preuzima okretanjem valjaka. Ostaje samo ograničenje kotrljanja u jednom smjeru. Tijelu robota ne nameće ograničenje bočnog klizanja, pa robot sa švedskim kotačima može biti svesmjeran.</p></div></details></div>
+<div class="pitanje"><p><b>8.</b> Opišite kinematska svojstva sfernog kotača.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Sferni kotač nema glavnu os rotacije i može se kotrljati u bilo kojem smjeru. Ne nameće nikakvo ograničenje gibanju tijela robota. Kinematički je idealan, ali ga je teško izvesti kao pogonski.</p></div></details></div>
+<div class="pitanje"><p><b>9.</b> Opišite kinematska ograničenja robota.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Ograničenja robota nastaju spajanjem ograničenja svih kotača preko geometrije šasije. Samo nepomični i upravljani standardni kotači ograničavaju gibanje tijela; slažu se u matricu ograničenja C<sub>1</sub>, a njezin rang određuje koliko smjerova gibanja robotu ostaje. Kod diferencijalnog robota dva kotača na istoj osi daju rang 1: robot se ne može gibati bočno.</p></div></details></div>
+<div class="pitanje"><p><b>10.</b> Što je manevrabilnost mobilnog robota?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Manevrabilnost je ukupna sposobnost robota da mijenja položaj i orijentaciju, računajući i ono što izravno može gibanjem kotača (mobilnost) i ono što može postići zakretanjem upravljanih kotača (upravljivost).</p></div></details></div>
+<div class="pitanje"><p><b>11.</b> Što je upravljivost mobilnog robota?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Upravljivost je broj neovisnih upravljanih standardnih kotača kojima robot može mijenjati smjer gibanja. Diferencijalni robot nema upravljanih kotača, a automobil ima jedan neovisni stupanj upravljanja (dva prednja kotača povezana Ackermannovim mehanizmom).</p></div></details></div>
+<div class="pitanje"><p><b>12.</b> Pojasnite stupanj manevrabilnosti mobilnog robota?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Stupanj manevrabilnosti zbroj je stupnja mobilnosti i stupnja upravljivosti: δ<sub>M</sub> = δ<sub>m</sub> + δ<sub>s</sub>. Stupanj mobilnosti δ<sub>m</sub> = 3 − rang C<sub>1</sub> govori koliko smjerova gibanja robot ima izravno. Diferencijalni robot: δ<sub>m</sub> = 2, δ<sub>s</sub> = 0, δ<sub>M</sub> = 2. Automobil: δ<sub>m</sub> = 1, δ<sub>s</sub> = 1, δ<sub>M</sub> = 2. Svesmjerni robot: δ<sub>m</sub> = 3, δ<sub>M</sub> = 3.</p></div></details></div>
+<div class="pitanje"><p><b>13.</b> Pojasnite stupanj upravljivosti mobilnog robota?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Stupanj upravljivosti δ<sub>s</sub> broj je neovisno upravljanih standardnih kotača, u rasponu od 0 do 2. δ<sub>s</sub> = 0 znači da robot nema upravljanih kotača (diferencijalni robot), δ<sub>s</sub> = 1 automobil, δ<sub>s</sub> = 2 robot s dva neovisno upravljana kotača.</p></div></details></div>
+<div class="pitanje"><p><b>14.</b> Radni prostor mobilnog robota. Ukratko opišite.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Radni prostor mobilnog robota skup je svih položaja i orijentacija (x, y, θ) u koje robot može doći. U ravnini ima tri stupnja slobode, pa i diferencijalni robot može doseći svaku pozu, ali ne bilo kojim putem: bočno se ne može gibati izravno, nego manevrom. Zato se razlikuje broj stupnjeva slobode u radnom prostoru (DOF = 3) od broja stupnjeva slobode koje robot može izravno mijenjati (DDOF = δ<sub>m</sub>).</p></div></details></div>
+<div class="pitanje"><p><b>15.</b> Kakvi su to holonomski mobilni roboti?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Holonomski robot je robot kod kojeg je broj stupnjeva slobode koje izravno upravlja jednak broju stupnjeva slobode u radnom prostoru: u ravnini DDOF = DOF = 3. Može se gibati u bilo kojem smjeru i istodobno zakretati, bez manevriranja; to su roboti sa švedskim, mecanum ili sfernim kotačima. Diferencijalni robot i automobil su neholonomski, jer se ne mogu gibati bočno.</p></div></details></div>
+<div class="pitanje"><p><b>16.</b> Otvorite nekoliko modela mobilnih robota (diferencijalne
+strukture) u programskom alatu CoppeliaSim, i, pokrenite gibanje istih.
+Raspravite o zapažanjima s kolegama.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kod diferencijalnih modela (npr. Pioneer p3dx, e-puck, BubbleRob) treba uočiti: jednake brzine kotača daju pravocrtno gibanje, suprotne brzine okretanje na mjestu, a različite brzine gibanje po kružnom luku. Robot se nikad ne giba bočno. Uočava se i proklizavanje pri naglom ubrzanju te razlika u ponašanju s različitim fizičkim pogonima simulatora.</p></div></details></div>
+</div>
+</section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="vjezbe.html">&#8592; Sve vježbe</a><a class="gumb" href="v08-modeliranje-robota-baza.html">V8 Modeliranje mobilnog robota diferencijalne strukture – CoppeliaRobotics – I. dio (baza robota) <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p>Izvorni materijal vježbi: RCK Tehnička škola Sisak, korišteno uz dopuštenje.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-mobilna-robotika-v07-kinematika-diferencijalnog-robota-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>

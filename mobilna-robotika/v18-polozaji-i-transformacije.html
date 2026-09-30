@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V18 O položajima, usmjerenjima i transformacijama kod robota — Osnove mobilnih robota | FORTRONIQ</title>
+<meta name="description" content="Potrebno je proučiti položaje, usmjerenja i transformacije koje se koriste kod (mobilnih) robota, te kako se to praktično koristi u programskome alatu…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/mobilna-robotika/v18-polozaji-i-transformacije.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/mobilna-robotika/v18-polozaji-i-transformacije.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/mobilna-robotika/v18-polozaji-i-transformacije.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/mobilna-robotika/v18-polozaji-i-transformacije.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Vježba V18: O položajima, usmjerenjima i transformacijama kod robota">
+<meta property="og:description" content="Potrebno je proučiti položaje, usmjerenja i transformacije koje se koriste kod (mobilnih) robota, te kako se to praktično koristi u programskome alatu…">
+<meta property="og:url" content="https://dos.fortroniq.hr/mobilna-robotika/v18-polozaji-i-transformacije.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- dodaci DOS graditelja */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+figure.crtez .st{stroke-dasharray:14 4 2 4}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+
+/* dodatak: slike i formule iz izvornika vježbi */
+figure.slika{margin:1.1rem 0 1.5rem;text-align:center}
+figure.slika img{display:inline-block;max-width:100%;height:auto;border:1px solid var(--rule);border-radius:10px;background:#fff}
+figure.slika figcaption{font-size:.85rem;color:var(--body);margin-top:.45rem}
+math[display="block"]{display:block;overflow-x:auto;overflow-y:hidden;margin:.9rem 0;padding:.2rem 0;font-size:1.08em}
+.postupak ul,.postupak ol{margin:.4rem 0 1rem 1.2rem}
+.postupak li{margin:.3rem 0}
+.postupak h3{margin:1.6rem 0 .6rem}
+main section a{overflow-wrap:anywhere}
+.pitanje .bez{color:var(--body);font-size:.9rem;margin:.2rem 0 0}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Osnove mobilnih robota</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">V18 O položajima, usmjerenjima i transformacijama kod robota</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VJEŽBA V18 &middot; MODUL 3 &middot; KINEMATIKA</p><p class="nadnaslov">Vježba V18 &middot; 1 sat</p><h1>O položajima, usmjerenjima i transformacijama kod robota</h1><p>Potrebno je proučiti položaje, usmjerenja i transformacije koje se koriste kod (mobilnih) robota, te kako se to praktično koristi u programskome alatu CoppeliaSim.</p></div></header>
+<div class="omot"><section id="o-vjezbi"><h2>O vježbi</h2><div class="crta"></div><div class="oznake-vj"><span>Vježba V18</span><span>Trajanje: 1 sat</span><span>Modul 3</span></div><p>Prije vježbe proći gradivo: <a href="3-1-kinematicki-modeli.html">3.1 Kinematički modeli</a>.</p><p>Pitanja i zadaci na ovoj stranici su bez odgovora. Rješenje se otvara gumbom <em>Prikaži rješenje</em> ispod pitanja, pa se najprije odgovara samostalno, a tek onda provjerava.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div></section>
+<section><h2>Zadatak</h2><div class="crta"></div>
+<h3>O položajima, usmjerenjima i transformacijama kod robota</h3>
+<p>Potrebno je proučiti položaje, usmjerenja i transformacije koje se
+koriste kod (mobilnih) robota, te kako se to praktično koristi u
+programskome alatu CoppeliaSim.</p>
+</section>
+<section class="postupak"><h2>Postupak</h2><div class="crta"></div>
+<p>U CoppeliaSim postoji mnogo različitih načina za <a href="https://coppeliarobotics.com/helpFiles/en/apiFunctions.htm#transformations" rel="noopener" target="_blank">dobivanje,
+postavljanje ili rad s pozicijama i orijentacijama</a> .</p>
+<p>U ovoj vježbi koristi se sljedeća nomenklatura:</p>
+<ul>
+<li><p><strong>Položaj</strong>: tri koordinate (x,y,z), koje
+predstavljaju položaj u 3D prostoru.</p></li>
+<li><p>Položaj može biti apsolutan (tj. relativan u odnosu na svjetski
+okvir) ili relativan u odnosu na određeni okvir.</p></li>
+<li><p><strong>Orijentacija</strong>: orijentacija u 3D prostoru, koja
+se može odrediti kao <a href="https://coppeliarobotics.com/helpFiles/en/positionOrientationTransformation.htm#euler" rel="noopener" target="_blank"><em>Eulerovi
+kutovi</em></a> , <a href="https://coppeliarobotics.com/helpFiles/en/positionOrientationTransformation.htm#quaternion" rel="noopener" target="_blank"><em>kvaternion</em></a>
+ili <a href="https://coppeliarobotics.com/helpFiles/en/positionOrientationTransformation.htm#rotation" rel="noopener" target="_blank"><em>rotacijska
+matrica</em></a> .</p></li>
+<li><p>Orijentacija može biti apsolutna (tj. relativna u odnosu na okvir
+svijeta) ili relativna u odnosu na određeni okvir.</p></li>
+<li><p><strong>Referentni okvir</strong>: također se naziva jednostavno
+<em>transformacija</em> ili <em>okvir</em> , predstavlja položaj i
+orijentaciju u 3D prostoru.</p></li>
+<li><p>Može se odrediti kao <a href="https://coppeliarobotics.com/helpFiles/en/positionOrientationTransformation.htm#transformation" rel="noopener" target="_blank">matrica
+transformacije</a> , <a href="https://coppeliarobotics.com/helpFiles/en/positionOrientationTransformation.htm#pose" rel="noopener" target="_blank">poza</a>
+ili kao položaj i orijentacija.</p></li>
+<li><p>Referentni okvir može biti apsolutan (tj. relativan u odnosu na
+svjetski okvir) ili relativan u odnosu na drugi referentni
+okvir.</p></li>
+</ul>
+<p><strong>Eulerovi kutovi</strong></p>
+<ul>
+<li><p>Eulerovi <a href="http://en.wikipedia.org/wiki/Euler_angles" rel="noopener" target="_blank">kutovi</a> su tri kuta
+koji opisuju rotaciju, orijentaciju krutog tijela ili orijentaciju
+okvira.</p></li>
+<li><p>Postoji dvanaest različitih konvencija kada govorimo o Eulerovim
+kutovima.</p></li>
+<li><p>Mogu se grupirati u pravilne Eulerove kutove i Tait-Bryanove
+kutove , gdje potonji predstavljaju rotacije oko tri različite
+osi.</p></li>
+<li><p>U CoppeliaSimu Tait-Bryanovi kutovi <em>alfa</em> , <em>beta</em>
+i <em>gama (ili (a,b,g)), koji opisuju rotaciju sastavljenu od tri
+elementarne rotacije:</em> koriste se</p></li>
+</ul>
+<figure class="slika"><img alt="Slika V18.1" height="40" loading="lazy" src="data:image/webp;base64,UklGRrwIAABXRUJQVlA4ILAIAABwKgCdASo+ASgAPm00lEckIyIhJ5bboIANiWkAFewfyfs1/ofh34v/I3tLui3855D/rj9o/Lf1072/Up6gXrf/CfmNwIIAPzf+nf6nvJv2n0A+sX+w9wD+S/0H/Nfmd8H/2bwKfon9w/3X2q/YB/J/6P/v/8F+UH0n/yP/L/z35b+0r8z/uP/Z/zHwD/yz+i/73+5/k387fsZ9FX9hjGWHYa1YN1ncgR+X233C14f/22diSdlTEsZY/o9GOZJUaqzZWMyGL/aGNy9xlDAAe5AkB3X7shs8dXuXdcV/70LQiZPuIQVvwwtDssFjEPK+MQblFJcqwofoHmtdF4j9ElzUxsTYsOLZnN6om29TlcyJmGj3j0S1kymngR/vMVUZkcN4egpNCCDUUY/d3zLnH0qWYOZesioSfwT4F+xAtCAovs2FAfkzPj/+Hk/neVPuQs2981jk9reUTb3zNAAA/tgyfo/eB/ww2rNIw0Fw/XyFAPjG8o3tvG3D31PtAWSe5fV3K8HDH9Heb2eqk8vogLisVah2u7sSxLJrbcXFzWvl73TZQOfK24+lnO98TYeJ5e/BQRf+CS2nq0KdvWVnwt5AFrR5ZPDxKTwn25JIO4Kf6G79HQGhDoaEFIh32YB7ke5Eyi+g6JpW1fkRYgbauKsn9aJgaWSYKO6kxenG2PJVn8lvx26In5BlGYsBAYWp9Q9lv9yyTN24JBb0wKBvijdVJbeRjwAfaUz/+zo+YX4q38PBOC23QkQVKWYcrvkMl2WF290dayFMkrohwN51tn4hJXJrxT1daEJh+duP6o5eF6GzGBPJkLT+xHTW7vWx/OWBBL6CzEFGsaTPx0aNENv85EbDp8LtBR/Rarwr96jGTWubZheFU4Gnte4xNc5IMsIX/AQ/hNwHjavxcD/2fbYWJ1IBDwUukPfc6kFw4CbrrjbmzXcC/RoFfJ1VhouqYElM3NCVzEJ9zQduYN+YyzQtD+w4+A4nDg4k16ceiFRMpJnqToq4qLM+FMDb6sN98QFnPd5GAA80OFGmNdz5q3x7r/kv3N/X3cER/mpbtgCfvDSBtjIm6llcxPIlLtNkymEPgzyyybBP63Cjllx/lVhMPoDngDkye38F0GylD4KAeSmOVuCGgR2sGSnghx60G0fbE/hd4bgdaN74wMRwnUuYB2X8vGCDvd0L7XD1h68ar7Tc6wA7Y4ullH18pRT0RcAYMGsoDn3bGsYyrPcaNW03IZ5EyVE8kt2CcmChpMg8E7ynDBXqEtrd4+VEzBTQmjxAlW7rHHKaNr2GdS150bBbiR/npWdH4Lgcyxf2Tl3PSUp3A/w9ekdi50zuIC2nRsRWw0z/VWBaaaEE4dAG99TottTBTyrkb+IRXMQJltlHtB0yBjGK0J7by2zjmFSwMtEZgjmtLDK6zKL7X8IWum+XF+e0eK6yudPKgMWgvF7UwVGwoNujs2g1kDv0HtALWWjcRasotH1ImkQ+fliPKhYvShXm4RINY/L1It2mPej2rzxHvzlw7h/3fyll89XkHYMv95eiBpKzLF9TDzeB41IVwernhfnt14FF0Ml7Qm7NaHYLxhqGvbO1SzuP/xcTc8RXLsDWcQgcaqg26WfUAZjzAagf4+2t+59VcdJpW6CvC8P696HOL29at9AiHa6q2ZEeGC2gFIh8Ga2i9l77gWC/rVETWnw4pqNi9jXHKKzyhNApGS6z/B+voFGOIEf/NBWLdnuJbzXzmYgNac+yL5ib+tLH+bpHGaaiaX+fXF5eFYeANejw9aez0epRcWtTU5xlUcsuahbt24GTlegKG5encQh0NGiwvYaqTR9Zr9+w9v3H9dFQ9l9pCQ6QFmw0PJ6mPJr0Pg1TX4NPgVl4sDYbj61TPhpoIqKiZbzpfIemU9kZNNmp7svyyHUQT4NvkQ1EOkMKSK5jfhT8NBN673pPCIOZYNJzN6DuR6nvY+O0WyIx5YZ0uv/ez2gca1rYasDREKv+4lI9cxx3bfiKXDbZL+wtwdt65czwSVccFOoNHGrT3v8ZpTLc/q0upV4dP3x+NHd/vKW2epVEcnIQS9gaPbzj15WLSERLqEQI8jdSxqefTc2VdrY6N49nUcUDETuUGCQdWgvgdPb5frNT21/cVxASyYdteIRcEmNqIfkdu4rwvnKPlRErQe6EVT5E6Za7xcD0GsKBRsg8pCDQOdzm7p6bhkxcYTlsSfLAxGUc0NV1rPlljnAfydHFRL6U3hLc2ZDy6CawDnks/Rcftu+Q3FcKywk09NznBtttY73YNQfTNlXFvQ5BbOD7LbV8dB8R0esWFUdTljOwqG/Co+mdbL6F9NV8vEGsLCOY4B7zrrA1Qbyv2J+5R2MaJHdtyXatQPC6IvQ5LWen4k5R9AAIulU+OteO+mcAzmWJTb5Bdg4OfA5tr9Y/6JW9Ujn94FP/KpGSIU/16bhXZnQ+WWxVciiIX82i8qU1ezqv/CSVQvy078mST1bqKVDJyKhLfeuyHlFI7xKH8h4UKUr44ofnfgtSJSiWE0XZG/1vPLogVQhlPZk3kr3f6+GFI8cZP1s/hOti9l2EwaW1jairinOgzLxJ/D26GWhWdNI7Ageh1epUw/BaqlIZ97z8FpyxgL+Jyjv4bxLupCLFLRe5a/F+KFubYUwspd958Mufw03n1lBgptFjxXe0ZxM5xOwj7mPo+oTf7omoqa7HDviSOXvN0EFxsP1WZmQLr4ifk7vhp/c+5p9NZevreO9/8FdjajfxnAMgAFkYm3ZsVvUUkGjb0XQwAERxkPl9jHNfVRAAObr/Mpd0PSC0X/Q7lqZeQgVzTAfB/8orUtJI45klNC/DPz5Qos909K1QdpF3VQWgbInQ/Bm9d6NCtVPauRjiU2ui7TDSMjN3i/LAuCRDdZB+TWNe3mLbawspDvtLTzkJ76h3EgAACMzyA1gHdoW9Z8wJ/Gntv4uL8AvHXA8AAAAA" width="318"/></figure>
+<p>Konvencija o Eulerovim kutovima u CoppeliaSim</p>
+<p>gdje Rz, Ry i Rx predstavljaju elementarne rotacije oko osi Z, Y i X
+(tim redoslijedom) apsolutnog referentnog okvira.</p>
+<p>Za kruto tijelo ili <a href="https://coppeliarobotics.com/helpFiles/en/objects.htm" rel="noopener" target="_blank">objekt
+scene</a> možete dobiti istu transformaciju ako ga rotirate sljedećim
+redoslijedom oko vlastitog referentnog okvira:</p>
+<ul>
+<li><p>rotacija <em>alfa</em> oko osi x, nakon čega slijedi</p></li>
+<li><p>rotacija <em>beta</em> oko osi y, nakon čega slijedi</p></li>
+<li><p>rotacija <em>gama</em> oko z.</p></li>
+</ul>
+<p>Yaw-Pitch-Roll su također Tait-Bryanovi kutovi koji opisuju rotaciju
+sastavljenu od tri elementarne rotacije:</p>
+<figure class="slika"><img alt="Slika V18.2" height="40" loading="lazy" src="data:image/webp;base64,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" width="667"/></figure>
+<p>Rotacije Yaw-Pitch-Roll</p>
+<p>gdje Rx, Ry i Rz predstavljaju elementarne rotacije oko osi X, Y i Z
+(tim redoslijedom) apsolutnog referentnog okvira.</p>
+<p>Upotrijebite sljedeće API funkcije za pretvorbu između
+<em>alfa-beta-gama</em> kutova i <em>kutova skretanja-nagiba-</em>
+kotrljanja:</p>
+<p>• <a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simYawPitchRollToAlphaBetaGamma.htm" rel="noopener" target="_blank">sim.yawPitchRollToAlphaBetaGamma</a></p>
+<p>• <a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simAlphaBetaGammaToYawPitchRoll.htm" rel="noopener" target="_blank">sim.alphaBetaGammaToYawPitchRoll</a></p>
+<p><strong>Kvaternioni</strong></p>
+<p><a href="https://en.wikipedia.org/wiki/Quaternion" rel="noopener" target="_blank">Kvaternioni</a> su
+četiri vrijednosti koje jedinstveno opisuju rotaciju, orijentaciju
+krutog tijela ili orijentaciju okvira.</p>
+<ul>
+<li><p>Oni su superiorniji od Eulerovih kutova na nekoliko načina (npr.
+nema kardanske blokade), ali ih je teže razumjeti i
+konstruirati.</p></li>
+<li><p>Iz tog razloga nikada se ne koriste u korisničkim sučeljima, ali
+preferiraju se pri radu s orijentacijama u kodu.</p></li>
+<li><p>U CoppeliaSim, kvaternioni su izraženi kao tablica od 4 elementa:
+(Qx,Qy,Qz,Qw), gdje je (Qx,Qy,Qz) jedinični vektor osi rotacije pomnožen
+sa sin(kut/2), a Qw je cos (kut/2), gdje je kut kut rotacije.</p></li>
+<li><p>Sljedeće API funkcije mogu se koristiti za pretvorbu između
+kvaterniona, Eulerovih kutova i matrica:</p></li>
+</ul>
+<p>• <a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simBuildPose.htm" rel="noopener" target="_blank">sim.buildPose</a></p>
+<p>• <a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simPoseToMatrix.htm" rel="noopener" target="_blank">sim.poseToMatrix</a></p>
+<p>• <a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simMatrixToPose.htm" rel="noopener" target="_blank">sim.matrixToPose</a></p>
+<p><strong>Rotacijske matrice</strong></p>
+<p>Matrica <a href="https://en.wikipedia.org/wiki/Rotation_matrix" rel="noopener" target="_blank">rotacije</a> je
+matrica 3x3 koja opisuje rotaciju, orijentaciju krutog tijela ili
+orijentaciju okvira:</p>
+<figure class="slika"><img alt="Slika V18.3" height="213" loading="lazy" src="data:image/webp;base64,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" width="528"/></figure>
+<p>Rotacijska matrica u 3D prostoru</p>
+<ul>
+<li><p>U gornjoj matrici, jedinični vektori (Xx,Xy,Xz), (Yx,Yy,Yz) i
+(Zx,Zy,Zz) predstavljaju X, Y odnosno Z referentnog okvira.</p></li>
+<li><p>U CoppeliaSimu, matrice rotacije su izražene kao tablica od 9
+elemenata u redoslijedu glavnih redova:
+(Xx,Yx,Zx,Xy,Yy,Zy,Xz,Yz,Zz).</p></li>
+<li><p>Također pogledajte sljedeće API funkcije povezane s rotacijskim
+matricama:</p></li>
+</ul>
+<p>• <a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simBuildMatrix.htm" rel="noopener" target="_blank">sim.buildMatrix</a></p>
+<p>• <a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simPoseToMatrix.htm" rel="noopener" target="_blank">sim.poseToMatrix</a></p>
+<p>• <a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simGetEulerAnglesFromMatrix.htm" rel="noopener" target="_blank">sim.getEulerAnglesfromMatrix</a></p>
+<p>• <a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simGetRotationAxis.htm" rel="noopener" target="_blank">sim.getRotationAxis</a></p>
+<p>• <a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simRotateAroundAxis.htm" rel="noopener" target="_blank">sim.rotirati
+oko osi</a></p>
+<p><strong>Transformacijske matrice</strong></p>
+<ul>
+<li><p>Transformacijska <a href="https://en.wikipedia.org/wiki/Transformation_matrix" rel="noopener" target="_blank">matrica</a>
+je matrica 4x4 koja opisuje transformaciju okvir-okvir u 3D
+prostoru.</p></li>
+<li><p>Prva 3x3 elementa matrice predstavljaju <a href="https://coppeliarobotics.com/helpFiles/en/positionOrientationTransformation.htm#rotation" rel="noopener" target="_blank">matricu
+rotacije</a> :</p></li>
+</ul>
+<figure class="slika"><img alt="Slika V18.4" height="243" loading="lazy" src="data:image/webp;base64,UklGRkodAABXRUJQVlA4ID4dAAAwkgCdASrQAvMAPm02l0kkIqKhIrN5eIANiWdu/E85qMADOxTFhvlR+W5EztaFy705k/4fry/1HqP+7D3APGf9TfmQ/ZL9lfe39IXoFf3L+q9aT6EXlzezl/cf+x6TGq2eSv7B+QfmM/U/7t/Q/2Y8/fxX5l+1flV64P8z5Q91XoT/Efr1+O/rX7T/3/3i/1HhH8qf7D1CPxz+Xf3P8rv8L6lOzm1X/Rf9L1BfZX5z/nf7d+5v+g9FL+w9Bvrr/vvcA/k/9P/0P92/eL1kfAb9Y9gL+Z/3f/vfdH9Lv8z/5v9h59Pzn/K/9T/KfvZ/q/sL/lH9X/43+G/fT/U+EP9wvZt/bv//i+XCkzov0RFwpM6L9ERcKSMrmhTxpdfG4iIuFJnRfoiLhSZ0X6Ii4UmdF+iHcsS/EtoxD9dpSZ0X6Ii4UmdF+iIuFJnRfoiLg1pFCruQr2GUREUWg6tfL99FoOrXy/fRaDq18v3oihejcsrBi20Wg6tfL99FoOmWCDphUHVg3CroiLhSZxsHrHIQoGWBtFoOrXy/fRaB06zFn60OEC2mz1aI2KA9Dxd/4FZW6RlpO48Gq/P935rgDTC+UPrC41n/vZT5zv0RFwpHvQElos0zi0MJ7uYJbyzkzov0RHNSKVt0Y3q0XeI4llGEGfJtCdmAsfRglKBU9vPP2GQssnBWQIBsQfXug1ytMb47qhzWU9a5oMGOy/1tUdH3tFVz9rd/Esd9cmmKmR53QHhJD5hVF0xYymBg7R7+FufTn5yk3ksTLljEw9MSDqwjyH1yh2mnZgIWZ5imufBzDInvxIAmolkCyfFdeQLBWudUbSGLfsoIlHBpxDIvAthUkfJh2N33loPRFVF50LoZ3GmaXg9cAN91UjDHoDIhB3MGzSZ4J3GSE/37TG5LbCgU/vM9aCcFuphbcgceVit1Zlkr2EIKkuFmoGWDUwwQvqMAbTqzrsxCXJVYVkOuE6QCsaw+csXUnjg7IpJV4kC5LNhrtC+9ZqSK0t/ooCqIQNE+BXy9eN4wpJVFDOauEX0vvdzStDqlzSii50XFihRINxP4eGQEmEnErD5Nb+pkOl1cWJ4aKOP7ss0RUxij+jz4R5Y7XRbDV++ltU64qJFvIXOF8ON5XptwxKmCLmJARIQTLS2JF+d77kg7SrmIgvb23uSTyD0geW3ZIz9jzvRj76LQdOwbNjh/D3Y+sjGeFMBugAa2xRYmWqNwGDkmNOHUH1pyzu8sQcg/AoOmqyVQCg7KOYdRi0Y/0Wg6tfL99FoO0kPIWtWkuoOnglugOlfreEWcHzPSgwZ5ug6D5hWRbt2rQMZkSL88BGxL1sy3/1haL/vx0mZmtRX0Wg6tfL99FoO9MCAu/ll7J8lBrL0Sa1u/6dy9i0WXlBMlEXBi6E50BgOFa3yVnmzeptbSkzov0RFwpM6L9ERcKTOi/REWzrKdjvxaowuB6zVsNpVek9kVtOz6HnZNLQOozSQ9bQii0HVr5fvotB1a+X76LQdWvmAZn5BgXOgakSYjCJmrjxphSZ0X6Ii4UmdF+iIuFJnRfoiLhSZ0X6HIAAD+/GwAOLcGlOpGCCVDr0VCrKjrKMru/rH+Z2GabyR+32iU/UtWr57fE+SYIOkf9htnW4a7UpUUhRsegYYrgFwDPPhgxsXSJiejEmVbRHHmBumpoIobR1ATPrGNw6CXK/dDGJtOJFFsM3XZviYxyfaRVWm0gC7786fUptGQD9L+f3+LI0yPG/vYP9cwTYJ+HOEsd0l/neT5AANdz15BEJZr4/0n5yO0vFI+X7Y3XNLMgtfxNKdGZfon8qm+sZvVa9kBzSdhU19/FXGaEz/WW82+YCcWv5na6FBf6PQKuZjl+6SJ2HgU5+CZ8Vy69xYZ2c5PdGQv16/K5CABOuI6RbrvbJbFv9WWLDl/tv6PR8JJMkXwclVCdoeztV9VHvQvopfMoWdSK45vJp7EEbs/x0mKzNdjF4KZt3HjW2B04arxHtChl0K7Fgxskxpg+fiKteDbHJLxCoIfSSvQ21BjHTU2MUr/K5KASTstn7tbbfvcc5jfePnvjKJLa2V1nSKuxFj1JnC+fg1OUAAbrTlt5h+6gANdTds0JUl2PZG/Jk0+ydlVsccIbcygy904wSQMP778da6idNIRunGVh4vIte1JMaV47gQFEW2KMi1Gm3P+Oqw4LwRAweQB9EEwVs5krSawq//ajTTxW1SnhgKP46l1r/O1ztWoZ13ggbfWyRXvA4rb93m1ZmdF7kFqarsjlbuw+4Kq+s+zgoyvVo5gC052MY+hB/9Pb+BncZeuUbX+8cWlE/YnPceTAubNowl8TyMj2w5G3qryVx49aIRIo5q6ngswGgNlaft1iAiM47/4cjAvuwZpL2j+ztyiEC16bya7ya5ib7PJH2qyeV5ZLINQjFLn7YTVtyL6B/mYesK8EbMlrcbXYYQZEbanjkeTF5izXE8J30LSWa6YLgz8Pywz5g4BCgN/Km/prLm29CcrYxMH/6WIVUeo4LO3yPnHBN0nSXid/5cnvSJKlg/wo69Zb+JjAU2ZGg/bWnQP4/vGq6Pm9yYLtmy64aJiV7/Zj5b3YxVu0yY7Lm6bN99d5dNHage6rpbX95YV8BI4DiAQmkPFUDwEOAtYl1aO7b2VNq81N4XAzORFsvbUTqmgltgOlLB78tsvo77WK3jc39fANWF31Tnk/qzVtDp8Msi7Z6VTSbcfr5bdD/iqTN+WyYs4l0lWiRS8qI9/M+CcWx4o6U8VF9twjJxk3faPQR91oVVqJqRQ23Gee6DJpfPcEdx4hpTe7izQDGYKOJFn30KMzcUIccHVlzctZZ97UKuU1lJ/hQ/viNoev7dyce8bc/IPKzmBeJGIY2eGkx0EMjHqzOLuXTlZ510llECFwE22l/l/eWYV29lc34VFuexZgBKJ5b8BIEV3OEAw7OFtzvxBu39VbefF1+P7drvmUu8gATOQ5qn+08+McJLYh/JiB2VTaWW8/p1/4urSjUVLzGH72pSBaLtzd2oTsPkxDYx3OLs4QImnNm+pKF11/vNCwgxEiWRqA/VDGDYjLUr4MdAB6s49bGANMj9HWudgp/mM/p/eOYUOYO/qPXA+gSVrKndPCW9cc4tHOXYa0/QNQDD4z2EQX7DzrxWSK3gaq46TnWHQ9E3vsf4ldIfT7YQfmADqpSIPyNxpUA3PVhycehNwQ/g1XG6InX201FlDgPY8dq4Vd4TiQh+eeCy1Xg7IQ//5mVdB4WliybBa8J/2uMh2S04y+c6Uqu13R3KglbBQwfQOaIp6jeFs1GfOErUiM/lUgMByyf+wgCAGQ0MN/TIwopTyEkxrgOqTfEAJSHSLIOD/nspvn6szL6fbp0k6s02BckHKoNWvP5J6GtbNPc099p05LCLr4Uig1NdIYGOJDfOLKj9olMsvBfi8QwmHAZehPC+hLgCGH7O14rYwUtKR6/DL3akvWXlesHkbFaJDxEJ4lRRXcrPJ2C5GaFG6xVUPEs2V8M0hKVr13gJn6GxZdl0gb3A9WGI+W0BB67VDHen4/DBXcP8Jk5eEPIjjZBffeMwJjLNcEKQT/FCgMU75wjru3XX7XZ3ypXIq2I2gr/ezmkSjIh+SGq2c4oZUlsEPaHGKtBMIBPO25+dMFO6AnnzPDjRxZVJAmh5RhMej7x5Dcx+/hBx9Bmk0n+R5vUqEaK06m51OjabUmnyB4WNO8YsEwXECU3JF+V1MLaelSOqw3xiKEpAW5yUutxBFn4QouspwCuIR6H+W7IfKS+TdVKs4vsIvqVRBmY5R6UnZIsoEO0weeqhQYOEA7CbIFq7ye3YI6MFpqH1TxolXc1lrVj/urFx1Mk0i1DSJQnJd5xH1RFAhFuWzfAvQXiiSpkJNf289Ud30CX27QbuLXzdIB2Ez9nAzt2FtV7z2O+1/8kyEqFEp71+PKUDy81mfcSvndGqppX/5qDtmwTsNseZ3pLxXeK6RvAKHDeXctOtaXx3myZ13XGnknDucW68PlKc9LBnTgPqoNN1h4Sazf77szK+yPAyV0essSKdH7lRyeflbgUC7ZTmMnMAc0Inf1u+S8Yo/eFfO5BLa7bjw7o9lYeFdg9+oTdG69WyqQC/BRXPOITw+jfJ5LRXFdt6cLAFfellkdp5vivKKeyNPdmrJPfOKgzRXK8X0hoA1gkXWz+rorSSbJ9OldRIIpArLCKLBmXultA+tYjISkK4loizxfm/CNtEHGe18KjIGesFU02UyySXG6ib4RThsOpZ0O4/5dEmS6yUXO+Ou1FGx+3/XTWmqm+EZzczg5K2lMs5yOMSrXre2/M/YBxvUQOoSlEswEkwYPsVRELr/U6ox7ZfnoN250KGMghxDVdi9ut0TlNvM7s3W9mx2/VG3cYM6f/49K0n8T5d8M/Kis+iiywIqnbORkWe7Sw9QCZFz38Zom2MOIvKmp0c9pBHZhDpMY3j34U3cKOPXmhl2yREbnzGSVX/mvYX1+2TQp538Ora25FOpukKi1P9DPQL3Q7r+/qgqv2bxSnZVM/7tDKrETTN/7EbbeAEU6RsD3M0gIPOKUitVOBEjZXL8J1k5MJnrdO7PQojMwJ55kgUR7UBxO+F/2WCRs6cabr4Fevth9HZYLVm6PV94ZprrgkXkndxjTjvjsSnd0yNHrRw9dKFF2sXYv1uH8NNdKYhzsgm5KZa2JZBIqgtDDKLr4tvJhzmAhG08syRoYGdX5HpG94CmmtquFSxCYxj59+e01ZWSYi9zKy100PhEDR/kQ9jDwiHhUvCd42f3l2xVZxr1QtujSkeqVkcreOy5M6BtgzYRR7bYc3lyDmAxU2q2yvALMkeLSP4/hwgZ8ePNyj1SiLL+sEveMyVGIW4CObLxfhQjZ/FLJUEnpXtPXjZm9hl4KquZorTY+ndBm27zJZk8pyNPzhUxYuWPl9ViuMk0VsGWorz+oLgI+hiSxTiuo+NrdsIBluplsCrWfHmGJXLZDoERGiIbGqFw97sJffC6UMghqC9pU8EzArdMu9SGJ3BIN2BDeOhS5yl/k8isVKo+xlQH7I+uM6j6RZK7vnzEJPelmc51fNsQ85Th/BQv00nMq4od0J7wUJVYY6rp3NXnhYHoTZCQv8uk2c58uXTO6tCY83ZRyha47eURLFzsk+Zglf+zGL0utZ7+MA8wyqWsTsfXzZJ5FESdSvcvTJqpci8u6Rdl8OlL10WwamluFNGMxR0/7NBmnvGynwMy//6m7VuVVXd1YD+W75/W8eOY7pNdUTqdtCwqP4uP2VH28M2ftumXb+XE9urdrOrl+V848VyW0dztRpBzh+QujCYU+HQT2jFiHvHR9JXMLDk7IVY40kMb8Vf4NcQhYhiIKGD5vfYBkpmJfAHHdr0HXhMlxkrhb+IjC9xV3+tTGxsdiSdqOjSaYF8nwGn2pu1UHHfgmI0RR9eu5LcZCy/oQQGdip92JXK7oAG/rfX+JAD4A7378kXfwV6NUYELoPwSneB7iG7xmyXtkmTroGnpYMNXg/wswLlnC9uvQNAmbmXorsIgF8WCzc99OhOuBMyGCxPJQCnlHRamgBfu//pXWK1rdLir0dZR3XIOIyETABhq39+4OYuNFcROmSHlCSnafaILXuy4xdoWJiE7UMijp+DesTX9KQ6+8EuGGgcL9w5COXdvO+T6C2+upbrdRQ90BbSMcpozvOZOdA9emFWywYw3lxGe7+SC27edUgG2XPWEw7yeicLGjdo78kzk33HfvX5JVD25mNhft6rQe3sTWLTdRApQEA/+eq5T/Mk384VcfW8Fok0OaNvXoR6PIUAPXrJY9pOwpabGRwwMKt+BAnZmBSIRKC8kyEpZJBbGMZe6xF36ikBtAs6ZO88SuZ3pOZhYjLpyvnNJOLps39XkF3itdOej8uHky5wOUCA72RzdmXEUshSBvnyfpW0lqTo1M9RVK/M87TJ81ESb6ARgP9/AaycU7c5D9kLu+lrvN5JT3rVGpyh3Es/o/RaDRlUnXgZjGjs8DRT4bMNjd53bg7K/il0epS+Id1ctVgvU0xKzS1MoSrl2eMfigT+rIf/ORjkcqHiwfWuYJHsK9frB+AmA1nDHZvhVbeMzdRMz1eoComCJgajsLYio5iQIFdxOiyOTaHApYdOpDKWaeGn+DmnPn+nmLWBCFri620smM+xa/kbseJLPu9ftjAuiaEAIoYAMvo7aJKKVG+mdukeJkFQXl6P2eSVNRJY43xS2P6ayCXU665NJIP8g9Ki9nyWpzqNmmJmJK3L5z5wHWZHyU8SfbRimcXHaDBIIpCSyEM4Bfky32+XqfgS8iivvJBiSQVlg0NnsK3npq1Sfz/H2X+1QTKSuktDKDRkynu0F4rPH2raa2xAz0pcz7JzkqbHmXx4iRiOxmI2oxd6C7508htQyu+PPXPvVIxyllEOS+fT3KimcRLEMw5U2QUTWl67JRlqITFEoacVZFzgPm9xtxWWhgr+eUayLC5NURPaHf6UuvKsh5fMln+bUXCWrDD40T5cnBsLkaE9Nu4QZL3LK7N1s5NZqA/Biy5mt7QY7cYmLIqhGg8RT4dsa/UoQKoj4aw/4SFNfO6g2t+ud2xK46rT52rnkvyjoSPnwlVYVhSmYvry2k5+Elh/fw2AqO5mHw+G6PxhMs1pUm9SZl/R1KaOXL/JiNrB+/Sv9qbKfeKd2/0XwMqanrGgg92C/wjIIQfcsqI57jGYO/wLYhPu7qTAZm2vi5wBlW+xcHWoRtydlqq6tQAA1lUGPPdeStrsu3ZW7qZz0jLlp1USLDuwylYqe7tcBgtKe4bPnBvl5rh/8mD9l/OuCs3VmsKx0DoQqsUaGrxNRGHKffa3K5AfsPyXSjhvOcYW0Lk1LJtXG9JloNgg7EBLeVEl/I6bX+BzC9Ny66wwBBba2rMxbEASO7Xo9l+nssVDA0aPtIfpGkR8u2NL/rO3HwvMHua5vRs99+VjpBFQnRqZHLWrUfo88fqNjxOeKJo/3xXp+nnumsqSAfZCH6RzTDOBUCzP05ypmXkXBkDfEmdFJ51p3i9/Y4MXmZKev+RR0snQ9tIxqPc/vcWP3CI75G/sdq1iop/6p1O3t8uFU+PGpFL4Ut6XzvLL/0i/WB8rdW8lbdG+15XVy3CoKIlota3JHRmtFUTuN6FClNBDhf2vvxD2n6n3fexiTR6MfEpAWqaJVe7MaALNfq9YQHGBpfrLJPmOyGHmd7XbuvQWqi/xCWK1ey8g+4EO3TBz8aCTIfovVoy6ufLOAUceXa8F9DdOitK8hbSqstmbjXD+1OJGQl2TTAeOdtChR/q90L0vtj38Bu9Mvi+kLaXfOgb5sXxKWBLnYjW66CoJUSLVDiC3WJ2ugfU0Ioy005yEcydkLgzNhakABrzJVAcmpgnVkbJvDy3Nir88JlYzvyyzj7tobFL2N3AEcrYpQlkk45NNDl/MHCtGLuouO11z54o8u20GXjeQKkjha4Yp8vH9RAYgjV/ySX9tftUNQIZ/yCyi1NYJN/rp7cAF2pzh8yqIGNZKRlVSd9yugproeJZRg14+w5f3L3id59KW/BWWCXeTFoCAc++nkwJr0LM9vGJ2gEGmljXOiXs0P/tYrb+JreUgpU+v1i35RZ0yexGMpWqyzdPzczA2ft//SDyL/jx3fuq0IKLj5zqiZWo0I/XdfXw5kfzVzA9sJVkIB5xB/afPy1GG/RZ2Cas5wCZxKFCOD7HIwdL9CXYHA0SN32S16lE0QtL+Q4qeI0R/r+dJh0/iIMBqYQO47JzRYbQ6CU/Jk2/2grP0UiYeheI7yWQzkXYz3vvIucNyuTzXJpWpJ2KRFMI2x8o3woF3edQ8r03wVpYKxnnSN+rTm9xWbhUXs6Sm7IlYBE+yG5utr64nRy0RzPwmqKVsUhgQTsJnxwALoxoOdl1W/swtjlWO/VDFqN3nbF/vBjj5HzM//yaMXLc/dCihG/BvXequfDZ+SYYN1GUx9V2d/gaIuITXKrE4pkIuumob4AdJanias5O9ksiCny+9aUIrbuyTgCkS0T2lICKhVJNrCHqmtNEwRvE9ZxQ8/zIopM12HHuvy3UKC4X3XT7JTFLG8isW3oj6EP5jp9c+FziR2qUD7GMfH8X8kSpHHAT5wBm48jIIHF2Ml2ANl3ohBqwvZWAkvur5s/CChgzDmsyVN3vrFLibdz/O9lbKXY3n9OW5Wy4C5BP1g3H1Wr4v0BSvFL4BvuhPOkCqqewwGUY/ucUd2x0WvVD09ecXNmASv8fU+b0R02YCcD+eMCKulxZ+6Htc6qS04TcF5OpJksIkxW5en/1Hqdum1Ti6BI8ZZrkp1HTyoAA2ndXCgVnYxal+N36UKEAIeyB+nVp+zWUAMEfgiPRuQ+f4fYqTrcyYMO19wEao8x2smIlvfuBLZk1F0M+CCz6jZ/4WIH1FEiIIh7hGP5LnDWBLu9uF7C0T044qiVUD8f9xlkKuJd66SqKjPlaEGkE5+sxPz9VNx7P+5v8sQNwaWiNkYCJzqFkESwl4S4TeI94+5zdAc8OkldjzXGGwdTbPcyXZ1ZE/9Rbd10LJlZdNn9CuU2rkcMEhX4gyUE5Dp5vVJSjy6Ii6nv2tV0jYa/KKCheRdMhzxAJuBoDFy8QvnFRVH9t8bxiFFzkaKlyAbfPVEsVC4Ld3doGaUPikqAHAQDyHeV9vY410W+d3ztJJBzCtW7EnIjBQ9/95sMSXO16fwS1+HrYY5FfdeAskadEpH23xzAYtQDHIJKKGYLZdfVbzNZjF7TUSZFzkCfMP56gELkw205s9BPJ41t+2IuOrSg5hz2INQeXdh/xrytqo6NgKhsSUw6i0N+9PlSHdje7GFHM5NoAEewAPyvqzMWrcT4RDXLvpTcxSKCnnqVnPIfrVwTOyAMSUdEP2iA8cu5ANSlN5bd492dfUmhKH1hIpl7Nb67xgm5kg3c35W/BeOmysxVhAR70k0rrHFpjBDeaJ3cbLvEZp+uzCCoVTTzZHPo+9YWYO8BgtSgwtiqC+mYzQe/jomYpRlTczDGnl+ipY525OLrJK5/0ait6dKwQ9YCt1gB+49xmmX2lfRcsnifqFXl4nTs6u0VcMw3vaglTrCr2w8SsQmx2UN3sK/pxHJhuNSehhAQI1nHwFYxmaSPtBUCoDWMFS0sKZJfsjjZtlxicinGvnojKq1+IDpaaYyFlq7P7t+ECIXuxFfXvWKdpI2ZH7/yqM0t1CGTO8rsr9bGh/VKkfOtNJiT8DcbY2Y/j7Ky+NPZS2IGlYb3iVkinHi9ljFMpeik2Hoeg44i+aLdk3h4q4t6aPKaj1h/totl2vZhg3XvjIUGabVNyYymzsTPkweamLLe/dl1y4Mo5iT2x5XFwIxjN+qfexSAAkAHrQNAYAHpC4ExGfeZ+vYXiOpcyf08RlnrsVZk3x9P/kQzqQjvBV/SwD84oh9KivSDRdGTqWYz0/pyWpsA/6IrAcQiKQGTMQ1Ayrh8mLJ7v4M8ZTieN2cnOesxTTXPHIYxCSS02gD4Y+LSkHMILZiLpbwdqEQre553DHwp0hquxuMXoWjFuQGW6+nYsNPxzxhMgUWb+SK69wMIAv6ViXtMcKajbnNWTstyZPv2dRkH8zKFMBXODUnMw+tSpco1UihM4GMZHK5jO6/qN3Gy39wqAtdGQEab+WR8tV3wIs0xXEhkbeTcO5etWR7C2jHg2ixZ6GEBijf8vjc7giakwLmAprNT7G4Z4ErgSEIkc8NRoeqmdon02ngOVBuzoZsZUc3VoheaSYpeWpTXdrfHncT050/UYC0MCLHmOYQ0vdY0ibHLTbk8tbWjYRh0F3xY/uAADq1+d2tO2yyrq7gGcd9Pa5oGGEd8r5jBRLn+aQa+XWihzFQQPFimDCQcMKSTA6BhVgAlinNNMplSkJwLu7Rwq1wAT9sP1zdJI9YRkWwYERYytcGPfnbBTQW7K6vT4QIwmyjSTCQAAAA" width="720"/></figure>
+<p>Transformacijska matrica u 3D prostoru</p>
+<ul>
+<li><p>U CoppeliaSimu, transformacijske matrice su izražene kao tablica
+od 12 elemenata u redoslijedu glavnih redova (zadnji red je
+izostavljen): (Xx,Yx,Zx,X,Xy,Yy,Zy,Y,Xz,Yz,Zz,Z ).</p></li>
+<li><p>Također pogledajte sljedeće API funkcije povezane s rotacijskim
+matricama:</p></li>
+</ul>
+<ul>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simBuildMatrix.htm" rel="noopener" target="_blank">sim.buildMatrix</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simPoseToMatrix.htm" rel="noopener" target="_blank">sim.poseToMatrix</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simMatrixToPose.htm" rel="noopener" target="_blank">sim.matrixToPose</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simGetEulerAnglesFromMatrix.htm" rel="noopener" target="_blank">sim.getEulerAnglesfromMatrix</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simGetRotationAxis.htm" rel="noopener" target="_blank">sim.getRotationAxis</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simRotateAroundAxis.htm" rel="noopener" target="_blank">sim.rotirati
+oko osi</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simMultiplyMatrices.htm" rel="noopener" target="_blank">sim.multiplyMatrices</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simMultiplyVector.htm" rel="noopener" target="_blank">sim.multiplyVector</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simInterpolateMatrices.htm" rel="noopener" target="_blank">sim.interpolirati
+matrice</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simGetMatrixInverse.htm" rel="noopener" target="_blank">sim.getMatrixInverse</a></p></li>
+</ul>
+<p><strong>Poze</strong></p>
+<ul>
+<li><p><a href="https://en.wikipedia.org/wiki/Pose_(computer_vision)" rel="noopener" target="_blank">Poze</a> su
+vrijednosti koje opisuju transformaciju okvira u 3D prostoru.</p></li>
+<li><p>U CoppeliaSimu, poze su izražene kao tablica od 7 elemenata:
+(X,Y,Z,Qx,Qy,Qz,Qw), tj. pozicija nakon koje slijedi
+kvaternion.</p></li>
+<li><p>Također pogledajte sljedeće API funkcije povezane s
+pozama:</p></li>
+</ul>
+<ul>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simBuildPose.htm" rel="noopener" target="_blank">sim.buildPose</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simPoseToMatrix.htm" rel="noopener" target="_blank">sim.poseToMatrix</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simMatrixToPose.htm" rel="noopener" target="_blank">sim.matrixToPose</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simGetRotationAxis.htm" rel="noopener" target="_blank">sim.getRotationAxis</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simRotateAroundAxis.htm" rel="noopener" target="_blank">sim.rotirati
+oko osi</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simMultiplyPoses.htm" rel="noopener" target="_blank">sim.multiplyPoses</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simMultiplyVector.htm" rel="noopener" target="_blank">sim.multiplyVector</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simInterpolatePoses.htm" rel="noopener" target="_blank">sim.interpoliratiPoze</a></p></li>
+<li><p><a href="https://coppeliarobotics.com/helpFiles/en/regularApi/simGetPoseInverse.htm" rel="noopener" target="_blank">sim.getPoseInverse</a></p></li>
+</ul>
+</section>
+<section><h2>Pitanja i zadaci</h2><div class="crta"></div>
+<div class="pitanja">
+<div class="pitanje"><p><b>1.</b> Objasnite položaj, orijentaciju i referentni okvir u robotici..</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Položaj je mjesto točke ili tijela u prostoru, zadano vektorom (x, y, z). Orijentacija je zakrenutost tijela u odnosu na referentne osi. Referentni okvir je koordinatni sustav prema kojem se položaj i orijentacija izražavaju: svijet, tijelo robota, senzor. Ista točka ima različite koordinate u različitim okvirima.</p></div></details></div>
+<div class="pitanje"><p><b>2.</b> Klikom na poveznice, potražite na Internetu položaj, orijentaciju i
+referentne okvire koji se koriste kod robota.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Treba uočiti da se u robotici koriste najmanje tri okvira: svjetski (globalni), okvir tijela robota i okvir svakog senzora, te da se podaci senzora uvijek prevode u okvir robota pa u svjetski okvir.</p></div></details></div>
+<div class="pitanje"><p><b>3.</b> Opišite što su to Eulerovi kutovi.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Eulerovi kutovi opisuju orijentaciju s tri uzastopne rotacije oko osi, npr. valjanje, propinjanje i skretanje (roll, pitch, yaw); u CoppeliaSimu to su kutovi α, β i γ. Zapis je zoran, ali ovisi o redoslijedu rotacija i ima singularnost (<em>gimbal lock</em>) kad se dvije osi poklope.</p></div></details></div>
+<div class="pitanje"><p><b>4.</b> Opišite što su to kvaternioni.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kvaternion je zapis orijentacije s četiri broja: tri za os rotacije i jedan za kut. Nema singularnosti, lako se normalizira i omogućuje glatku interpolaciju orijentacija, pa ga simulatori, IMU senzori i ROS koriste interno.</p></div></details></div>
+<div class="pitanje"><p><b>5.</b> Opišite čemu služe matrice rotacija.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Matrica rotacije je 3 × 3 ortogonalna matrica determinante 1 kojom se vektor iz jednog okvira preračunava u drugi zakrenuti okvir. Uzastopne rotacije slažu se množenjem matrica, a inverz je jednak transponiranoj matrici.</p></div></details></div>
+<div class="pitanje"><p><b>6.</b> Opišite čemu služe matrice transformacija.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Matrica transformacije (homogena, 4 × 4) spaja rotaciju i translaciju u jedan zapis. Množenjem matrica lančano se prelazi iz okvira senzora u okvir robota pa u svjetski okvir, npr. za prijenos točke koju je izmjerio senzor u koordinate karte.</p></div></details></div>
+<div class="pitanje"><p><b>7.</b> Opišite čemu služe poze. Istražite na Internetu, i, opišite kakve
+veze imaju s računalnim vidom.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Poza je položaj i orijentacija zajedno; u CoppeliaSimu zapisuje se kao sedam brojeva (x, y, z i kvaternion). U računalnom vidu poza kamere (vanjski parametri) određuje odakle i u kojem smjeru kamera gleda, pa se iz slike i poznatih točaka (npr. vizualne oznake) računa položaj robota ili predmeta.</p></div></details></div>
+</div>
+</section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="vjezbe.html">&#8592; Sve vježbe</a><a class="gumb" href="v19-senzori-kod-robota.html">V19 Senzori kod robota <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p>Izvorni materijal vježbi: RCK Tehnička škola Sisak, korišteno uz dopuštenje.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-mobilna-robotika-v18-polozaji-i-transformacije-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>
