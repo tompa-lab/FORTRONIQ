@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>V15 Proširite robotski program naprednim programskim elementima — Industrijska robotika | FORTRONIQ</title>
-<meta name="description" content="Na početku program pozvati početnu pripremnu poziciju HOME. Pokušajte HOME poziciju definirati što je moguće univerzalnije, jer pripremnu točku pozivamo u…">
+<title>V17 Sigurnosne zone robota, alata i prostora — Industrijska robotika | FORTRONIQ</title>
+<meta name="description" content="Kontroler nadzire model robota u prostoru: zone članaka, zona alata i kartezijske zone (dopuštena, zabranjena, nadzor brzine).">
 <meta name="author" content="ForTroniQ d.o.o.">
-<link rel="canonical" href="https://dos.fortroniq.hr/industrijska-robotika/v15-napredni-programski-elementi.html">
-<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/industrijska-robotika/v15-napredni-programski-elementi.html">
-<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/industrijska-robotika/v15-napredni-programski-elementi.html">
-<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/industrijska-robotika/v15-napredni-programski-elementi.html">
+<link rel="canonical" href="https://dos.fortroniq.hr/industrijska-robotika/v17-sigurnosne-zone-robota.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/industrijska-robotika/v17-sigurnosne-zone-robota.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/industrijska-robotika/v17-sigurnosne-zone-robota.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/industrijska-robotika/v17-sigurnosne-zone-robota.html">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="FORTRONIQ">
 <meta property="og:locale" content="hr_HR">
-<meta property="og:title" content="Vježba V15: Proširite robotski program naprednim programskim elementima">
-<meta property="og:description" content="Na početku program pozvati početnu pripremnu poziciju HOME. Pokušajte HOME poziciju definirati što je moguće univerzalnije, jer pripremnu točku pozivamo u…">
-<meta property="og:url" content="https://dos.fortroniq.hr/industrijska-robotika/v15-napredni-programski-elementi.html">
+<meta property="og:title" content="Vježba V17: Sigurnosne zone robota, alata i prostora">
+<meta property="og:description" content="Kontroler nadzire model robota u prostoru: zone članaka, zona alata i kartezijske zone (dopuštena, zabranjena, nadzor brzine).">
+<meta property="og:url" content="https://dos.fortroniq.hr/industrijska-robotika/v17-sigurnosne-zone-robota.html">
 <link rel="icon" href="../favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -319,13 +319,9 @@ figure.crtez .st{stroke-dasharray:14 4 2 4}
 .oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
 @media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
 
-/* dodatak: slike i praznine iz izvornika */
-figure.slika{margin:1.1rem 0 1.5rem;text-align:center}
-figure.slika img{display:inline-block;max-width:100%;height:auto;border:1px solid var(--rule);border-radius:10px;background:#fff}
-main section img{max-width:100%;height:auto}
+/* praktikum v2 */
 .postupak ul,.postupak ol{margin:.4rem 0 1rem 1.2rem}
-.postupak li{margin:.3rem 0}
-.postupak h3{margin:1.6rem 0 .6rem}
+.postupak li{margin:.35rem 0}
 main section a{overflow-wrap:anywhere}
 main section p,main section li,.hero-in p{overflow-wrap:anywhere}
 .praznina{display:inline-block;min-width:6em;max-width:100%;border-bottom:1.5px solid var(--body);height:1em;vertical-align:baseline}
@@ -333,88 +329,63 @@ main section p,main section li,.hero-in p{overflow-wrap:anywhere}
 .ponude{list-style:none;margin:.4rem 0 0;padding:0}
 .ponude li{margin:.25rem 0;padding-left:1.4rem;position:relative}
 .ponude li::before{content:"";position:absolute;left:.1rem;top:.45em;width:.7em;height:.7em;border:1.5px solid var(--body);border-radius:3px}
+.odgovori ol{margin:.4rem 0 .6rem 1.4rem}
+.odgovori li{margin:.2rem 0}
+.pitanje .vrsta{color:var(--body);font-weight:500;font-size:.9rem}
+.ishod-q{font-size:.92rem;color:var(--body);margin:.2rem 0 .6rem;text-align:left}
+.uputa{font-size:.92rem;color:var(--body)}
+h3.skup{margin:2rem 0 .5rem}
 .set-ishodi{margin:.4rem 0 1.4rem 1.2rem}
 .set-ishodi li{margin:.25rem 0}
-.pitanje table{margin:.6rem 0}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em;background:var(--tanko);border:1px solid var(--rule);border-radius:5px;padding:.05em .35em}
 </style>
 </head>
 <body>
 <a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
-<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Industrijska robotika</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">V15 Proširite robotski program naprednim programskim elementima</span></div></div></header>
-<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VJEŽBA V15 &middot; MODUL 4 &middot; PROGRAMSKI ALATI U INDUSTRIJSKOJ ROBOTICI</p><p class="nadnaslov">Vježba V15 &middot; 3 sata</p><h1>Proširite robotski program naprednim programskim elementima</h1><p>Na početku program pozvati početnu pripremnu poziciju HOME. Pokušajte HOME poziciju definirati što je moguće univerzalnije, jer pripremnu točku pozivamo u nekoliko programa.</p></div></header>
-<div class="omot"><section id="o-vjezbi"><h2>O vježbi</h2><div class="crta"></div><div class="oznake-vj"><span>Vježba V15</span><span>Trajanje: 3 sata</span><span>Modul 4</span></div><p>Uz gradivo: <a href="4-7-programski-elementi.html">4.7 Programski elementi i strukture</a>.</p><p>Pitanja za vrednovanje nalaze se na kraju stranice, nakon postupka.</p></section>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Industrijska robotika</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">V17 Sigurnosne zone robota, alata i prostora</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">VJEŽBA V17 &middot; MODUL 5 &middot; ZAŠTITA NA RADU U INDUSTRIJSKOJ ROBOTICI</p><p class="nadnaslov">Vježba V17 &middot; 3 sata</p><h1>Sigurnosne zone robota, alata i prostora</h1><p>Kontroler nadzire model robota u prostoru: zone članaka, zona alata i kartezijske zone (dopuštena, zabranjena, nadzor brzine). Vježba ih definira na edukacijskoj ćeliji i provjerava reakciju na ulazak u zabranjeni prostor (jedinice 5.4, 5.6 i 5.7).</p></div></header>
+<div class="omot"><section id="o-vjezbi"><h2>O vježbi</h2><div class="crta"></div><div class="oznake-vj"><span>Vježba V17</span><span>Trajanje: 3 sata</span><span>Modul 5</span></div><p>Uz gradivo: <a href="5-4-mjere-zastite.html">5.4 Mjere zaštite radne okoline</a>, <a href="5-6-sigurno-okruzenje.html">5.6 Osiguranje sigurnog okruženja</a>, <a href="5-7-sigurnosni-rizici.html">5.7 Sigurnosni rizici</a>.</p><p>Rješenje se otvara gumbom <em>Prikaži rješenje</em> ispod pitanja, pa se najprije odgovara samostalno, a tek onda provjerava.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div></section>
 <section><h2>Zadatak</h2><div class="crta"></div>
-<h3>Proširite robotski program naprednim programskim elementima</h3>
-<p>Na početku program pozvati početnu pripremnu poziciju HOME. Pokušajte
-HOME poziciju definirati što je moguće univerzalnije, jer pripremnu
-točku pozivamo u nekoliko programa.</p>
-<p>Što znači da HOME pozicija mora biti definirana neovisno o
-korisničkim koordinatnim sustavima.</p>
-<p>Program proširite koristeći petlje. Gibanje po točkama izvesti unutar
-petlje.</p>
-<figure class="slika"><img alt="Slika V15.1" height="358" loading="lazy" src="data:image/webp;base64,UklGRiAkAABXRUJQVlA4IBQkAABQqQCdASpDAmYBPm02mUikIyKhIlT5QIANiWNu6dBYIWXPI1n/hP/T9l7Kfjf7B/ff2g/vH7F/OjyH2X+SfDfJOWJ5cHK/+y/vH7p/3b58/37/X/1z9vfk3+gfYE/UD/Pf23/Gf9/+y+8B7IvMR/O/7t/zP71+//zKf9H/jf6X3Qf2T1BP5t/Y/+h2I3oPftF/9PXU/ZL4YP6x/uf2t9nT/w/n/8gH//9QD//9ZP13/u/bt/bvyj9B/xn6D+9f2z9ovyV+NnOPan/IPsr+e/sH42++X+R8R/kp5K/AF+S/yj/PfmV6G/7t+W/k+6r/nP+f6gvrX9L/2v+D/If0qf7n0I+w3/S9wD+Yf1X/reof/A8NH67/2fYF/mv+U/8n+c907+b/9f+b84n5j/kf/j/pfgO/l/9t/8Xrsexn91v//7mn7N//9YbnyFwy8fIWycE2PEH8aLi/WtHmqAnH7bHCrkSy9qaiAdBCqIB0EKogHQQqhH2IW0W/zP4DS/2xL0XUAoa3CnwxsDlis+QuGXj5C4ZePkLhl45b8Y9KbDXBUhwPG9iRYvg5RufIXDLx8hcMvHyFwy74ZVedrKEpA1Vf2xopZNC6d9g8HwXaysnb/5c/OQuGXj5C4ZePkLhl4+QmhoATefNJ6foBovM/yFLx8hcMvHyFwy8fIXDLx8ej3Mpj5C4ZePkLhl4+QuGXj5CdyNvHyFwy8fIXDLx8hcMvHyEvkqxrzuP994J1EA6CFUQBLUHs0vH2I3CGQVT7X5iO2MA2WtbuTHyFwy1k0C0S6RZm8RTp1z5C4ZePjuPiRdEIQqurx3nq+XVH2ILpiJ4V/LiSONu46MbHCMgSYNzIUGRR1DHEb+Rwd/+Ilip6AqkidHn6jmvDkrarEOGKK+K2SvCs+YmL1aSq1gcIs6sV2sv4FS2v545aB+1K0r7tS9QyFZQroD4LUWWmTTHWSOhijMZWsEP8WLksJc6pD7qpzXPEKLVJp9C7PHCEByviE2UfcIJ1t3orT3zoemxA1VTiuWj2DfnUa+FXD70dvziZYL18hiLZ+EmqVFydMv/xcI22lQU8nXk4iJ2gHfJGmNPNMTkde5U70opsoV676nXHiVva5g6FeQ6ymgzklHOZDr2ejSrbmvsinK89+3RjnGq0Q9TH5SjHIerycBV/4KjBd4BxHoFZxKUA07Xk3tK544YSFvqkh3KuaU0OvtM3BkJECvp8OO135lUxUbUWAZ+HR07/v5gfgVC/e+M8+2Bqd7UQa/TTQWZIlIHHVt+aqUvQa8fkwkQkOSxrgty+U2A4S9rF6Y/S/F4UEGWZThufdvzWnYKAlc30X5QHFTJiiB/Q+/H9BvtoCjkidtSQ1rMUZFmGFlBdUvtUkKSa6LGGssUO/Lq6YFB/2JE6aeyp/ku5OgUxZmKMo//Emrhltb62gkVFoEbIBfA3mEMvx3SsGe5OSfiPycb40s/y+7CdiA0QQoRFXsKwGIaKcvXeULbrQB0EKogZYEg4+cB0M9bFD7i4bnyFwy8fIXDLx8hcMu/L24lcsFJ9xcNz5C4ZePkLhl4+QuGM39CughVEA6CFUQDoIVRAOggSBb748MaKHnWUKL8C1nH9bL5QNYyDLx8hcMvHyFwy8fIXDE/d/qULNe2CsGaJICTPIKHuNqOhVEA6CFUQDoIVRAOghQ/QEH4Ukwg3T23lYRxU0AdBCqIB0EKogHQQqh8BQ6IR5uiQ+fIhsJD6arcmYddnZPcCySTQFUQDoIVRAOghVEA6CBOpuBmcgy5++ynHMe4uG58hcMvHyFwy8fIXDLx8hcMvHyFwy8cQAP78VmCFCw6EQG4hsyCCsbu95vrWYNlybjA3gNXPU8aGRtNBZEBDwE79/FRHehHOWxrtcdC0X9vi9Pvs6LdCh9HmKOKcNzDds68HcA/MPSlIsix2JGB8x866wYXavtrvaWfwYzMUOXd/qwYizjif59jBcdwFpa1CaGamC3AvPJezscK7gswKooRBrSVjp+q9GqA+GHo3lx1I6dqK5RLi7aQTlzhyOFNAaOlRK8xVOiv85tia3W9nTWatBRpCUWMejRvNJtwqbTFTo8nC+EXWXmpCROlye44AYc4wBtkZyMYAy8v3RbLum8LHeRj+6yTNQi37VLdNWvlIs/wmRRtUgau4OSDUofCj/GVA7EIw1FqChVB1l3OaN9RXaTf7LfIJHwVVX6/uBV3AcJBhdUCfNNvPRepuKj3jUeNWie+YT4Z9LD7iIGidrLaiRngPqWIeKS03+CJQb7l4xIRITInLymsluBpza6sdNGEYnQN19YpHSjZ5gSh+ldNpcuMFuf9mbvumQXAMfFv/PfJTGD/UHZSJpi/b+kU2KyHhz7kjOpg2Cdphbde3pNRWMjnUJv8yvrP3hIZMHP+JpdvUFEbI0+Rz1v8xFtiI7kXu17P/fWNQU6fMd9SRviICiHdtEUggADXURYGwm4UoVWbW503pjR8I9GlK2JTym54doNROpLuWOD/z074zK+OombaJJmBod0+V2Ud7VYvrF5BlcUoDCs4Et//HD+1rSaBix3XttSfgznq+8WOnHsoL61ZpyZ1zfjFo16IUM3rAAcfSLCC7gT2wgBI8VRoCgDmAFGhDb/OPuFdWQMESuv/ea4wD4GUlvqQN3fqxBgvoAEfW0HW2jTmuJgDjq7oWntVogU78O6H7CpCUOrohH7KmVZSTeHON+ipa14gWBc4TbSgrk+yyf/rREn2cTlP2OgnhBCctnp97R0q7NnnBDvYhjoNsVslxP+5D/I5xUgYq6ihUZMXnGUCvFppiX7ePtPmhgR9tq8m13runfCotHtbtr/waWT1s1rh7PCmOi8Cu8M5Yc7eI0gbVrUSP9hSPIGIg++XmfjIbQkGQ3ddP9o0vzyLp0Xi1fgIBNW1PG/406S+Lja4ENJZ5QhTE++vTllPgGQa7hz+ui3qPojSC1XF6MRwcoZgOfZOJf/m8s1SkHRpmtlaUR4rNh93g2+75b1t3/G0lw89oQeC7WzSwt06zBwcp5LsSv41cgUBqM0XaX7JLHoNFsUS7RIr7CzZj4cda4JuAIFcDwFC1q78UrdyI4gFgAA5alxZf+CAuCC7oxtl/jLksYXfNkBdOLjosPJ+wNHa0lwMdbYYvg6QrjH6X4OsBTn+hFHOLgtOD7VBhcm4rB+GbRVD5DNU0bE+xAcUk7FXrvh6NISAXWED46oxp1hhjhS+ZHG6w5AWED1CU44MxSF2YlZB2TBXVZMcWAgOAAAAAAAAAADxIi3qGromwreMcPuDQa13CQZ2Bb1Gf53zb1ckIbLiVet8Ekpg0RtWqvnUZkWZ5onHnqqqtd79aOZDYKAMVZdkw0lncmGSYx7AqOCU5ulRTfEWOoNxnNagLUmmsCIyatWWFqpweP8RBVq3cQQBLpmw3nNClUJD81SmoIzkfUsBB4y4UyJ9B2WvDTzveaPbUVhFbjCwuS4n5r+f4EkQmkyte4thctVoVxZM72xnQUOghYQF3RAB4mxHW7bxhie7lmr9xPKoC9D4SqiZ9PdqCTa3rdvNV0dmttvS1gZN/z7aY3US0zeiFi1k8y0UHi7bykTC0vkE+PrGHUhbPtt67o2Hxs8enKTtb5fg6IIFo93VNgOlkhRj8MtWkkHYPJkJREW/TmRJMtzjnxBYwnzdF9Q6GaC9lqA9Z8TdUyL/2vXajCo9F+WfZ+v6uJqAU0AeyME5ua/38bqko33LtPrej4hdZwKJRYVazhWhHcgpwhYDJsSJJ5ya3S6vwNjAr/cgfyrPyLMidn0JHr3n8lzPS0ITz9Fa4B2cINN6TkEzEfOJxj2tG0a66VU49gmW4LR1huDuJsGM0aspF/lZXYiZWGeH2C3GxDFaFaH+tieht99+s4f4GRTfT3RBswv+R1ahtaKmlVBmomPk3Ja8owsmFH2P3HfmgbXc5mkn04L9IBQUQtI6n6cNnEkLkJQ1qoulkM6WIWwbsVWVmD1269Y3IPBh8a7/QuMRzdJcf1KCDGZJN5GNnJ5ZtmW18U1FE5Ocg1GXIQxJeQvuT39BcSkswtJN6WrPTKW3dCGsnDo9e/t+BXrzPnNgjwWo8KWhCt2iGYPH6zMGP9PD/ZKmrLHSPKfWCQ16jqvEGXF1swnQVDkYNgKYtl+I97Fr8fwQ8hAirS8noXN2s2Xd29B+EQEIKnL0BUytbFKziDOv8XUY+4eyT8COJxpXhg18E7oq8JF5fMGtfsgwnVXsBNCeZm0uOko3TKPeJdDwBMvv87pSscqaH+k6LN+S0RTjQVSo/gCqYw8PQXAHxf14Nfb+nIZnnmqcOL9ZapnWIhw+e0MQc4bAbLdxv/STy8UYa8xiC8skesZp5cs9hqTLBr02a8MJY5R/4mKr99O1cXhTVVyxTITaUSUYWyk5NDF+Eqr7dvcA4zMbbvc/hG7by++eDB4qILO4BPDLMpfGujzU4XwEZU7SENhwetpIOrBI6uQuTmhSPJ/i2408HNKHXND4spNVtbFhxtiggcBAfykAkqwaqJximCBvCq0C4SiuoMyUgndp7mf//MJKbRXwgTmV/tlg6Qf77f7sMQsvcT/++gTFETSvH5VkaMMmSMgf/YrelqPUFogcr2KF96UbJtI7oYmJz/tFjXBxNdBzMNwIy+3sawf6ujF4LLVp19/MJcFpWLtak+sCpOjbRXsIpSBtUTGijL2TTWByVuj3n+M2W1F6yeO1oZbdH7x72lwqNQttLhgiV/JJYpeWKYPlaJyoD1matb2k/GE3GUTLSmsY0S36fVIVw0CZvw8MH2MG8VTKmj2gXAdvz6UFsvUYCrfSU85SQ0ecL/9vHW7vb3HTxEjM0nbCQVDENcPpKMVd58ivliZYz1yLXQGNU+/NeV9ufhqRhpxsHXlQXgDz5n8dac03bWR9SO7Alci4VVK+rp1/2qSFkGMcBxEITAmhxc0dA9gkXREkWdTupyLZHE14+1Ln+SckszJKSPD6tFsT6MJ1Lq2+Wif29eZNg1CRwi4nKvDY49v/uYOUtxX++nJ4Kgf+KSUMO+jQUIdyYhrukUdPrrbiadO58sXp0w0Z5T2jukxYb3a9+bGe0xRsr/sjF++MMLJRhtvqRByQv/znh/xKTH9GcQ5Z6GP+f5vsC3fWoOdAezGw8c7rCce0P10ockghyzWoFlrbgJTihZlBMiAsDpd9EUpw1agCmI+s9ITMWk4nS4TSYVGRLVw3pyWctWiPuDY4Ik+8vhRBEp0SSlor2I7gqyNkL227ApaJ535l4lT1XKgSkoBqywJxp0B73zBnKTcmvu5lFZfghJInYlb54JWsaHA+y1NCmpmmwWA2nfcj2OHAjg5rY9JLiXrvuFilfZIeSrs4Ej/T3Fc0HybGL2aPyWxhmMvwJEb010Infd6egu3pkvqIP66Pr3XMAtHFw2PBagx35DbBCZek1gjcqQbDZsLO45/5JUA2fGL3qdSIMRPsBKhx9HJTHjQv7jZzFDKbAJIwbNvUXJnsgnBwAr+/37YLySS2KYK+HLS5SIsEOiZVEb+eyYmRGTAIpBD1DcOJP+Wm74Z0/WcA2KBcTYX5atCR5Q1XpbSDN578RPXWlaIjKWpAMRNAzv5JAwtusABAI4vG6DRc+YGxkgrUa32A0pfZ2jz5/fPqV7vpefFg2/ne1H3l4c0HF5KLQ0meyzUPUWCKJuMalcCrFaza+vztphMH0yR95sSUFRoqApyZ9kvxws4Eaj15OM7Kn+MBDsQ8SolVCalL3DoLsepEzyBZ/xJ/kROaWNVuKyx6AOzf1mqqG29PZUPYkNCmqVhZhbWmJ5ruAP78yBti0OwgIp7RQk3NS6pSsFQqdtPMbc1L29EAH61SJT7TLlFJ3fWzKQTKJcy+CZQI3r6bGRF+sNnFkfGCiU7iBT6wZviA/ouWPHjl+hUXgMjgFRIjKAxcetF/plQ8a2JWRLpLuL/DkzmBBMqmZEhu0Wdee8VHfEW59q+YuiFpSfbl7V+eAdxxLcetZMhUW57dzduiypESW7V0BT6Wdsx88PZRISEKLk72JXRvtvyn+ebyq34Mv06aAfKWmlpEraOHWa0fBxD/MVR1am+RM4sAJ6EzjBKIpgv7sdkYYdAdKhSMbvp9YMKG6SestcUAbSpEflZzMSGQG3yNykLqhhvD32nHUVT3vBxRN/U2n4Lmf2OJORtX+WyHBhasTTba/q9dfWqhIwLaLWEQcRCgUxQuUMVUrC45971M1fkZ/PBCz+XSKS+bMmhSFeGfFA+DdNIEkT9LTNq4SJzN7SEXrTkjTywpD0DPzV9SPnnaT9X+lFjXCdt+ealneDzZYk5L/XrZI2AfWtGv2/0mSsp7lyD0JG/I54xOy/779zRYpWvr2QC6KrV70AWuVGM+dEmlbWqnv8xJjB7CxT9m+S0QRcBEF/qzzcQZtuk1krk32RWPeJ3PjfnwtFsrzTSCnRm2ZoAsh9aZ8UxdZZk9ho58QobNwisEUAQARSvgd5XHtKA5CsAx1f9QZpiYrVK3RwUmlpCl2MeZXMiXiXOtw9sDqUNHmyITPUwnPMKSujfLZ9UtJpyGZl7GlD0b0cofDWmd85PDYq6kYy8aSZlF/+ZZzJlPY87J9RJkH6D4kBalFyLZy+XDivlYdyBJQKA8NNPGq43kxXkT+Dmlg4hwmMdUAqMrhYPN89Hr7eT9G7YRnTv9+XUUhQDJ8n3nJ03/i0/3fCMmUAOZZUkhflYx6xW75f27RZYvjNonjyGrEXNgTjyjEExY8wGPNPVHMURB+8wFQXc6pL/QD7kwBXcslopXmm/p1HfrAgxpacpvMsaQTd38qp5e9A+Xf3u0HRItZB3qm++dZmqYjdR21JngXANzqxNevSQElgqY3dZqW2k5op7WIdcP2FV6iTuyHB5zS9tGYY8qSyPMHxSiXbSMgTfIHmdlmxP463ki1eO+4dFtHfwQCTOzA5sS5najQBJK8/WZJRkpTcLSDffXSkgByo+rF1IAeoH54nCez2hexPRj+MS35cC76xh/3A4kT1iGQJU0nyRQr2r8JqwQcXPC0keQYQJnMonEMH/LD/F6jYjh5gEEuRbBMlwd3s4dvODci0HGT5Ofxb191orZeNAh9FUvCNAvvi4XMIADCdO7HBRxx/AYe/a4KpsV1J1LZVD+V5SofuBgI5BThCsxsOqyyQ9r5Uub6nz96xmbs2lNCeBUy3GFa0seLuWne9wPqhAUoeaJYEqg1h88IbyOfMDei4VtbqedAqOLjU1bdeIC7BEqlRunmrR3eY4AP+7gh3ASLP/J5XkIwoKIv0dpYmINzKLEP0WWZR/RcT6MC7b5aboWkitJrsXV0bCg7vcmO+y3K6KaAyyMcQ7bNDicp1brvyONBLEvqXeQwStp1WwZqy72B5CmM/kHP0sylCI9Fmo1Ck6f9pbu9JzFyMvZgw637IDSPk+BlFoUBuCeXF3/BESyr6JmCu+yBkAiH7RlUi9vipsgmPG8ST04bICanWHyOC+TmP3VqN769Hui1p00B4EjSVuFLvGlmhGQV2vdewZlm4C9SN+1W+VWlyXqlJ9qcuai/zfwioMzkL8ugZb09aOTcKLvA4i+60MoiitR5OCHU+iSFsWwSWOzq/YVcX9z1zhC+Dvs8ogLpyW9hcUb9dnoqbuoHPCTVkCZAKRa4ARlFJiJuevqddOS3MmetjIn1SmkgRXteiwtXCXjAbaKeyVU8N05rAeUejg81pGPDygbJ8DPqU+PFcw4lK5KrQ42OOhDEPdqCmBkvONk41yj48HmMpRzmQiTCjHoaHmRZCzYj/6RBcqF837+igeKd5tdZZi9Mcm1slEtc9x0gOb2pHXx3ZA474yP19MFI2BviajSWeoRzJufXlM1up4/mrf2rszqpvpzVZYfLcIwWoZ8br7kcIHckNCDENf7+x5darOA50hsL0vTixWSLko9r6U2JC67slzWWT827RuKT0CeJDf38o1DPK24kFCocvbbLColJ7NK5lIFViET17FDyXbn9jJumv3gtbsltpZxR3yRAEdKY7SUKFpZ09lkB7nbaXo6bj2/x3Ffyi+CK22uWXOrA6BGgUK3fK2LNCWN8ktFt1zqLAczRTzE5GupaPEFD6DA7xbEWBFezhxMYkX1HV0hKcAnS8Dai93XyfY/ADpwNHG3pxALqngWbwGpq+JZeewwZ8ZV/5IbdqR+YqSq+j/EyXbiesLA0Uafx3jRJj+Yqo5sKiNIS/vy4QVOr2yvaPmPuTeBFOpH6lsK/Wnp+eX1VvFI4AbOr0sM/BwPr8C8ocwd4UG/Z9IMLratsksI/M3BaELc7EDyARC7MtLeNqDulhWMTIawFN9bGSt21aLaYq62DyJUXXPAp62JmV7olUdbNhVOM4CuLEWtlqQ7MgEw0MFTfNP5EC186OxIIrckNHbaJf3jQJEvFecXz+2BU8detClXDndNuf81t56qNLbumYaJ6UVKXikJ2IouNgf7Vj0LvX9IJLGACYFZRB+/BJzBqJpILZypeCck/CEHAjMJdi2L3DEa5frGHIErQxySr/QfBlhImJusKskZJHXo+Mwp7mXnt6fxh9fQPL1D+SpMt7+kHaG2eOB1EjHUBkIwlw3NlRRhwpWGir3BEauSphITnKTiCRXiqIFYZY/EhQG0v6G7urc2CxvzBytdZBoAJfWHRPQrOj3vEeqrYWxi5OTjx53KiQh7cAxCCQHwHk41OY21BSPfiy6e1rIPqEWoNJc0JDWVQLTr+LEjjdLrlNM3EUbKFrFyz2EEESFRfDaTs5qc38TTdojU8pBl7bBblpXW9dgQbIpVbQ/p/MY59nT4h/vQ4oVvRrfght2ZaLjLZap/q/sNKcPiQTBrV1rFhGCoql9kpfBJ7/GtUPFUnfkh1HyO6h8DuofBf/3fjLFoDsScTaSehuzs/4UuOdF8AVf2cIxOhiIJMr+yi/kCGDA9Kzq/tcnW7F4/vp/CEh2BY+kt00/fjIJ56I24F6AajzVafnxikdWcDNKUsAPSTnsq9XafA8n6BNUUDLnQNa/hAaZCFO2cfpUk+flUyS3xAQ8Nud+fZarvXl6y4pRu7/6sEAgrMF8hRjPayVL/ktk+QfxTpIMOUVNgOdPS4Q5441h9HmLQkCutUUwTTxOxzRzmFX2bIHm8r0dRgTEc2SSZCNoWyMBS3bjrcsu0Tg/6FmUvZl2gtrJ22sxHx9pY8m+fVO4CZd+PMZhuvbPlXrI3CmvdMCdtjQMJhelYM+v8gOakBQvzjW6K/orzsPzKjzXFkOyJEs1mTXXP6Duyn5rMX9AHn8hjEE0jkpdyUG9pqUVbeoeQqLzEgphIp9zFsMS5qRXV7G96pS18pOz9Vgl20ZPmnbK2gPtj+FMQnio62W3wMKRWAz6Q1VQQ4eVjgk0nT90cqwkpnpyaZQmOKfhn4iFTKeRungzKGP/VMzLbjljMfl14b223lUMa1BbEJfHy2URoar8YwQmdu5MQVIcOnmgmRqzQo0fxTBo1z7yMNl+8Nl0NMy+9ycxUhMDgvy0V8dGHw9a0xYPmL4vfudWw/0/rJKqoOkW+pEPH2wIp/qhlmQH2D/3d6uRpMc6bUaLtBE2Ghew1eHCybyExtLN6W7+8N/eBTBUap1GImKFzrw1J5xNqBjfSPRfy/pPwb+iEc8Qd6Skwy7TgH9lwFRIYGYAF4h5Lc9ujG5F/Ns+abvS8DdNXYXLZWQhAxYB+ob/rMCR9Uwj2VaVG2EWnkplfLUMECNu3wQ5YyEbGdEMhrpB9TtapkeMQF9leJbB8CYAt+3fkTZAocAWvdhlcQbJp6aH1ZGer4lYHZIvsmHNWuHd100A8OnGL9bhJqtB8EUWvisMaNXMRTGr8wZ/vD8A/dV9HtS0M06wsO+3pXCZCVvC/7g8GIRrfVi9YM/WcVjmcBhepH2ajGtGJO8Kyey/EEusy0rvmYYMNoHvAXhpAwHBgoFA6V0X30Clr2lfEqVeadAtIqTzknlrfIMjYWKWJ9buAp2z9NlMgr6VNKO/tM+v2w9UG+twZgUdAHE6hHcpqAOHV1XrYFveyXsz35QeLdsvXki8b04GMGs+HkrcwkncO9Pcc3LSiFCF/SJwKD1LsGzbxnUi0xoyD7++EpDG7YghkMoIb6frQf0nF3hUUu46P4fduAAgaFYxwywq8HP3TS2Wz3i1sOAAGXrPZFmhfTFa/Z8QzoFIi/O/Eeki3lEWp7Q380LCBzE6IRBmttJt5jMZ9QD1voJsU/b1B3C93Q0o1LLxd5ol9tifGM4q9hLjubu3hniazqJPhihfTZdPaxnzYWNjUibl8hs2DlGDHAkJSbEveHBLuUuKBZFgdL7QchS27y+j2LAsiJiW5T0CR38FQzhx9/EwkM2u0ESuAowDvnruBTy8a3YbWJZeTs3zKMpZyAPue5WqNdy/BCyEqubMgPuS0hzIXLhtdXw0JljzXei9B7HtLlljOU2Wh+Q6a9voQcXJvEQfI6n+ugXZ2ZYtxm5UMNX/Rt8ClZDakSUH2HNnN/A8MHZqK/n1ljf1O3arUnWxAZsU3byBPXACactBWZ+21WnaxfBLISBh4FREuXst1izc1MrxCLNZ9YZML40X98xMLbueAtN4FeRQooP4cPmQ4T6OtFLeU1dPt6LPGhFpe/LPANuHpUEz5pDyEm3ZRPdeSS+4rFgImGSYKP4jMi4koqtD7G9tqK5uuerOploMYSEOGEZtDVzFgVP5i/UpT82xdsBxjcddXzyUIsLwYpRuohH/dEP4LRp7dcVsMSfBPnKmvjKaxD8J4ULRjdNIPeKz7q1CeqKNOASUjiX9bnTvKnHj5f7K1U7rj0Y15xU1KhBV86/aGj4pqils34G5/4J2nGeFTeFcXe3m2Ys/Mb20agAsFSkl4AAAAGW8ae2QNHeJuxYosINxcFhCRMvbK13prcZnvAQtAAAAfmKiOoQABvyhjf3QJ0Df92DhcGX+oQ5fB4da3A0v+XETSnOw17K5dRePfkRZHgNzYFKJNEQWTNeLTx55pWqsa6mL7euccI7XGjiKLjRUpIAE4bEb5vCf4HjxnkaC2YlWjhC9jxD96XffFcWxqrsZnsmsBFJj3Ho+H/qMsWNEHlF+DOfAhpZmjdRKGNBTGU7FMUWM3dcKmm7rhT2uuqbsiZv54/RoHwSgMpIfGtCKO2njo4yuSi9vHs0epntHjnb2hlFRWaWORzI0pyYjZJdIx3gDQBrWoh9kXzCeYfiWaWzhX8lWaYq8/AB0AUjJg1OxoB7w3R4Wzpcg0Gii/7+oxiGkXqf+NdyqnqAY//fm2sU64eoErQCc3tgFtC+LqhRm2nmV+smNVAjQOnTRO625DwF4kUkN1Aa1P+EfR0pG4n1JlB7zI6pjPDHeB4HFjVCtViKcoDu2QdXe/tg41qLeNqjBQJa2KSF7CTwb50yPYIwL50mo2N6qUAmy07jGQfrPFNn+uLFNyCfAjjs8tPCTooEtBmDoM06l7PWj6UPYVAx+PdseeWLBQ7KRIThtmgbsMIUPI6F7dzpbah+ANBO0K6iiaD+S4I9vfwFpHmTdiOf0+qADYjkH6W1f4vkIWbZThjpMh73Q6Cr9HF0de/b7fh9C09Rnf90u4EKHnMMdZLsapLlFlZ6xL4T1n6kw8XTfj37+REuDIcV90s3yNvdaEwUk+ABCJRNH1Q1lX5BPJX+sG7A0z2zrE8g4u9OXGYTOt+9pwcBCA+1El5PgfxNq2Vt4vp1u4TtfBx5YAiYzesjmEPmeb/bcIgm6s6AIyinKGBCrTbgLhGHar/u/U/cx2W0naA5uVJD/QbuO+AH5/J+MyAbB7U6L8V2a0b2PPDm3YFI0AU9A6GkR9zGDesCDqeEvAA765mik3ZmUTzEmeetVrzk9AGC+yuUeO3x+FMIo0dXXVP805uySk9lUm5x+u4AG1zhZooJIw1hb/T0lHQcGD65XW03GDmgZa8gKC8cb+sdmZIQTOIf6fOsx3dbR8p/cDpaLb7sIhg+dzS1EeFe5zsxIgY4KfoGByIyMvdyL/yagycly1S9SAwL4P9Piq+slQ86ZUZnSc3mCxnwHLc0e0Zp2cnRTPm/nt4SUmrdNOYo0g5CgESTPSOfOcH8wK7vovtzFwm3YQluReijiO0Rf8uvahlck78Fr6h5BrB1d6UvBBrYW6aLs3XcCLN3ffBy/GKvlrPEGPTyrIT5VxsADulk7YFDnQ75Zzq/0yOUvHb/Um7g7auz3e2NtPcepLfmIW665XzWxaaHHjPBgEWGRp7FnlMUUgm4Jg5IoYgg3+p9XbagXmeD946mLGWo9TCzINt1MWInKg9eoAAAAAAAA==" width="579"/></figure>
-<p>FOR petlje služe za ponavljanje nekog dijela robotskog program</p>
-<p>Funkcija ili petlja broji ponavljanja te nakon dostignute vrijednosti
-izlazi iz petlje i nastavlja sa izvođenjem robotskog programa</p>
-<p>1. Pozivanje FOR petlje [INST] -&gt; 7 FOR/ENDFOR -&gt; FOR</p>
-<p>2. Broj ciklusa petlje, koliko puta će dio programa unutar petlje
-biti pozvan. Brojanje ciklusa petlje se mora izvršiti u registru</p>
-<p>3. Dio programa koji se izvodi unutar petlje</p>
-<p>4. Završetak FOR petlje. Dio programa koji je potrebno ponavljati
-nalazi se između FOR i ENDFOR. Nakon ENDFOR funkcije program se
-nastavlja izvoditi.</p>
+<p>Otvorite gotovu edukacijsku ćeliju (ili onu iz V18) i u sigurnosnim postavkama kontrolera (npr. DCS) definirajte:</p><ul><li>pregledajte zone članaka koje dolaze s robotom (ne mijenjajte ih);</li><li>zonu alata: prihvatnicu opišite s dva do tri oblika (kutija, kugla, linija) u korisničkom modelu;</li><li>dopuštenu kartezijsku zonu radnog prostora ćelije (kvadar zadan dvjema dijagonalnim točkama) i zabranjenu zonu oko stroja;</li><li>zonu nadzora brzine u kojoj se robot ne zaustavlja nego usporava na zadani postotak.</li></ul><p>Provjera: ručno vodite alat u zabranjenu zonu i zabilježite alarm; izmjerite koliko duboko zona alata uđe prije zaustavljanja.</p>
 </section>
 <section class="postupak"><h2>Postupak</h2><div class="crta"></div>
-<p>Na dosadašnji program dodati dio programa koristeći napredne
-programske elemente</p>
-<p>Na kraju stvorenog programa koji prolazi kroz točke vezane za „Stol”,
-pozvati potprogram koji prolazi kroz točke koje su vezane za „Pokretnu
-traku”</p>
-<p>Stvoriti potprogram naziva „Pokretna traka”- sve radnje koje se tiču
-pokretne trake nalazit će se unutar ovog potprograma</p>
-<p>Na početku programa dobra je praksa pozvati HOME položaj robota kako
-bi se osigurala kretnja iz nekog položaja gdje je robot ostavljen iz
-prethodnih radnji, kako bi se poboljšala sigurnost od sudara</p>
-<p>HOME položaj je specifičan jer se može pozvati iz bilo kojeg dijela
-programa sa bilo kojim korisničkim koordinatnim sustavom aktivnim</p>
-<p>Kako bi se program učinio fleksibilniji HOME položaj, odnosno
-registra položaja koji se naziva „HOME” neće biti vezan niti za jedan
-korisnički koordinatni sustav</p>
-<p>Pozvati položaj HOME, te u popisu registra dotičnog položaja odabrati
-|REPRE| -&gt; Joint</p>
-<p>Ova naredba položaj robota ne opisuje globalnim koordinatama nego
-kutevima zakreta svake od osi koji nisu vezani za koordinatne sustave,
-vidljivo je da su mjerene jedinice sada (deg).</p>
-<p>U novo-stvorenom potprogramu prvu definirati aktivne koordinatne
-sustave</p>
-<p>Nakon toga pozvati HOME položaj kao sigurnosnu zonu iz koje kreće
-kretanje iznad pokretne trake</p>
-<p>Postaviti jednu točku na pokrenut traku, te izvršiti pomak u novu
-polju po X osi ali korištenjem istog registra položaja</p>
-<p>1. Pozivanje HOME položaja</p>
-<p>2. Pozivanje početnog položaja iznad pokretne trake</p>
-<p>3. Upis nove vrijednosti po X osi, te pozivanje istog položaja sa
-novim vrijednostima</p>
-<p>4. Početak i kraj FOR petlje</p>
-<p>5. Promjena vrijednosti položaja po Y osi, te pozivanje iste.
-Korišten je dodatni operater zbrajanja +</p>
-<p>Nakon pokrenutog programa provjeriti vrijednosti registara</p>
-<p>Pokušati ponovno pokrenuti program</p>
-<p>Što će se desiti??</p>
+<ol><li>U pretraživaču ćelije otvorite sigurnosne postavke (DCS); na privjesku: MENU &rarr; SYSTEM &rarr; DCS &rarr; User Model.</li><li>Zone članaka: pregledajte; proizvođač ih definira, integrator ih ne dira.</li><li>Model alata: oblik 1 kutija oko tijela prihvatnice, oblik 2 linija do vrha čeljusti, oblik 3 kugla oko predmeta; položaji u sustavu prirubnice.</li><li>Kartezijska zona: dvije dijagonalne točke ručno ili povlačenjem trijada mišem; postavite <em>dopuštena</em> i uključite.</li><li>Zabranjena zona oko stroja: kvadar koji obuhvaća stroj s rezervom; uključite.</li><li>Zona nadzora brzine kod vrata ograde: postotak brzine 20 %.</li><li>Test: vodite robota prema stroju; kad se zona alata preklopi sa zabranjenom, robot stane i javi alarm. Zabilježite dubinu prodora pri različitim brzinama.</li></ol>
+<figure class="crtez"><svg viewBox="0 0 640 420" role="img" aria-label="Slika V17.1: Sigurnosne zone u tlocrtu ćelije: zona alata oko prihvatnice, dopuštena kartezijska zona (ćelija), zabranjena zona oko stroja i zona nadzora brzine kod vrata.">
+<rect class="l2 dash" x="60" y="60" width="520" height="320"/>
+<text class="mali" x="70" y="52">dopuštena kartezijska zona (ćelija)</text>
+<rect class="rf" x="420" y="90" width="130" height="120"/>
+<rect class="cf" x="400" y="70" width="170" height="160"/>
+<path class="l2 dash" d="M400 70 H570 V230 H400 Z"/>
+<text class="mali" x="400" y="252">zabranjena zona: stroj</text>
+<rect class="cf" x="60" y="260" width="120" height="120"/>
+<text class="mali" x="66" y="396">nadzor brzine (vrata)</text>
+<rect class="rf" x="280" y="200" width="60" height="60" rx="8"/><text class="mali" x="292" y="236">robot</text>
+<path class="l" d="M310 200 L360 150"/>
+<circle class="t" cx="368" cy="142" r="22"/>
+<rect class="t" x="352" y="126" width="32" height="32" rx="4"/>
+<text class="mali" x="300" y="120">zona alata</text>
+<text class="mali" x="60" y="414">robot stane kad se zona alata ili članka preklopi sa zabranjenom zonom</text>
+</svg><figcaption><b>Slika V17.1</b> &mdash; Sigurnosne zone u tlocrtu ćelije: zona alata oko prihvatnice, dopuštena kartezijska zona (ćelija), zabranjena zona oko stroja i zona nadzora brzine kod vrata.</figcaption></figure></section>
+<section><h2>Računski dio</h2><div class="crta"></div>
+<div class="racun" id="rv17"><div class="racun-h"><b>Dubina prodora u zabranjenu zonu</b><em>Računski prikaz</em></div><p>Od trenutka kad zona alata dotakne granicu do potpunog zaustavljanja robot još putuje: vrijeme reakcije sigurnosnog sustava plus put kočenja. Prikaz računa prodor i potrebnu rezervu zone.</p><div class="polja"><div class="polje"><label for="rv17-vb">Brzina TCP-a<output id="rv17-vb-out" for="rv17-vb" data-jed=" mm/s">500 mm/s</output></label><input type="range" id="rv17-vb" data-ulaz="vb" min="50" max="2000" step="50" value="500"></div><div class="polje"><label for="rv17-tr">Vrijeme reakcije sigurnosne funkcije<output id="rv17-tr-out" for="rv17-tr" data-jed=" ms">60 ms</output></label><input type="range" id="rv17-tr" data-ulaz="tr" min="10" max="200" step="5" value="60"></div><div class="polje"><label for="rv17-a">Usporenje pri sigurnosnom zaustavljanju<output id="rv17-a-out" for="rv17-a" data-jed=" mm/s²">5000 mm/s²</output></label><input type="range" id="rv17-a" data-ulaz="a" min="1000" max="15000" step="500" value="5000"></div><div class="polje"><label for="rv17-nb">Nadzor brzine u zoni (postotak)<output id="rv17-nb-out" for="rv17-nb" data-jed="%">20%</output></label><input type="range" id="rv17-nb" data-ulaz="nb" min="5" max="100" step="5" value="20"></div></div><div class="ishod"><div class="ish"><span>Prodor pri punoj brzini</span><b id="rv17-s">&mdash;<small>mm</small></b></div><div class="ish"><span>Prodor uz nadzor brzine</span><b id="rv17-sn">&mdash;<small>mm</small></b></div></div><p class="poruka" id="rv17-poruka"></p></div>
+<p><strong>Primjer.</strong> Pri 500 mm/s, reakciji 60 ms i usporenju 5 m/s&sup2; robot uđe 30 + 25 = 55 mm u zonu prije zaustavljanja; uz nadzor brzine 20 % (100 mm/s) samo 7 mm. Zato zabranjena zona oko stroja treba rezervu od barem 60 mm, ili se ispred nje stavlja zona nadzora brzine.</p>
 </section>
 <section><h2>Pitanja za vrednovanje</h2><div class="crta"></div>
 <div class="pitanja">
-<div class="pitanje"><p><b>1.</b> Koje programske elemente poznajete?</p></div>
-<div class="pitanje"><p><b>2.</b> Nabrojite elemente programskog toka?</p></div>
-<div class="pitanje"><p><b>3.</b> Objasnite instrukciju preskoka? Za koju namjenu koristimo preskok
-programa?</p></div>
-<div class="pitanje"><p><b>4.</b> Koje vrste signala se koriste u programima?</p></div>
-<div class="pitanje"><p><b>5.</b> Da li digitalne signale može koristiti u IF funkcijama?</p></div>
-<div class="pitanje"><p><b>6.</b> Koja je namjena komentara u izvršenju programa?</p></div>
-<div class="pitanje"><p><b>7.</b> Objasnite pozivanje potprograma?</p></div>
-<div class="pitanje"><p><b>8.</b> Koje su prednosti korištenja potprograma?</p></div>
+<div class="pitanje"><p><b>1.</b> Što je sigurnosna zona u kontroleru i kako se nadzire?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Geometrijski model robota, alata i prostora; kontroler stalno računa preklapanja i reagira zaustavljanjem ili usporavanjem.</p></div></details></div>
+<div class="pitanje"><p><b>2.</b> Koje vrste zona postoje?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Zone članaka (proizvođač), zona alata (integrator), dopuštena i zabranjena kartezijska zona, zona nadzora brzine.</p></div></details></div>
+<div class="pitanje"><p><b>3.</b> Zašto se zone članaka ne mijenjaju?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Definirao ih je proizvođač prema stvarnoj geometriji; izmjena bi mogla ostaviti dio robota nenadziran.</p></div></details></div>
+<div class="pitanje"><p><b>4.</b> Kako se sigurnosne zone razlikuju od ograde i svjetlosne zavjese?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Zone ograničavaju robota; ograda i zavjesa štite čovjeka i zaustavljaju robota kad čovjek uđe. Trebaju oboje.</p></div></details></div>
+<div class="pitanje"><p><b>5.</b> Može li se sigurnosna zona 'zaobići' i što je posljedica?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Isključivanjem u postavkama, uz lozinku; posljedica je nenadziran robot, što norma i procjena rizika ne dopuštaju u proizvodnji.</p></div></details></div>
+<div class="pitanje"><p><b>6.</b> Nabrojite opremu kojom se u ćeliji ostvaruju sigurnosne funkcije izvan kontrolera.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Ograda s bravama na vratima, svjetlosne zavjese, sigurnosni skeneri, sigurnosni relej ili PLC, tipke za zaustavljanje u nuždi, tipka pristanka.</p></div></details></div>
 </div>
-</section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="vjezbe.html">&#8592; Sve vježbe</a><a class="gumb" href="v16-simulacijski-program.html">V16 Izrada simulacijskog programa <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+</section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="vjezbe.html">&#8592; Sve vježbe</a><a class="gumb" href="v18-edukacijska-celija-i-koordinatni-sustavi.html">V18 Edukacijska ćelija: dopuna elemenata i koordinatni sustavi prema dokumentaciji <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
 <footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a> &middot; <a href="ispitna-pitanja.html">Ispitna pitanja</a></p></div></footer>
 <canvas id="ploca" aria-hidden="true"></canvas>
 <aside class="alati" aria-label="Alatna traka za rad po stranici">
@@ -439,7 +410,7 @@ programa?</p></div>
 </aside>
 <script>
 (function(){
-  var kljuc = 'ftq-industrijska-robotika-v15-napredni-programski-elementi-strokes';
+  var kljuc = 'ftq-industrijska-robotika-v17-sigurnosne-zone-robota-strokes';
   var html = document.documentElement;
   /* --- tema, veličina pisma, disleksija ------------------------------- */
   function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
@@ -573,6 +544,48 @@ document.querySelectorAll('[data-rjesenja]').forEach(function(b){
   });
 });
 
+</script>
+<script>
+(function(){
+  var k = document.getElementById('rv17'); if(!k) return;
+  var jedinice = {'s':'mm','sn':'mm'};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){ 
+      function pr(vv){ return vv * v.tr / 1000 + vv * vv / (2 * v.a); }
+      var s = pr(v.vb), sn = pr(v.vb * v.nb / 100);
+      return { s: s.toFixed(0), sn: sn.toFixed(0),
+               _poruka: 'Zabranjena zona mora biti veca od stroja najmanje za prodor pri najvecoj brzini u tom dijelu celije.' };
+     }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = racunaj(v) || {};
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('rv17-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small>' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('rv17-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
 </script>
 </body>
 </html>
