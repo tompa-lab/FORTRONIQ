@@ -757,9 +757,14 @@ const sloj = $('xr-sloj'), uputa = $('xr-uputa'), xrGumb = $('xr-gumb');
   const adresa = /^https?:/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname) ? location.href.split('#')[0] : KANON;
   try { if (window.qrcode) { const qq = qrcode(0, 'M'); qq.addData(adresa); qq.make(); $('qr').innerHTML = qq.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } } catch (e) { }
   $('adresa').textContent = adresa;
+  // gumb se na Androidu prikazuje uvijek kad preglednik ima WebXR; provjera podrske samo se ispisuje
+  const android = /Android/i.test(ua);
+  if (navigator.xr && android) xrGumb.hidden = false;
   if (navigator.xr && navigator.xr.isSessionSupported) navigator.xr.isSessionSupported('immersive-ar').then(ok => {
-    if (!ok) return; xrGumb.hidden = false; $('ar-poruka').textContent = '';
-  }).catch(() => { });
+    if (ok) { xrGumb.hidden = false; $('ar-poruka').textContent = ''; }
+    else if (android) $('ar-poruka').textContent = 'Preglednik javlja da AR nije podržan. Probaj ipak gumb; ako se ne pokrene, provjeri da je instalirana aplikacija Google Play usluge za AR (ARCore) i da stranica nije otvorena u načinu „Web-lokacija za računala”.';
+  }).catch(e => { if (android) $('ar-poruka').textContent = 'Provjera AR-a nije uspjela (' + (e && e.message || e) + '). Probaj ipak gumb.'; });
+  else if (mob && !navigator.xr) $('ar-poruka').textContent = 'Ovaj preglednik nema WebXR. AR s crtanjem radi u Chromeu na Androidu; na iPhoneu Safari to još ne podržava.';
 })();
 xrGumb.addEventListener('click', () => {
   sloj.hidden = false;
