@@ -320,6 +320,18 @@ fieldset label{margin-right:14px;font-size:.9rem;color:var(--body);cursor:pointe
 textarea,select,input[type=file]{font:inherit;font-size:.9rem;max-width:100%}
 textarea{width:100%;min-height:64px;border:1px solid var(--rule);border-radius:8px;padding:6px 8px;background:var(--paper);color:var(--ink)}
 select{border:1px solid var(--rule);border-radius:6px;padding:4px 6px;background:var(--paper);color:var(--ink)}
+.t-traka{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:6px;border:1px solid var(--rule);border-bottom:0;border-radius:8px 8px 0 0;background:var(--tanko)}
+.t-traka select,.t-traka input{font:inherit;font-size:.85rem;height:30px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);padding:0 4px}
+.t-traka select{width:auto;max-width:13rem}.t-traka #tekst-h{width:58px}.t-jed,.t-lab{font-size:.8rem;color:var(--body)}
+.t-skup{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.t-sep{width:1px;height:22px;background:var(--rule);margin:0 2px}
+.t-g{width:30px;height:30px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--ink);cursor:pointer;font:inherit;font-size:.95rem;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.t-g:hover{border-color:var(--rule)}.t-g[aria-pressed="true"]{background:var(--paper);border-color:var(--teal);color:var(--teal)}
+.t-g svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;fill:none}
+[data-izvor="tekst"] textarea{border-radius:0 0 8px 8px;min-height:96px;resize:vertical;line-height:1.45}
+.t-pregled{display:block;width:100%;height:120px;margin-top:8px;border:1px dashed var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+.t-polja{display:flex;flex-wrap:wrap;gap:6px 14px}.t-polja label{white-space:nowrap}.t-polja input{width:64px}
+.t-raz{display:flex;align-items:center;gap:6px}.t-raz input{flex:1;min-width:80px}
 .red2{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;padding:6px 0;font-size:.88rem;color:var(--body)}
 #slika-pregled{max-width:100%;max-height:150px;border:1px solid var(--rule);border-radius:6px;margin-top:8px;background:#fff;image-rendering:pixelated}
 .legenda{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--body);margin-top:6px}
@@ -396,7 +408,16 @@ table.slojevi{width:100%;border-collapse:collapse;font-size:.85rem}
 <label><input type="radio" name="izvor" value="slika"> Slika</label>
 <label><input type="radio" name="izvor" value="dxf"> DXF</label>
 <label><input type="radio" name="izvor" value="model"> 3D model (komad na ploči)</label></div></fieldset>
-<div data-izvor="tekst" hidden><div class="red2"><label for="tekst">Tekst</label><textarea id="tekst">ABB IRB 120</textarea><label for="tekst-h">Visina slova</label><span><input type="number" id="tekst-h" value="40" min="5" max="300" step="1" style="width:80px"> mm (za stvarnu veličinu)</span></div><p class="pom">Jednopotezni font, kakav koriste ploteri i graviranje. Novi red = Enter.</p></div>
+<div data-izvor="tekst" hidden>
+<div class="t-traka" role="toolbar" aria-label="Oblikovanje teksta"><select id="t-font" aria-label="Font"></select><input type="number" id="tekst-h" value="40" min="3" max="300" step="1" aria-label="Visina slova u mm" title="Visina velikog slova (mm)"><span class="t-jed">mm</span><span class="t-sep"></span><span class="t-skup"><button type="button" class="t-g" id="t-b" aria-pressed="false" title="Podebljano (Ctrl+B)"><b>B</b></button><button type="button" class="t-g" id="t-i" aria-pressed="false" title="Kurziv (Ctrl+I)"><i>I</i></button><button type="button" class="t-g" id="t-u" aria-pressed="false" title="Podcrtano (Ctrl+U)"><u>U</u></button></span><span class="t-sep"></span><span class="t-skup"><button type="button" class="t-g" data-por="lijevo" aria-pressed="true" title="Poravnaj lijevo (Ctrl+L)" aria-label="Poravnaj lijevo"><svg viewBox="0 0 16 16"><path d="M2 3h12M2 6.3h8M2 9.6h12M2 13h8"/></svg></button><button type="button" class="t-g" data-por="sredina" aria-pressed="false" title="Centriraj (Ctrl+E)" aria-label="Centriraj"><svg viewBox="0 0 16 16"><path d="M2 3h12M4 6.3h8M2 9.6h12M4 13h8"/></svg></button><button type="button" class="t-g" data-por="desno" aria-pressed="false" title="Poravnaj desno (Ctrl+R)" aria-label="Poravnaj desno"><svg viewBox="0 0 16 16"><path d="M2 3h12M6 6.3h8M2 9.6h12M6 13h8"/></svg></button><button type="button" class="t-g" data-por="obostrano" aria-pressed="false" title="Obostrano (Ctrl+J)" aria-label="Obostrano poravnanje"><svg viewBox="0 0 16 16"><path d="M2 3h12M2 6.3h12M2 9.6h12M2 13h8"/></svg></button></span><span class="t-sep"></span><span class="t-skup"><label class="t-lab" for="t-prored">Prored</label><select id="t-prored"><option>1</option><option>1.15</option><option>1.5</option><option selected>1.6</option><option>2</option><option>2.5</option><option>3</option></select></span></div>
+<textarea id="tekst" rows="4" spellcheck="false" aria-label="Tekst za crtanje">ABB IRB 120</textarea>
+<svg id="t-pregled" class="t-pregled" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Pregled teksta jednopoteznim fontom"></svg>
+<p class="pom" id="t-info"></p>
+<div class="red2"><label for="t-razmak">Razmak slova</label><span class="t-raz"><input type="range" id="t-razmak" min="-0.1" max="0.5" step="0.01" value="0"><output id="t-razmak-out">0.00</output> × visina</span>
+<span class="t-lab2">Okvir teksta</span><span class="t-polja"><label>širina <input type="number" id="t-sirina" value="0" min="0" max="1200" step="5"> mm</label><label>visina <input type="number" id="t-visina" value="0" min="0" max="1000" step="5"> mm</label><label>margina <input type="number" id="t-margina" value="5" min="0" max="100" step="1"> mm</label></span></div>
+<label class="kv"><input type="checkbox" id="t-okvir"> Nacrtaj okvir oko teksta (zaseban sloj)</label>
+<label class="kv"><input type="checkbox" id="t-prilagodi"> Prilagodi tekst okviru (veličina slova se sama smanji ili poveća)</label>
+<p class="pom">Upisuješ tipkovnicom, Enter je novi red. Širina okvira 0 znači bez prelamanja; zadana širina prelama riječi u retke kao u Wordu, a visina 0 znači da se okvir sam produlji. Prečaci: Ctrl+B, I, U i Ctrl+L, E, R, J (poravnanje). Oblikovanje vrijedi za cijeli tekst. Fontovi su jednopotezni (Hershey), kakve koriste ploteri i graviranje.</p></div>
 <div data-izvor="slika" hidden><div class="red2"><label for="slika-dat">Slika</label><input type="file" id="slika-dat" accept="image/*">
 <label for="slika-nacin">Način</label><select id="slika-nacin"><option value="obris">Obris</option><option value="srafura">Šrafura (ispuna)</option><option value="oba" selected>Obris i šrafura</option></select>
 <label for="slika-prag">Prag</label><span><input type="range" id="slika-prag" min="10" max="245" value="128" style="width:60%;accent-color:var(--teal)"> <output id="slika-prag-out">–</output> <label class="kv" style="display:inline-flex"><input type="checkbox" id="slika-auto" checked> auto</label></span>
@@ -437,6 +458,7 @@ table.slojevi{width:100%;border-collapse:collapse;font-size:.85rem}
 <div><p><b>Skeniraj kod mobitelom</b> (Chrome na Androidu). Dodirni gumb za proširenu stvarnost, usmjeri kameru prema podu i robot s pločom stane ispred tebe u stvarnoj veličini.</p><p class="adresa" id="adresa"></p></div></div>
 <div class="mob"><p><b>Usmjeri kameru prema podu</b> i polako pomiči mobitel. Kad se pojavi krug, dodirni ga: robot i ploča postave se u stvarnoj veličini, s crtežom i postavkama s ove stranice. Gumb Crtaj pokreće crtanje.</p>
 <button type="button" class="gumb ar-gumb" id="xr-gumb" hidden>Postavi robota i ploču</button>
+<a class="gumb ar-gumb" id="u-chrome" hidden href="#">Otvori u Chromeu</a>
 <p class="napomena" id="ar-poruka">Proširena stvarnost s crtanjem radi u Chromeu na Androidu (WebXR). Na iPhoneu Safari to još ne podržava.</p></div>
 </div></div>
 
@@ -620,6 +642,7 @@ table.slojevi{width:100%;border-collapse:collapse;font-size:.85rem}
 <script>window.FTQ_ALATI={"piv":{"j1":[0,0,0],"j2":[0,0,0.29],"j3":[0,0,0.56],"j4":[0,0,0.63],"j5":[0.302,0,0.63],"j6":[0.302,0,0.63]},"F":[0.374,0.0,0.63],"R_sb":[[0.0,0.0,1.0],[1.0,0.0,0.0],[0.0,1.0,0.0]],"tcp":{"flomaster":{"p":[0.08795000000000003,-0.0736,-0.122],"R":[[1.0,0.0,0.0],[0.0,-1.0,0.0],[0.0,0.0,-1.0]]},"prsti":{"p":[0.179,0.0,0.0],"R":[[0.0,0.0,1.0],[1.0,0.0,0.0],[0.0,1.0,0.0]]}},"sisaljka":{"poc":[0.09459936738014224,0.0585999984741211,0.0],"smjer":[0.0,1.0,0.0],"L0":0.08000000762939453,"meh":0.021},"hod_prsta":0.008,"prst_smjer_p":[0.0,1.0,0.0],"tocke_kolizije":{"flomaster_zadnji":[0.08795000000000003,-0.0736,0.006000000000000005],"okvir_1":[0.08200000000000002,-0.1016,-0.04500000000000004],"okvir_2":[0.08200000000000002,-0.1016,0.04500000000000004],"okvir_3":[0.08200000000000002,0.06,-0.04500000000000004],"okvir_4":[0.08200000000000002,0.06,0.04500000000000004],"luk_vrh":[0.22200000000000003,0.0,0.0],"kuci\u0161te_1":[0.12,-0.048,-0.02100000000000002],"kuci\u0161te_2":[0.12,0.048,0.02100000000000002],"kuci\u0161te_3":[0.12,-0.048,0.02100000000000002],"kuci\u0161te_4":[0.12,0.048,-0.02100000000000002]}};</script>
 <script src="../lib/qrcode.js"></script>
 <script src="podaci_crtanje.js"></script>
+<script src="fontovi.js"></script>
 <script src="primjer_dxf.js"></script>
 <script src="primjer_model.js"></script>
 <script type="importmap">{"imports":{"three":"../lib/three.module.min.js","three/addons/":"../lib/addons/"}}</script>

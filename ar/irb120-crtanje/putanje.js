@@ -513,3 +513,78 @@ export function modelUPoteze(M, opc = {}) {
   if (lanci.length) slojevi.push({ ime: 'Bridovi gornjih ploha (3D)', potezi: lanci, vrsta: '01', debljina: 'debela' });
   return { slojevi, potezi: slojevi.flatMap(s => s.potezi), jedinica_mm: 1, ime: opc.ime || '3D model', model: M };
 }
+
+// ---------------- tekst u okviru (fontovi, B/I/U, poravnanje, prelamanje, okvir) ----------------
+// F = window.FTQ_FONTOVI; opc: { font, deb, kurziv, podcrtano, visina (mm, veliko slovo), prored (x visina), razmak (x visina),
+//   poravnanje: 'lijevo'|'sredina'|'desno'|'obostrano', sirina, visinaOkvira (mm, 0 = bez/auto), margina (mm), okvir (bool), prilagodi (bool) }
+export function tekstOkvir(niz, F, opc = {}) {
+  const fam = F[opc.font] || F.sans;
+  const varijanta = opc.deb && opc.kurziv ? (fam.bi || fam.b || fam.i) : opc.deb ? fam.b : opc.kurziv ? (fam.i || null) : null;
+  const G = varijanta || fam.r;
+  const umjetnoDeb = opc.deb && !(opc.kurziv ? (fam.bi || fam.b) : fam.b);
+  const umjetnoKurziv = opc.kurziv && !(opc.deb ? (fam.bi || fam.i) : fam.i);
+  let h = opc.visina || 30;
+  const prored = opc.prored || 1.6, razmak = opc.razmak ?? 0.06, mrg = opc.margina ?? 8;
+  const gl = c => G[c] || G['?'];
+  const sirinaRijeci = (r, hh) => { let w = 0; for (const c of r) w += (gl(c)[0] / 21 + razmak) * hh; return Math.max(0, w - razmak * hh); };
+  const prazno = hh => (gl(' ')[0] / 21 + razmak) * hh;
+  function slozi(hh, bezPrelamanja) {
+    const unutra = opc.sirina > 0 && !bezPrelamanja ? Math.max(5, opc.sirina - 2 * mrg) : Infinity;
+    const redovi = [];
+    for (const par of String(niz).split('\n')) {
+      const rijeci = par.split(/ +/).filter((r, i, a) => r.length || a.length === 1);
+      let red = [], w = 0;
+      for (const r of rijeci) {
+        const wr = sirinaRijeci(r, hh), dod = red.length ? prazno(hh) + wr : wr;
+        if (red.length && w + dod > unutra + 1e-6) { redovi.push({ rijeci: red, w, kraj: false }); red = [r]; w = wr; }
+        else { red.push(r); w += dod; }
+      }
+      redovi.push({ rijeci: red, w, kraj: true });
+    }
+    return { redovi, unutra };
+  }
+  let { redovi, unutra } = slozi(h);
+  if (opc.prilagodi && opc.sirina > 0) {        // tekst se prilagodi okviru, kao „Smanji tekst pri preljevu" u Wordu
+    if (opc.visinaOkvira > 0) {                  // širina i visina zadane: najveća visina slova kod koje složeni tekst stane (s ponovnim prelamanjem)
+      const unutraH = Math.max(2, opc.visinaOkvira - 2 * mrg);
+      const stane = hh => { const z = slozi(hh); return Math.max(0, ...z.redovi.map(r => r.w)) <= z.unutra + 1e-6 && (z.redovi.length - 1) * prored * hh + 1.25 * hh <= unutraH; };
+      let lo = 0.5, hi = Math.max(1, unutraH / 1.25);
+      if (stane(hi)) lo = hi; else for (let it = 0; it < 32; it++) { const m = (lo + hi) / 2; if (stane(m)) lo = m; else hi = m; }
+      h = lo;
+    } else {                                     // samo širina: najdulji redak (bez novog prelamanja) popuni širinu
+      const z0 = slozi(h, true), najsira = Math.max(1, ...z0.redovi.map(r => r.w));
+      h *= (opc.sirina - 2 * mrg) / najsira * 0.9999;
+    }
+    ({ redovi, unutra } = slozi(h));
+  }
+  const sirinaBloka = isFinite(unutra) ? unutra : Math.max(0, ...redovi.map(r => r.w));
+  const tekst = [], crte = [], sh = umjetnoKurziv ? 0.22 : 0;
+  redovi.forEach((red, ri) => {
+    const yb = -h - ri * h * prored;                 // osnovna crta (vrh prvog reda na y = 0)
+    let x = 0, praz = prazno(h);
+    if (opc.poravnanje === 'sredina') x = (sirinaBloka - red.w) / 2;
+    else if (opc.poravnanje === 'desno') x = sirinaBloka - red.w;
+    else if (opc.poravnanje === 'obostrano' && !red.kraj && red.rijeci.length > 1) praz += (sirinaBloka - red.w) / (red.rijeci.length - 1);
+    const x0 = x;
+    red.rijeci.forEach((r, wi) => {
+      for (const c of r) {
+        const [adv, st] = gl(c);
+        for (const s of st) {
+          const p = []; for (let k = 0; k < s.length; k += 2) { const yy = (9 - s[k + 1]) / 21 * h; p.push([x + s[k] / 21 * h + yy * sh, yb + yy]); }
+          tekst.push(p);
+          if (umjetnoDeb) tekst.push(p.map(([a, b]) => [a + 0.035 * h, b]));
+        }
+        x += (adv / 21 + razmak) * h;
+      }
+      x -= razmak * h; if (wi < red.rijeci.length - 1) x += praz;
+    });
+    if (opc.podcrtano && x > x0) crte.push([[x0, yb - 0.2 * h], [x, yb - 0.2 * h]]);
+  });
+  const slojevi = [{ ime: 'Tekst', potezi: tekst.concat(crte), vrsta: '01', debljina: opc.deb ? 'debela' : 'tanka' }];
+  if (opc.okvir) {
+    const vis = opc.visinaOkvira > 0 ? opc.visinaOkvira : (redovi.length - 1) * h * prored + h + 2 * mrg + 0.25 * h;
+    const x0 = -mrg, y0 = mrg, x1 = sirinaBloka + mrg, y1 = mrg - vis;
+    slojevi.push({ ime: 'Okvir teksta', potezi: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]], vrsta: '01', debljina: 'debela' });
+  }
+  return { slojevi, potezi: slojevi.flatMap(s => s.potezi), jedinica_mm: 1, ime: 'Tekst', visinaSlova: h, redova: redovi.length };
+}

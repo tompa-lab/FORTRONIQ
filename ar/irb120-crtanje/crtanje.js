@@ -305,7 +305,7 @@ function ucitajCrtez() {
   const iz = izvor();
   document.querySelectorAll('[data-izvor]').forEach(el => el.hidden = el.dataset.izvor !== iz);
   if (iz === 'znak') crtez = znakSlojevi();
-  else if (iz === 'tekst') crtez = P.tekst($('tekst').value || ' ', window.FTQ_FONT, { visina: +$('tekst-h').value || 40 });
+  else if (iz === 'tekst') { crtez = P.tekstOkvir($('tekst').value || ' ', window.FTQ_FONTOVI, opcTeksta()); pregledTeksta(crtez); }
   else if (iz === 'slika') { crtez = slikaMreza ? P.mrezaUPoteze(slikaMreza, { nacin: $('slika-nacin').value, korak_px: korakSrafure() }) : null; if (crtez) crtez.datoteka = slikaImg._ime; }
   else if (iz === 'dxf') crtez = dxfCrtez;
   else if (iz === 'model') crtez = modelCrtez();
@@ -415,7 +415,50 @@ function postaviModelNaPlocu(pl) {
 }
 document.querySelectorAll('input[name="izvor"]').forEach(r => r.addEventListener('change', ucitajCrtez));
 let tTekst = 0;
-['tekst', 'tekst-h'].forEach(id => $(id).addEventListener('input', () => { clearTimeout(tTekst); tTekst = setTimeout(ucitajCrtez, 350); }));
+// ---------------- alat Tekst: font, B/I/U, poravnanje, okvir (kao u Wordu, oblikovanje za cijeli tekst) ----------------
+const TS = { deb: false, kurziv: false, podcrtano: false, poravnanje: 'lijevo' };
+(function () {
+  const sel = $('t-font');
+  for (const k in window.FTQ_FONTOVI) { const o = document.createElement('option'); o.value = k; o.textContent = window.FTQ_FONTOVI[k].ime; sel.appendChild(o); }
+})();
+function opcTeksta() {
+  return { font: $('t-font').value, deb: TS.deb, kurziv: TS.kurziv, podcrtano: TS.podcrtano, poravnanje: TS.poravnanje,
+    visina: +$('tekst-h').value || 30, prored: +$('t-prored').value || 1.6, razmak: +$('t-razmak').value,
+    sirina: +$('t-sirina').value || 0, visinaOkvira: +$('t-visina').value || 0, margina: +$('t-margina').value || 0,
+    okvir: $('t-okvir').checked, prilagodi: $('t-prilagodi').checked };
+}
+function osvjeziGumbe() {
+  $('t-b').setAttribute('aria-pressed', TS.deb); $('t-i').setAttribute('aria-pressed', TS.kurziv); $('t-u').setAttribute('aria-pressed', TS.podcrtano);
+  document.querySelectorAll('[data-por]').forEach(b => b.setAttribute('aria-pressed', b.dataset.por === TS.poravnanje));
+}
+function promjenaTeksta(odmah) { clearTimeout(tTekst); tTekst = setTimeout(ucitajCrtez, odmah ? 0 : 300); }
+$('t-b').addEventListener('click', () => { TS.deb = !TS.deb; osvjeziGumbe(); promjenaTeksta(true); });
+$('t-i').addEventListener('click', () => { TS.kurziv = !TS.kurziv; osvjeziGumbe(); promjenaTeksta(true); });
+$('t-u').addEventListener('click', () => { TS.podcrtano = !TS.podcrtano; osvjeziGumbe(); promjenaTeksta(true); });
+document.querySelectorAll('[data-por]').forEach(b => b.addEventListener('click', () => { TS.poravnanje = b.dataset.por; osvjeziGumbe(); promjenaTeksta(true); }));
+$('tekst').addEventListener('keydown', e => {          // prečaci kao u Wordu
+  if (!(e.ctrlKey || e.metaKey)) return;
+  const k = e.key.toLowerCase(), por = { l: 'lijevo', e: 'sredina', r: 'desno', j: 'obostrano' }[k];
+  if (k === 'b') TS.deb = !TS.deb; else if (k === 'i') TS.kurziv = !TS.kurziv; else if (k === 'u') TS.podcrtano = !TS.podcrtano;
+  else if (por) TS.poravnanje = por; else return;
+  e.preventDefault(); osvjeziGumbe(); promjenaTeksta(true);
+});
+['tekst', 'tekst-h', 't-razmak', 't-sirina', 't-visina', 't-margina'].forEach(id => $(id).addEventListener('input', () => promjenaTeksta()));
+['t-font', 't-prored', 't-okvir', 't-prilagodi'].forEach(id => $(id).addEventListener('change', () => promjenaTeksta(true)));
+$('t-razmak').addEventListener('input', () => { $('t-razmak-out').textContent = (+$('t-razmak').value).toFixed(2); });
+function pregledTeksta(c) {               // pregled jednopoteznog teksta ispod polja za upis
+  const sv = $('t-pregled'); if (!c || !c.potezi.length) { sv.innerHTML = ''; return; }
+  const b = P.okvir(c.potezi), w = Math.max(1, b[2] - b[0]), h = Math.max(1, b[3] - b[1]), m = Math.max(w, h) * 0.03;
+  sv.setAttribute('viewBox', (b[0] - m) + ' ' + (-b[3] - m) + ' ' + (w + 2 * m) + ' ' + (h + 2 * m));
+  const sw = Math.max(w, h) / 260;
+  sv.innerHTML = c.slojevi.map(s => '<g stroke-width="' + (s.ime === 'Tekst' ? sw : sw * 0.7) + '">' + s.potezi.map(p => '<polyline points="' + p.map(([x, y]) => x.toFixed(2) + ',' + (-y).toFixed(2)).join(' ') + '"/>').join('') + '</g>').join('');
+  $('t-info').textContent = c.redova + (c.redova === 1 ? ' red' : c.redova < 5 ? ' reda' : ' redova') + ', visina slova ' + c.visinaSlova.toFixed(1) + ' mm' + ($('t-prilagodi').checked ? ' (prilagođeno okviru)' : '') + ', blok ' + Math.round(w) + ' × ' + Math.round(h) + ' mm.';
+}
+osvjeziGumbe();
+let tekstPrviPut = true;
+document.querySelector('input[name="izvor"][value="tekst"]').addEventListener('change', () => {
+  if (tekstPrviPut) { tekstPrviPut = false; $('stvarno').checked = true; $('velicina').disabled = true; }
+});
 ['pomak-x', 'pomak-y', 'zakret-crteza'].forEach(id => $(id).addEventListener('change', pripremi));
 $('skupina').addEventListener('change', () => { if (izvor() === 'slika') ucitajCrtez(); else pripremi(); });
 
@@ -764,6 +807,11 @@ const sloj = $('xr-sloj'), uputa = $('xr-uputa'), xrGumb = $('xr-gumb');
     if (ok) { xrGumb.hidden = false; $('ar-poruka').textContent = ''; }
     else if (android) $('ar-poruka').textContent = 'Preglednik javlja da AR nije podržan. Probaj ipak gumb; ako se ne pokrene, provjeri da je instalirana aplikacija Google Play usluge za AR (ARCore) i da stranica nije otvorena u načinu „Web-lokacija za računala”.';
   }).catch(e => { if (android) $('ar-poruka').textContent = 'Provjera AR-a nije uspjela (' + (e && e.message || e) + '). Probaj ipak gumb.'; });
+  else if (android && !navigator.xr) {
+    const a = $('u-chrome'); a.hidden = false;
+    a.href = 'intent://' + adresa.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+    $('ar-poruka').textContent = 'Ovaj preglednik (npr. Samsung Internet) nema WebXR. Otvori stranicu u Chromeu gumbom iznad.';
+  }
   else if (mob && !navigator.xr) $('ar-poruka').textContent = 'Ovaj preglednik nema WebXR. AR s crtanjem radi u Chromeu na Androidu; na iPhoneu Safari to još ne podržava.';
 })();
 xrGumb.addEventListener('click', () => {
