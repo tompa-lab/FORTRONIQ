@@ -304,6 +304,7 @@ figure.crtez figcaption b{color:var(--teal)}
 .gumbi{display:flex;gap:8px;flex-wrap:wrap}
 .gumb.tanki[aria-pressed="true"]{background:var(--tanko)}
 .gumb.tanki{cursor:pointer}
+.gumb.tanki:disabled{opacity:.45;cursor:default}
 .ar-gumb{width:100%;justify-content:center;font-size:1.02rem;padding:14px 16px;font-weight:600}
 .ar-gumb img{width:22px;height:22px}
 .qr{display:flex;gap:18px;align-items:center}
@@ -345,6 +346,8 @@ figure.crtez figcaption b{color:var(--teal)}
 #xr-sloj button{font:inherit;font-size:.88rem;font-weight:600;color:#fff;background:#17656E;border:0;border-radius:9px;padding:8px 12px;flex:1}
 #xr-sloj button[aria-pressed="true"]{background:#2ECAD4;color:#06262B}
 #xr-izlaz{flex:0 0 auto!important;background:#B23B2A!important}
+.xr-gumbi{flex-wrap:wrap}
+.xr-gumbi button{min-width:30%}
 .xr-os{display:grid;grid-template-columns:52px 1fr 46px;gap:8px;align-items:center;padding:4px 0}
 .xr-os b{font-size:.82rem;font-weight:600}
 .xr-os input{width:100%;accent-color:#2ECAD4;margin:0;height:26px}
@@ -373,7 +376,7 @@ figure.crtez figcaption b{color:var(--teal)}
 
 <div class="stup">
 <div class="karta" id="k-scena">
-<div class="karta-h"><h2>Trodimenzionalni prikaz</h2><div class="gumbi"><button type="button" class="gumb tanki" id="pocetni">Početni položaj</button><button type="button" class="gumb tanki" id="gibanje" aria-pressed="false">Pokaži gibanje</button></div></div>
+<div class="karta-h"><h2>Trodimenzionalni prikaz</h2><div class="gumbi"><button type="button" class="gumb tanki" id="pocetni">Početni položaj</button><button type="button" class="gumb tanki" id="gibanje" aria-pressed="false">Pokaži gibanje</button><button type="button" class="gumb tanki" id="pp" aria-pressed="false" disabled>Pick &amp; place</button></div></div>
 <div id="scena" aria-label="Trodimenzionalni model robota ABB IRB 120; povuci za okretanje, kotačićem ili s dva prsta za približavanje"><div class="ucitavanje" id="ucitavanje">Učitavam model robota…</div><p class="uputa">Povuci za okretanje &middot; kotačić ili dva prsta za zum</p></div>
 </div>
 
@@ -419,6 +422,7 @@ figure.crtez figcaption b{color:var(--teal)}
 <tr><th scope="row">Masa robota</th><td>25 kg</td></tr>
 <tr><th scope="row">Ponovljivost položaja</th><td>0,01 mm</td></tr>
 <tr><th scope="row">Montaža</th><td>na pod, obrnuto ili pod kutom</td></tr>
+<tr><th scope="row">Prihvatnica u prikazu</th><td>SCHUNK PGN 80, paralelna dvoprsta; kocke 35 mm</td></tr>
 </tbody></table>
 </div>
 </div>
@@ -444,6 +448,7 @@ figure.crtez figcaption b{color:var(--teal)}
 <ul class="ishodi">
 <li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>prepoznati šest osi zglobne robotske ruke i opisati gibanje svake od njih</span></li>
 <li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>procijeniti veličinu robota i prostor potreban za njegov rad u stvarnom okruženju</span></li>
+<li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pratiti tijek operacije uzmi-i-odloži (pick and place): prilaz, hvatanje, prijenos i odlaganje</span></li>
 <li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>povezati osnovne značajke robota (nosivost, doseg, ponovljivost) s izborom robota za zadatak</span></li>
 </ul>
 </div>
@@ -456,7 +461,7 @@ figure.crtez figcaption b{color:var(--teal)}
 <div id="xr-sloj" hidden>
 <div class="xr-vrh"><span id="xr-uputa">Usmjeri kameru prema podu i dodirni krug da postaviš robota.</span><button type="button" id="xr-izlaz">Izlaz</button></div>
 <div class="xr-dno">
-<div class="xr-gumbi"><button type="button" id="xr-gib" aria-pressed="false">Gibanje</button><button type="button" id="xr-nula">Početni</button><button type="button" id="xr-premjesti">Premjesti</button></div>
+<div class="xr-gumbi"><button type="button" id="xr-gib" aria-pressed="false">Gibanje</button><button type="button" id="xr-pp" aria-pressed="false">Pick &amp; place</button><button type="button" id="xr-nula">Početni</button><button type="button" id="xr-premjesti">Premjesti</button></div>
 <div id="xr-osi"></div>
 </div>
 </div>
@@ -704,8 +709,10 @@ klizaci.forEach(function (k, i) {
 new GLTFLoader().load('irb120.glb', function (g) {
   g.scene.traverse(function (o) { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   for (var i = 1; i <= 6; i++) zglobovi.push(g.scene.getObjectByName('j' + i));
+  tcpN = g.scene.getObjectByName('tcp'); prstP = g.scene.getObjectByName('prst_p'); prstN = g.scene.getObjectByName('prst_n');
   korijen.add(g.scene);
   document.getElementById('ucitavanje').remove();
+  try { pripremiProgram(); } catch (e) { console.error('Pick & place:', e); }
 }, undefined, function () {
   document.getElementById('ucitavanje').textContent = 'Model se nije mogao učitati. Stranicu otvori preko poslužitelja (dos.fortroniq.hr), ne izravno iz datoteke.';
 });
@@ -713,8 +720,9 @@ new GLTFLoader().load('irb120.glb', function (g) {
 var anim = false, t0 = 0;
 var gGib = document.getElementById('gibanje');
 var xGib = document.getElementById('xr-gib');
-function stani() { anim = false; gGib.setAttribute('aria-pressed', 'false'); xGib.setAttribute('aria-pressed', 'false'); }
+function stani() { anim = false; gGib.setAttribute('aria-pressed', 'false'); xGib.setAttribute('aria-pressed', 'false'); zaustaviProgram(); }
 function prebaciGibanje() {
+  zaustaviProgram();
   anim = !anim; t0 = performance.now();
   gGib.setAttribute('aria-pressed', anim ? 'true' : 'false'); xGib.setAttribute('aria-pressed', anim ? 'true' : 'false');
 }
@@ -723,7 +731,158 @@ xGib.addEventListener('click', prebaciGibanje);
 document.getElementById('xr-nula').addEventListener('click', function () { document.getElementById('pocetni').click(); });
 document.getElementById('pocetni').addEventListener('click', function () {
   stani(); klizaci.forEach(function (k, i) { k.value = 0; postavi(i, 0); ispis(i, 0); });
+  if (prog.seg.length) { postaviKocke(); prsti(OTV); prog.i = 0; prog.t = 0; prog.q = [0, 0, 0, 0, 0, 0]; }
 });
+
+// --- PICK & PLACE: prihvatnica SCHUNK PGN 80, kocke 35 mm ---------------------------
+var tcpN = null, prstP = null, prstN = null, kocke = [];
+var prog = { aktivan: false, seg: [], i: 0, t: 0, q: [0, 0, 0, 0, 0, 0] };
+var KOCKA = 0.035, OTV = 0.008, ZATV = 0.004, PODLOGA = 0.008;
+var RED = [[0.34, -0.18], [0.40, -0.18], [0.46, -0.18]];   // početni položaj kocki (KS baze, m)
+var TORANJ = [0.40, 0.18];                                  // mjesto slaganja
+var gPP = document.getElementById('pp'), xPP = document.getElementById('xr-pp');
+function g3(x, y, z) { return new THREE.Vector3(x, z, -y); }  // KS baze (Z gore) -> scena (Y gore)
+function prsti(d) { if (prstP) { prstP.position.z = -d; prstN.position.z = d; } }
+function smjer(x, y) { var p = g3(x, y, 0); p.y = 0; return p.normalize(); }
+function poza(x, y, z) {
+  var r = smjer(x, y);
+  var zt = new THREE.Vector3(0, -1, 0), yt = new THREE.Vector3(-r.z, 0, r.x);
+  return { p: g3(x, y, z), x: yt.clone().cross(zt), y: yt, z: zt };
+}
+function postaviKocke() {
+  kocke.forEach(function (k, i) {
+    korijen.attach(k);
+    var r = smjer(RED[i][0], RED[i][1]);
+    k.position.copy(g3(RED[i][0], RED[i][1], PODLOGA + KOCKA / 2));
+    k.rotation.set(0, Math.atan2(-r.z, r.x), 0);
+  });
+}
+var _M = new THREE.Matrix4(), _I = new THREE.Matrix4();
+var _x = new THREE.Vector3(), _y = new THREE.Vector3(), _z = new THREE.Vector3(), _p = new THREE.Vector3();
+function fk(q) {
+  for (var i = 0; i < 6; i++) postavi(i, q[i]);
+  korijen.updateMatrixWorld(true);
+  _I.copy(korijen.matrixWorld).invert(); _M.multiplyMatrices(_I, tcpN.matrixWorld);
+  _M.extractBasis(_x, _y, _z); _p.setFromMatrixPosition(_M);
+}
+function greska(c) {
+  var ep = c.p.clone().sub(_p);
+  var er = _x.clone().cross(c.x).add(_y.clone().cross(c.y)).add(_z.clone().cross(c.z)).multiplyScalar(0.5 * 0.25);
+  return [ep.x, ep.y, ep.z, er.x, er.y, er.z];
+}
+function rijesi(A, b) {
+  var n = b.length, M = A.map(function (r, i) { return r.concat([b[i]]); });
+  for (var c = 0; c < n; c++) {
+    var m = c; for (var r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[m][c])) m = r;
+    var t = M[c]; M[c] = M[m]; M[m] = t;
+    for (r = c + 1; r < n; r++) { var f = M[r][c] / M[c][c]; for (var k = c; k <= n; k++) M[r][k] -= f * M[c][k]; }
+  }
+  var x = new Array(n);
+  for (r = n - 1; r >= 0; r--) { var s = M[r][n]; for (k = r + 1; k < n; k++) s -= M[r][k] * x[k]; x[r] = s / M[r][r]; }
+  return x;
+}
+function ik(c, q0) {
+  var q = q0.slice(), h = 0.2, L2 = 1e-4, ok = false;
+  for (var it = 0; it < 250; it++) {
+    fk(q); var e = greska(c);
+    var np = Math.hypot(e[0], e[1], e[2]), nr = Math.hypot(e[3], e[4], e[5]);
+    if (np < 2e-4 && nr < 3e-4) { ok = true; break; }
+    var J = [[], [], [], [], [], []];
+    for (var j = 0; j < 6; j++) {
+      var qq = q.slice(); qq[j] += h; fk(qq); var e2 = greska(c);
+      for (var r = 0; r < 6; r++) J[r][j] = (e[r] - e2[r]) / (h * Math.PI / 180);
+    }
+    var A = [];
+    for (r = 0; r < 6; r++) { A.push([]); for (var k = 0; k < 6; k++) { var s = 0; for (j = 0; j < 6; j++) s += J[r][j] * J[k][j]; A[r].push(s + (r === k ? L2 : 0)); } }
+    var y = rijesi(A, e);
+    for (j = 0; j < 6; j++) {
+      var d = 0; for (r = 0; r < 6; r++) d += J[r][j] * y[r];
+      d = d * 180 / Math.PI; d = Math.max(-8, Math.min(8, d));
+      q[j] = Math.max(+klizaci[j].min, Math.min(+klizaci[j].max, q[j] + d));
+    }
+  }
+  return { q: q, ok: ok };
+}
+function pripremiProgram() {
+  if (!tcpN || !prstP) return;
+  var mat = [0xD9452F, 0x17656E, 0xE6B422].map(function (c) { return new THREE.MeshStandardMaterial({ color: c, roughness: 0.55 }); });
+  for (var i = 0; i < 3; i++) {
+    var k = new THREE.Mesh(new THREE.BoxGeometry(KOCKA, KOCKA, KOCKA), mat[i]);
+    k.castShadow = true; k.receiveShadow = true; korijen.add(k); kocke.push(k);
+  }
+  var pm = new THREE.MeshStandardMaterial({ color: 0x8A9AA3, roughness: 0.8 });
+  function ploca(x, y, dx, dy) {
+    var r = smjer(x, y), m = new THREE.Mesh(new THREE.BoxGeometry(dx, PODLOGA, dy), pm);
+    m.position.copy(g3(x, y, PODLOGA / 2)); m.rotation.set(0, Math.atan2(-r.z, r.x), 0); m.receiveShadow = true; korijen.add(m);
+  }
+  ploca(0.40, -0.18, 0.20, 0.07); ploca(TORANJ[0], TORANJ[1], 0.07, 0.07);
+  postaviKocke(); prsti(OTV);
+  var seg = [], q = [0, 0, 0, 0, 0, 0], loseIK = 0, VIS = 0.10, VRH = 0.006;
+  function dodajJ(qn, glatko, dur) {
+    var dm = 0; for (var i = 0; i < 6; i++) dm = Math.max(dm, Math.abs(qn[i] - q[i]));
+    seg.push({ tip: 'J', q0: q, q1: qn, dur: dur || Math.max(0.45, dm / 75), glatko: glatko }); q = qn;
+  }
+  function J(x, y, z) { var r = ik(poza(x, y, z), q); if (!r.ok) loseIK++; dodajJ(r.q, true); }
+  function L(x, y, z0, z1) {
+    var n = 6;
+    for (var k = 1; k <= n; k++) {
+      var r = ik(poza(x, y, z0 + (z1 - z0) * k / n), q); if (!r.ok) loseIK++;
+      dodajJ(r.q, false, Math.abs(z1 - z0) / 0.12 / n);
+    }
+  }
+  function G(zatvori, kocka) { seg.push({ tip: 'G', d0: zatvori ? OTV : ZATV, d1: zatvori ? ZATV : OTV, dur: 0.5, zatvori: zatvori, kocka: kocka }); }
+  function W(t) { seg.push({ tip: 'W', dur: t }); }
+  function premjesti(a, za, b, zb, i) {
+    J(a[0], a[1], za + VIS); L(a[0], a[1], za + VIS, za); G(true, i); L(a[0], a[1], za, za + VIS);
+    J(b[0], b[1], zb + VIS); L(b[0], b[1], zb + VIS, zb); G(false, i); L(b[0], b[1], zb, zb + VIS);
+  }
+  for (i = 0; i < 3; i++) premjesti(RED[i], PODLOGA + VRH, TORANJ, PODLOGA + i * KOCKA + VRH, i);
+  W(0.8);
+  for (i = 2; i >= 0; i--) premjesti(TORANJ, PODLOGA + i * KOCKA + VRH, RED[i], PODLOGA + VRH, i);
+  dodajJ([0, 0, 0, 0, 0, 0], true); W(1.2);
+  prog.seg = seg;
+  fk([0, 0, 0, 0, 0, 0]); postavi(0, 0);
+  for (i = 0; i < 6; i++) postavi(i, 0);
+  if (loseIK) console.warn('Pick & place: IK nije konvergirao u', loseIK, 'točaka');
+  gPP.disabled = false;
+  window.FTQ_PP = { segmenata: seg.length, loseIK: loseIK, trajanje: seg.reduce(function (a, s) { return a + s.dur; }, 0) };
+}
+function zaustaviProgram() {
+  prog.aktivan = false; gPP.setAttribute('aria-pressed', 'false'); xPP.setAttribute('aria-pressed', 'false');
+}
+function prebaciProgram() {
+  if (!prog.seg.length) return;
+  var bio = prog.aktivan;
+  anim = false; gGib.setAttribute('aria-pressed', 'false'); xGib.setAttribute('aria-pressed', 'false');
+  if (bio) { zaustaviProgram(); return; }
+  if (prog.i === 0 && prog.t === 0) { postaviKocke(); prsti(OTV); }
+  var tren = klizaci.map(function (k) { return +k.value; });
+  var s0 = prog.seg[prog.i];
+  if (s0.tip === 'J') { s0.q0 = tren; }
+  else if (Math.max.apply(null, tren.map(function (v, i) { return Math.abs(v - prog.q[i]); })) > 0.5) {
+    prog.seg.splice(prog.i, 0, { tip: 'J', q0: tren, q1: prog.q.slice(), dur: 1.2, glatko: true, umetnut: true });
+  }
+  prog.aktivan = true; gPP.setAttribute('aria-pressed', 'true'); xPP.setAttribute('aria-pressed', 'true');
+}
+gPP.addEventListener('click', prebaciProgram);
+xPP.addEventListener('click', prebaciProgram);
+function korakPrograma(dt) {
+  var s = prog.seg[prog.i]; prog.t += dt;
+  var u = Math.min(1, prog.t / s.dur);
+  if (s.tip === 'J') {
+    var w = s.glatko ? u * u * (3 - 2 * u) : u;
+    for (var i = 0; i < 6; i++) { var v = s.q0[i] + (s.q1[i] - s.q0[i]) * w; postavi(i, v); klizaci[i].value = v; ispis(i, v); }
+    if (u >= 1) prog.q = s.q1.slice();
+  } else if (s.tip === 'G') {
+    prsti(s.d0 + (s.d1 - s.d0) * u);
+    if (u >= 1) { if (s.zatvori) tcpN.attach(kocke[s.kocka]); else korijen.attach(kocke[s.kocka]); }
+  }
+  if (u >= 1) {
+    if (s.umetnut) prog.seg.splice(prog.i, 1); else prog.i = (prog.i + 1) % prog.seg.length;
+    prog.t = 0;
+    if (prog.i === 0) prog.seg[0].q0 = [0, 0, 0, 0, 0, 0];
+  }
+}
 var AMP = [60, 30, 28, 70, 55, 120], FR = [0.21, 0.33, 0.27, 0.41, 0.37, 0.5];
 
 function velicina() {
@@ -789,7 +948,10 @@ document.getElementById('xr-premjesti').addEventListener('click', function () {
   uputa.textContent = 'Dodirni krug na podu da ponovno postaviš robota.';
 });
 
+var zadnjeT = 0;
 renderer.setAnimationLoop(function (t, frame) {
+  var dt = zadnjeT ? Math.min(0.05, (t - zadnjeT) / 1000) : 0; zadnjeT = t;
+  if (prog.aktivan) korakPrograma(dt);
   if (frame && xr && !xr.postavljen && xr.izvor) {
     var r = frame.getHitTestResults(xr.izvor);
     var p = r.length ? r[0].getPose(renderer.xr.getReferenceSpace()) : null;
