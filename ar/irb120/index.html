@@ -687,6 +687,37 @@ function postavi(i, stup) {
   z.rotation[OS[i][0]] = OS[i][1] * stup * Math.PI / 180;
 }
 var xrKlizaci = [], xr = null, xrSmjer = 0, xrZakret = 0;
+// sidro (WebXR Anchors): robot ostaje vezan uz stvarnu tocku na podu ili stolu dok se obilazi.
+// korijen = A_sad * inv(A_0) * T(p0) * Ry(smjer + zakret); A_0 je prva poza sidra, A_sad trenutna.
+var sidroP0 = new THREE.Vector3(), sidroSad = new THREE.Matrix4(), sidroInv0 = new THREE.Matrix4(), korM = new THREE.Matrix4(), pomM = new THREE.Matrix4();
+function korijenXR() {
+  korM.makeRotationY(xrSmjer + xrZakret).setPosition(sidroP0);
+  if (xr && xr.sidro && xr.imaPozu) korM.premultiply(pomM.multiplyMatrices(sidroSad, sidroInv0));
+  korM.decompose(korijen.position, korijen.quaternion, korijen.scale);
+}
+function pustiSidro() {
+  if (xr && xr.sidro) { try { xr.sidro.delete(); } catch (e) { } }
+  if (xr) { xr.sidro = null; xr.imaPozu = false; xr.trebaSidro = false; }
+}
+function sidriUOkviru(frame, ref) {
+  xr.trebaSidro = false;
+  function gotovo(a) {
+    if (!xr || !xr.postavljen) { try { a.delete(); } catch (e) { } return; }
+    xr.sidro = a; xr.imaPozu = false; uputa.textContent = 'Robot je usidren na podlozi. Klizačima pomiči osi, a robota slobodno obiđi.';
+  }
+  function nijeUspjelo() { if (xr) uputa.textContent = 'Robot je postavljen (uređaj ne podržava sidra, pa može malo plivati). Klizačima pomiči osi.'; }
+  try {
+    var r = xr.izvor ? frame.getHitTestResults(xr.izvor) : [];
+    var hp = r.length ? r[0].getPose(ref) : null;
+    if (hp && r[0].createAnchor && Math.hypot(hp.transform.position.x - sidroP0.x, hp.transform.position.y - sidroP0.y, hp.transform.position.z - sidroP0.z) < 0.25) {
+      r[0].createAnchor().then(gotovo, nijeUspjelo); return;
+    }
+    if (frame.createAnchor) {
+      frame.createAnchor(new XRRigidTransform({ x: sidroP0.x, y: sidroP0.y, z: sidroP0.z }), ref).then(gotovo, nijeUspjelo); return;
+    }
+  } catch (e) { }
+  nijeUspjelo();
+}
 function stupanj(v) { v = Math.round(v); return (v < 0 ? '\u2212' + (-v) : String(v)) + '\u00b0'; }
 function ispis(i, v) {
   var t = stupanj(v);
@@ -710,7 +741,7 @@ klizaci.forEach(function (k, i) {
   document.getElementById('xr-osi').appendChild(red);
   var ul = red.querySelector('input'), iz = red.querySelector('output'); iz.textContent = stupanj(0);
   ul.addEventListener('input', function () {
-    xrZakret = +ul.value * Math.PI / 180; korijen.rotation.y = xrSmjer + xrZakret; iz.textContent = stupanj(+ul.value);
+    xrZakret = +ul.value * Math.PI / 180; if (xr && xr.postavljen) korijenXR(); else korijen.rotation.y = xrSmjer + xrZakret; iz.textContent = stupanj(+ul.value);
   });
 })();
 
@@ -918,30 +949,30 @@ if (navigator.xr && navigator.xr.isSessionSupported) {
 xrGumb.addEventListener('click', function () {
   sloj.hidden = false;
   navigator.xr.requestSession('immersive-ar', {
-    requiredFeatures: ['hit-test'], optionalFeatures: ['dom-overlay'], domOverlay: { root: sloj }
+    requiredFeatures: ['hit-test'], optionalFeatures: ['dom-overlay', 'anchors'], domOverlay: { root: sloj }
   }).then(function (s) {
     renderer.xr.enabled = true;
     renderer.xr.setReferenceSpaceType('local');
     return renderer.xr.setSession(s).then(function () {
-      xr = { s: s, izvor: null, postavljen: false };
+      xr = { s: s, izvor: null, postavljen: false, sidro: null, imaPozu: false, trebaSidro: false };
       mreza.visible = false; korijen.visible = false;
-      uputa.textContent = 'Usmjeri kameru prema podu i polako pomiči mobitel dok se ne pojavi krug.';
+      uputa.textContent = 'Usmjeri kameru prema podu ili stolu i polako pomiči mobitel dok se ne pojavi krug.';
       s.requestReferenceSpace('viewer').then(function (vs) {
         return s.requestHitTestSource({ space: vs });
       }).then(function (iz) { if (xr) xr.izvor = iz; });
       s.addEventListener('select', function () {
         if (!xr || xr.postavljen || !krug.visible) return;
-        korijen.position.setFromMatrixPosition(krug.matrix);
+        sidroP0.setFromMatrixPosition(krug.matrix);
         var c = renderer.xr.getCamera().position;
-        xrSmjer = Math.atan2(-(c.z - korijen.position.z), c.x - korijen.position.x);
-        korijen.rotation.y = xrSmjer + xrZakret;
-        korijen.visible = true; xr.postavljen = true; krug.visible = false;
-        uputa.textContent = 'Robot je postavljen. Klizačima pomiči osi, a robota obiđi.';
+        xrSmjer = Math.atan2(-(c.z - sidroP0.z), c.x - sidroP0.x);
+        pustiSidro(); korijenXR();
+        korijen.visible = true; xr.postavljen = true; xr.trebaSidro = true; krug.visible = false;
+        uputa.textContent = 'Robot je postavljen, sidrim ga na podlogu…';
       });
       s.addEventListener('end', function () {
         if (xr && xr.izvor) xr.izvor.cancel();
-        xr = null; renderer.xr.enabled = false; sloj.hidden = true;
-        korijen.position.set(0, 0, 0); korijen.rotation.set(0, 0, 0); korijen.visible = true;
+        pustiSidro(); xr = null; renderer.xr.enabled = false; sloj.hidden = true;
+        korijen.position.set(0, 0, 0); korijen.rotation.set(0, 0, 0); korijen.scale.set(1, 1, 1); korijen.visible = true;
         mreza.visible = true; krug.visible = false; velicina();
       });
     });
@@ -952,8 +983,8 @@ xrGumb.addEventListener('click', function () {
 });
 document.getElementById('xr-izlaz').addEventListener('click', function () { if (xr) xr.s.end(); });
 document.getElementById('xr-premjesti').addEventListener('click', function () {
-  if (!xr) return; xr.postavljen = false; korijen.visible = false;
-  uputa.textContent = 'Dodirni krug na podu da ponovno postaviš robota.';
+  if (!xr) return; pustiSidro(); xr.postavljen = false; korijen.visible = false;
+  uputa.textContent = 'Dodirni krug na podu ili stolu da ponovno postaviš robota.';
 });
 
 var zadnjeT = 0;
@@ -965,6 +996,14 @@ renderer.setAnimationLoop(function (t, frame) {
     var p = r.length ? r[0].getPose(renderer.xr.getReferenceSpace()) : null;
     if (p) { krug.visible = true; krug.matrix.fromArray(p.transform.matrix); uputa.textContent = 'Dodirni krug da postaviš robota.'; }
     else krug.visible = false;
+  }
+  if (frame && xr && xr.postavljen) {
+    var ref = renderer.xr.getReferenceSpace();
+    if (xr.trebaSidro) sidriUOkviru(frame, ref);
+    if (xr.sidro) {
+      var ap = frame.trackedAnchors && !frame.trackedAnchors.has(xr.sidro) ? null : frame.getPose(xr.sidro.anchorSpace, ref);
+      if (ap) { sidroSad.fromArray(ap.transform.matrix); if (!xr.imaPozu) { sidroInv0.copy(sidroSad).invert(); xr.imaPozu = true; } korijenXR(); }
+    }
   }
   sunce.position.set(korijen.position.x + 1.2, korijen.position.y + 2.2, korijen.position.z + 1.4);
   sunce.target.position.copy(korijen.position);
@@ -979,7 +1018,7 @@ renderer.setAnimationLoop(function (t, frame) {
   if (!renderer.xr.isPresenting) upr.update();
   renderer.render(scena, kamera);
 });
-window.FTQ_AR = { zglobovi: zglobovi, postavi: postavi };
+window.FTQ_AR = { zglobovi: zglobovi, postavi: postavi, korijenXR: korijenXR, korijen: korijen };
 </script>
 </body>
 </html>
