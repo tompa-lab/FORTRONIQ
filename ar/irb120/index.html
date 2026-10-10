@@ -332,8 +332,25 @@ figure.crtez figcaption b{color:var(--teal)}
 .ishodi{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .ishodi li{display:flex;gap:10px;color:var(--body);font-size:.93rem;line-height:1.45}
 .ishodi svg{flex:0 0 14px;width:14px;height:14px;margin-top:4px;color:var(--teal)}
+#xr-gumb{margin-bottom:10px}
+#xr-gumb[hidden]{display:none}
+.ar-gumb.tanki{background:transparent}
+.ar-gumb.tanki img{display:none}
+#xr-sloj{position:fixed;inset:0;z-index:100;pointer-events:none;font-family:inherit;color:#fff}
+#xr-sloj[hidden]{display:none}
+.xr-vrh,.xr-dno{pointer-events:auto;background:rgba(6,30,36,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.xr-vrh{position:absolute;left:10px;right:10px;top:10px;border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:.92rem;line-height:1.35}
+.xr-dno{position:absolute;left:10px;right:10px;bottom:10px;border-radius:14px;padding:10px 12px 8px;max-height:46vh;overflow:auto}
+.xr-gumbi{display:flex;gap:6px;margin-bottom:6px}
+#xr-sloj button{font:inherit;font-size:.88rem;font-weight:600;color:#fff;background:#17656E;border:0;border-radius:9px;padding:8px 12px;flex:1}
+#xr-sloj button[aria-pressed="true"]{background:#2ECAD4;color:#06262B}
+#xr-izlaz{flex:0 0 auto!important;background:#B23B2A!important}
+.xr-os{display:grid;grid-template-columns:52px 1fr 46px;gap:8px;align-items:center;padding:4px 0}
+.xr-os b{font-size:.82rem;font-weight:600}
+.xr-os input{width:100%;accent-color:#2ECAD4;margin:0;height:26px}
+.xr-os output{text-align:right;font-size:.84rem;font-variant-numeric:tabular-nums}
 @media (max-width:900px){
-  .ar-mreza{display:flex;flex-direction:column;gap:20px}
+  .ar-mreza{display:flex;flex-direction:column;gap:20px;align-items:stretch}
   .stup{display:contents}
   #k-scena{order:1}#ar{order:2}#k-osi{order:3}#k-spec{order:4}#k-opseg{order:5}#k-ishodi{order:6}
 }
@@ -382,7 +399,8 @@ figure.crtez figcaption b{color:var(--teal)}
 <div><p><b>Skeniraj kod kamerom mobitela.</b> Otvorit će se ova stranica; dodirni gumb za proširenu stvarnost i usmjeri kameru prema podu ili stolu.</p><p class="adresa" id="adresa"></p></div>
 </div>
 <div class="mob">
-<p><b>Usmjeri kameru prema podu ili stolu</b> i polako pomiči mobitel dok se robot ne pojavi. Robot je prikazan u stvarnoj veličini; možeš ga obilaziti, a prstima ga premjestiti ili okrenuti.</p>
+<p><b>Usmjeri kameru prema podu ili stolu</b> i polako pomiči mobitel. Kad se pojavi krug, dodirni ga i robot se postavi u stvarnoj veličini. Klizačima na dnu zaslona pomičeš svaku os, a robota možeš obilaziti.</p>
+<button type="button" class="gumb ar-gumb" id="xr-gumb" hidden><img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%271.8%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M12 2.5 20.5 7v10L12 21.5 3.5 17V7z%27/%3E%3Cpath d=%27M3.5 7 12 11.5 20.5 7M12 11.5v10%27/%3E%3C/svg%3E" alt="">Postavi robota i pomiči osi</button>
 <a class="gumb ar-gumb" id="ar-gumb" href="#ar"><img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%271.8%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M12 2.5 20.5 7v10L12 21.5 3.5 17V7z%27/%3E%3Cpath d=%27M3.5 7 12 11.5 20.5 7M12 11.5v10%27/%3E%3C/svg%3E" alt="">Postavi robota u prostor</a>
 <p class="napomena" id="ar-poruka"></p>
 </div>
@@ -416,7 +434,7 @@ figure.crtez figcaption b{color:var(--teal)}
 <tr><th scope="row">Os 5</th><td>−120° do +120°</td><td>savijanje zgloba</td></tr>
 <tr><th scope="row">Os 6</th><td>−400° do +400°</td><td>okretanje prirubnice s alatom</td></tr>
 </tbody></table>
-<p class="napomena">U proširenoj stvarnosti robot stoji u početnom (nultom) položaju. Položaj osi mijenja se u trodimenzionalnom prikazu.</p>
+<p class="napomena">Na Android mobitelu (Chrome) osi se pomiču klizačima i u proširenoj stvarnosti. U brzom prikazu (Googleov preglednik, iPhone) robot stoji u početnom (nultom) položaju.</p>
 </div>
 </div>
 
@@ -435,6 +453,13 @@ figure.crtez figcaption b{color:var(--teal)}
 </div></div></section>
 </main>
 <footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Stručni sadržaj: dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../../index.html">Sva područja</a></p></div></footer>
+<div id="xr-sloj" hidden>
+<div class="xr-vrh"><span id="xr-uputa">Usmjeri kameru prema podu i dodirni krug da postaviš robota.</span><button type="button" id="xr-izlaz">Izlaz</button></div>
+<div class="xr-dno">
+<div class="xr-gumbi"><button type="button" id="xr-gib" aria-pressed="false">Gibanje</button><button type="button" id="xr-nula">Početni</button><button type="button" id="xr-premjesti">Premjesti</button></div>
+<div id="xr-osi"></div>
+</div>
+</div>
 <canvas id="ploca" aria-hidden="true"></canvas>
 <aside class="alati" aria-label="Alatna traka za rad po stranici">
 <button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
@@ -620,8 +645,12 @@ var sc = sunce.shadow.camera; sc.left = -1; sc.right = 1; sc.top = 1; sc.bottom 
 scena.add(sunce);
 var dopuna = new THREE.DirectionalLight(0xffffff, 0.7); dopuna.position.set(-1.5, 1, -1); scena.add(dopuna);
 
+var korijen = new THREE.Group(); scena.add(korijen); scena.add(sunce.target);
 var pod = new THREE.Mesh(new THREE.CircleGeometry(1.2, 64), new THREE.ShadowMaterial({ opacity: 0.18 }));
-pod.rotation.x = -Math.PI / 2; pod.receiveShadow = true; scena.add(pod);
+pod.rotation.x = -Math.PI / 2; pod.receiveShadow = true; korijen.add(pod);
+var krug = new THREE.Mesh(new THREE.RingGeometry(0.11, 0.14, 40).rotateX(-Math.PI / 2),
+  new THREE.MeshBasicMaterial({ color: 0x2ECAD4 }));
+krug.matrixAutoUpdate = false; krug.visible = false; scena.add(krug);
 var mreza = new THREE.PolarGridHelper(0.9, 12, 6, 64);
 mreza.material.transparent = true; mreza.material.opacity = 0.35; scena.add(mreza);
 
@@ -644,19 +673,38 @@ function postavi(i, stup) {
   z.rotation.set(0, 0, 0);
   z.rotation[OS[i][0]] = OS[i][1] * stup * Math.PI / 180;
 }
+var xrKlizaci = [], xr = null, xrSmjer = 0, xrZakret = 0;
+function stupanj(v) { v = Math.round(v); return (v < 0 ? '\u2212' + (-v) : String(v)) + '\u00b0'; }
 function ispis(i, v) {
-  var o = document.getElementById('os' + (i + 1) + '-out');
-  v = Math.round(v);
-  o.textContent = (v < 0 ? '\u2212' + (-v) : String(v)) + '\u00b0';
+  var t = stupanj(v);
+  document.getElementById('os' + (i + 1) + '-out').textContent = t;
+  if (xrKlizaci[i]) { xrKlizaci[i].value = Math.round(v); xrKlizaci[i]._out.textContent = t; }
 }
 klizaci.forEach(function (k, i) {
   k.addEventListener('input', function () { stani(); postavi(i, +k.value); ispis(i, +k.value); });
+  var red = document.createElement('div'); red.className = 'xr-os';
+  var oz = document.createElement('b'); oz.textContent = 'Os ' + (i + 1);
+  var ul = document.createElement('input'); ul.type = 'range'; ul.min = k.min; ul.max = k.max; ul.step = 1; ul.value = k.value;
+  ul.setAttribute('aria-label', 'Os ' + (i + 1));
+  var iz = document.createElement('output'); iz.textContent = stupanj(0); ul._out = iz;
+  ul.addEventListener('input', function () { k.value = ul.value; stani(); postavi(i, +ul.value); ispis(i, +ul.value); });
+  red.appendChild(oz); red.appendChild(ul); red.appendChild(iz);
+  document.getElementById('xr-osi').appendChild(red); xrKlizaci.push(ul);
 });
+(function () {
+  var red = document.createElement('div'); red.className = 'xr-os';
+  red.innerHTML = '<b>Zakret</b><input type="range" min="-180" max="180" step="1" value="0" aria-label="Zakret cijelog robota"><output></output>';
+  document.getElementById('xr-osi').appendChild(red);
+  var ul = red.querySelector('input'), iz = red.querySelector('output'); iz.textContent = stupanj(0);
+  ul.addEventListener('input', function () {
+    xrZakret = +ul.value * Math.PI / 180; korijen.rotation.y = xrSmjer + xrZakret; iz.textContent = stupanj(+ul.value);
+  });
+})();
 
 new GLTFLoader().load('irb120.glb', function (g) {
   g.scene.traverse(function (o) { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   for (var i = 1; i <= 6; i++) zglobovi.push(g.scene.getObjectByName('j' + i));
-  scena.add(g.scene);
+  korijen.add(g.scene);
   document.getElementById('ucitavanje').remove();
 }, undefined, function () {
   document.getElementById('ucitavanje').textContent = 'Model se nije mogao učitati. Stranicu otvori preko poslužitelja (dos.fortroniq.hr), ne izravno iz datoteke.';
@@ -664,10 +712,15 @@ new GLTFLoader().load('irb120.glb', function (g) {
 
 var anim = false, t0 = 0;
 var gGib = document.getElementById('gibanje');
-function stani() { anim = false; gGib.setAttribute('aria-pressed', 'false'); }
-gGib.addEventListener('click', function () {
-  anim = !anim; t0 = performance.now(); gGib.setAttribute('aria-pressed', anim ? 'true' : 'false');
-});
+var xGib = document.getElementById('xr-gib');
+function stani() { anim = false; gGib.setAttribute('aria-pressed', 'false'); xGib.setAttribute('aria-pressed', 'false'); }
+function prebaciGibanje() {
+  anim = !anim; t0 = performance.now();
+  gGib.setAttribute('aria-pressed', anim ? 'true' : 'false'); xGib.setAttribute('aria-pressed', anim ? 'true' : 'false');
+}
+gGib.addEventListener('click', prebaciGibanje);
+xGib.addEventListener('click', prebaciGibanje);
+document.getElementById('xr-nula').addEventListener('click', function () { document.getElementById('pocetni').click(); });
 document.getElementById('pocetni').addEventListener('click', function () {
   stani(); klizaci.forEach(function (k, i) { k.value = 0; postavi(i, 0); ispis(i, 0); });
 });
@@ -679,7 +732,72 @@ function velicina() {
 }
 new ResizeObserver(velicina).observe(kut); velicina();
 
-renderer.setAnimationLoop(function (t) {
+// --- proširena stvarnost u pregledniku (WebXR: Chrome na Androidu) ---
+var sloj = document.getElementById('xr-sloj'), uputa = document.getElementById('xr-uputa');
+var xrGumb = document.getElementById('xr-gumb');
+['.xr-vrh', '.xr-dno'].forEach(function (q) {
+  sloj.querySelector(q).addEventListener('beforexrselect', function (e) { e.preventDefault(); });
+});
+if (navigator.xr && navigator.xr.isSessionSupported) {
+  navigator.xr.isSessionSupported('immersive-ar').then(function (ok) {
+    if (!ok) return;
+    xrGumb.hidden = false;
+    var stari = document.getElementById('ar-gumb');
+    stari.classList.add('tanki');
+    stari.lastChild.textContent = 'Brzi prikaz (bez pomicanja osi)';
+    document.getElementById('ar-poruka').textContent = '';
+  }).catch(function () {});
+}
+xrGumb.addEventListener('click', function () {
+  sloj.hidden = false;
+  navigator.xr.requestSession('immersive-ar', {
+    requiredFeatures: ['hit-test'], optionalFeatures: ['dom-overlay'], domOverlay: { root: sloj }
+  }).then(function (s) {
+    renderer.xr.enabled = true;
+    renderer.xr.setReferenceSpaceType('local');
+    return renderer.xr.setSession(s).then(function () {
+      xr = { s: s, izvor: null, postavljen: false };
+      mreza.visible = false; korijen.visible = false;
+      uputa.textContent = 'Usmjeri kameru prema podu i polako pomiči mobitel dok se ne pojavi krug.';
+      s.requestReferenceSpace('viewer').then(function (vs) {
+        return s.requestHitTestSource({ space: vs });
+      }).then(function (iz) { if (xr) xr.izvor = iz; });
+      s.addEventListener('select', function () {
+        if (!xr || xr.postavljen || !krug.visible) return;
+        korijen.position.setFromMatrixPosition(krug.matrix);
+        var c = renderer.xr.getCamera().position;
+        xrSmjer = Math.atan2(-(c.z - korijen.position.z), c.x - korijen.position.x);
+        korijen.rotation.y = xrSmjer + xrZakret;
+        korijen.visible = true; xr.postavljen = true; krug.visible = false;
+        uputa.textContent = 'Robot je postavljen. Klizačima pomiči osi, a robota obiđi.';
+      });
+      s.addEventListener('end', function () {
+        if (xr && xr.izvor) xr.izvor.cancel();
+        xr = null; renderer.xr.enabled = false; sloj.hidden = true;
+        korijen.position.set(0, 0, 0); korijen.rotation.set(0, 0, 0); korijen.visible = true;
+        mreza.visible = true; krug.visible = false; velicina();
+      });
+    });
+  }).catch(function (e) {
+    sloj.hidden = true;
+    document.getElementById('ar-poruka').textContent = 'Proširena stvarnost u pregledniku nije se mogla pokrenuti (' + (e && e.message ? e.message : e) + '). Probaj brzi prikaz.';
+  });
+});
+document.getElementById('xr-izlaz').addEventListener('click', function () { if (xr) xr.s.end(); });
+document.getElementById('xr-premjesti').addEventListener('click', function () {
+  if (!xr) return; xr.postavljen = false; korijen.visible = false;
+  uputa.textContent = 'Dodirni krug na podu da ponovno postaviš robota.';
+});
+
+renderer.setAnimationLoop(function (t, frame) {
+  if (frame && xr && !xr.postavljen && xr.izvor) {
+    var r = frame.getHitTestResults(xr.izvor);
+    var p = r.length ? r[0].getPose(renderer.xr.getReferenceSpace()) : null;
+    if (p) { krug.visible = true; krug.matrix.fromArray(p.transform.matrix); uputa.textContent = 'Dodirni krug da postaviš robota.'; }
+    else krug.visible = false;
+  }
+  sunce.position.set(korijen.position.x + 1.2, korijen.position.y + 2.2, korijen.position.z + 1.4);
+  sunce.target.position.copy(korijen.position);
   if (anim && zglobovi.length) {
     var s = (t - t0) / 1000;
     klizaci.forEach(function (k, i) {
@@ -688,7 +806,8 @@ renderer.setAnimationLoop(function (t) {
       k.value = v; postavi(i, v); ispis(i, v);
     });
   }
-  upr.update(); renderer.render(scena, kamera);
+  if (!renderer.xr.isPresenting) upr.update();
+  renderer.render(scena, kamera);
 });
 window.FTQ_AR = { zglobovi: zglobovi, postavi: postavi };
 </script>
