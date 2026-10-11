@@ -101,6 +101,8 @@ function postaviTheta(t) { theta = t; tanjur.rotation.y = t * D2R; }
 // ---------------- predmet (STL / OBJ) ----------------
 let predmet = null, predmetMesh = null, predmetIme = '', modelTri = null;
 const matPredmet = new THREE.MeshStandardMaterial({ color: 0xe8641e, roughness: 0.55, metalness: 0.05, transparent: true });
+const matTekstura = new THREE.MeshStandardMaterial({ roughness: 0.85, metalness: 0, transparent: true });
+let uvPrimjer = null; // UV po vrhu trokuta za primjer sa skena (tekstura iz mobitela)
 function ucitajModelDat(buf, ime) {
   try { modelTri = P.citajModel(buf, ime); predmetIme = ime; postaviPredmet(); }
   catch (e) { $('model-info').textContent = 'Model se nije mogao pročitati: ' + e.message; }
@@ -112,14 +114,31 @@ function postaviPredmet() {
   predmet = { P: M.P, w: M.w * s, h: M.h * s, visina: M.visina * s };
   if (predmetMesh) { predmetG.remove(predmetMesh); predmetMesh.geometry.dispose(); }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(predmet.P, 3)); g.computeVertexNormals(); g.computeBoundingBox();
-  predmetMesh = new THREE.Mesh(g, matPredmet); predmetMesh.castShadow = predmetMesh.receiveShadow = true; predmetG.add(predmetMesh);
+  const imaUV = !!(uvPrimjer && matTekstura.map && uvPrimjer.length === predmet.P.length / 3 * 2);
+  if (imaUV) g.setAttribute('uv', new THREE.BufferAttribute(uvPrimjer, 2));
+  predmetMesh = new THREE.Mesh(g, imaUV ? matTekstura : matPredmet); predmetMesh.castShadow = predmetMesh.receiveShadow = true; predmetG.add(predmetMesh);
   uzorciPovrsine();
   $('model-info').textContent = predmetIme + ': ' + (modelTri.length / 9) + ' trokuta, ' + Math.round(predmet.w) + ' × ' + Math.round(predmet.h) + ' × ' + predmet.visina.toFixed(1) +
     ' mm; površina ' + Math.round(povrsinaUk / 100) + ' cm².' + (Math.max(predmet.w, predmet.h) > PL.d ? ' Predmet je širi od tanjura.' : '');
   obrisiOblak(); pripremi(); primijeniPrikaz();
 }
-$('model-dat').addEventListener('change', e => { const f = e.target.files[0]; if (f) f.arrayBuffer().then(b => ucitajModelDat(b, f.name)); });
-$('model-primjer').addEventListener('click', () => { const bin = Uint8Array.from(atob(window.FTQ_PRIMJER_STL), c => c.charCodeAt(0)); ucitajModelDat(bin.buffer, 'primjer_nosac.stl'); });
+$('model-dat').addEventListener('change', e => { const f = e.target.files[0]; uvPrimjer = null; if (f) f.arrayBuffer().then(b => ucitajModelDat(b, f.name)); });
+$('model-primjer').addEventListener('click', () => {
+  if ($('model-primjer-izbor').value === 'dron') {
+    $('model-info').textContent = 'Učitavam sken mini drona…';
+    const dohvati = u => fetch(u).then(r => { if (!r.ok) throw new Error(u + ': HTTP ' + r.status); return r.arrayBuffer(); });
+    const tekstura = new Promise(ok => new THREE.TextureLoader().load('primjeri/mini_dron_tekstura.jpg', t => ok(t), undefined, () => ok(null)));
+    Promise.all([dohvati('primjeri/mini_dron_iphone17pro.stl'), dohvati('primjeri/mini_dron_uv.bin').catch(() => null), tekstura])
+      .then(([b, uv, t]) => {
+        if (t) { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; if (matTekstura.map) matTekstura.map.dispose(); matTekstura.map = t; matTekstura.needsUpdate = true; }
+        uvPrimjer = uv && t ? new Float32Array(uv) : null;
+        ucitajModelDat(b, 'mini_dron_iphone17pro.stl');
+      }).catch(e => { $('model-info').textContent = 'Sken se nije mogao učitati: ' + e.message; });
+    return;
+  }
+  uvPrimjer = null;
+  const bin = Uint8Array.from(atob(window.FTQ_PRIMJER_STL), c => c.charCodeAt(0)); ucitajModelDat(bin.buffer, 'primjer_nosac.stl');
+});
 ['model-os', 'model-jed', 'model-mj'].forEach(id => $(id).addEventListener('change', postaviPredmet));
 
 // uzorci po površini CAD modela (za pokrivenost): jednoliko po površini, ~1 uzorak na 2 mm²
@@ -184,7 +203,7 @@ function primijeniPrikaz() {
   const v = id => (+$(id).value) / 100, s = $('pr-stanica').value;
   if (N.stol) N.stol.visible = s !== 'robot';
   stalak.visible = s !== 'robot';
-  matPredmet.opacity = v('pr-predmet'); matPredmet.depthWrite = v('pr-predmet') > 0.95; if (predmetMesh) predmetMesh.visible = v('pr-predmet') > 0.001;
+  matPredmet.opacity = matTekstura.opacity = v('pr-predmet'); matPredmet.depthWrite = matTekstura.depthWrite = v('pr-predmet') > 0.95; if (predmetMesh) predmetMesh.visible = v('pr-predmet') > 0.001;
   if (oblak) { oblak.material.opacity = v('pr-oblak'); oblak.visible = v('pr-oblak') > 0.001; }
   if (rupe) rupe.visible = $('pr-rupe').checked;
   if (oznakePoza) oznakePoza.visible = $('pr-poze').checked;
