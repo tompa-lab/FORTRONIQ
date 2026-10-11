@@ -43,8 +43,8 @@ Object.assign(sunce.shadow.camera, { left: -1.4, right: 1.4, top: 1.4, bottom: -
 scena.add(sunce);
 const dop = new THREE.DirectionalLight(0xffffff, 0.6); dop.position.set(-1.5, 1, -1); scena.add(dop);
 const pod = new THREE.Mesh(new THREE.CircleGeometry(2.2, 72), new THREE.ShadowMaterial({ opacity: 0.16 }));
-pod.rotation.x = -Math.PI / 2; pod.receiveShadow = true; scena.add(pod);
-const korijen = new THREE.Group(); scena.add(korijen);         // robot, plo\u010da i dio — u AR-u se postavlja kao cjelina
+pod.rotation.x = -Math.PI / 2; pod.receiveShadow = true;
+const korijen = new THREE.Group(); scena.add(korijen); korijen.add(pod);   // sjena ide s robotom (u AR-u na stol)         // robot, plo\u010da i dio — u AR-u se postavlja kao cjelina
 const mreza = new THREE.PolarGridHelper(1.2, 12, 6, 72); mreza.material.transparent = true; mreza.material.opacity = 0.3; scena.add(mreza);
 function boje() {
   const c = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--teal').trim() || '#17656E');
@@ -798,15 +798,22 @@ function korijenXR() {
   if (xr && xr.sidro && xr.imaPozu) korM.premultiply(pomM.multiplyMatrices(sidroSad, sidroInv0));
   korM.decompose(korijen.position, korijen.quaternion, korijen.scale);
 }
+const XR_INACICA = 'v06';
+function stanjeSidra(t) { const el = $('xr-sidro'); if (el && el.textContent !== t) el.textContent = t; }
+function presidri() {                     // sidro se izgubilo: model ostaje gdje je sada, novo slobodno sidro na tom mjestu
+  sidroP0.copy(korijen.position);
+  const e = new THREE.Euler().setFromQuaternion(korijen.quaternion, 'YXZ'); xrSmjer = e.y - xrZakret;
+  pustiSidro(); korijenXR(); xr.trebaSidro = true; xr.slobodno = true; xr.presidreno++;
+}
 function pustiSidro() { if (xr && xr.sidro) { try { xr.sidro.delete(); } catch (e) { } } if (xr) { xr.sidro = null; xr.imaPozu = false; xr.trebaSidro = false; } }
 function sidriUOkviru(frame, ref) {      // zove se u animacijskom okviru (createAnchor traži aktivan okvir)
   xr.trebaSidro = false;
-  const gotovo = a => { if (!xr || !xr.postavljen) { try { a.delete(); } catch (e) { } return; } xr.sidro = a; xr.imaPozu = false; uputa.textContent = 'Robot i ploča su usidreni na podlozi. Dodirni Crtaj; obilazi ih slobodno.'; };
-  const nijeUspjelo = () => { if (xr) uputa.textContent = 'Robot i ploča su postavljeni (uređaj ne podržava sidra, pa mogu malo plivati). Dodirni Crtaj.'; };
+  const gotovo = a => { if (!xr || !xr.postavljen) { try { a.delete(); } catch (e) { } return; } xr.sidro = a; xr.imaPozu = false; xr.izgubljeno = 0; xr.sidroStanje = 'da'; uputa.textContent = 'Robot i ploča su usidreni na podlozi. Dodirni Crtaj; obilazi ih slobodno.'; };
+  const nijeUspjelo = () => { if (xr) xr.sidroStanje = 'ne'; if (xr && !xr.presidreno) uputa.textContent = 'Robot i ploča su postavljeni (uređaj ne podržava sidra, pa mogu malo plivati). Dodirni Crtaj.'; };
   try {
     const r = xr.izvor ? frame.getHitTestResults(xr.izvor) : [];
     const hp = r.length ? r[0].getPose(ref) : null;
-    if (hp && r[0].createAnchor && Math.hypot(hp.transform.position.x - sidroP0.x, hp.transform.position.y - sidroP0.y, hp.transform.position.z - sidroP0.z) < 0.25) {
+    if (!xr.slobodno && hp && r[0].createAnchor && Math.hypot(hp.transform.position.x - sidroP0.x, hp.transform.position.y - sidroP0.y, hp.transform.position.z - sidroP0.z) < 0.25) {
       r[0].createAnchor().then(gotovo, nijeUspjelo); return;      // sidro vezano uz plohu (pod, stol)
     }
     if (frame.createAnchor) {
@@ -844,9 +851,9 @@ xrGumb.addEventListener('click', () => {
   navigator.xr.requestSession('immersive-ar', { requiredFeatures: ['hit-test'], optionalFeatures: ['dom-overlay', 'anchors'], domOverlay: { root: sloj } }).then(s => {
     renderer.xr.enabled = true; renderer.xr.setReferenceSpaceType('local');
     return renderer.xr.setSession(s).then(() => {
-      xr = { s, izvor: null, postavljen: false, sidro: null, imaPozu: false, trebaSidro: false };
-      mreza.visible = false; pod.visible = false; korijen.visible = false;
-      uputa.textContent = 'Usmjeri kameru prema podu ili stolu i polako pomiči mobitel dok se ne pojavi krug.';
+      xr = { s, izvor: null, postavljen: false, sidro: null, imaPozu: false, trebaSidro: false, slobodno: false, izgubljeno: 0, presidreno: 0, sidroStanje: '', okvir: 0 };
+      mreza.visible = false; pod.material.opacity = 0.32; korijen.visible = false;
+      uputa.textContent = 'Usmjeri kameru prema podu ili stolu i polako pomiči mobitel dok se ne pojavi krug.'; stanjeSidra('');
       s.requestReferenceSpace('viewer').then(vs => s.requestHitTestSource({ space: vs })).then(iz => { if (xr) xr.izvor = iz; });
       s.addEventListener('select', () => {
         if (!xr || xr.postavljen || !krug.visible) return;
@@ -855,26 +862,40 @@ xrGumb.addEventListener('click', () => {
         // okreni cjelinu tako da korisnik gleda plohu za pisanje (kao gumb Pogled na plocu)
         const d = K.unit(K.add(K.mul(ploca.Nn, 0.78), K.mul(ploca.U, -0.62)));
         xrSmjer = Math.atan2(-(c.z - sidroP0.z), c.x - sidroP0.x) - Math.atan2(d[1], d[0]);
-        pustiSidro(); korijenXR(); korijen.visible = true; xr.postavljen = true; xr.trebaSidro = true; krug.visible = false;
+        pustiSidro(); korijenXR(); korijen.visible = true; xr.postavljen = true; xr.trebaSidro = true; xr.slobodno = false; xr.presidreno = 0; xr.sidroStanje = 'čekam'; krug.visible = false;
         uputa.textContent = 'Robot i ploča su postavljeni, sidrim ih na podlogu…';
       });
       s.addEventListener('end', () => {
         if (xr && xr.izvor) xr.izvor.cancel();
         pustiSidro(); xr = null; renderer.xr.enabled = false; sloj.hidden = true;
         korijen.position.set(0, 0, 0); korijen.rotation.set(0, 0, 0); korijen.scale.set(1, 1, 1); korijen.visible = true;
-        mreza.visible = true; pod.visible = true; krug.visible = false; velicina();
+        mreza.visible = true; pod.material.opacity = 0.16; krug.visible = false; velicina();
       });
     });
   }).catch(e => { sloj.hidden = true; $('ar-poruka').textContent = 'Proširena stvarnost se nije mogla pokrenuti (' + (e && e.message ? e.message : e) + ').'; });
 });
 $('xr-izlaz').addEventListener('click', () => { if (xr) xr.s.end(); });
-$('xr-premjesti').addEventListener('click', () => { if (!xr) return; pustiSidro(); xr.postavljen = false; korijen.visible = false; uputa.textContent = 'Dodirni krug na podu ili stolu da ponovno postaviš robota i ploču.'; });
+$('xr-premjesti').addEventListener('click', () => { if (!xr) return; pustiSidro(); stanjeSidra(''); xr.postavljen = false; korijen.visible = false; uputa.textContent = 'Dodirni krug na podu ili stolu da ponovno postaviš robota i ploču.'; });
 $('xr-crtaj').addEventListener('click', () => $('crtaj').click());
 $('xr-obrisi').addEventListener('click', () => $('obrisi').click());
 $('xr-zakret').addEventListener('input', e => { xrZakret = +e.target.value * Math.PI / 180; if (xr && xr.postavljen) korijenXR(); else korijen.rotation.y = xrSmjer + xrZakret; $('xr-zakret-out').textContent = e.target.value + '\u00b0'; });
 new MutationObserver(() => { $('xr-crtaj').textContent = $('crtaj').textContent; $('xr-crtaj').setAttribute('aria-pressed', $('crtaj').getAttribute('aria-pressed')); })
   .observe($('crtaj'), { childList: true, attributes: true, characterData: true, subtree: true });
 
+function xrKorak(frame, ref) {        // svaki okvir dok je model postavljen: sidro, presidravanje, stanje
+  if (xr.trebaSidro) sidriUOkviru(frame, ref);
+  if (xr.sidro) {
+    const ap = frame.trackedAnchors && !frame.trackedAnchors.has(xr.sidro) ? null : frame.getPose(xr.sidro.anchorSpace, ref);
+    if (ap) { sidroSad.fromArray(ap.transform.matrix); if (!xr.imaPozu) { sidroInv0.copy(sidroSad).invert(); xr.imaPozu = true; } korijenXR(); xr.izgubljeno = 0; }
+    else if (xr.imaPozu && ++xr.izgubljeno > 45) presidri();      // oko 0,75 s bez sidra
+  }
+  if (++xr.okvir % 15 === 0) {
+    const vp = frame.getViewerPose(ref);
+    stanjeSidra(vp && vp.emulatedPosition ? 'Praćenje kamere je slabo: polako pomiči mobitel, osvijetli stol ili stavi papir s uzorkom pod robota.'
+      : xr.sidroStanje === 'da' ? 'Sidro: aktivno' + (xr.presidreno ? ' (obnovljeno ' + xr.presidreno + '×)' : '') + (xr.izgubljeno ? ', traži plohu…' : '') + ' · ' + XR_INACICA
+      : xr.sidroStanje === 'ne' ? 'Sidro: preglednik ga ne podržava · ' + XR_INACICA : 'Sidro: postavljam… · ' + XR_INACICA);
+  }
+}
 let zadnje = 0;
 renderer.setAnimationLoop((t, frame) => {
   const dt = zadnje ? Math.min(0.05, (t - zadnje) / 1000) : 0; zadnje = t;
@@ -888,18 +909,11 @@ renderer.setAnimationLoop((t, frame) => {
     const p = r.length ? r[0].getPose(renderer.xr.getReferenceSpace()) : null;
     if (p) { krug.visible = true; krug.matrix.fromArray(p.transform.matrix); uputa.textContent = 'Dodirni krug da postaviš robota i ploču.'; } else krug.visible = false;
   }
-  if (frame && xr && xr.postavljen) {
-    const ref = renderer.xr.getReferenceSpace();
-    if (xr.trebaSidro) sidriUOkviru(frame, ref);
-    if (xr.sidro) {
-      const ap = frame.trackedAnchors && !frame.trackedAnchors.has(xr.sidro) ? null : frame.getPose(xr.sidro.anchorSpace, ref);
-      if (ap) { sidroSad.fromArray(ap.transform.matrix); if (!xr.imaPozu) { sidroInv0.copy(sidroSad).invert(); xr.imaPozu = true; } korijenXR(); }
-    }
-  }
+  if (frame && xr && xr.postavljen) xrKorak(frame, renderer.xr.getReferenceSpace());
   if (xr) $('xr-napredak').textContent = $('napredak-txt').textContent;
   sunce.position.set(korijen.position.x + 1.2, korijen.position.y + 2.4, korijen.position.z + 1.4); sunce.target.position.copy(korijen.position);
   if (!renderer.xr.isPresenting) upr.update();
   renderer.render(scena, kamera);
 });
 scena.add(sunce.target);
-window.FTQ_CRT = { korijenXR, sidroP0, sidroSad, sidroInv0, korijen, set xrTest(v) { xr = v; }, K, P, PL, ploca, prog, postavi, racunajKartu, pripremi, stanjeTocke, get q() { return q; } };
+window.FTQ_CRT = { korijenXR, xrKorak, get xrStanje() { return xr; }, sidroP0, sidroSad, sidroInv0, korijen, set xrTest(v) { xr = v; }, K, P, PL, ploca, prog, postavi, racunajKartu, pripremi, stanjeTocke, get q() { return q; } };
