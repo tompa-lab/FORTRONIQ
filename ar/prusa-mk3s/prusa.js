@@ -33,7 +33,7 @@ const upr = new OrbitControls(kamera, renderer.domElement);
 upr.enableDamping = true; upr.minDistance = 0.06; upr.maxDistance = 6; upr.maxPolarAngle = Math.PI * 0.495;
 scena.add(new THREE.HemisphereLight(0xffffff, 0x8899a0, 1.5));
 const sunce = new THREE.DirectionalLight(0xffffff, 1.8);
-sunce.position.set(0.6, 1.4, 0.9); sunce.castShadow = true; sunce.shadow.mapSize.set(2048, 2048);
+sunce.position.set(0.6, 1.4, 0.9); sunce.castShadow = true; sunce.shadow.mapSize.set(2048, 2048); sunce.shadow.bias = -0.0004; sunce.shadow.normalBias = 0.0015;
 Object.assign(sunce.shadow.camera, { left: -0.6, right: 0.6, top: 0.6, bottom: -0.6, near: 0.2, far: 4 });
 scena.add(sunce); scena.add(sunce.target);
 const dop = new THREE.DirectionalLight(0xffffff, 0.6); dop.position.set(-1, 0.8, -0.6); scena.add(dop);
@@ -74,6 +74,15 @@ glbLoader.load('prusa_mk3s.glb', g => {
   const premjesti = [];
   g.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } if (o.name && /^os_[xyz]_/.test(o.name)) premjesti.push(o); });
   premjesti.forEach(o => ({ os_y: osY, os_z: osZ, os_x: osX })[o.name.slice(0, 4)].attach(o));
+  osY.traverse(o => { if (o.isMesh && o.material) { o.material = o.material.clone(); o.material.side = THREE.DoubleSide; } });
+  // čelična ploča za ispis: puna ploha 252 × 241 mm preko ploče iz CAD-a (tanka ploča s urezanim natpisima u CAD-u ima šupljine nakon pojednostavljenja)
+  const ploca = new THREE.Mesh(new THREE.BoxGeometry(252, 241, 1.0), new THREE.MeshStandardMaterial({ color: 0x8f9396, roughness: 0.55, metalness: 0.35 }));
+  ploca.position.set(125, 105, -0.52); ploca.receiveShadow = true; stol.add(ploca);
+  const natpis = document.createElement('canvas'); natpis.width = 1024; natpis.height = 980;
+  { const c = natpis.getContext('2d'); c.fillStyle = '#8f9396'; c.fillRect(0, 0, 1024, 980); c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 3; c.strokeRect(4 + 1 * 1024 / 252, 4 + 15.5 * 980 / 241, 250 * 1024 / 252 - 8, 210 * 980 / 241 - 8);
+    c.fillStyle = 'rgba(255,255,255,.55)'; c.font = '600 34px IBM Plex Sans, Arial'; c.fillText('ORIGINAL PRUSA i3 MK3S', 600, 940); c.font = '26px IBM Plex Sans, Arial'; c.fillText('Print area 250 × 210', 30, 940); }
+  const tx = new THREE.CanvasTexture(natpis); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4;
+  ploca.material = [ploca.material, ploca.material, ploca.material, ploca.material, new THREE.MeshStandardMaterial({ map: tx, roughness: 0.55, metalness: 0.35 }), ploca.material];
   pisacUcitan = true; $('ucitavanje').remove(); postaviOsi(HOME.X, HOME.Y, HOME.Z);
   pogled('pisac'); window.FTQ_SPREMNO = true;
 }, undefined, () => { $('ucitavanje').textContent = 'Model pisača se nije mogao učitati. Stranicu otvori preko poslužitelja, ne izravno iz datoteke.'; });
