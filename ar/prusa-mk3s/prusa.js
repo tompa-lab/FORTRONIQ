@@ -675,4 +675,9 @@ materijal();
 $('s-ispuna-out').textContent = $('s-ispuna').value + ' %';
 legenda();
 window.FTQ_PRUSA = { M, igra, get rez() { return rez; }, get gkod() { return gkodTekst; }, postaviT, primjer, datoteka, postaviOsi, HOME, CAD };
-primjer('n14');
+(async () => {   // model poslan s druge stranice (npr. skener: ?iz=skener)
+  if (/[?&]iz=/.test(location.search) && window.FTQ_PRIJENOS) {
+    try { const m = await window.FTQ_PRIJENOS.uzmi(); if (m && m.buf) { const r = CIT.stl(m.buf); postaviModel(r.T, m.ime, 'preneseno sa stranice skenera', null); return; } } catch (e) { }
+  }
+  primjer('n14');
+})();
