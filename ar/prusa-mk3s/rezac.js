@@ -402,6 +402,17 @@
     return { trokuta: n, volumen: Math.abs(V) / 1000, povrsina: A / 100, prepust: Ap / 100, dodir: Ak / 100, lo, hi, otvoreni, viseStruki, krivi, okrenut: V < 0 };
   }
 
-  glob.FTQ_REZAC = { izreži, gkod, dodajM73, analiza, presjekTraga };
+  // presjeci za slojeviti model (CO₂ laser, karton): obrisi na zadanim visinama u mm, otoci s rupama, pomak za širinu reza
+  function presjeciMm(T, zs, dodatak) {
+    const M = pripremiTrokute(T);
+    return zs.map(z => {
+      let P = CL.Clipper.SimplifyPolygons(presjek(M, z).map(uC), PFT.pftEvenOdd);
+      P = ocisti(CL.Clipper.CleanPolygons(P, 0.02 * SK), 0.5);
+      if (dodatak) P = pomak(P, dodatak);
+      return P;
+    });
+  }
+  const alati = { SK, uC, izC, unija, razlika, presjekP, pomak, otoci, odrezi, ocisti, povrsina, granice };
+  glob.FTQ_REZAC = { izreži, gkod, dodajM73, analiza, presjekTraga, presjeciMm, alati };
   if (typeof module !== 'undefined') module.exports = glob.FTQ_REZAC;
 })(typeof self !== 'undefined' ? self : (typeof window !== 'undefined' ? window : globalThis));
