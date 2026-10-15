@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutoCAD upute P09 — radionički crtež ploče P09, korak po korak — Tehnička dokumentacija | FORTRONIQ</title>
+<meta name="description" content="Projektni dio P09 u AutoCAD-u korak po korak: od CNC-crteža do radioničkog crteža ploče P09 — tlocrt, lomljeni presjek A-A, kote od baza A i B, dubine, hrapavost i zaglavlje na listu A4 u mjerilu 1:2. Animacija crteža uz svaki korak.">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/tehnicka-dokumentacija/AutoCAD_P09_upute_v1.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="AutoCAD upute P09 — radionički crtež ploče P09, korak po korak">
+<meta property="og:description" content="Projektni dio P09 u AutoCAD-u korak po korak: od CNC-crteža do radioničkog crteža ploče P09 — tlocrt, lomljeni presjek A-A, kote od baza A i B, dubine, hrapavost i zaglavlje na listu A4 u mjerilu 1:2. Animacija crteža uz svaki korak.">
+<meta property="og:url" content="https://dos.fortroniq.hr/tehnicka-dokumentacija/AutoCAD_P09_upute_v1.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- dodaci DOS graditelja */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+figure.crtez .st{stroke-dasharray:14 4 2 4}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+</style>
+<style>
+.uvodni{font-size:1.08em}
+.okvir-info,.savjet{border-left:4px solid var(--teal);background:var(--tanko);border-radius:0 10px 10px 0;padding:.8rem 1rem;margin:0 0 1.1rem}
+.savjet{border-left-color:var(--cyan)}
+.okvir-info p,.savjet p{margin:0;text-align:left}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.92em;background:var(--tanko);border:1px solid var(--rule);border-radius:5px;padding:.05em .32em;white-space:nowrap}
+code.cmd{font-weight:600;color:var(--teal);cursor:copy;border-color:var(--teal)}
+code.cmd.kopirano{background:var(--teal);color:#fff}
+kbd{font-family:inherit;font-size:.85em;font-weight:600;border:1px solid var(--rule);border-bottom-width:3px;border-radius:5px;padding:.02em .4em;background:var(--paper);color:var(--ink);white-space:nowrap}
+.korak{position:relative;border:1px solid var(--rule);border-radius:14px;padding:1rem 1rem .4rem;margin:0 0 1.1rem;background:var(--paper);scroll-margin-top:60px}
+.korak.gotov{border-color:var(--teal);box-shadow:inset 4px 0 0 var(--teal)}
+.korak h3{margin:0 0 .7rem;padding-right:6.5rem;display:flex;gap:.6rem;align-items:flex-start;font-size:1.08em}
+.korak .br{flex:0 0 auto;width:2rem;height:2rem;border-radius:50%;background:var(--teal);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.95rem}
+.korak.gotov .br{background:var(--cyan);color:#06262B}
+.kv{position:absolute;top:.9rem;right:.9rem;display:flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:600;color:var(--teal);cursor:pointer;border:1px solid var(--teal);border-radius:999px;padding:.25rem .65rem;background:var(--paper)}
+.kv input{width:1.1rem;height:1.1rem;accent-color:var(--teal);margin:0}
+.korak ol.tekst li,.korak ul li,.korak p{text-align:left}
+.korak ul{margin:.3rem 0 .3rem 1.1rem;padding:0}
+.provjera{font-size:.94em;background:var(--tanko);border-radius:10px;padding:.6rem .8rem;text-align:left}
+.napredak{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;border:1px solid var(--rule);border-radius:12px;padding:.7rem 1rem;margin:0 0 1rem}
+.napredak .traka-n{flex:1 1 160px;height:10px;border-radius:999px;background:var(--rule);overflow:hidden}
+.napredak .traka-n i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.kontrola li{text-align:left}
+figure.crtez.mob svg{min-width:0}
+@media (max-width:680px){
+ .korak{padding:.9rem .8rem .3rem}
+ .korak h3{padding-right:0;padding-top:2.3rem}
+ .kv{top:.7rem;right:.7rem}
+ .tablica-omot table{font-size:.88rem}
+ code{white-space:normal;word-break:break-word}
+}
+</style>
+
+<style>
+/* --- v2: animacija crteža po koracima --- */
+.film{border:1px solid var(--rule);border-radius:14px;background:var(--paper);padding:.8rem;margin:0 0 1.4rem}
+.film h3{margin:0 0 .5rem;font-size:1.05em}
+.film .natpis{min-height:3.1em;margin:.5rem 0 .6rem;text-align:left;font-size:.95em}
+.film .natpis b{color:var(--teal)}
+.kontrole{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.kontrole button{font:inherit;font-weight:600;font-size:.9rem;border:1px solid var(--teal);color:var(--teal);background:var(--paper);border-radius:999px;padding:.45rem .95rem;cursor:pointer;min-height:44px}
+.kontrole button.glavni{background:var(--teal);color:#fff}
+.kontrole button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+.tockice{display:flex;flex-wrap:wrap;gap:4px;margin-top:.6rem}
+.tockice button{width:26px;height:26px;border-radius:50%;border:1px solid var(--rule);background:var(--tanko);color:var(--body);font:600 .7rem/1 var(--pismo);padding:0;cursor:pointer}
+.tockice button.na{background:var(--teal);border-color:var(--teal);color:#fff}
+figure.anim{margin:.4rem 0 1rem;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--paper);position:relative}
+figure.anim figcaption{font-size:.82rem;color:var(--body);padding:.35rem .6rem;border-top:1px solid var(--rule);display:flex;justify-content:space-between;gap:.6rem;align-items:center}
+figure.anim figcaption button{font:inherit;font-weight:600;color:var(--teal);background:none;border:1px solid var(--teal);border-radius:999px;padding:.2rem .7rem;cursor:pointer;min-height:32px}
+svg.p14anim{display:block;width:100%;height:auto;max-height:70vh;background:var(--paper)}
+.p14anim .papir{fill:var(--paper)}
+.p14anim .el{fill:none;stroke-linecap:round;stroke-linejoin:round;transition:opacity .4s}
+.p14anim .v,.p14anim .f{color:var(--ink)}
+.p14anim .v path,.p14anim .v circle{stroke:currentColor;stroke-width:calc(var(--s,1) * 2.2px)}
+.p14anim .f path{stroke:currentColor;stroke-width:calc(var(--s,1) * 3px)}
+.p14anim .o{color:var(--body)}
+.p14anim .o path{stroke:currentColor;stroke-width:calc(var(--s,1) * 1.1px);stroke-dasharray:12 3 1.5 3}
+.p14anim .k{color:var(--teal)}
+.p14anim .k path{stroke:currentColor;stroke-width:calc(var(--s,1) * 1.1px)}
+.p14anim .h path{stroke:var(--body);stroke-width:calc(var(--s,1) * .8px);stroke-dasharray:4 3;opacity:.55}
+.p14anim .s path{stroke:none;fill:url(#ftq-srafura)}
+.p14anim .fill{fill:currentColor;stroke:none}
+.p14anim text{fill:currentColor;stroke:none;font-family:var(--pismo);font-weight:600}
+.p14anim .el.skriven{opacity:0;pointer-events:none}
+.p14anim .el.novo{color:var(--cyan)}
+.p14anim .el.novo.s path{fill:url(#ftq-srafura-novo)}
+.p14anim .el.igra.crta path:not(.fill),.p14anim .el.igra.crta circle{stroke-dasharray:1;stroke-dashoffset:1;animation:ftq-crtaj 1.1s ease forwards}
+.p14anim .el.igra:not(.crta){animation:ftq-pojavi .8s ease both}
+@keyframes ftq-crtaj{to{stroke-dashoffset:0}}
+@keyframes ftq-pojavi{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.p14anim .el.igra.crta path,.p14anim .el.igra.crta circle,.p14anim .el.igra{animation:none!important;stroke-dashoffset:0}}
+figure.snimka{margin:.6rem 0 1rem;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--tanko)}
+figure.snimka img{display:block;width:100%;height:auto}
+figure.snimka figcaption{font-size:.82rem;color:var(--body);padding:.4rem .6rem;background:var(--paper);border-top:1px solid var(--rule);text-align:left}
+.tablica-omot{overflow-x:auto}
+.tablica-omot code{white-space:nowrap!important;word-break:normal!important}
+.sam{border:2px dashed var(--teal);border-radius:14px;padding:1rem}
+.sam ol li{text-align:left}
+.p14anim .n{color:var(--ink)} .p14anim .n path,.p14anim .n circle{stroke:currentColor;stroke-width:calc(var(--s,1)*1.1px);stroke-dasharray:3 1}
+.p14anim .r{color:var(--ink)} .p14anim .r path{stroke:currentColor;stroke-width:calc(var(--s,1)*2.2px);stroke-dasharray:12 3 1.5 3}
+.p14anim .p{color:var(--body)} .p14anim .p path{stroke:currentColor;stroke-width:calc(var(--s,1)*1.1px);stroke-dasharray:12 2 1 2 1 2}
+.p14anim .o circle{stroke:currentColor;stroke-width:calc(var(--s,1)*1.1px);stroke-dasharray:6 2 1 2}
+.p14anim .k circle{stroke:currentColor;stroke-width:calc(var(--s,1)*1.1px)}
+.p14anim .f path{stroke-width:calc(var(--s,1)*3px)}
+.p14anim .s.sit path{fill:url(#ftq-sraf-sit)} .p14anim .el.novo.s.sit path{fill:url(#ftq-sraf-sit-novo)}
+.p14anim .k ellipse,.p14anim .v ellipse{stroke:currentColor}
+.p14anim .s.pun:not(.novo){color:var(--ink)} .p14anim .s.pun path{fill:currentColor}
+.p14anim .s.sit135 path{fill:url(#ftq-sraf-sit135)} .p14anim .el.novo.s.sit135 path{fill:url(#ftq-sraf-sit-novo)}
+.snimka img{background:#1e2430}
+</style>
+
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><pattern id="ftq-srafura" patternUnits="userSpaceOnUse" width="4.76" height="4.76" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4.76" style="stroke:var(--body);stroke-width:.6"/></pattern><pattern id="ftq-srafura-novo" patternUnits="userSpaceOnUse" width="4.76" height="4.76" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4.76" style="stroke:var(--cyan);stroke-width:.8"/></pattern><pattern id="ftq-sraf-sit" patternUnits="userSpaceOnUse" width="1.5" height="1.5" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="1.5" style="stroke:var(--body);stroke-width:.14"/></pattern><pattern id="ftq-sraf-sit-novo" patternUnits="userSpaceOnUse" width="1.5" height="1.5" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="1.5" style="stroke:var(--cyan);stroke-width:.22"/></pattern><pattern id="ftq-sraf-sit135" patternUnits="userSpaceOnUse" width="1.5" height="1.5" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="1.5" style="stroke:var(--body);stroke-width:.14"/></pattern></defs></svg><template id="p14-predlozak"><svg class="p14anim" viewBox="0 0 428 602" role="img" aria-label="Ploča P09 nastaje korak po korak"><rect class="papir" x="0" y="0" width="428" height="602"/><g class="el h" data-od="3" data-do="999"><path d="M4.00,598.00 L424.00,598.00 L424.00,4.00 L4.00,4.00 Z"/></g><g class="el f crta" data-od="3" data-do="999"><path pathLength="1" d="M44.00,578.00 L404.00,578.00 L404.00,24.00 L44.00,24.00 Z"/></g><g class="el f crta" data-od="3" data-do="999"><path pathLength="1" d="M214.00,4.00 L214.00,34.00"/></g><g class="el f crta" data-od="3" data-do="999"><path pathLength="1" d="M214.00,598.00 L214.00,578.00"/></g><g class="el f crta" data-od="3" data-do="999"><path pathLength="1" d="M4.00,301.00 L54.00,301.00"/></g><g class="el f crta" data-od="3" data-do="999"><path pathLength="1" d="M424.00,301.00 L394.00,301.00"/></g><g class="el f crta" data-od="3" data-do="999"><path pathLength="1" d="M44.00,578.00 L404.00,578.00 L404.00,486.00 L44.00,486.00 Z"/></g><g class="el f crta" data-od="3" data-do="999"><path pathLength="1" d="M44.00,506.00 L404.00,506.00"/></g><g class="el f crta" data-od="3" data-do="999"><path pathLength="1" d="M144.00,578.00 L144.00,506.00"/></g><g class="el f crta" data-od="3" data-do="999"><path pathLength="1" d="M294.00,578.00 L294.00,506.00"/></g><g class="el k" data-od="3" data-do="999"><path d="M104.00,506.00 L104.00,486.00"/></g><g class="el k" data-od="3" data-do="999"><path d="M204.00,506.00 L204.00,486.00"/></g><g class="el k" data-od="3" data-do="999"><path d="M264.00,506.00 L264.00,486.00"/></g><g class="el k" data-od="3" data-do="999"><path d="M324.00,506.00 L324.00,486.00"/></g><g class="el k" data-od="3" data-do="999"><path d="M44.00,530.00 L144.00,530.00"/></g><g class="el k" data-od="3" data-do="999"><path d="M44.00,554.00 L144.00,554.00"/></g><g class="el k" data-od="3" data-do="999"><path d="M144.00,530.00 L294.00,530.00"/></g><g class="el k" data-od="3" data-do="999"><path d="M294.00,530.00 L404.00,530.00"/></g><g class="el k" data-od="3" data-do="999"><path d="M294.00,554.00 L404.00,554.00"/></g><g class="el k" data-od="3" data-do="999"><path d="M330.00,578.00 L330.00,530.00"/></g><g class="el k" data-od="3" data-do="999"><text x="46.50" y="493.50" font-size="4.75" text-anchor="start">Mjerilo</text></g><g class="el k" data-od="3" data-do="999"><text x="106.50" y="493.50" font-size="4.75" text-anchor="start">Materijal</text></g><g class="el k" data-od="3" data-do="999"><text x="206.50" y="493.50" font-size="4.75" text-anchor="start">Masa</text></g><g class="el k" data-od="3" data-do="999"><text x="266.50" y="493.50" font-size="4.75" text-anchor="start">Projekcija</text></g><g class="el k" data-od="3" data-do="999"><text x="326.50" y="493.50" font-size="4.75" text-anchor="start">Opće tolerancije</text></g><g class="el k" data-od="3" data-do="999"><text x="46.50" y="513.50" font-size="4.75" text-anchor="start">Izradio</text></g><g class="el k" data-od="3" data-do="999"><text x="46.50" y="537.50" font-size="4.75" text-anchor="start">Odobrio</text></g><g class="el k" data-od="3" data-do="999"><text x="46.50" y="561.50" font-size="4.75" text-anchor="start">Vrsta dokumenta</text></g><g class="el k" data-od="3" data-do="999"><text x="146.50" y="513.50" font-size="4.75" text-anchor="start">Vlasnik</text></g><g class="el k" data-od="3" data-do="999"><text x="146.50" y="537.50" font-size="4.75" text-anchor="start">Naziv</text></g><g class="el k" data-od="3" data-do="999"><text x="296.50" y="513.50" font-size="4.75" text-anchor="start">Broj dokumenta</text></g><g class="el k" data-od="3" data-do="999"><text x="296.50" y="537.50" font-size="4.75" text-anchor="start">Izm.</text></g><g class="el k" data-od="3" data-do="999"><text x="332.50" y="537.50" font-size="4.75" text-anchor="start">Datum izdavanja</text></g><g class="el k" data-od="3" data-do="999"><text x="296.50" y="561.50" font-size="4.75" text-anchor="start">Jezik</text></g><g class="el k" data-od="3" data-do="999"><text x="332.50" y="561.50" font-size="4.75" text-anchor="start">List</text></g><g class="el k" data-od="20" data-do="999"><text x="48.00" y="526.00" font-size="6.65" text-anchor="start">Prezime I.</text></g><g class="el k" data-od="20" data-do="999"><text x="48.00" y="550.00" font-size="6.65" text-anchor="start">Prezime I.</text></g><g class="el k" data-od="20" data-do="999"><text x="48.00" y="574.00" font-size="6.65" text-anchor="start">Radionički crtež</text></g><g class="el k" data-od="20" data-do="999"><text x="148.00" y="526.00" font-size="6.65" text-anchor="start">ForTroniQ d.o.o.</text></g><g class="el k" data-od="20" data-do="999"><text x="298.00" y="550.00" font-size="6.65" text-anchor="start">A</text></g><g class="el k" data-od="20" data-do="999"><text x="334.00" y="550.00" font-size="6.65" text-anchor="start">2026-11-27</text></g><g class="el k" data-od="20" data-do="999"><text x="298.00" y="574.00" font-size="6.65" text-anchor="start">hr</text></g><g class="el k" data-od="20" data-do="999"><text x="48.00" y="503.60" font-size="6.65" text-anchor="start">1:2</text></g><g class="el k" data-od="20" data-do="999"><text x="108.00" y="503.60" font-size="6.65" text-anchor="start">EN AW-6082 T6</text></g><g class="el k" data-od="20" data-do="999"><text x="208.00" y="503.60" font-size="6.65" text-anchor="start">1,18 kg</text></g><g class="el k" data-od="20" data-do="999"><text x="328.00" y="503.60" font-size="6.65" text-anchor="start">ISO 2768-m</text></g><g class="el k" data-od="20" data-do="999"><text x="148.00" y="558.80" font-size="9.50" text-anchor="start">Ploča P09</text></g><g class="el k" data-od="20" data-do="999"><text x="148.00" y="571.20" font-size="4.75" text-anchor="start">radionički crtež</text></g><g class="el k" data-od="20" data-do="999"><text x="298.00" y="526.00" font-size="9.50" text-anchor="start">TD-2026-P09-01</text></g><g class="el k" data-od="20" data-do="999"><text x="334.00" y="574.00" font-size="6.65" text-anchor="start">1/1</text></g><g class="el v crta" data-od="20" data-do="999"><path pathLength="1" d="M276.50,502.80 L292.75,505.92 L292.75,494.68 L276.50,497.80 Z"/></g><g class="el o" data-od="20" data-do="999"><path d="M273.40,500.30 L296.00,500.30"/></g><g class="el v crta" data-od="20" data-do="999"><circle pathLength="1" cx="309.00" cy="500.30" r="5.62"/></g><g class="el v crta" data-od="20" data-do="999"><circle pathLength="1" cx="309.00" cy="500.30" r="2.5"/></g><g class="el o" data-od="20" data-do="999"><path d="M300.20,500.30 L317.80,500.30"/></g><g class="el v crta" data-od="4" data-do="999"><path pathLength="1" d="M164.00,358.00 L344.00,358.00 L344.00,178.00 L164.00,178.00 Z"/></g><g class="el o" data-od="4" data-do="999"><path d="M249.00,258.00 L249.00,200.00"/></g><g class="el o" data-od="4" data-do="999"><path d="M199.00,223.00 L299.00,223.00"/></g><g class="el v crta" data-od="5" data-do="999"><circle pathLength="1" cx="179.00" cy="343.00" r="5"/></g><g class="el o" data-od="5" data-do="999"><path d="M171.00,343.00 L187.00,343.00"/></g><g class="el o" data-od="5" data-do="999"><path d="M179.00,351.00 L179.00,335.00"/></g><g class="el v crta" data-od="5" data-do="999"><circle pathLength="1" cx="179.00" cy="193.00" r="5"/></g><g class="el o" data-od="5" data-do="999"><path d="M171.00,193.00 L187.00,193.00"/></g><g class="el o" data-od="5" data-do="999"><path d="M179.00,201.00 L179.00,185.00"/></g><g class="el v crta" data-od="5" data-do="999"><circle pathLength="1" cx="329.00" cy="193.00" r="5"/></g><g class="el o" data-od="5" data-do="999"><path d="M321.00,193.00 L337.00,193.00"/></g><g class="el o" data-od="5" data-do="999"><path d="M329.00,201.00 L329.00,185.00"/></g><g class="el v crta" data-od="5" data-do="999"><circle pathLength="1" cx="329.00" cy="343.00" r="5"/></g><g class="el o" data-od="5" data-do="999"><path d="M321.00,343.00 L337.00,343.00"/></g><g class="el o" data-od="5" data-do="999"><path d="M329.00,351.00 L329.00,335.00"/></g><g class="el v crta" data-od="5" data-do="999"><circle pathLength="1" cx="249.00" cy="223.00" r="5"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M304.00,333.00 L199.61,333.00"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M199.61,333.00 L189.00,343.61"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M189.00,343.61 L178.39,333.00"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M178.39,333.00 L189.00,322.39"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M189.00,322.39 L189.00,247.72"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M189.00,247.72 A20.00,20.00 0 0 0 186.89,238.78"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M186.89,238.78 L179.00,223.00"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M179.00,223.00 L179.00,213.00"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M189.00,203.00 A10.00,10.00 0 0 0 179.00,213.00"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M189.00,203.00 L215.46,203.00"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M288.69,203.00 L307.16,203.00"/></g><g class="el v crta" data-od="6" data-do="999"><path pathLength="1" d="M307.16,203.00 L329.00,263.00"/></g><g class="el v crta" data-od="6" data-do="6"><path pathLength="1" d="M215.46,203.00 L288.69,203.00"/></g><g class="el v crta" data-od="7" data-do="999"><path pathLength="1" d="M225.04,215.86 A10.00,10.00 0 0 0 215.46,203.00"/></g><g class="el v crta" data-od="7" data-do="999"><path pathLength="1" d="M225.04,215.86 A25.00,25.00 0 1 0 273.80,219.88"/></g><g class="el v crta" data-od="7" data-do="999"><path pathLength="1" d="M288.69,203.00 A15.00,15.00 0 0 0 273.80,219.88"/></g><g class="el v crta" data-od="8" data-do="999"><path pathLength="1" d="M329.00,263.00 A28.00,28.00 0 0 0 319.00,284.45"/></g><g class="el v crta" data-od="8" data-do="999"><path pathLength="1" d="M319.00,284.45 L319.00,318.00"/></g><g class="el v crta" data-od="8" data-do="999"><path pathLength="1" d="M319.00,318.00 L304.00,333.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M209.00,318.00 L219.00,318.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M219.00,318.00 A10.00,10.00 0 0 0 229.00,308.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M229.00,308.00 L229.00,288.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M229.00,288.00 A10.00,10.00 0 0 0 219.00,278.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M219.00,278.00 L209.00,278.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M209.00,278.00 A10.00,10.00 0 0 0 199.00,288.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M199.00,288.00 L199.00,308.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M199.00,308.00 A10.00,10.00 0 0 0 209.00,318.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M249.00,318.00 L259.00,318.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M259.00,318.00 A10.00,10.00 0 0 0 269.00,308.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M269.00,308.00 L269.00,288.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M269.00,288.00 A10.00,10.00 0 0 0 259.00,278.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M259.00,278.00 L249.00,278.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M249.00,278.00 A10.00,10.00 0 0 0 239.00,288.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M239.00,288.00 L239.00,308.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M239.00,308.00 A10.00,10.00 0 0 0 249.00,318.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M289.00,318.00 L299.00,318.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M299.00,318.00 A10.00,10.00 0 0 0 309.00,308.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M309.00,308.00 L309.00,288.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M309.00,288.00 A10.00,10.00 0 0 0 299.00,278.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M299.00,278.00 L289.00,278.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M289.00,278.00 A10.00,10.00 0 0 0 279.00,288.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M279.00,288.00 L279.00,308.00"/></g><g class="el v crta" data-od="9" data-do="999"><path pathLength="1" d="M279.00,308.00 A10.00,10.00 0 0 0 289.00,318.00"/></g><g class="el v crta" data-od="10" data-do="999"><path pathLength="1" d="M204.00,223.00 A45.00,45.00 0 0 0 294.00,223.00"/></g><g class="el v crta" data-od="10" data-do="999"><path pathLength="1" d="M294.00,223.00 A5.00,5.00 0 0 0 284.00,223.00"/></g><g class="el v crta" data-od="10" data-do="999"><path pathLength="1" d="M214.00,223.00 A35.00,35.00 0 0 0 284.00,223.00"/></g><g class="el v crta" data-od="10" data-do="999"><path pathLength="1" d="M214.00,223.00 A5.00,5.00 0 0 0 204.00,223.00"/></g><g class="el o" data-od="10" data-do="999"><path d="M209.00,223.00 A40.00,40.00 0 0 0 289.00,223.00"/></g><g class="el o" data-od="10" data-do="999"><path d="M209.00,230.00 L209.00,216.00"/></g><g class="el o" data-od="10" data-do="999"><path d="M289.00,230.00 L289.00,216.00"/></g><g class="el o" data-od="11" data-do="999"><path d="M156.00,223.00 L276.00,223.00 L276.00,298.00 L352.00,298.00"/></g><g class="el v crta" data-od="11" data-do="999"><path pathLength="1" d="M156.00,223.00 L168.00,223.00"/></g><g class="el v crta" data-od="11" data-do="999"><path pathLength="1" d="M268.00,223.00 L276.00,223.00 L276.00,231.00"/></g><g class="el v crta" data-od="11" data-do="999"><path pathLength="1" d="M276.00,290.00 L276.00,298.00 L284.00,298.00"/></g><g class="el v crta" data-od="11" data-do="999"><path pathLength="1" d="M340.00,298.00 L352.00,298.00"/></g><g class="el k" data-od="11" data-do="999"><path d="M160.00,223.00 L160.00,237.00"/><path class="fill" d="M160.00,223.00 L161.10,217.00 L158.90,217.00 Z"/></g><g class="el k" data-od="11" data-do="999"><path d="M348.00,298.00 L348.00,312.00"/><path class="fill" d="M348.00,298.00 L349.10,292.00 L346.90,292.00 Z"/></g><g class="el k" data-od="11" data-do="999"><text x="147.00" y="219.00" font-size="6.65" text-anchor="start">A</text></g><g class="el k" data-od="11" data-do="999"><text x="353.00" y="314.00" font-size="6.65" text-anchor="start">A</text></g><g class="el v crta" data-od="12" data-do="999"><path pathLength="1" d="M164.00,98.00 L244.00,98.00 L244.00,88.00 L224.00,88.00 L224.00,78.00 L214.00,78.00 L214.00,81.00 L204.00,81.00 L204.00,78.00 L179.00,78.00 L179.00,88.00 L164.00,88.00 Z"/></g><g class="el s sit" data-od="12" data-do="999"><path fill-rule="evenodd" d="M164.00,98.00 L244.00,98.00 L244.00,88.00 L224.00,88.00 L224.00,78.00 L214.00,78.00 L214.00,81.00 L204.00,81.00 L204.00,78.00 L179.00,78.00 L179.00,88.00 L164.00,88.00 Z"/></g><g class="el v crta" data-od="12" data-do="999"><path pathLength="1" d="M254.00,98.00 L344.00,98.00 L344.00,88.00 L319.00,88.00 L319.00,78.00 L309.00,78.00 L309.00,86.00 L279.00,86.00 L279.00,78.00 L274.00,78.00 L274.00,88.00 L254.00,88.00 Z"/></g><g class="el s sit" data-od="12" data-do="999"><path fill-rule="evenodd" d="M254.00,98.00 L344.00,98.00 L344.00,88.00 L319.00,88.00 L319.00,78.00 L309.00,78.00 L309.00,86.00 L279.00,86.00 L279.00,78.00 L274.00,78.00 L274.00,88.00 L254.00,88.00 Z"/></g><g class="el v crta" data-od="13" data-do="999"><path pathLength="1" d="M204.00,78.00 L214.00,78.00"/></g><g class="el v crta" data-od="13" data-do="999"><path pathLength="1" d="M244.00,88.00 L254.00,88.00"/></g><g class="el v crta" data-od="13" data-do="999"><path pathLength="1" d="M244.00,98.00 L254.00,98.00"/></g><g class="el v crta" data-od="13" data-do="999"><path pathLength="1" d="M279.00,78.00 L309.00,78.00"/></g><g class="el v crta" data-od="13" data-do="999"><path pathLength="1" d="M319.00,78.00 L329.00,78.00"/></g><g class="el v crta" data-od="13" data-do="999"><path pathLength="1" d="M329.00,88.00 L329.00,78.00"/></g><g class="el o" data-od="13" data-do="999"><path d="M249.00,104.00 L249.00,72.00"/></g><g class="el o" data-od="13" data-do="999"><path d="M209.00,86.00 L209.00,72.00"/></g><g class="el k" data-od="13" data-do="999"><text x="124.00" y="64.00" font-size="9.50" text-anchor="start">A-A</text></g><g class="el k pun" data-od="14" data-do="999"><path fill-rule="evenodd" d="M164.00,165.20 L164.00,158.80 L158.46,162.00 Z"/></g><g class="el k" data-od="14" data-do="999"><path d="M164.00,165.20 L164.00,158.80 L158.46,162.00 Z"/></g><g class="el k" data-od="14" data-do="999"><path d="M158.46,162.00 L150.46,162.00"/></g><g class="el k" data-od="14" data-do="999"><path d="M136.46,169.00 L150.46,169.00 L150.46,155.00 L136.46,155.00 Z"/></g><g class="el k" data-od="14" data-do="999"><text x="141.06" y="165.50" font-size="6.65" text-anchor="start">A</text></g><g class="el k pun" data-od="14" data-do="999"><path fill-rule="evenodd" d="M363.20,358.00 L356.80,358.00 L360.00,363.54 Z"/></g><g class="el k" data-od="14" data-do="999"><path d="M363.20,358.00 L356.80,358.00 L360.00,363.54 Z"/></g><g class="el k" data-od="14" data-do="999"><path d="M360.00,363.54 L360.00,371.54"/></g><g class="el k" data-od="14" data-do="999"><path d="M353.00,385.54 L367.00,385.54 L367.00,371.54 L353.00,371.54 Z"/></g><g class="el k" data-od="14" data-do="999"><text x="357.60" y="382.04" font-size="6.65" text-anchor="start">B</text></g><g class="el k" data-od="15" data-do="999"><path d="M164.00,360.00 L164.00,382.00"/><path d="M189.00,345.61 L189.00,382.00"/><path d="M164.00,378.00 L189.00,378.00"/><path class="fill" d="M164.00,378.00 L170.00,379.10 L170.00,376.90 Z"/><path class="fill" d="M189.00,378.00 L183.00,376.90 L183.00,379.10 Z"/><text x="176.50" y="376.00" font-size="6.65" text-anchor="middle">25</text></g><g class="el k" data-od="15" data-do="999"><path d="M164.00,360.00 L164.00,396.00"/><path d="M239.00,320.00 L239.00,396.00"/><path d="M164.00,392.00 L239.00,392.00"/><path class="fill" d="M164.00,392.00 L170.00,393.10 L170.00,390.90 Z"/><path class="fill" d="M239.00,392.00 L233.00,390.90 L233.00,393.10 Z"/><text x="201.50" y="390.00" font-size="6.65" text-anchor="middle">75</text></g><g class="el k" data-od="15" data-do="999"><path d="M164.00,360.00 L164.00,410.00"/><path d="M269.00,320.00 L269.00,410.00"/><path d="M164.00,406.00 L269.00,406.00"/><path class="fill" d="M164.00,406.00 L170.00,407.10 L170.00,404.90 Z"/><path class="fill" d="M269.00,406.00 L263.00,404.90 L263.00,407.10 Z"/><text x="216.50" y="404.00" font-size="6.65" text-anchor="middle">105</text></g><g class="el k" data-od="15" data-do="999"><path d="M164.00,360.00 L164.00,424.00"/><path d="M319.00,320.00 L319.00,424.00"/><path d="M164.00,420.00 L319.00,420.00"/><path class="fill" d="M164.00,420.00 L170.00,421.10 L170.00,418.90 Z"/><path class="fill" d="M319.00,420.00 L313.00,418.90 L313.00,421.10 Z"/><text x="241.50" y="418.00" font-size="6.65" text-anchor="middle">155</text></g><g class="el k" data-od="15" data-do="999"><path d="M164.00,360.00 L164.00,438.00"/><path d="M344.00,360.00 L344.00,438.00"/><path d="M164.00,434.00 L344.00,434.00"/><path class="fill" d="M164.00,434.00 L170.00,435.10 L170.00,432.90 Z"/><path class="fill" d="M344.00,434.00 L338.00,432.90 L338.00,435.10 Z"/><text x="254.00" y="432.00" font-size="6.65" text-anchor="middle">180</text></g><g class="el k" data-od="15" data-do="999"><path d="M162.00,358.00 L140.00,358.00"/><path d="M176.39,333.00 L140.00,333.00"/><path d="M144.00,358.00 L144.00,333.00"/><path class="fill" d="M144.00,358.00 L142.90,364.00 L145.10,364.00 Z"/><path class="fill" d="M144.00,333.00 L145.10,327.00 L142.90,327.00 Z"/><text x="142.00" y="345.50" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 142.00 345.50)">25</text></g><g class="el k" data-od="15" data-do="999"><path d="M162.00,358.00 L126.00,358.00"/><path d="M197.00,318.00 L126.00,318.00"/><path d="M130.00,358.00 L130.00,318.00"/><path class="fill" d="M130.00,358.00 L128.90,364.00 L131.10,364.00 Z"/><path class="fill" d="M130.00,318.00 L131.10,312.00 L128.90,312.00 Z"/><text x="128.00" y="338.00" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 128.00 338.00)">40</text></g><g class="el k" data-od="15" data-do="999"><path d="M162.00,358.00 L112.00,358.00"/><path d="M197.00,278.00 L112.00,278.00"/><path d="M116.00,358.00 L116.00,278.00"/><path class="fill" d="M116.00,358.00 L114.90,364.00 L117.10,364.00 Z"/><path class="fill" d="M116.00,278.00 L117.10,272.00 L114.90,272.00 Z"/><text x="114.00" y="318.00" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 114.00 318.00)">80</text></g><g class="el k" data-od="15" data-do="999"><path d="M162.00,358.00 L98.00,358.00"/><path d="M187.00,243.00 L98.00,243.00"/><path d="M102.00,358.00 L102.00,243.00"/><path class="fill" d="M102.00,358.00 L100.90,364.00 L103.10,364.00 Z"/><path class="fill" d="M102.00,243.00 L103.10,237.00 L100.90,237.00 Z"/><text x="100.00" y="300.50" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 100.00 300.50)">115</text></g><g class="el k" data-od="15" data-do="999"><path d="M162.00,358.00 L84.00,358.00"/><path d="M177.00,223.00 L84.00,223.00"/><path d="M88.00,358.00 L88.00,223.00"/><path class="fill" d="M88.00,358.00 L86.90,364.00 L89.10,364.00 Z"/><path class="fill" d="M88.00,223.00 L89.10,217.00 L86.90,217.00 Z"/><text x="86.00" y="290.50" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 86.00 290.50)">135</text></g><g class="el k" data-od="15" data-do="999"><path d="M162.00,358.00 L70.00,358.00"/><path d="M187.00,203.00 L70.00,203.00"/><path d="M74.00,358.00 L74.00,203.00"/><path class="fill" d="M74.00,358.00 L72.90,364.00 L75.10,364.00 Z"/><path class="fill" d="M74.00,203.00 L75.10,197.00 L72.90,197.00 Z"/><text x="72.00" y="280.50" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 72.00 280.50)">155</text></g><g class="el k" data-od="15" data-do="999"><path d="M162.00,358.00 L56.00,358.00"/><path d="M162.00,178.00 L56.00,178.00"/><path d="M60.00,358.00 L60.00,178.00"/><path class="fill" d="M60.00,358.00 L58.90,364.00 L61.10,364.00 Z"/><path class="fill" d="M60.00,178.00 L61.10,172.00 L58.90,172.00 Z"/><text x="58.00" y="268.00" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 58.00 268.00)">180</text></g><g class="el k" data-od="16" data-do="999"><path d="M164.00,176.00 L164.00,156.00"/><path d="M179.00,191.00 L179.00,156.00"/><path d="M164.00,160.00 L179.00,160.00"/><path class="fill" d="M164.00,160.00 L170.00,161.10 L170.00,158.90 Z"/><path class="fill" d="M179.00,160.00 L173.00,158.90 L173.00,161.10 Z"/><text x="171.50" y="158.00" font-size="6.65" text-anchor="middle">15</text></g><g class="el k" data-od="16" data-do="999"><path d="M164.00,176.00 L164.00,142.00"/><path d="M249.00,201.00 L249.00,142.00"/><path d="M164.00,146.00 L249.00,146.00"/><path class="fill" d="M164.00,146.00 L170.00,147.10 L170.00,144.90 Z"/><path class="fill" d="M249.00,146.00 L243.00,144.90 L243.00,147.10 Z"/><text x="206.50" y="144.00" font-size="6.65" text-anchor="middle">85</text></g><g class="el k" data-od="16" data-do="999"><path d="M164.00,176.00 L164.00,128.00"/><path d="M329.00,191.00 L329.00,128.00"/><path d="M164.00,132.00 L329.00,132.00"/><path class="fill" d="M164.00,132.00 L170.00,133.10 L170.00,130.90 Z"/><path class="fill" d="M329.00,132.00 L323.00,130.90 L323.00,133.10 Z"/><text x="246.50" y="130.00" font-size="6.65" text-anchor="middle">165</text></g><g class="el k" data-od="16" data-do="999"><path d="M346.00,358.00 L370.00,358.00"/><path d="M331.00,343.00 L370.00,343.00"/><path d="M366.00,358.00 L366.00,343.00"/><path class="fill" d="M366.00,358.00 L364.90,364.00 L367.10,364.00 Z"/><path class="fill" d="M366.00,343.00 L367.10,337.00 L364.90,337.00 Z"/><text x="364.00" y="350.50" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 364.00 350.50)">15</text></g><g class="el k" data-od="16" data-do="999"><path d="M346.00,358.00 L384.00,358.00"/><path d="M331.00,263.00 L384.00,263.00"/><path d="M380.00,358.00 L380.00,263.00"/><path class="fill" d="M380.00,358.00 L378.90,364.00 L381.10,364.00 Z"/><path class="fill" d="M380.00,263.00 L381.10,257.00 L378.90,257.00 Z"/><text x="378.00" y="310.50" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 378.00 310.50)">95</text></g><g class="el k" data-od="16" data-do="999"><path d="M346.00,358.00 L398.00,358.00"/><path d="M331.00,193.00 L398.00,193.00"/><path d="M394.00,358.00 L394.00,193.00"/><path class="fill" d="M394.00,358.00 L392.90,364.00 L395.10,364.00 Z"/><path class="fill" d="M394.00,193.00 L395.10,187.00 L392.90,187.00 Z"/><text x="392.00" y="275.50" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 392.00 275.50)">165</text></g><g class="el k" data-od="17" data-do="999"><path d="M199.00,320.00 L199.00,331.00"/><path d="M229.00,320.00 L229.00,331.00"/><path d="M199.00,327.00 L229.00,327.00"/><path class="fill" d="M199.00,327.00 L205.00,328.10 L205.00,325.90 Z"/><path class="fill" d="M229.00,327.00 L223.00,325.90 L223.00,328.10 Z"/><text x="214.00" y="325.00" font-size="6.65" text-anchor="middle">30</text></g><g class="el k" data-od="17" data-do="999"><path d="M229.00,320.00 L229.00,331.00"/><path d="M239.00,320.00 L239.00,331.00"/><path d="M229.00,327.00 L239.00,327.00"/><path class="fill" d="M229.00,327.00 L235.00,328.10 L235.00,325.90 Z"/><path class="fill" d="M239.00,327.00 L233.00,325.90 L233.00,328.10 Z"/><text x="234.00" y="325.00" font-size="6.65" text-anchor="middle">10</text></g><g class="el k" data-od="17" data-do="999"><path d="M269.00,320.00 L269.00,331.00"/><path d="M279.00,320.00 L279.00,331.00"/><path d="M269.00,327.00 L279.00,327.00"/><path class="fill" d="M269.00,327.00 L275.00,328.10 L275.00,325.90 Z"/><path class="fill" d="M279.00,327.00 L273.00,325.90 L273.00,328.10 Z"/><text x="274.00" y="325.00" font-size="6.65" text-anchor="middle">10</text></g><g class="el k" data-od="17" data-do="999"><path d="M279.00,320.00 L279.00,331.00"/><path d="M309.00,320.00 L309.00,331.00"/><path d="M279.00,327.00 L309.00,327.00"/><path class="fill" d="M279.00,327.00 L285.00,328.10 L285.00,325.90 Z"/><path class="fill" d="M309.00,327.00 L303.00,325.90 L303.00,328.10 Z"/><text x="294.00" y="325.00" font-size="6.65" text-anchor="middle">30</text></g><g class="el k" data-od="17" data-do="999"><path d="M181.93,205.93 L196.00,212.00 L202.00,212.00"/><path class="fill" d="M181.93,205.93 L187.87,204.56 L187.00,202.54 Z"/><text x="204.00" y="215.50" font-size="6.65" text-anchor="start">R10</text></g><g class="el k" data-od="17" data-do="999"><path d="M220.46,204.34 L228.00,188.00 L234.00,188.00"/><path class="fill" d="M220.46,204.34 L221.97,210.25 L223.97,209.33 Z"/><text x="236.00" y="191.50" font-size="6.65" text-anchor="start">R10</text></g><g class="el k" data-od="17" data-do="999"><path d="M296.19,205.01 L302.00,188.00 L308.00,188.00"/><path class="fill" d="M296.19,205.01 L297.09,211.04 L299.17,210.33 Z"/><text x="310.00" y="191.50" font-size="6.65" text-anchor="start">R15</text></g><g class="el k" data-od="17" data-do="999"><path d="M232.93,242.15 L238.00,234.00 L244.00,234.00"/><path class="fill" d="M232.93,242.15 L235.17,247.83 L237.03,246.67 Z"/><text x="246.00" y="237.50" font-size="6.65" text-anchor="start">R25</text></g><g class="el k" data-od="17" data-do="999"><path d="M188.49,243.22 L197.00,262.00 L203.00,262.00"/><path class="fill" d="M188.49,243.22 L191.97,238.21 L189.96,237.30 Z"/><text x="205.00" y="265.50" font-size="6.65" text-anchor="start">R20</text></g><g class="el k" data-od="17" data-do="999"><path d="M319.95,277.20 L314.00,258.00 L308.00,258.00"/><path class="fill" d="M319.95,277.20 L317.13,282.61 L319.23,283.26 Z"/><text x="306.00" y="261.50" font-size="6.65" text-anchor="end">R28</text></g><g class="el k" data-od="17" data-do="999"><path d="M266.07,280.93 L272.00,273.00 L278.00,273.00"/><path class="fill" d="M266.07,280.93 L268.78,286.39 L270.55,285.08 Z"/><text x="280.00" y="276.50" font-size="6.65" text-anchor="start">3 × R10</text></g><g class="el k" data-od="17" data-do="999"><path d="M242.05,262.39 L234.00,273.00 L228.00,273.00"/><path class="fill" d="M242.05,262.39 L239.30,256.95 L237.55,258.28 Z"/><text x="226.00" y="276.50" font-size="6.65" text-anchor="end">R40</text></g><g class="el k" data-od="17" data-do="999"><path d="M284.00,221.00 L284.00,208.00"/><path d="M294.00,221.00 L294.00,208.00"/><path d="M284.00,212.00 L294.00,212.00"/><path class="fill" d="M284.00,212.00 L290.00,213.10 L290.00,210.90 Z"/><path class="fill" d="M294.00,212.00 L288.00,210.90 L288.00,213.10 Z"/><text x="289.00" y="210.00" font-size="6.65" text-anchor="middle">10</text></g><g class="el k" data-od="17" data-do="999"><path d="M311.50,325.50 L292.00,344.00 L286.00,344.00"/><path class="fill" d="M311.50,325.50 L307.90,320.57 L306.39,322.17 Z"/><text x="284.00" y="347.50" font-size="6.65" text-anchor="end">15 × 45°</text></g><g class="el k" data-od="17" data-do="999"><path d="M194.30,338.30 L204.00,352.00 L210.00,352.00"/><path class="fill" d="M194.30,338.30 L198.67,334.04 L196.87,332.77 Z"/><text x="212.00" y="355.50" font-size="6.65" text-anchor="start">15 × 15, 45°</text></g><g class="el k" data-od="17" data-do="999"><path d="M182.54,189.46 L192.00,182.00 L198.00,182.00"/><path class="fill" d="M182.54,189.46 L186.57,194.04 L187.93,192.32 Z"/><text x="200.00" y="185.50" font-size="6.65" text-anchor="start">5 × Ø10</text></g><g class="el o" data-od="17" data-do="999"><path d="M329.00,258.00 L329.00,218.00"/></g><g class="el k" data-od="17" data-do="999"><path d="M329.00,223.00 A40.00,40.00 0 0 0 315.32,225.41"/></g><g class="el k" data-od="17" data-do="999"><path d="M329.00,223.00 L321.00,223.00"/><path class="fill" d="M329.00,223.00 L323.00,221.90 L323.00,224.10 Z"/></g><g class="el k" data-od="17" data-do="999"><path d="M315.32,225.41 L322.84,222.68"/><path class="fill" d="M315.32,225.41 L320.58,228.50 L321.33,226.43 Z"/></g><g class="el k" data-od="17" data-do="999"><text x="320.00" y="219.00" font-size="6.65" text-anchor="start">20°</text></g><g class="el k" data-od="18" data-do="999"><path d="M162.00,98.00 L144.00,98.00"/><path d="M162.00,78.00 L144.00,78.00"/><path d="M148.00,98.00 L148.00,78.00"/><path class="fill" d="M148.00,98.00 L146.90,104.00 L149.10,104.00 Z"/><path class="fill" d="M148.00,78.00 L149.10,72.00 L146.90,72.00 Z"/><text x="146.00" y="88.00" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 146.00 88.00)">20</text></g><g class="el k" data-od="18" data-do="999"><path d="M226.00,78.00 L238.00,78.00"/><path d="M232.00,88.00 L230.00,88.00"/><path d="M234.00,78.00 L234.00,88.00"/><path class="fill" d="M234.00,78.00 L235.10,72.00 L232.90,72.00 Z"/><path class="fill" d="M234.00,88.00 L232.90,94.00 L235.10,94.00 Z"/><text x="232.00" y="83.00" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 232.00 83.00)">10</text></g><g class="el k" data-od="18" data-do="999"><path d="M206.00,78.00 L213.00,78.00"/><path d="M207.00,81.00 L205.00,81.00"/><path d="M209.00,78.00 L209.00,81.00"/><path class="fill" d="M209.00,78.00 L210.10,72.00 L207.90,72.00 Z"/><path class="fill" d="M209.00,81.00 L207.90,87.00 L210.10,87.00 Z"/><text x="207.00" y="79.50" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 207.00 79.50)">3</text></g><g class="el k" data-od="18" data-do="999"><path d="M281.00,78.00 L290.00,78.00"/><path d="M284.00,86.00 L282.00,86.00"/><path d="M286.00,78.00 L286.00,86.00"/><path class="fill" d="M286.00,78.00 L287.10,72.00 L284.90,72.00 Z"/><path class="fill" d="M286.00,86.00 L284.90,92.00 L287.10,92.00 Z"/><text x="284.00" y="82.00" font-size="6.65" text-anchor="middle" transform="rotate(-90.0 284.00 82.00)">8</text></g><g class="el k" data-od="19" data-do="999"><path d="M183.23,68.00 L189.00,78.00 L200.55,58.00"/></g><g class="el k" data-od="19" data-do="999"><path d="M183.23,68.00 L194.77,68.00"/></g><g class="el k" data-od="19" data-do="999"><path d="M200.55,58.00 L233.95,58.00"/></g><g class="el k" data-od="19" data-do="999"><text x="202.15" y="66.80" font-size="6.65" text-anchor="start">Ra 1,6</text></g><g class="el k" data-od="19" data-do="999"><path d="M293.23,76.00 L299.00,86.00 L310.55,66.00"/></g><g class="el k" data-od="19" data-do="999"><path d="M293.23,76.00 L304.77,76.00"/></g><g class="el k" data-od="19" data-do="999"><path d="M310.55,66.00 L343.95,66.00"/></g><g class="el k" data-od="19" data-do="999"><text x="312.15" y="74.80" font-size="6.65" text-anchor="start">Ra 3,2</text></g><g class="el k" data-od="19" data-do="999"><text x="56.00" y="458.00" font-size="6.65" text-anchor="start">Opće tolerancije ISO 2768-m.</text></g><g class="el k" data-od="19" data-do="999"><text x="56.00" y="472.00" font-size="6.65" text-anchor="start">Rupe Ø10 prolazne. Bridovi skošeni 0,5 × 45°.</text></g><g class="el k" data-od="19" data-do="999"><path d="M280.23,468.00 L286.00,478.00 L297.55,458.00"/></g><g class="el k" data-od="19" data-do="999"><path d="M280.23,468.00 L291.77,468.00"/></g><g class="el k" data-od="19" data-do="999"><path d="M297.55,458.00 L330.95,458.00"/></g><g class="el k" data-od="19" data-do="999"><text x="299.15" y="466.80" font-size="6.65" text-anchor="start">Ra 6,3</text></g><g class="el k" data-od="19" data-do="999"><text x="334.00" y="475.00" font-size="6.65" text-anchor="start">(</text></g><g class="el k" data-od="19" data-do="999"><path d="M340.23,468.00 L346.00,478.00 L357.55,458.00"/></g><g class="el k" data-od="19" data-do="999"><path d="M340.23,468.00 L351.77,468.00"/></g><g class="el k" data-od="19" data-do="999"><text x="358.00" y="475.00" font-size="6.65" text-anchor="start">)</text></g></svg></template><script type="application/json" id="p14-pogled">{"1": [0, 0, 428, 602], "2": [0, 0, 428, 602], "3": [0, 0, 428, 602], "4": [134, 158, 240, 220], "5": [134, 158, 240, 220], "6": [134, 158, 240, 220], "7": [134, 158, 240, 220], "8": [134, 158, 240, 220], "9": [134, 158, 240, 220], "10": [134, 158, 240, 220], "11": [114, 48, 290, 340], "12": [114, 48, 290, 340], "13": [114, 48, 290, 340], "14": [44, 38, 370, 450], "15": [44, 38, 370, 450], "16": [44, 38, 370, 450], "17": [44, 38, 370, 450], "18": [44, 38, 370, 450], "19": [44, 38, 370, 450], "20": [34, 438, 380, 150], "21": [0, 0, 428, 602], "22": [0, 0, 428, 602], "23": [0, 0, 428, 602], "24": [0, 0, 428, 602], "25": [0, 0, 428, 602], "26": [0, 0, 428, 602], "27": [0, 0, 428, 602], "28": [0, 0, 428, 602], "29": [0, 0, 428, 602], "30": [0, 0, 428, 602], "31": [0, 0, 428, 602], "32": [0, 0, 428, 602], "33": [0, 0, 428, 602], "34": [0, 0, 428, 602], "35": [0, 0, 428, 602], "36": [0, 0, 428, 602], "37": [0, 0, 428, 602], "38": [0, 0, 428, 602], "39": [0, 0, 428, 602]}</script>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Tehnička dokumentacija</a><i aria-hidden="true">/</i><span aria-current="page">AutoCAD upute — P09</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><div><p class="oznaka-modula">TEHNIČKA DOKUMENTACIJA &middot; AUTOCAD UPUTE &middot; PROJEKTNI ZADATAK P09</p><h1>Radionički crtež ploče P09 u AutoCAD-u</h1><p>Ploča P09 (180 × 180 × 20) s otokom, U-utorom, tri džepa, lučnim utorom i pet provrta — od CNC-crteža do radioničkog crteža na listu A4 u mjerilu 1:2. Uz svaki korak animacija crteža.</p></div></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pročitati CNC-crtež ploče (Z-dubine, otok, ishodište) i pretvoriti ga u radionički crtež</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>nacrtati složeni obris s tangencijalnim zaobljenjima (FILLET, ARC, TRIM)</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odabrati lomljeni presjek koji jednim pogledom pokazuje sve dubine</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>kotirati od baza A i B s DIMBASELINE na listu u mjerilu 1:2</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ispuniti zaglavlje s masom i ispisati PDF u mjerilu 1:2</span></li></ul></div></div></header><div class="omot"><section id="o-uputama"><h2>Što radiš</h2><div class="crta"></div>
+<p class="uvodni">Iz CNC-crteža ploče P09 nastaje radionički crtež 01: tlocrt, lomljeni presjek A-A, kote od baza, dubine, hrapavost, napomene i ispunjeno zaglavlje.</p>
+<p>CNC-crtež je pisan za programiranje stroja (ishodište u kutu, dubine kao <code>Z-10</code>, <code>Z-8</code>, <code>Z-3</code>). Radionički crtež mora biti takav da ga radionica izradi, a kontrola provjeri bez dodatnog pitanja: dubine postaju kote u presjeku, položaji kote od baza, svi polumjeri upisani. Uz svaki korak je animacija crteža i kvačica <em>Gotovo</em>.</p>
+<div class="savjet"><p><strong>Za korisnike kojima je dodijeljen dio P09.</strong> Upute se oslanjaju na V4 (kotiranje), V5 (slojevi, stilovi, blokovi baze i hrapavosti) i V6 (radionički crtež ploče P14 u mjerilu 1:2) — ovdje je isti postupak za P09. Upute su napisane prema zadanom CNC-crtežu i <strong>nisu provjerene u AutoCAD-u</strong> korak po korak; koordinate su izračunate. Neke mjere zadani crtež ne kotira ili su dvoznačne — gdje je mjera uzeta kao pretpostavka, to piše u koraku. Ako tvoj zadani crtež kaže drukčije, vrijedi zadani crtež.</p></div>
+<div class="okvir-info"><p><strong>Što predaješ:</strong> <code>TD_2026-2027_Prezime_Ime_P09_01_radionicki.dwg</code> i <code>TD_2026-2027_Prezime_Ime_P09_01_radionicki.pdf</code>, zajedno s crtežima 00 i 02, u <code>TD_2026-2027_Prezime_Ime_P09.zip</code>.<br><strong>Prije početka:</strong> crtež iz V6 (slojevi, stil kota <code>TD_1-2</code>, blokovi <code>BAZA</code> i <code>HRAPAVOST</code>) i zadani CNC-crtež P09.</p></div>
+<div class="savjet"><p><strong>Naredbe</strong> su ispisane ovako: <code class="cmd" tabindex="0">DIMBASELINE</code>; dodirom na mobitelu naredba se kopira. Koordinate se upisuju kao <code>x,y</code> s decimalnom <strong>točkom</strong>. Sve koordinate su u modelu, gdje je list A4 povećan dvaput (mjerilo 1:2).</p></div>
+<div class="napredak" aria-live="polite"><span id="napredak-t">Gotovo 0 / 0 koraka</span><span class="traka-n"><i id="napredak-b"></i></span><button type="button" class="gumb tanki" id="napredak-r">Kreni ispočetka</button></div>
+</section>
+
+<section id="crtez"><h2>Što na kraju treba nastati</h2><div class="crta"></div>
+<div class="film" id="film"><h3>Cijeli crtež, korak po korak</h3><div class="platno"></div><p class="natpis" aria-live="polite"></p><div class="kontrole"><button type="button" data-a="natrag">◀ Natrag</button><button type="button" class="glavni" data-a="igraj" aria-pressed="false">▶ Pokreni</button><button type="button" data-a="dalje">Dalje ▶</button></div><div class="tockice" aria-label="Skok na korak"></div></div>
+<div class="tablica-omot"><table><thead><tr><th>Dio crteža</th><th>Što je na njemu</th><th>Gdje je u modelu</th></tr></thead><tbody><tr><td>tlocrt</td><td>obris 180 × 180, otok (puna visina 20), U-utor R25, 3 džepa, lučni utor R40, 5 × Ø10</td><td>donji lijevi kut ploče u <code>160,240</code></td></tr><tr><td>presjek A-A</td><td>lomljena ravnina kroz lučni utor, provrt Ø10 i džep; debljina 20, dubine 10, 8 i 3</td><td>iznad tlocrta, donja ploha na <code>y = 500</code></td></tr><tr><td>list</td><td>A4 uspravno, okvir i zaglavlje, mjerilo <strong>1:2</strong></td><td><code>0,0</code> – <code>420,594</code> (list ×2)</td></tr></tbody></table></div>
+
+</section>
+
+<section id="koraci-1"><h2>A · Priprema</h2><div class="crta"></div>
+<div class="korak" id="k1"><label class="kv"><input type="checkbox" data-k="k1"><span>Gotovo</span></label>
+<h3><span class="br">1</span> Otvori crtež iz V6 i spremi kao P09</h3>
+<ol class="tekst"><li>Otvori svoj crtež iz V6 i odmah <code class="cmd" tabindex="0">SAVEAS</code> → <code>TD_2026-2027_Prezime_Ime_P09_01_radionicki.dwg</code>.</li><li>Zadrži list 2 (P14, A4 u mjerilu 1:2) i premjesti ga (<code class="cmd" tabindex="0">MOVE</code>) tako da je donji lijevi kut papira u <code>0,0</code>; obriši (<code class="cmd" tabindex="0">ERASE</code>) sve ostalo osim okvira, oznaka i praznog zaglavlja.</li><li>Stil kota <code>TD_1-2</code> (kao <code>TD_1-1</code>, <em>Fit</em> → overall scale <code>2</code>) postavi kao trenutni; <code class="cmd" tabindex="0">CELTSCALE</code> <code>2</code>. U stilu postavi razmak paralelnih kota <code class="cmd" tabindex="0">DIMDLI</code> <code>7</code> (na listu 1:2 to je 14 jedinica u modelu, 7 mm na papiru).</li></ol>
+</div>
+<div class="korak" id="k2"><label class="kv"><input type="checkbox" data-k="k2"><span>Gotovo</span></label>
+<h3><span class="br">2</span> Odluke prije crtanja</h3>
+<ol class="tekst"><li><strong>Glavna projekcija</strong> je tlocrt — u njemu su svi obrisi; bokocrt nije potreban jer sve dubine pokazuje presjek.</li><li><strong>Presjek A-A</strong>: zadani CNC-crtež ga nema, pa je izabrana <strong>lomljena</strong> ravnina: <code>y = 135</code> od lijevog ruba (kroz krajeve lučnog utora Z-3, U-utor i provrt Ø10 u njemu) do <code>x = 112</code>, pa <code>y = 60</code> do desnog ruba (kroz desni džep Z-8). Tako jedan presjek pokazuje sve tri dubine i prolazni provrt.</li><li><strong>Baze</strong> kao na CNC-crtežu (ishodište u donjem lijevom kutu): <strong>A</strong> = lijevi brid, <strong>B</strong> = donji brid.</li><li><strong>Format i mjerilo</strong>: ploča 180 × 180 s kotama ne stane na A4 u mjerilu 1:1 (polje je široko 180 mm). Na A3 položeno 1:1 kote od baze B i baze A ne stanu uredno uz zaglavlje (donji desni kut). Zato <strong>A4 uspravno, mjerilo 1:2</strong>, kao P14 u V6.</li><li><strong>Tumačenje CNC-oznaka</strong>: <code>Z-10</code> = sve oko otoka spušteno 10 mm (otok ostaje puna visina 20), <code>Z-8</code> = džepovi dubine 8, <code>Z-3</code> = lučni utor dubine 3, <code>Z-20 (alle)</code> = svi provrti Ø10 prolazni, <code>t = 20</code> = debljina.</li></ol>
+<p class="provjera"><strong>Masa:</strong> otok je zatvoren obris (izračunata površina 14854 mm²), lučni utor 1335 mm². V = 180 · 180 · 10 + 14854 · 10 − 3 · (30 · 40 − (4 − π) · 10²) · 8 − 1335 · 3 − 5 · π · 5² · 10 ≈ 438 cm³; m = 438 cm³ · 2,70 g/cm³ ≈ <strong>1,18 kg</strong>.</p>
+</div>
+<div class="korak" id="k3"><label class="kv"><input type="checkbox" data-k="k3"><span>Gotovo</span></label>
+<h3><span class="br">3</span> List A4 1:2 i raspored</h3>
+<figure class="anim" data-k="3"><figcaption><span>List A4 u mjerilu 1:2 s okvirom i zaglavljem.</span><button type="button" aria-label="Ponovi animaciju koraka 3">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Okvir lista je od <code>40,20</code> do <code>400,574</code> u modelu, zaglavlje od <code>40,20</code> do <code>400,112</code>.</li><li>Tlocrt: donji lijevi kut ploče u <code>160,240</code> — lijevo ostaje mjesto za sedam paralelnih kota visine, dolje za pet kota širine, desno i gore za kote provrta. Presjek A-A iznad tlocrta, donja ploha na <code>y = 500</code>, u projekcijskoj vezi (isti <code>x</code>).</li></ol>
+</div>
+</section>
+
+<section id="koraci-2"><h2>B · Tlocrt</h2><div class="crta"></div>
+<div class="korak" id="k4"><label class="kv"><input type="checkbox" data-k="k4"><span>Gotovo</span></label>
+<h3><span class="br">4</span> Obris ploče i osi U-utora</h3>
+<figure class="anim" data-k="4"><figcaption><span>Obris 180 × 180 i osi U-utora.</span><button type="button" aria-label="Ponovi animaciju koraka 4">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Sloj <code>01_VIDLJIVO</code>: <code class="cmd" tabindex="0">RECTANG</code> <code>160,240</code> → <code>@180,180</code>.</li><li>Sloj <code>03_OSI</code>: osi U-utora kroz <code>245,375</code> — <code>245,340</code> → <code>245,398</code> i <code>195,375</code> → <code>295,375</code>.</li></ol>
+</div>
+<div class="korak" id="k5"><label class="kv"><input type="checkbox" data-k="k5"><span>Gotovo</span></label>
+<h3><span class="br">5</span> Provrti 5 × Ø10</h3>
+<figure class="anim" data-k="5"><figcaption><span>Pet prolaznih provrta Ø10.</span><button type="button" aria-label="Ponovi animaciju koraka 5">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li><code class="cmd" tabindex="0">CIRCLE</code> polumjer <code>5</code> u <code>175,255</code>, <code>175,405</code>, <code>325,405</code>, <code>325,255</code>, <code>245,375</code> (peti je u središtu U-utora).</li><li>Križ osi ±8 oko četiri kutna provrta na <code>03_OSI</code> (kao u V2).</li></ol>
+<p class="provjera"><strong>Pretpostavka:</strong> kružnica u središtu U-utora na zadanom crtežu nije posebno označena; uzeta je kao peti provrt Ø10 jer oznaka <code>Z-20 (alle)</code> vrijedi za sve provrte.</p>
+</div>
+<div class="korak" id="k6"><label class="kv"><input type="checkbox" data-k="k6"><span>Gotovo</span></label>
+<h3><span class="br">6</span> Otok: obris ravnim crtama, R10 i R20</h3>
+<figure class="anim" data-k="6"><figcaption><span>Otok: romb, lijevi rub s R20, kut R10, gornji brid i kosina 20°.</span><button type="button" aria-label="Ponovi animaciju koraka 6">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Sloj <code>01_VIDLJIVO</code>, <code class="cmd" tabindex="0">LINE</code> u jednom potezu: <code>300,265</code> → <code>195.607,265</code> → <code>185,254.393</code> → <code>174.393,265</code> → <code>185,275.607</code> → <code>185,355</code> → <code>175,375</code> → <code>175,395</code> → <code>303.162,395</code> → <code>325,335</code> → <kbd>Enter</kbd>.</li><li><code class="cmd" tabindex="0">FILLET</code> <code>R</code> <code>20</code> → crte u kutu <code>185,355</code>; <code class="cmd" tabindex="0">FILLET</code> <code>R</code> <code>10</code> → crte u kutu <code>175,395</code>.</li><li>Romb u donjem lijevom kutu je kvadrat 15 × 15 zakrenut 45° sa središtem u kutu otoka <code>185,265</code>: vrhovi su 15/√2 = 10,607 mm od središta. Gornji brid otoka zasad ide preko U-utora — reže se u idućem koraku.</li></ol>
+<p class="provjera"><strong>Iz kota:</strong> kosina 20° desno: gornji kut otoka je na x = 165 − 60 · tg 20° = 143,162 (lokalno), u modelu <code>303.162,395</code>.</p>
+</div>
+<div class="korak" id="k7"><label class="kv"><input type="checkbox" data-k="k7"><span>Gotovo</span></label>
+<h3><span class="br">7</span> U-utor R25 sa zaobljenjima R10 i R15</h3>
+<figure class="anim" data-k="7"><figcaption><span>U-utor R25, lijevo R10 i desno R15.</span><button type="button" aria-label="Ponovi animaciju koraka 7">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li><code class="cmd" tabindex="0">CIRCLE</code> <code>245,375</code> polumjer <code>25</code>.</li><li><code class="cmd" tabindex="0">TRIM</code>: odreži gornji brid unutar kružnice i gornji dio kružnice iznad brida (ostaje donji luk U-utora).</li><li><code class="cmd" tabindex="0">FILLET</code> <code>R</code> <code>10</code> → lijevi dio gornjeg brida i luk R25; <code class="cmd" tabindex="0">FILLET</code> <code>R</code> <code>15</code> → desni dio gornjeg brida i luk R25.</li></ol>
+<p class="provjera"><strong>Kontrola:</strong> točke dodira: R10 na bridu <code>211.459,395</code>, na luku <code>221.042,382.143</code>; R15 na bridu <code>284.686,395</code>, na luku <code>269.804,378.125</code>.</p>
+<p class="provjera"><strong>Pretpostavka:</strong> zadani crtež na prijelazima brida u R25 ima ostatke luka R25 do gornjeg brida („rogove”) — uzeto je da su to ostaci crtanja i da brid prelazi u R25 zaobljenjima. Lijevo zaobljenje na zadanom crtežu nije kotirano — uzeto <strong>R10</strong> (izmjereno sa slike).</p>
+</div>
+<div class="korak" id="k8"><label class="kv"><input type="checkbox" data-k="k8"><span>Gotovo</span></label>
+<h3><span class="br">8</span> Otok desno: R28, rub x = 155 i skošenje</h3>
+<figure class="anim" data-k="8"><figcaption><span>Desni rub otoka: R28, rub i skošenje 15 × 45°.</span><button type="button" aria-label="Ponovi animaciju koraka 8">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Luk R28 prolazi vrhom kosine <code>325,335</code> i dodiruje desni rub otoka: središte <code>343,313.552</code>. <code class="cmd" tabindex="0">ARC</code> → <code>C</code> → <code>343,313.552</code> → <code>325,335</code> → <code>315,313.552</code> (luk ide suprotno od kazaljke).</li><li><code class="cmd" tabindex="0">LINE</code> <code>315,313.552</code> → <code>315,280</code> → <code>300,265</code> (skošenje 15 × 45°).</li></ol>
+<p class="provjera"><strong>Pretpostavka:</strong> središte R28: x = 155 + 28 = 183 (lokalno), y = 95 − √(28² − 18²) = 73,552. Kut 30° sa zadanog crteža se ne koristi — uz dodir s rubom x = 155 i polumjer R28 luk je potpuno određen.</p>
+</div>
+<div class="korak" id="k9"><label class="kv"><input type="checkbox" data-k="k9"><span>Gotovo</span></label>
+<h3><span class="br">9</span> Džepovi Z-8: 3 × 30 × 40, R10</h3>
+<figure class="anim" data-k="9"><figcaption><span>Tri džepa 30 × 40 s R10.</span><button type="button" aria-label="Ponovi animaciju koraka 9">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li><code class="cmd" tabindex="0">RECTANG</code> → <code>F</code> (Fillet) → <code>10</code> → <code>195,280</code> → <code>225,320</code>; isto <code>235,280</code> → <code>265,320</code> i <code>275,280</code> → <code>305,320</code>.</li></ol>
+<p class="provjera"><strong>Pretpostavka:</strong> zadani crtež kotira srednji džep (75, 105), razmak 10 i visinu (40, 80). Treći džep (115–145) je uzet simetrično, s istim razmakom 10.</p>
+</div>
+<div class="korak" id="k10"><label class="kv"><input type="checkbox" data-k="k10"><span>Gotovo</span></label>
+<h3><span class="br">10</span> Lučni utor Z-3: os R40, širina 10</h3>
+<figure class="anim" data-k="10"><figcaption><span>Lučni utor širine 10 na osi R40.</span><button type="button" aria-label="Ponovi animaciju koraka 10">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li><code class="cmd" tabindex="0">ARC</code> → <code>C</code> → <code>245,375</code> → <code>200,375</code> → <code>290,375</code> (vanjski R45); isto <code>210,375</code> → <code>280,375</code> (unutarnji R35).</li><li>Krajevi: <code class="cmd" tabindex="0">ARC</code> <code>C</code> <code>205,375</code> → <code>210,375</code> → <code>200,375</code> i <code>C</code> <code>285,375</code> → <code>290,375</code> → <code>280,375</code>.</li><li>Os utora na <code>03_OSI</code>: <code class="cmd" tabindex="0">ARC</code> <code>C</code> <code>245,375</code> → <code>205,375</code> → <code>285,375</code>; kratke osi krajeva <code>205,368</code> → <code>205,382</code> i <code>285,368</code> → <code>285,382</code>.</li></ol>
+</div>
+</section>
+
+<section id="koraci-3"><h2>C · Presjek A-A</h2><div class="crta"></div>
+<div class="korak" id="k11"><label class="kv"><input type="checkbox" data-k="k11"><span>Gotovo</span></label>
+<h3><span class="br">11</span> Lomljena rezna ravnina A-A</h3>
+<figure class="anim" data-k="11"><figcaption><span>Lomljena ravnina A-A kroz utor, provrt i džep.</span><button type="button" aria-label="Ponovi animaciju koraka 11">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Sloj <code>03_OSI</code>: <code class="cmd" tabindex="0">PLINE</code> <code>152,375</code> → <code>272,375</code> → <code>272,300</code> → <code>348,300</code>.</li><li>Široki krajevi i lomovi na <code>01_VIDLJIVO</code> (duljine 12 = 6 mm na papiru): <code>152,375</code> → <code>164,375</code>; <code>264,375</code> → <code>272,375</code> → <code>272,367</code>; <code>272,308</code> → <code>272,300</code> → <code>280,300</code>; <code>336,300</code> → <code>348,300</code>.</li><li>Strelice gledaju gore (presjek je iznad): <code class="cmd" tabindex="0">LEADER</code> <code>156,375</code> → <code>156,361</code> i <code>344,300</code> → <code>344,286</code>; slova <code>A</code> visine 7 na <code>143,379</code> i <code>349,284</code>.</li></ol>
+</div>
+<div class="korak" id="k12"><label class="kv"><input type="checkbox" data-k="k12"><span>Gotovo</span></label>
+<h3><span class="br">12</span> Presjek A-A: obris i šrafura</h3>
+<figure class="anim" data-k="12"><figcaption><span>Presjek A-A: puna visina 20, dubine 3, 10 i 8, prolazni provrt.</span><button type="button" aria-label="Ponovi animaciju koraka 12">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Lijevi dio (do provrta): <code class="cmd" tabindex="0">PLINE</code> <code>160,500</code> → <code>240,500</code> → <code>240,510</code> → <code>220,510</code> → <code>220,520</code> → <code>210,520</code> → <code>210,517</code> → <code>200,517</code> → <code>200,520</code> → <code>175,520</code> → <code>175,510</code> → <code>160,510</code> → <code>C</code>.</li><li>Desni dio: <code>250,500</code> → <code>340,500</code> → <code>340,510</code> → <code>315,510</code> → <code>315,520</code> → <code>305,520</code> → <code>305,512</code> → <code>275,512</code> → <code>275,520</code> → <code>270,520</code> → <code>270,510</code> → <code>250,510</code> → <code>C</code>.</li><li><code class="cmd" tabindex="0">HATCH</code> ANSI31, mjerilo <code>1</code>, u oba dijela.</li></ol>
+<p class="provjera"><strong>Što vidiš:</strong> presjek se crta „razvijeno” — lom ravnine se u presjeku ne crta. Lijevo je stanje na y = 135 (otok 20, utor Z-3 → 17, U-utor 10, provrt), desno na y = 60 (džep Z-8 → 12, rub Z-10 → 10).</p>
+</div>
+<div class="korak" id="k13"><label class="kv"><input type="checkbox" data-k="k13"><span>Gotovo</span></label>
+<h3><span class="br">13</span> Bridovi iza ravnine, osi i oznaka</h3>
+<figure class="anim" data-k="13"><figcaption><span>Bridovi iza ravnine, osi i oznaka A-A.</span><button type="button" aria-label="Ponovi animaciju koraka 13">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Vidljivi bridovi iza ravnine (<code>01_VIDLJIVO</code>): stražnji rub kraja utora <code>200,520</code> → <code>210,520</code>; stražnja stijenka provrta <code>240,510</code> → <code>250,510</code> i <code>240,500</code> → <code>250,500</code>; stražnja stijenka džepa <code>275,520</code> → <code>305,520</code>; luk R28 i vrh <code>315,520</code> → <code>325,520</code> → <code>325,510</code>.</li><li>Tek <strong>nakon šrafure</strong> osi na <code>03_OSI</code>: provrt <code>245,494</code> → <code>245,526</code>, kraj utora <code>205,512</code> → <code>205,526</code>.</li><li>Oznaka <code>A-A</code> visine 10 (5 na papiru) na <code>120,534</code>.</li></ol>
+</div>
+</section>
+
+<section id="koraci-4"><h2>D · Kotiranje i oznake</h2><div class="crta"></div>
+<div class="korak" id="k14"><label class="kv"><input type="checkbox" data-k="k14"><span>Gotovo</span></label>
+<h3><span class="br">14</span> Baze A i B</h3>
+<figure class="anim" data-k="14"><figcaption><span>Baze A (lijevi brid) i B (donji brid).</span><button type="button" aria-label="Ponovi animaciju koraka 14">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Blok <code>BAZA</code> s mjerilom 2. <strong>A</strong> na produžetku lijevog brida iznad ploče <code>160,436</code>, kvadrat lijevo; <strong>B</strong> na produžetku donjeg brida desno od ploče <code>356,240</code>, kvadrat ispod.</li></ol>
+<p class="provjera"><strong>Zašto tu:</strong> znak baze smije stajati na produžnoj crti brida — tako ne siječe paralelne kote ispod i lijevo od ploče.</p>
+</div>
+<div class="korak" id="k15"><label class="kv"><input type="checkbox" data-k="k15"><span>Gotovo</span></label>
+<h3><span class="br">15</span> Kote od baza: dolje i lijevo (DIMBASELINE)</h3>
+<figure class="anim" data-k="15"><figcaption><span>Paralelne kote od baza: 25, 75, 105, 155, 180 i 25, 40, 80, 115, 135, 155, 180.</span><button type="button" aria-label="Ponovi animaciju koraka 15">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Po širini od baze A: <code class="cmd" tabindex="0">DIMLINEAR</code> <code>160,240</code> → vrh romba <code>185,254.393</code> → mjesto <code>y = 220</code> (25), zatim <code class="cmd" tabindex="0">DIMBASELINE</code>: <code>235,280</code> (75) → <code>265,280</code> (105) → <code>315,280</code> (155) → <code>340,240</code> (180).</li><li>Po visini od baze B: <code class="cmd" tabindex="0">DIMLINEAR</code> <code>160,240</code> → lijevi vrh romba <code>174.393,265</code> → mjesto <code>x = 140</code> (25), zatim <code class="cmd" tabindex="0">DIMBASELINE</code>: <code>195,280</code> (40) → <code>195,320</code> (80) → <code>185,355</code> (115) → <code>175,375</code> (135) → <code>185,395</code> (155) → <code>160,420</code> (180).</li></ol>
+<p class="provjera"><strong>Pravilo:</strong> 115 se kotira do sjecišta ravnih bridova (prije zaobljenja R20) — tako je i na CNC-crtežu. Nijedna kota nije u lancu: sve polaze od iste baze.</p>
+</div>
+<div class="korak" id="k16"><label class="kv"><input type="checkbox" data-k="k16"><span>Gotovo</span></label>
+<h3><span class="br">16</span> Kote od baza: gore i desno</h3>
+<figure class="anim" data-k="16"><figcaption><span>Položaji provrta, osi U-utora i vrha kosine.</span><button type="button" aria-label="Ponovi animaciju koraka 16">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Gore, od baze A (gornji lijevi kut <code>160,420</code>): <code class="cmd" tabindex="0">DIMLINEAR</code> → os provrta <code>175,405</code> → mjesto <code>y = 438</code> (15), <code class="cmd" tabindex="0">DIMBASELINE</code>: <code>245,395</code> (85) → <code>325,405</code> (165).</li><li>Desno, od baze B (donji desni kut <code>340,240</code>): <code class="cmd" tabindex="0">DIMLINEAR</code> → os provrta <code>325,255</code> → mjesto <code>x = 362</code> (15), <code class="cmd" tabindex="0">DIMBASELINE</code>: <code>325,335</code> (95) → <code>325,405</code> (165).</li></ol>
+<p class="provjera"><strong>Što se kotira:</strong> kota 85 ide do osi U-utora (i lučnog utora), 95 do vrha kosine, 15 i 165 do osi provrta.</p>
+</div>
+<div class="korak" id="k17"><label class="kv"><input type="checkbox" data-k="k17"><span>Gotovo</span></label>
+<h3><span class="br">17</span> Kote oblika: džepovi, polumjeri, utor, kutovi</h3>
+<figure class="anim" data-k="17"><figcaption><span>Oblik džepova, utora i otoka: polumjeri, skošenje, romb, 20°.</span><button type="button" aria-label="Ponovi animaciju koraka 17">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Džepovi ispod, u redu <code>y = 271</code>: 30 (<code>195,280</code> → <code>225,280</code>), 10 (<code>225,280</code> → <code>235,280</code>), 10 (<code>265,280</code> → <code>275,280</code>), 30 (<code>275,280</code> → <code>305,280</code>). Srednji džep već određuju 75 i 105 od baze.</li><li>Širina utora 10: <code>280,375</code> → <code>290,375</code> → mjesto <code>y = 386</code>.</li><li>Pokazne crte (<code class="cmd" tabindex="0">LEADER</code>): <code>R10</code> (kut gore lijevo i zaobljenje U-utora), <code>R15</code>, <code>R25</code>, <code>R20</code>, <code>R28</code>, <code>R40</code> (na osi utora), <code>3 × R10</code> (džepovi), <code>15 × 45%%d</code> (skošenje), <code>15 × 15, 45%%d</code> (romb), <code>5 × %%c10</code> (provrti).</li><li>Kut 20°: <code class="cmd" tabindex="0">DIMANGULAR</code> → kosina i os provrta <code>x = 325</code> (na <code>03_OSI</code> povuci <code>325,340</code> → <code>325,380</code>) → luk polumjera ≈ 40.</li></ol>
+<p class="provjera"><strong>Pravilo:</strong> polumjeri se kotiraju samo pokaznom crtom sa strelicom na luku; × se upisuje kao <code>\U+00D7</code>.</p>
+</div>
+<div class="korak" id="k18"><label class="kv"><input type="checkbox" data-k="k18"><span>Gotovo</span></label>
+<h3><span class="br">18</span> Kote presjeka: debljina i dubine</h3>
+<figure class="anim" data-k="18"><figcaption><span>Debljina 20 i dubine 10, 3 i 8.</span><button type="button" aria-label="Ponovi animaciju koraka 18">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Debljina 20: <code>160,500</code> → <code>160,520</code> → <code>x = 144</code>.</li><li>Dubina Z-10 (U-utor): <code>220,520</code> → <code>230,510</code> → <code>x = 230</code>; dubina utora 3: <code>200,520</code> → <code>205,517</code> → <code>x = 205</code>; dubina džepa 8: <code>275,520</code> → <code>282,512</code> → <code>x = 282</code>.</li></ol>
+<p class="provjera"><strong>Iz CNC-a:</strong> Z-dubine iz CNC-crteža (−10, −8, −3) na radioničkom crtežu su dubine od gornje plohe, kotirane u presjeku.</p>
+</div>
+<div class="korak" id="k19"><label class="kv"><input type="checkbox" data-k="k19"><span>Gotovo</span></label>
+<h3><span class="br">19</span> Hrapavost i napomene</h3>
+<figure class="anim" data-k="19"><figcaption><span>Hrapavost i napomene.</span><button type="button" aria-label="Ponovi animaciju koraka 19">↻ Ponovi</button></figcaption></figure>
+<ol class="tekst"><li>Blok <code>HRAPAVOST</code> (mjerilo 2): gornja ploha otoka Ra 1,6 na <code>185,520</code>, dno džepa Ra 3,2 na <code>295,512</code>.</li><li>Opća oznaka iznad zaglavlja: Ra 6,3 na <code>282,120</code> i u zagradi prazan znak — „sve ostale plohe Ra 6,3”.</li><li>Napomene <code class="cmd" tabindex="0">TEXT</code> visine 7 (3,5 na papiru): <code>52,140</code> → <code>Opće tolerancije ISO 2768-m.</code>; <code>52,126</code> → <code>Rupe %%c10 prolazne. Bridovi skošeni 0,5x45%%d.</code></li></ol>
+</div>
+</section>
+
+<section id="koraci-5"><h2>E · Zaglavlje, ispis i predaja</h2><div class="crta"></div>
+<div class="korak" id="k20"><label class="kv"><input type="checkbox" data-k="k20"><span>Gotovo</span></label>
+<h3><span class="br">20</span> Zaglavlje</h3>
+<figure class="anim" data-k="20"><figcaption><span>Zaglavlje radioničkog crteža P09.</span><button type="button" aria-label="Ponovi animaciju koraka 20">↻ Ponovi</button></figcaption></figure>
+<div class="tablica-omot"><table><thead><tr><th>Polje</th><th>Upiši</th></tr></thead><tbody><tr><td>Naziv</td><td>Ploča P09 / radionički crtež</td></tr><tr><td>Broj dokumenta</td><td>TD-2026-P09-01</td></tr><tr><td>Materijal</td><td>EN AW-6082 T6</td></tr><tr><td>Masa</td><td>1,18 kg</td></tr><tr><td>Mjerilo</td><td><strong>1:2</strong></td></tr><tr><td>Opće tolerancije</td><td>ISO 2768-m</td></tr><tr><td>Vrsta dokumenta</td><td>Radionički crtež</td></tr><tr><td>Vlasnik</td><td>ForTroniQ d.o.o.</td></tr><tr><td>Izradio / Odobrio</td><td>Prezime I.</td></tr><tr><td>Izm.</td><td>A</td></tr><tr><td>Datum izdavanja</td><td>2026-11-27</td></tr><tr><td>Jezik</td><td>hr</td></tr><tr><td>List</td><td>1/1</td></tr></tbody></table></div>
+</div>
+<div class="korak" id="k21"><label class="kv"><input type="checkbox" data-k="k21"><span>Gotovo</span></label>
+<h3><span class="br">21</span> Ispis u PDF</h3>
+<ol class="tekst"><li><code class="cmd" tabindex="0">PLOT</code> → <strong>DWG To PDF.pc3</strong>, <strong>ISO full bleed A4</strong>, <em>Portrait</em>, <em>Window</em> <code>0,0</code> – <code>420,594</code>, mjerilo <strong>1:2</strong>, <strong>monochrome.ctb</strong> → <code>TD_2026-2027_Prezime_Ime_P09_01_radionicki.pdf</code>.</li></ol>
+<p class="provjera"><strong>Provjera PDF-a:</strong> na PDF-u ploča je široka 90 mm, kotni brojevi 3,5 mm, ništa ne izlazi iz okvira; u zaglavlju piše 1:2.</p>
+</div>
+<div class="korak" id="k22"><label class="kv"><input type="checkbox" data-k="k22"><span>Gotovo</span></label>
+<h3><span class="br">22</span> Predaja</h3>
+<ol class="tekst"><li>Spakiraj <code>TD_2026-2027_Prezime_Ime_P09_01_radionicki.dwg</code> i <code>TD_2026-2027_Prezime_Ime_P09_01_radionicki.pdf</code> zajedno s crtežima <strong>00</strong> (sklopni, <a href="AutoCAD_V07_upute_v1.html">V7</a>) i <strong>02</strong> (osnovna ploča, <a href="AutoCAD_V07_upute_v1.html">V7</a>) u <code>TD_2026-2027_Prezime_Ime_P09.zip</code>.</li><li>Merlin → zadaća <em>„Strojarski dio”</em> → priloži ZIP → <em>Spremi promjene</em>. Rok: <strong>27. 11. 2026. u 23:59</strong>.</li><li>Kontrolni popis prije predaje: <a href="AutoCAD_V08_upute_v1.html">V8</a>.</li></ol>
+</div>
+</section>
+
+<section id="kontrola"><h2>Kontrolni popis</h2><div class="crta"></div><ul class="tekst kontrola">
+<li>Tlocrt i lomljeni presjek A-A u projekcijskoj vezi; presjek pokazuje dubine 10, 8 i 3 te prolazni provrt.</li>
+<li>Položaji kotirani od baza A i B s DIMBASELINE; nijedna kota u zatvorenom lancu.</li>
+<li>Svi polumjeri upisani: R10, R15, R20, R25, R28, R40, 3 × R10; skošenje 15 × 45°, romb 15 × 15, kut 20°.</li>
+<li>Pet provrta s oznakom 5 × Ø10 i napomenom „prolazne”.</li>
+<li>Hrapavost: opća oznaka uz zaglavlje, iznimke na gornjoj plohi otoka i dnu džepa.</li>
+<li>Zaglavlje: naziv, broj TD-2026-P09-01, materijal, masa, mjerilo 1:2, znak projekcije; PDF u mjerilu 1:2.</li></ul></section>
+<section id="greske"><h2>Česte pogreške kod P09</h2><div class="crta"></div><ul class="tekst">
+<li><strong>Z-oznake prepisane na tlocrt</strong> (Z-10, Z-8) umjesto kota dubine u presjeku.</li>
+<li><strong>Otok shvaćen kao džep</strong> — Z-10 je područje <em>oko</em> otoka; otok ostaje puna visina 20.</li>
+<li><strong>Kote džepova od ruba do ruba u lancu</strong> preko cijele ploče (35 + 30 + 10 + …) umjesto od baze A.</li>
+<li><strong>R28 nacrtan kao zaobljenje</strong> s pogrešnim središtem — luk prolazi vrhom kosine (165, 95) i dodiruje rub x = 155.</li>
+<li><strong>Presjek ravnom ravninom samo kroz džepove</strong> — tada nedostaju dubine utora Z-3 i provrta.</li>
+<li><strong>Mjerilo 1:2 upisano, a ispisano 1:1</strong> (ili obrnuto).</li></ul></section>
+<nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="index.html">&#8592; Tehnička dokumentacija</a><a class="gumb tanki" href="AutoCAD_V06_upute_v1.html">V6: radionički crtež</a><a class="gumb" href="AutoCAD_projekt_P01-P21_v1.html">Svi dijelovi P01–P21 <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Autorski tim: Krunoslav Kušec, mag. ing. mech. &middot; Alen Britvić, bacc. ing. mech. &middot; dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-tehnicka-dokumentacija-autocad-p09-upute-v1-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+<script>
+(function(){
+  var K='ftq-tehnicka-dokumentacija-autocad-p09-upute-v1-koraci';
+  function citaj(){ try { return JSON.parse(localStorage.getItem(K)||'{}'); } catch(e){ return {}; } }
+  function pisi(o){ try { localStorage.setItem(K, JSON.stringify(o)); } catch(e){} }
+  var st=citaj(), boxes=[].slice.call(document.querySelectorAll('.kv input'));
+  var t=document.getElementById('napredak-t'), b=document.getElementById('napredak-b');
+  function osvjezi(){
+    var n=0; boxes.forEach(function(x){ var k=x.closest('.korak'); if(x.checked){n++; k.classList.add('gotov');} else k.classList.remove('gotov'); });
+    t.textContent='Gotovo '+n+' / '+boxes.length+' koraka'; b.style.width=(100*n/boxes.length)+'%';
+  }
+  function sljedeci(x){
+    var k=x.closest('.korak').nextElementSibling;
+    while(k && !(k.classList && k.classList.contains('korak'))) k=k.nextElementSibling;
+    if(!k){ var s=x.closest('section').nextElementSibling; k=s && s.querySelector('.korak'); }
+    return k;
+  }
+  boxes.forEach(function(x){
+    x.checked=!!st[x.getAttribute('data-k')];
+    x.addEventListener('change',function(){
+      st[x.getAttribute('data-k')]=x.checked; pisi(st); osvjezi();
+      if(x.checked){ var k=sljedeci(x); if(k && k.scrollIntoView) k.scrollIntoView({behavior:'smooth',block:'start'}); }
+    });
+  });
+  document.getElementById('napredak-r').addEventListener('click',function(){ st={}; pisi(st); boxes.forEach(function(x){x.checked=false;}); osvjezi(); window.scrollTo(0,0); });
+  osvjezi();
+  [].slice.call(document.querySelectorAll('code.cmd')).forEach(function(c){
+    function kopiraj(){
+      var s=c.textContent.trim();
+      var ok=function(){ c.classList.add('kopirano'); setTimeout(function(){ c.classList.remove('kopirano'); },900); };
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(s).then(ok,function(){}); } else { ok(); }
+    }
+    c.addEventListener('click',kopiraj);
+    c.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); kopiraj(); } });
+  });
+})();
+</script>
+
+<script>
+(function(){
+  var tpl=document.getElementById('p14-predlozak'); if(!tpl) return;
+  var POGLED=JSON.parse(document.getElementById('p14-pogled').textContent);
+  var NASLOVI={};
+  [].slice.call(document.querySelectorAll('.korak')).forEach(function(k){
+    var n=parseInt(k.id.slice(1),10), h=k.querySelector('h3');
+    if(h){ var t=h.cloneNode(true); var b=t.querySelector('.br'); if(b) b.remove(); NASLOVI[n]=t.textContent.trim(); }
+  });
+  var tiho=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function novi(){ return tpl.content.firstElementChild.cloneNode(true); }
+  function mjera(svg){ var v=svg._vb, w=svg.clientWidth||svg.getBoundingClientRect().width; if(v&&w) svg.style.setProperty('--s',(v[2]/w).toFixed(4)); }
+  window.addEventListener('resize',function(){ [].slice.call(document.querySelectorAll('svg.p14anim')).forEach(mjera); });
+  function vb(svg,k,glatko){
+    var c=POGLED[k]; if(!c) return;
+    if(!glatko||tiho||!svg._vb){ svg.setAttribute('viewBox',c.join(' ')); svg._vb=c.slice(); mjera(svg); return; }
+    var a=svg._vb.slice(), t0=null, T=650;
+    function korak(t){ if(t0===null) t0=t; var u=Math.min(1,(t-t0)/T), e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+      var v=a.map(function(x,i){return x+(c[i]-x)*e;}); svg.setAttribute('viewBox',v.join(' ')); svg._vb=v; mjera(svg);
+      if(u<1) requestAnimationFrame(korak); }
+    requestAnimationFrame(korak);
+  }
+  function stanje(svg,k,igraj,glatko){
+    vb(svg,k,glatko);
+    [].slice.call(svg.querySelectorAll('.el')).forEach(function(g){
+      var od=+g.getAttribute('data-od'), dO=+g.getAttribute('data-do');
+      var vid=od<=k&&k<=dO;
+      g.classList.toggle('skriven',!vid);
+      g.classList.toggle('novo',vid&&od===k);
+      g.classList.remove('igra');
+      if(vid&&od===k&&igraj&&!tiho){ void g.getBoundingClientRect(); g.classList.add('igra'); }
+    });
+  }
+  // slika u svakom koraku
+  var figure=[].slice.call(document.querySelectorAll('figure.anim'));
+  var io=('IntersectionObserver' in window)? new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting&&!e.target._odigrano){ e.target._odigrano=true; stanje(e.target._svg,+e.target.getAttribute('data-k'),true); } });
+  },{threshold:.45}) : null;
+  figure.forEach(function(f){
+    var k=+f.getAttribute('data-k'), svg=novi(); f._svg=svg; f.insertBefore(svg,f.firstChild);
+    stanje(svg,k,false);
+    var b=f.querySelector('button'); if(b) b.addEventListener('click',function(){ stanje(svg,k,true); });
+    if(io) io.observe(f);
+  });
+  // cijeli film
+  var film=document.getElementById('film'); if(!film) return;
+  var KORACI=[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+  var svg=novi(); film.querySelector('.platno').appendChild(svg);
+  var natpis=film.querySelector('.natpis'), bIgraj=film.querySelector('[data-a="igraj"]');
+  var tock=film.querySelector('.tockice'), i=0, sat=null;
+  KORACI.forEach(function(k,j){ var b=document.createElement('button'); b.type='button'; b.textContent=k; b.setAttribute('aria-label','Korak '+k+': '+(NASLOVI[k]||''));
+    b.addEventListener('click',function(){ stani(); idi(j,true); }); tock.appendChild(b); });
+  function idi(j,igraj){
+    i=Math.max(0,Math.min(KORACI.length-1,j)); var k=KORACI[i];
+    stanje(svg,k,igraj,true);
+    natpis.innerHTML='<b>Korak '+k+'</b> · '+(NASLOVI[k]||'')+' <a href="#k'+k+'">upute za ovaj korak &darr;</a>';
+    [].slice.call(tock.children).forEach(function(b,n){ b.classList.toggle('na',n===i); });
+  }
+  function stani(){ if(sat){ clearInterval(sat); sat=null; } bIgraj.textContent='▶ Pokreni'; bIgraj.setAttribute('aria-pressed','false'); }
+  function pokreni(){ if(i>=KORACI.length-1) idi(0,true); bIgraj.textContent='❚❚ Stani'; bIgraj.setAttribute('aria-pressed','true');
+    sat=setInterval(function(){ if(i>=KORACI.length-1){ stani(); return; } idi(i+1,true); },2600); }
+  film.querySelector('[data-a="natrag"]').addEventListener('click',function(){ stani(); idi(i-1,true); });
+  film.querySelector('[data-a="dalje"]').addEventListener('click',function(){ stani(); idi(i+1,true); });
+  bIgraj.addEventListener('click',function(){ if(sat) stani(); else pokreni(); });
+  idi(0,false);
+})();
+</script>
+
+</body>
+</html>
