@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulator mehanizama — četveročlani</title>
+<meta name="description" content="Interaktivni simulator zglobnog četverokuta: Grashofova klasifikacija, prijenosni kut, granični i mrtvi položaji, putanja točke spojke, dijagrami položaja, brzine i ubrzanja izlaznog člana.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --bg:#F3F6F7; --tint:#EDF3F5; --grid:#E9EFF1; --on-teal:#FFFFFF;
+  --warn:#B4541A; --warn-bg:#FBEEE5; --ok:#1E7A4C; --ok-bg:#E5F3EB;
+  --link:#10394A; --fill:rgba(46,202,212,.16);
+  --font:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#101B20; --ink:#E3EEF1; --body:#9DB5C2; --rule:#28414A;
+  --teal:#2ECAD4; --teal-d:#7ADDE4; --cyan:#2ECAD4;
+  --bg:#0A1215; --tint:#14242A; --grid:#1B2D34; --on-teal:#0A1215;
+  --warn:#F2A06A; --warn-bg:#3A2418; --ok:#6CD49A; --ok-bg:#15301F;
+  --link:#E3EEF1; --fill:rgba(46,202,212,.18); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#101B20; --ink:#E3EEF1; --body:#9DB5C2; --rule:#28414A;
+  --teal:#2ECAD4; --teal-d:#7ADDE4; --cyan:#2ECAD4;
+  --bg:#0A1215; --tint:#14242A; --grid:#1B2D34; --on-teal:#0A1215;
+  --warn:#F2A06A; --warn-bg:#3A2418; --ok:#6CD49A; --ok-bg:#15301F;
+  --link:#E3EEF1; --fill:rgba(46,202,212,.18); color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--font)}
+.bar{background:#17181A;color:#FFFFFF;display:flex;align-items:center;gap:12px;padding:10px 16px;position:sticky;top:0;z-index:20}
+.logo{font-weight:600;letter-spacing:.17em;text-transform:uppercase;font-size:15px;white-space:nowrap}
+.logo .q{color:#2ECAD4}
+.bar .sub{color:#A9B8BF;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.tbtn{background:transparent;color:#FFFFFF;border:1px solid #3A3D42;border-radius:8px;padding:6px 10px;font:500 13px var(--font);cursor:pointer;white-space:nowrap}
+.tbtn:hover{border-color:#2ECAD4}
+.wrap{max-width:1360px;margin:0 auto;padding:18px 16px 48px;display:flex;flex-direction:column;gap:14px}
+.eyebrow{margin:0;font:600 12px/1 var(--font);letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+h1{margin:6px 0 4px;font:700 clamp(22px,3.2vw,30px)/1.15 var(--font);letter-spacing:-.01em;color:var(--ink)}
+h2{margin:0;font:600 16px/1.3 var(--font);color:var(--ink)}
+h3{margin:0;font:600 14px/1.3 var(--font);color:var(--ink)}
+p{margin:0}
+.lede{color:var(--body);max-width:85ch}
+.grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:980px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cv{display:block;width:100%;background:var(--paper);border-radius:8px;touch-action:none}
+#mech{aspect-ratio:4/3;max-height:70vh;border:1px solid var(--rule);cursor:grab}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:600 14px/1.2 var(--font);padding:8px 14px;border-radius:8px;border:1px solid var(--teal);background:var(--teal);color:var(--on-teal);cursor:pointer;min-height:36px}
+.btn.ghost{background:transparent;color:var(--teal)}
+.btn:disabled{opacity:.45;cursor:default}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+select,.num input{font:14px var(--font);padding:6px 8px;border-radius:6px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);min-height:34px;max-width:100%}
+.ctls{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 18px}
+.ctl{display:flex;flex-direction:column;gap:4px;min-width:0}
+.ctl-h{display:flex;align-items:center;gap:6px;min-width:0}
+.ctl-h label{color:var(--body);font-size:14px;flex:1;min-width:0}
+.num{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--body)}
+.num input{width:5.2em;text-align:right;padding:4px 6px;min-height:30px;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:2px 0}
+.i{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--rule);background:var(--tint);color:var(--teal);font:600 13px/1 var(--font);cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.i:hover{border-color:var(--teal)}
+.lbl{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--body);flex-wrap:wrap;min-width:0;max-width:100%}
+#preset{min-width:0;max-width:calc(100vw - 110px)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+td,th{padding:5px 6px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:middle}
+th{color:var(--body);font-weight:500}
+td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink);font-weight:500}
+td.u{color:var(--body);white-space:nowrap;width:1%}
+td.k{width:1%}
+.card{border:1px solid var(--rule);border-left:4px solid var(--teal);border-radius:8px;padding:8px 10px;background:var(--tint);font-size:14px;display:flex;flex-direction:column;gap:4px}
+.card.warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.card.ok{border-left-color:var(--ok);background:var(--ok-bg)}
+.card b{color:var(--ink)}
+.tag{display:inline-block;font:600 11px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;padding:4px 7px;border-radius:5px;background:var(--teal);color:var(--on-teal)}
+.tag.warn{background:var(--warn);color:#fff}
+.muted{color:var(--body);font-size:13px}
+.plots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.plots{grid-template-columns:minmax(0,1fr)}}
+.plot{display:flex;flex-direction:column;gap:4px;min-width:0}
+.plot canvas{height:170px;border:1px solid var(--rule)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--body)}
+.legend i{display:inline-block;width:22px;height:0;border-top:3px solid var(--teal);vertical-align:middle;margin-right:6px}
+.legend i.d{border-top:2px dashed var(--body)}
+.legend i.c{border-top-color:var(--cyan)}
+.legend i.w{border-top:2px dashed var(--warn)}
+details{border-top:1px solid var(--rule);padding-top:8px}
+summary{cursor:pointer;font-weight:600;color:var(--teal)}
+.flist{display:flex;flex-direction:column;gap:8px;padding-top:8px}
+.f{display:flex;gap:8px;align-items:flex-start;font-size:14px}
+.f code{font:500 14px/1.5 var(--font);color:var(--ink);background:var(--tint);padding:3px 8px;border-radius:6px;display:block;overflow-wrap:anywhere;flex:1;min-width:0}
+.sheet{position:fixed;z-index:50;right:16px;bottom:16px;width:min(440px,calc(100vw - 32px));background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-top:4px solid var(--teal);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.25);padding:14px 16px;display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto}
+.sheet[hidden]{display:none}
+.sheet p{color:var(--body);font-size:14px}
+.sheet .x{align-self:flex-end}
+.foot{color:var(--body);font-size:13px}
+</style>
+</head>
+<body>
+<header class="bar">
+  <span class="logo">FORTRONI<span class="q">Q</span></span>
+  <span class="sub">Osnove mehanizama · simulator</span>
+  <button class="tbtn" id="themeBtn" type="button" aria-label="Promijeni temu">Tamna tema</button>
+</header>
+
+<main class="wrap">
+  <div>
+    <p class="eyebrow">Osnove mehanizama · simulator</p>
+    <h1>Simulator mehanizama — četveročlani</h1>
+    <p class="lede">Zglobni četverokut O₂ABO₄: zadajte duljine članova i položaj točke spojke P, pokrenite animaciju i pratite Grashofovu klasifikaciju, prijenosni kut, granične i mrtve položaje te dijagrame izlaznog člana. Koljeno možete povući mišem ili prstom. Uz svaku veličinu i formulu je gumb ⓘ s opisom.</p>
+  </div>
+
+  <section class="grid2">
+    <div class="panel">
+      <div class="ph"><h2>Mehanizam</h2><span class="muted" id="confNow"></span></div>
+      <canvas id="mech" class="cv" aria-label="Crtež četveročlanog mehanizma"></canvas>
+      <div class="row">
+        <button class="btn" id="runBtn" type="button">Pokreni</button>
+        <button class="btn ghost" id="stepBtn" type="button">Korak +5°</button>
+        <span class="lbl">Prikaz <select id="tscale" aria-label="Brzina prikaza animacije"><option value="1">1×</option><option value="0.5">0,5×</option><option value="0.25" selected>0,25×</option><option value="0.1">0,1×</option></select><button class="i" data-i="tscale" type="button" aria-label="Opis">ⓘ</button></span>
+      </div>
+      <div class="ctl">
+        <div class="ctl-h"><label for="r_th2">θ₂ — položaj pogonskog koljena</label><button class="i" data-i="th2" type="button" aria-label="Opis">ⓘ</button><span class="num"><input id="n_th2" inputmode="decimal" aria-label="θ₂ u stupnjevima"> °</span></div>
+        <input type="range" id="r_th2" min="0" max="360" step="0.5" value="60">
+      </div>
+      <div class="legend">
+        <span><i></i>članovi</span><span><i class="c"></i>putanja točke P</span><span><i class="d"></i>druga konfiguracija</span><span><i class="w"></i>granični položaji</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph"><h2>Rezultati</h2><button class="i" data-i="results" type="button" aria-label="Opis">ⓘ</button></div>
+      <div id="grashofCard" class="card"></div>
+      <div id="muCard" class="card"></div>
+      <div style="overflow-x:auto"><table id="readout"></table></div>
+      <div id="limitsCard" class="card"></div>
+    </div>
+  </section>
+
+  <section class="grid2">
+    <div class="panel">
+      <div class="ph"><h2>Parametri</h2>
+        <span class="lbl"><label for="preset">Primjer</label>
+          <select id="preset">
+            <option value="">— odaberite —</option>
+            <option value="ref">Referentni (vježbe)</option>
+            <option value="pred">Primjer s predavanja</option>
+            <option value="brisac">Mehanizam brisača</option>
+            <option value="kk">Koljeno-klackalica</option>
+            <option value="dk">Dvostruko koljeno</option>
+            <option value="par">Paralelogram (granični slučaj)</option>
+            <option value="stez">Stezni mehanizam blizu mrtvog položaja</option>
+            <option value="dkl">Dvostruka klackalica (Grashofova)</option>
+            <option value="ng">Ne-Grashofov (trostruka klackalica)</option>
+          </select><button class="i" data-i="preset" type="button" aria-label="Opis">ⓘ</button></span>
+      </div>
+      <p class="muted" id="presetNote"></p>
+      <div class="ctls" id="ctls"></div>
+      <div class="ctl">
+        <div class="ctl-h"><label for="conf">Konfiguracija</label><button class="i" data-i="conf" type="button" aria-label="Opis">ⓘ</button></div>
+        <select id="conf"><option value="open">otvorena</option><option value="cross">križna</option></select>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph"><h2>Dijagrami kroz okret pogonskog koljena</h2>
+        <button class="btn ghost" id="csvBtn" type="button">Izvoz CSV</button>
+      </div>
+      <div class="legend"><span><i></i>odabrana konfiguracija</span><span><i class="d"></i>druga konfiguracija</span><span class="muted" id="plotNote"></span></div>
+      <div class="plots">
+        <div class="plot"><div class="ctl-h"><h3 style="flex:1">θ₄(θ₂) [°]</h3><button class="i" data-i="pTh4" type="button" aria-label="Opis">ⓘ</button></div><canvas class="cv" id="pTh4"></canvas></div>
+        <div class="plot"><div class="ctl-h"><h3 style="flex:1">ω₄ [rad/s]</h3><button class="i" data-i="pW4" type="button" aria-label="Opis">ⓘ</button></div><canvas class="cv" id="pW4"></canvas></div>
+        <div class="plot"><div class="ctl-h"><h3 style="flex:1">α₄ [rad/s²]</h3><button class="i" data-i="pA4" type="button" aria-label="Opis">ⓘ</button></div><canvas class="cv" id="pA4"></canvas></div>
+        <div class="plot"><div class="ctl-h"><h3 style="flex:1">μ [°]</h3><button class="i" data-i="pMu" type="button" aria-label="Opis">ⓘ</button></div><canvas class="cv" id="pMu"></canvas></div>
+      </div>
+      <p class="muted">CSV sadrži θ₂, θ₃, θ₄, ω₃, ω₄, α₃, α₄, μ, x_P i y_P za odabranu konfiguraciju u koracima od 1°. Kutovi su u stupnjevima, duljine u mm. <button class="i" data-i="csv" type="button" aria-label="Opis">ⓘ</button></p>
+      <label class="lbl"><input type="checkbox" id="csvComma" checked> decimalni zarez i „;“ (Excel na hrvatskom)</label>
+    </div>
+  </section>
+
+  <section class="panel">
+    <details open>
+      <summary>Formule i postupak</summary>
+      <div class="flist" id="flist"></div>
+    </details>
+  </section>
+  <p class="foot">Oznake: a = pogonski član O₂A, b = spojka AB, c = izlazni član O₄B, d = postolje O₂O₄; točka P zadana je s p i δ. Kinematika se računa analitički (zatvaranje vektorske petlje). Duljine su u mm, kutovi se mjere od pozitivne osi x suprotno od kazaljke na satu, O₂ je u ishodištu, O₄ na osi x.</p>
+</main>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="false" aria-labelledby="sheetT" hidden>
+  <h3 id="sheetT"></h3>
+  <p id="sheetP"></p>
+  <button class="btn ghost x" id="sheetX" type="button">Zatvori</button>
+</div>
+
+<script id="kin">
+/* ===== Kinematika zglobnog četverokuta (čiste funkcije; testira ih i Node skripta) ===== */
+var FB = (function(){
+  var TAU = 2*Math.PI, D2R = Math.PI/180;
+  function w2pi(x){ x = x % TAU; return x < 0 ? x + TAU : x; }
+  function wpi(x){ return w2pi(x + Math.PI) - Math.PI; }
+  function fOf(P, t){ return Math.sqrt(Math.max(0, P.d*P.d + P.a*P.a - 2*P.d*P.a*Math.cos(t))); }
+  /* položaj: zatvaranje petlje a·e^{iθ2} + b·e^{iθ3} = d + c·e^{iθ4}; sig = +1 / −1 grana rješenja
+     a = pogonski član O2A, b = spojka AB, c = izlazni član O4B, d = postolje O2O4 */
+  function pos(P, t2, sig){
+    var a=P.a,b=P.b,c=P.c,d=P.d;
+    var Ax=a*Math.cos(t2), Ay=a*Math.sin(t2);
+    var ux=d-Ax, uy=-Ay, f=Math.hypot(ux,uy);           /* f = |AO4|, kut β pravca A → O4 */
+    if (f < 1e-9) return null;
+    var k=(b*b+f*f-c*c)/(2*b*f);                          /* cos γ (kosinusni poučak u trokutu A-B-O4) */
+    if (k > 1+1e-9 || k < -1-1e-9) return null;
+    k = Math.max(-1, Math.min(1, k));
+    var t3 = Math.atan2(uy,ux) + sig*Math.acos(k);       /* θ3 = β ± γ */
+    var Bx = Ax + b*Math.cos(t3), By = Ay + b*Math.sin(t3);
+    var t4 = Math.atan2(By, Bx - d);
+    var km = (b*b + c*c - f*f)/(2*b*c); km = Math.max(-1, Math.min(1, km));
+    return {t2:t2, t3:t3, t4:t4, Ax:Ax, Ay:Ay, Bx:Bx, By:By, f:f, mu:Math.acos(km)};
+  }
+  /* brzine i ubrzanja analitički (α2 = 0) */
+  function va(P, s, w2){
+    var a=P.a,b=P.b,c=P.c, t2=s.t2,t3=s.t3,t4=s.t4;
+    var D = Math.sin(t4 - t3);
+    if (Math.abs(D) < 1e-7) return {w3:NaN,w4:NaN,a3:NaN,a4:NaN};
+    var w3 = a*w2*Math.sin(t4-t2)/(b*Math.sin(t3-t4));
+    var w4 = a*w2*Math.sin(t2-t3)/(c*Math.sin(t4-t3));
+    var a3 = (c*w4*w4 - a*w2*w2*Math.cos(t2-t4) - b*w3*w3*Math.cos(t3-t4))/(b*Math.sin(t3-t4));
+    var a4 = (a*w2*w2*Math.cos(t2-t3) + b*w3*w3 - c*w4*w4*Math.cos(t4-t3))/(c*Math.sin(t4-t3));
+    return {w3:w3,w4:w4,a3:a3,a4:a4};
+  }
+  function coupler(P, s){
+    var ang = s.t3 + P.delta*D2R;
+    return {x: s.Ax + P.p*Math.cos(ang), y: s.Ay + P.p*Math.sin(ang)};
+  }
+  function tol(P){ return 1e-9*(P.d+P.a+P.b+P.c); }
+  function canAssemble(P){
+    var L=[P.d,P.a,P.b,P.c], m=Math.max.apply(null,L), sum=P.d+P.a+P.b+P.c;
+    return m < sum - m - tol(P);
+  }
+  function isFull(P){ var e=tol(P); return (P.d+P.a <= P.b+P.c + e) && (Math.abs(P.d-P.a) >= Math.abs(P.b-P.c) - e); }
+  function feasible(P, t){ var f=fOf(P,t), e=1e-9*(P.d+P.a+P.b+P.c); return f <= P.b+P.c+e && f >= Math.abs(P.b-P.c)-e; }
+  /* kritični kutovi θ2: f = b + c ili f = |b − c| (spojka i izlazni član kolinearni) */
+  function crits(P){
+    var out=[], a=P.a, d=P.d, e=tol(P), Fs=[P.b+P.c, Math.abs(P.b-P.c)];
+    for (var i=0;i<2;i++){
+      var F=Fs[i], k=(a*a+d*d-F*F)/(2*a*d);
+      var touch = Math.abs(F-Math.abs(d-a)) < e || Math.abs(F-(d+a)) < e;
+      if (touch){ out.push({t: (Math.abs(F-Math.abs(d-a)) < e ? 0 : Math.PI), kind:'touch', F:F}); continue; }
+      if (k > 1 || k < -1) continue;
+      var t=Math.acos(k); out.push({t:t,kind:'limit',F:F}); out.push({t:w2pi(TAU-t),kind:'limit',F:F});
+    }
+    return out;
+  }
+  /* luk dopuštenih θ2 koji sadrži t (za pogon koji ne može napraviti puni okret) */
+  function arcOf(P, t){
+    if (isFull(P)) return {lo:0, len:TAU, full:true};
+    var L = crits(P).filter(function(c){return c.kind==='limit';}).map(function(c){return c.t;}).sort(function(x,y){return x-y;});
+    for (var i=0;i<L.length;i++){
+      var lo=L[i], hi=L[(i+1)%L.length], len=w2pi(hi-lo); if (L.length===1) len=TAU;
+      if (len < 1e-12) continue;
+      if (!feasible(P, lo+len/2)) continue;
+      if (w2pi(t-lo) <= len + 1e-9) return {lo:lo, len:len, full:false};
+    }
+    return null;
+  }
+  function nearestFeasible(P, t){
+    if (feasible(P,t)) return t;
+    var best=null, bd=1e9, L=crits(P);
+    for (var i=0;i<L.length;i++){ var dd=Math.abs(wpi(L[i].t-t)); if (dd<bd){bd=dd;best=L[i].t;} }
+    if (best===null){ for (var j=0;j<720;j++){ var tt=j*TAU/720; if (feasible(P,tt)){ var d2=Math.abs(wpi(tt-t)); if (d2<bd){bd=d2;best=tt;} } } }
+    return best;
+  }
+  /* korak animacije: st = {th, sig, dir}; dth = stvarni prirast θ2 (s predznakom) */
+  function step(P, st, dth){
+    var cr = crits(P), rem = dth, guard = 0;
+    while (Math.abs(rem) > 1e-14 && guard++ < 5000){
+      var h = (rem>0?1:-1)*Math.min(Math.abs(rem), 0.5*D2R), sg = h>0?1:-1;
+      var ev=null, evRel=Infinity;
+      for (var i=0;i<cr.length;i++){
+        var rel = w2pi((cr[i].t - st.th)*sg);
+        if (rel > 1e-10 && rel <= Math.abs(h)+1e-12 && rel < evRel){ evRel=rel; ev=cr[i]; }
+      }
+      if (ev){
+        st.th = ev.t; rem -= sg*evRel;
+        if (ev.kind === 'touch'){ st.sig = -st.sig; }
+        else { st.sig = -st.sig; st.dir = -st.dir; rem = -rem; }
+        continue;
+      }
+      if (!feasible(P, st.th + h)){ st.dir = -st.dir; rem = -rem; continue; } /* stoji na granici i gleda prema van */
+      st.th = w2pi(st.th + h); rem -= h;
+    }
+    return st;
+  }
+  function sigmaAt(P, st, t){
+    var s = st.sig, cr = crits(P), relT = w2pi(t - st.th);
+    for (var i=0;i<cr.length;i++){ if (cr[i].kind!=='touch') continue; var rel=w2pi(cr[i].t-st.th); if (rel>1e-10 && rel<=relT+1e-12) s=-s; }
+    return s;
+  }
+  /* Grashofova klasifikacija; a pogonski član, b spojka, c izlazni član, d postolje */
+  function grashof(P){
+    var e=tol(P), arr=[['d',P.d],['a',P.a],['b',P.b],['c',P.c]];
+    var sorted=arr.slice().sort(function(x,y){return x[1]-y[1];});
+    var s=sorted[0][1], l=sorted[3][1], p=sorted[1][1], q=sorted[2][1];
+    var r={s:s,l:l,p:p,q:q,sl:s+l,pq:p+q};
+    if (!canAssemble(P)){ r.cls='X'; r.type='Ne može se sastaviti'; r.text='Najdulji član nije kraći od zbroja ostalih triju — petlja se ne zatvara.'; return r; }
+    var shortest = arr.filter(function(x){return Math.abs(x[1]-s) < e;}).map(function(x){return x[0];});
+    var pick = shortest.indexOf('d')>=0?'d':shortest.indexOf('a')>=0?'a':shortest.indexOf('c')>=0?'c':'b';
+    var typeG = {d:'Dvostruko koljeno', a:'Koljeno-klackalica', c:'Klackalica-koljeno', b:'Dvostruka klackalica (Grashofova)'}[pick];
+    var txtG = {d:'Najkraći je član postolje d: pogonski i izlazni član rade pune okretaje.',
+                a:'Najkraći je pogonski član a: on radi puni okretaj, izlazni član c njiše se između dva granična položaja.',
+                c:'Najkraći je izlazni član c: on bi mogao raditi puni okretaj, ali pogonski član a se samo njiše — pogon s a ne može ići u krug.',
+                b:'Najkraća je spojka b: ona se puno okreće prema ostalim članovima, a a i c se samo njišu.'}[pick];
+    if (Math.abs(r.sl - r.pq) < e){
+      r.cls='B';
+      var sub = (Math.abs(P.d-P.b)<e && Math.abs(P.a-P.c)<e) ? 'paralelogram' :
+                ((Math.abs(P.d-P.a)<e && Math.abs(P.b-P.c)<e) || (Math.abs(P.d-P.c)<e && Math.abs(P.a-P.b)<e)) ? 'deltoid' : 'mehanizam s točkom grananja';
+      r.type='Granični slučaj: '+sub;
+      r.text='s + l = p + q. U nekom položaju svi su članovi kolinearni (točka grananja); tu mehanizam može prijeći iz jedne konfiguracije u drugu. Gibanje kao: '+typeG.toLowerCase()+'. Simulator nastavlja glatko (bez preskoka u drugu konfiguraciju).';
+    } else if (r.sl < r.pq){ r.cls='G'; r.type=typeG; r.text='Grashofov četverokut (s + l < p + q). '+txtG; }
+    else { r.cls='N'; r.type='Ne-Grashofov: trostruka klackalica'; r.text='s + l > p + q: nijedan član ne može napraviti puni okretaj prema drugome; pogonski član a njiše se između dva mrtva položaja.'; }
+    r.full = isFull(P);
+    return r;
+  }
+  function segX(p1,p2,p3,p4){
+    function cr(o,a,b){return (a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);}
+    var d1=cr(p3,p4,p1), d2=cr(p3,p4,p2), d3=cr(p1,p2,p3), d4=cr(p1,p2,p4);
+    return ((d1>1e-9&&d2<-1e-9)||(d1<-1e-9&&d2>1e-9)) && ((d3>1e-9&&d4<-1e-9)||(d3<-1e-9&&d4>1e-9));
+  }
+  /* križna konfiguracija: stranice četverokuta O2-A-B-O4 se sijeku */
+  function crossed(P, s){
+    var O2={x:0,y:0}, O4={x:P.d,y:0}, A={x:s.Ax,y:s.Ay}, B={x:s.Bx,y:s.By};
+    return segX(O2,A,B,O4) || segX(A,B,O4,O2);
+  }
+  /* proračun kroz cijeli okret (N točaka) za odabranu i drugu granu */
+  function sweep(P, st, N, w2){
+    var arc = arcOf(P, st.th), out={t:[], A:[], B:[]};
+    for (var i=0;i<=N;i++){
+      var t = i*TAU/N; out.t.push(t);
+      var inside = arc && (arc.full || w2pi(t-arc.lo) <= arc.len+1e-9);
+      var sg = sigmaAt(P, st, t);
+      for (var j=0;j<2;j++){
+        var key = j===0?'A':'B', sgn = j===0?sg:-sg;
+        var s = inside ? pos(P, t, sgn) : null;
+        if (!s){ out[key].push(null); continue; }
+        var v = va(P, s, w2), cp = coupler(P, s);
+        out[key].push({t2:t, t3:s.t3, t4:s.t4, w3:v.w3, w4:v.w4, a3:v.a3, a4:v.a4, mu:s.mu, xP:cp.x, yP:cp.y, Bx:s.Bx, By:s.By, Ax:s.Ax, Ay:s.Ay, sig:sgn});
+      }
+    }
+    out.arc = arc;
+    return out;
+  }
+  /* granični položaji izlaznog člana: ω4 = 0, tj. sin(θ2 − θ3) = 0 (koljeno a i spojka b kolinearni) */
+  function extremes(P, sw){
+    var res=[], lists = (sw.arc && !sw.arc.full) ? [sw.A, sw.B] : [sw.A];
+    for (var li=0; li<lists.length; li++){ var A=lists[li];
+    for (var i=0;i<A.length-1;i++){
+      var p=A[i], q=A[i+1]; if (!p||!q||p.sig!==q.sig) continue;
+      var g1=Math.sin(p.t2-p.t3), g2=Math.sin(q.t2-q.t3);
+      if (g1===0 || g1*g2<0){
+        var lo=p.t2, hi=q.t2, glo=g1, s=null;
+        for (var k=0;k<50;k++){ var m=(lo+hi)/2; s=pos(P,m,p.sig); if(!s) break; var gm=Math.sin(m-s.t3); if (glo*gm<=0){hi=m;} else {lo=m;glo=gm;} }
+        s = pos(P,(lo+hi)/2,p.sig); if (!s) continue;
+        var ext = Math.abs(wpi(s.t3 - s.t2)) < Math.PI/2 ? 'ispruženi' : 'preklopljeni';
+        if (!res.some(function(r){return Math.abs(wpi(r.t2-s.t2))<1e-6 && Math.abs(wpi(r.t4-s.t4))<1e-6;})) res.push({t2:w2pi(s.t2), t4:s.t4, kind:ext});
+      }
+    }}
+    return res;
+  }
+  return {pos:pos, va:va, coupler:coupler, grashof:grashof, crits:crits, isFull:isFull, feasible:feasible, arcOf:arcOf,
+          nearestFeasible:nearestFeasible, step:step, sigmaAt:sigmaAt, sweep:sweep, extremes:extremes, crossed:crossed,
+          canAssemble:canAssemble, w2pi:w2pi, wpi:wpi};
+})();
+if (typeof module !== 'undefined') module.exports = FB;
+</script>
+
+<script>
+(function(){
+'use strict';
+var TAU=2*Math.PI, D2R=Math.PI/180, R2D=180/Math.PI;
+var $=function(id){return document.getElementById(id);};
+
+/* ---------- oblikovanje brojeva (decimalni zarez, minus U+2212) ---------- */
+function fmt(x, n){
+  if (n===undefined) n=2;
+  if (x===null || x===undefined || !isFinite(x)) return '—';
+  var lim = 0.5*Math.pow(10,-n); if (Math.abs(x) < lim) x = 0;
+  return x.toFixed(n).replace('-', '−').replace('.', ',');
+}
+function deg(x){ return x*R2D; }
+function d360(x){ return FB.w2pi(x)*R2D; }
+function d180(x){ return FB.wpi(x)*R2D; }
+
+/* ---------- opisi (ⓘ) ---------- */
+var INFO = {
+  a:['a — pogonski član (O₂A), koljeno ili ručica','Član na koji djeluje pogon (motor) stalnom kutnom brzinom ω₂. Ako je najkraći član i vrijedi Grashofov uvjet, radi pune okretaje.'],
+  b:['b — spojka (AB)','Član koji nije vezan za postolje. Prenosi gibanje s pogonskog na izlazni član i nosi točku P čiju putanju pratimo.'],
+  c:['c — izlazni član (O₄B), klackalica','Član čiji kut θ₄ i njegove derivacije računamo. U koljeno-klackalici njiše se između dva granična položaja.'],
+  d:['d — postolje (O₂O₄)','Udaljenost nepomičnih zglobova O₂ i O₄. Postolje je nepomični član mehanizma. U simulatoru je O₂ u ishodištu, a O₄ = (d, 0) na pozitivnoj osi x.'],
+  p:['p — udaljenost točke P od zgloba A','Točka P kruto je vezana za spojku. Položaj joj određuju udaljenost p od zgloba A i kut δ prema pravcu AB.'],
+  delta:['δ — kut točke P na spojci','Kut između pravca AB i pravca AP, mjeren od AB suprotno od kazaljke na satu. Za δ = 0° i p = b točka P pada u zglob B. Pravac AP ima kut θ₃ + δ.'],
+  w2:['ω₂ — kutna brzina pogonskog koljena','Stalna kutna brzina pogonskog člana u rad/s; pozitivna je suprotno od kazaljke na satu, a α₂ = 0. Brzine ω₃ i ω₄ razmjerne su ω₂, a ubrzanja α₃ i α₄ razmjerna su ω₂².'],
+  conf:['Konfiguracija: otvorena ili križna','Za isti θ₂ zatvaranje petlje ima dva rješenja: zglob B leži s jedne ili s druge strane pravca AO₄. U otvorenoj konfiguraciji stranice četverokuta O₂ABO₄ se ne sijeku, u križnoj se sijeku. Mehanizam ne može sam prijeći iz jedne u drugu (trebalo bi ga rastaviti), osim kroz točku grananja u graničnom Grashofovom slučaju.'],
+  preset:['Primjeri','Unaprijed spremljene duljine članova za tipične mehanizme. Nakon učitavanja možete mijenjati svaku veličinu. Stezni mehanizam postavlja se nekoliko stupnjeva prije položaja u kojem su koljeno i spojka kolinearni.'],
+  tscale:['Brzina prikaza','Usporava samo animaciju na zaslonu. Izračunane brzine i ubrzanja uvijek vrijede za zadani ω₂.'],
+  th2:['θ₂ — kut pogonskog koljena','Kut koljena O₂A mjeren od osi x (od pravca O₂O₄) suprotno od kazaljke na satu. Možete ga zadati klizačem, upisom ili povlačenjem koljena na crtežu.'],
+  th3:['θ₃ — kut spojke','Kut pravca AB prema osi x. Dobiva se iz zatvaranja vektorske petlje.'],
+  th4:['θ₄ — kut izlaznog člana','Kut pravca O₄B prema osi x. Glavni rezultat kinematike položaja: θ₄ = f(θ₂) naziva se i prijenosna funkcija položaja.'],
+  w2now:['ω₂ — trenutna kutna brzina pogona','Ako pogonski član ne može napraviti puni okretaj, animacija ga vodi tamo-amo između graničnih položaja, pa mu se predznak brzine mijenja.'],
+  w3:['ω₃ — kutna brzina spojke','ω₃ = a·ω₂·sin(θ₄ − θ₂) / (b·sin(θ₃ − θ₄)). Kad je sin(θ₃ − θ₄) = 0 (spojka i izlazni član kolinearni), izraz nije definiran — to je mrtvi položaj.'],
+  w4:['ω₄ — kutna brzina izlaznog člana','ω₄ = a·ω₂·sin(θ₂ − θ₃) / (c·sin(θ₄ − θ₃)). ω₄ = 0 kad su koljeno i spojka kolinearni — to su granični položaji izlaznog člana.'],
+  a3:['α₃ — kutno ubrzanje spojke','Dobiva se deriviranjem jednadžbe brzina po vremenu (uz α₂ = 0); formula je u odjeljku „Formule i postupak“.'],
+  a4:['α₄ — kutno ubrzanje izlaznog člana','α₄ = [a·ω₂²·cos(θ₂ − θ₃) + b·ω₃² − c·ω₄²·cos(θ₄ − θ₃)] / (c·sin(θ₄ − θ₃)), uz α₂ = 0. Veliki α₄ znači velike inercijske sile na izlaznom članu.'],
+  mu:['μ — prijenosni kut','Kut između spojke i izlaznog člana u zglobu B: cos μ = (b² + c² − f²)/(2bc), gdje je f = |O₄A|. Pri μ = 90° sila iz spojke najbolje okreće izlazni član. Uobičajena preporuka: μ između 40° i 140°; izvan toga raste opterećenje zglobova, a gibanje postaje osjetljivo na trenje i zračnost.'],
+  ratio:['ω₄/ω₂ i omjer momenata','Omjer kutnih brzina izlaznog i pogonskog člana. Bez gubitaka je snaga ista na ulazu i izlazu, pa je omjer momenata T₄/T₂ = ω₂/ω₄. Kad ω₄ → 0, T₄/T₂ → ∞: na tome se temelji stezni mehanizam.'],
+  P:['Točka P i njezina putanja','Koordinate točke spojke u mm (O₂ je ishodište). Putanja točke spojke (krivulja spojke) je zatvorena krivulja; ovisno o p i δ može imati ravne dijelove, šiljke ili petlje.'],
+  grashof:['Grashofovo pravilo','Neka je s najkraći, l najdulji, a p i q preostali članovi. Ako je s + l < p + q, barem jedan član može napraviti puni okretaj prema ostalima (Grashofov četverokut); vrsta mehanizma ovisi o tome koji je član najkraći (postolje, koljeno, spojka). Ako je s + l > p + q, nijedan član ne može napraviti puni okretaj. Ako je s + l = p + q, riječ je o graničnom slučaju s točkom grananja.'],
+  extreme:['Granični položaji izlaznog člana','Položaji u kojima su pogonski član a i spojka b kolinearni (ispruženi ili preklopljeni). Tada je ω₄ = 0 i izlazni član mijenja smjer. Ako bi pogon dolazio s izlaznog člana c, to bi bili njegovi mrtvi položaji.'],
+  dead:['Mrtvi položaji pri pogonu članom a','Položaji u kojima su spojka i izlazni član kolinearni (μ = 0° ili 180°). Sila iz spojke tada prolazi kroz O₄ i ne stvara moment na izlaznom članu. Pogonski član a do njih može doći samo ako ne radi puni okretaj — tu mu je kraj hoda.'],
+  K:['Kut zakreta ψ i omjer vremena hodova K','ψ je razlika graničnih kutova izlaznog člana. K je omjer vremena sporijeg i bržeg hoda uz stalni ω₂ (kut koljena za jedan hod prema kutu koljena za drugi). K > 1 znači brzopovratni mehanizam.'],
+  results:['Rezultati','Vrijednosti vrijede za trenutni položaj θ₂ i odabranu konfiguraciju. Kutovi su u stupnjevima, kutne brzine u rad/s, kutna ubrzanja u rad/s², duljine u mm.'],
+  pTh4:['Dijagram θ₄(θ₂)','Prijenosna funkcija položaja. Za koljeno-klackalicu krivulja ima jedan maksimum i jedan minimum (granični položaji); za dvostruko koljeno θ₄ raste kroz cijeli okret. Isprekidano: druga konfiguracija.'],
+  pW4:['Dijagram ω₄(θ₂)','Kutna brzina izlaznog člana uz zadani stalni ω₂. Nultočke su granični položaji. Kad pogonski član ne radi puni okretaj, ω₄ prema mrtvim položajima teži u beskonačnost, pa je mjerilo osi odrezano.'],
+  pA4:['Dijagram α₄(θ₂)','Kutno ubrzanje izlaznog člana uz stalni ω₂ (α₂ = 0). Najveće vrijednosti određuju inercijska opterećenja u dinamici mehanizma.'],
+  pMu:['Dijagram μ(θ₂)','Prijenosni kut kroz okret. Osjenčano je preporučeno područje 40°–140°. Za koljeno-klackalicu najmanji i najveći μ javljaju se kad je koljeno kolinearno s postoljem (θ₂ = 0° i 180°).'],
+  csv:['Izvoz CSV','Tablica za odabranu konfiguraciju, θ₂ od 0° do 360° u koracima od 1° (retci u kojima se mehanizam ne može sastaviti izostavljeni su). Stupci: theta2_deg, theta3_deg, theta4_deg, omega3_rad_s, omega4_rad_s, alpha3_rad_s2, alpha4_rad_s2, mu_deg, xP_mm, yP_mm. Pogodno za usporedbu sa SolidWorks Motionom ili Python skriptom.'],
+  fLoop:['Vektorska petlja','Članovi se prikazuju vektorima; zbroj vektora po zatvorenoj konturi O₂ → A → B → O₄ → O₂ jednak je nuli. Rastavljanjem na x i y komponentu dobivaju se dvije skalarne jednadžbe s dvije nepoznanice (θ₃ i θ₄).'],
+  fPos:['Rješenje položaja','f je udaljenost zgloba A od O₄, β je kut pravca A → O₄, a γ kut u zglobu A u trokutu A–B–O₄ (kosinusni poučak). Predznak ± daje dvije konfiguracije. Rješenje postoji samo ako je |b − c| ≤ f ≤ b + c.'],
+  fVel:['Brzine','Deriviranjem petlje po vremenu dobiva se a·ω₂·e^{iθ₂} + b·ω₃·e^{iθ₃} = c·ω₄·e^{iθ₄}. Množenjem s e^{−iθ₄} odnosno e^{−iθ₃} i uzimanjem imaginarnog dijela izdvajaju se ω₃ i ω₄.'],
+  fAcc:['Ubrzanja','Drugom derivacijom petlje (uz α₂ = 0) i istim postupkom izdvajaju se α₃ i α₄. Članovi s ω² su normalna (centripetalna) ubrzanja, članovi s α tangencijalna.'],
+  fMu:['Prijenosni kut','Kosinusni poučak u trokutu A–B–O₄. Ne ovisi o konfiguraciji, nego samo o udaljenosti f = |O₄A|.'],
+  fGr:['Grashofov uvjet','s najkraći, l najdulji, p i q preostali članovi. Vrijedi za bilo koji izbor postolja; o izboru postolja ovisi samo vrsta mehanizma.'],
+  fP:['Točka spojke','Položaj točke P dobiva se iz položaja zgloba A i kuta spojke θ₃.']
+};
+var sheet=$('sheet'), sheetT=$('sheetT'), sheetP=$('sheetP'), lastBtn=null;
+function openInfo(k, btn){ var it=INFO[k]; if(!it) return; sheetT.textContent=it[0]; sheetP.textContent=it[1]; sheet.hidden=false; lastBtn=btn||null; $('sheetX').focus(); }
+function closeInfo(){ sheet.hidden=true; if(lastBtn) lastBtn.focus(); }
+document.addEventListener('click', function(e){
+  var b=e.target.closest('.i'); if (b){ openInfo(b.getAttribute('data-i'), b); e.stopPropagation(); return; }
+  if (!sheet.hidden && !e.target.closest('#sheet')) closeInfo();
+});
+$('sheetX').addEventListener('click', closeInfo);
+document.addEventListener('keydown', function(e){ if (e.key==='Escape' && !sheet.hidden) closeInfo(); });
+
+/* ---------- tema ---------- */
+function isDark(){ var t=document.documentElement.getAttribute('data-theme'); if (t) return t==='dark'; return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
+function setThemeLabel(){ $('themeBtn').textContent = isDark() ? 'Svijetla tema' : 'Tamna tema'; }
+try { var sv=localStorage.getItem('om-tema'); if (sv==='dark'||sv==='light') document.documentElement.setAttribute('data-theme', sv); } catch(e){}
+$('themeBtn').addEventListener('click', function(){ var nt = isDark()?'light':'dark'; document.documentElement.setAttribute('data-theme', nt); try{localStorage.setItem('om-tema', nt);}catch(e){} setThemeLabel(); drawAll(); });
+if (window.matchMedia) { var mq=window.matchMedia('(prefers-color-scheme: dark)'); if (mq.addEventListener) mq.addEventListener('change', function(){ setThemeLabel(); drawAll(); }); }
+setThemeLabel();
+function C(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+/* ---------- parametri i kontrole ---------- */
+var CTRL = [
+  {k:'a', lab:'a — pogonski član (O₂A)', u:'mm', min:5, max:250, step:1, v:30},
+  {k:'b', lab:'b — spojka (AB)', u:'mm', min:5, max:250, step:1, v:70},
+  {k:'c', lab:'c — izlazni član (O₄B)', u:'mm', min:5, max:250, step:1, v:60},
+  {k:'d', lab:'d — postolje (O₂O₄)', u:'mm', min:10, max:250, step:1, v:80},
+  {k:'p', lab:'p — točka P: udaljenost od A', u:'mm', min:0, max:300, step:1, v:70},
+  {k:'delta', lab:'δ — točka P: kut prema AB', u:'°', min:-180, max:180, step:1, v:40},
+  {k:'w2', lab:'ω₂ — kutna brzina koljena', u:'rad/s', min:-20, max:20, step:0.1, v:2}
+];
+var P = {}; CTRL.forEach(function(c){ P[c.k]=c.v; });
+var st = {th: 60*D2R, sig: 1, dir: 1};
+var running=false, lastT=null, sw=null, ext=[], view=null, gr=null;
+
+function parseNum(s){ s=String(s).replace(/\s/g,'').replace('−','-').replace(',', '.'); return parseFloat(s); }
+function buildCtls(){
+  var h='';
+  CTRL.forEach(function(c){
+    h += '<div class="ctl"><div class="ctl-h"><label for="r_'+c.k+'">'+c.lab+'</label><button class="i" type="button" data-i="'+c.k+'" aria-label="Opis">ⓘ</button>'+
+         '<span class="num"><input id="n_'+c.k+'" inputmode="decimal" aria-label="'+c.lab+'"> '+c.u+'</span></div>'+
+         '<input type="range" id="r_'+c.k+'" min="'+c.min+'" max="'+c.max+'" step="'+c.step+'"></div>';
+  });
+  $('ctls').innerHTML = h;
+  CTRL.forEach(function(c){
+    var r=$('r_'+c.k), n=$('n_'+c.k);
+    r.addEventListener('input', function(){ setParam(c.k, parseFloat(r.value)); });
+    function fromNum(){ var v=parseNum(n.value); if (isFinite(v)) setParam(c.k, Math.max(c.min, Math.min(c.max, v))); else syncCtls(); }
+    n.addEventListener('change', fromNum);
+    n.addEventListener('keydown', function(e){ if (e.key==='Enter') fromNum(); });
+  });
+}
+function syncCtls(){
+  CTRL.forEach(function(c){ var v=P[c.k], dec = Math.abs(v-Math.round(v))<1e-9 ? 0 : Math.abs(v*10-Math.round(v*10))<1e-6 ? 1 : 2;
+    $('r_'+c.k).value=v; $('n_'+c.k).value=fmt(v, Math.max(dec, c.step<1?1:0)).replace('−','-'); });
+}
+function setParam(k, v){ P[k]=v; $('preset').value=''; $('presetNote').textContent=''; afterParams(); }
+
+function pickSigmaForConf(){
+  var want = $('conf').value==='cross';
+  var s1 = FB.pos(P, st.th, 1), s2 = FB.pos(P, st.th, -1);
+  if (!s1 || !s2){ return; }
+  var c1 = FB.crossed(P, s1), c2 = FB.crossed(P, s2);
+  if (c1===want && c2!==want) st.sig = 1;
+  else if (c2===want && c1!==want) st.sig = -1;
+  else st.sig = want ? -1 : 1;
+}
+function afterParams(){
+  syncCtls();
+  gr = FB.grashof(P);
+  if (gr.cls !== 'X'){
+    var t = FB.nearestFeasible(P, st.th);
+    if (t !== null) st.th = t;
+  }
+  // grana (st.sig) ostaje ista radi kontinuiteta gibanja
+  recompute();
+}
+function recompute(){
+  if (gr.cls==='X'){ sw=null; ext=[]; view=null; drawAll(); updateReadout(); return; }
+  sw = FB.sweep(P, st, 720, P.w2);
+  ext = FB.extremes(P, sw);
+  computeView();
+  drawAll(); updateReadout();
+}
+
+/* ---------- primjeri ---------- */
+var PRESETS = {
+  ref:{a:40,b:110,c:90,d:120,p:70,delta:30,w2:6.2832,th:60,conf:'open',note:'Referentni četverokut iz vježbi (a = 40, b = 110, c = 90, d = 120 mm), točka spojke p = 70 mm, δ = 30°, n = 60 min⁻¹ (ω₂ = 2π rad/s). Pri θ₂ = 60° očitajte P i θ₃ i usporedite s ručnim računom.'},
+  pred:{a:40,b:110,c:100,d:120,p:70,delta:30,w2:10,th:60,conf:'open',note:'Primjer s predavanja: a = 40, b = 110, c = 100, d = 120 mm, ω₂ = 10 rad/s. Usporedite θ₃, θ₄, ω₃, ω₄, α₃ i α₄ s ručnim računom.'},
+  brisac:{a:30,b:90,c:48,d:100,p:45,delta:0,w2:3,th:0,conf:'open',note:'Koljeno-klackalica: motor okreće koljeno, a izlazni član (ruka brisača) njiše se za oko 78°. Prijenosni kut ostaje u području 50°–139°.'},
+  kk:{a:30,b:70,c:60,d:80,p:70,delta:40,w2:2,th:60,conf:'open',note:'Klasična koljeno-klackalica (s + l = 110 < p + q = 130). Pratite putanju točke P i položaje u kojima je ω₄ = 0.'},
+  dk:{a:80,b:75,c:70,d:30,p:50,delta:-30,w2:2,th:60,conf:'open',note:'Najkraći je član postolje: oba člana vezana za postolje rade pune okretaje, ali izlazni nejednoliko (pogledajte ω₄).'},
+  par:{a:40,b:80,c:40,d:80,p:40,delta:-90,w2:2,th:60,conf:'open',note:'b = d i a = c: spojka se giba translacijski, a svaka njezina točka opisuje kružnicu polumjera a. U θ₂ = 0° i 180° svi su članovi kolinearni (točka grananja).'},
+  stez:{a:25,b:60,c:45,d:70,p:30,delta:0,w2:0.5,th:'toggle',conf:'open',note:'Položaj je 4° prije ispruženog položaja koljena i spojke. Pratite kako ω₄/ω₂ teži nuli, a omjer momenata T₄/T₂ raste. Pomaknite θ₂ korak po korak.'},
+  dkl:{a:55,b:25,c:50,d:60,p:12,delta:90,w2:1,th:50,conf:'open',note:'Najkraća je spojka (s + l = 85 < p + q = 105): a i c se samo njišu. Animacija vodi koljeno tamo-amo između mrtvih položaja.'},
+  ng:{a:50,b:45,c:55,d:70,p:30,delta:30,w2:1,th:60,conf:'open',note:'s + l = 115 > p + q = 105: nijedan član ne radi puni okretaj. Pogonski član njiše se između dva mrtva položaja (μ = 0° ili 180°).'}
+};
+function loadPreset(k){
+  var pr=PRESETS[k]; if(!pr) return;
+  ['a','b','c','d','p','delta','w2'].forEach(function(q){ P[q]=pr[q]; });
+  $('conf').value = pr.conf;
+  st.dir = 1;
+  gr = FB.grashof(P);
+  if (pr.th==='toggle'){
+    st.th = 0; st.sig = 1; pickSigmaForConf();
+    var sw0 = FB.sweep(P, st, 720, 1), ex = FB.extremes(P, sw0).filter(function(e){return e.kind==='ispruženi';});
+    st.th = ex.length ? FB.w2pi(ex[0].t2 - 4*D2R*(P.w2>=0?1:-1)) : 0;
+  } else st.th = pr.th*D2R;
+  st.th = FB.nearestFeasible(P, st.th);
+  pickSigmaForConf();
+  $('presetNote').textContent = pr.note;
+  afterParams();
+  $('preset').value = k;
+}
+
+/* ---------- prikaz mehanizma ---------- */
+var mech = $('mech');
+function fitCanvas(cv){
+  var r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio||1;
+  var w = Math.max(10, Math.round(r.width*dpr)), h = Math.max(10, Math.round(r.height*dpr));
+  if (cv.width!==w || cv.height!==h){ cv.width=w; cv.height=h; }
+  var ctx = cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx:ctx, w:r.width, h:r.height};
+}
+function computeView(){
+  var xs=[0,P.d,-P.a,P.a], ys=[-P.a,P.a,0];
+  if (sw){ var nf = sw.arc && !sw.arc.full;
+    ['A','B'].forEach(function(k){ sw[k].forEach(function(q){ if(!q) return; xs.push(q.xP); ys.push(q.yP); if (k==='A'||nf){ xs.push(q.Bx); ys.push(q.By); } }); }); }
+  view = {x0:Math.min.apply(null,xs), x1:Math.max.apply(null,xs), y0:Math.min.apply(null,ys), y1:Math.max.apply(null,ys)};
+}
+function drawGround(ctx, x, y, s){
+  ctx.save(); ctx.strokeStyle=C('--ink'); ctx.lineWidth=1.5; ctx.fillStyle=C('--paper');
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-s*0.8,y+s*1.25); ctx.lineTo(x+s*0.8,y+s*1.25); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x-s*1.3,y+s*1.25); ctx.lineTo(x+s*1.3,y+s*1.25); ctx.stroke();
+  ctx.lineWidth=1; for (var i=-1.2;i<=1.21;i+=0.6){ ctx.beginPath(); ctx.moveTo(x+s*i,y+s*1.25); ctx.lineTo(x+s*i-s*0.45,y+s*1.8); ctx.stroke(); }
+  ctx.restore();
+}
+function joint(ctx,x,y,r){ ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.fillStyle=C('--paper'); ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle=C('--ink'); ctx.stroke(); }
+function label(ctx, t, x, y, col){ ctx.fillStyle=col||C('--ink'); ctx.font='600 13px "IBM Plex Sans", system-ui, sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(t,x,y); }
+function drawMech(){
+  var g = fitCanvas(mech), ctx=g.ctx, W=g.w, H=g.h;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle=C('--paper'); ctx.fillRect(0,0,W,H);
+  if (!gr || gr.cls==='X' || !view){
+    label(ctx,'Mehanizam se ne može sastaviti s ovim duljinama.',W/2,H/2,C('--warn')); return;
+  }
+  var pad=34, sx=(W-2*pad)/Math.max(1e-6,view.x1-view.x0), sy=(H-2*pad-18)/Math.max(1e-6,view.y1-view.y0), k=Math.min(sx,sy);
+  var cx=(view.x0+view.x1)/2, cy=(view.y0+view.y1)/2;
+  var X=function(x){return W/2+(x-cx)*k;}, Y=function(y){return H/2-9-(y-cy)*k;};
+  view.X=X; view.Y=Y; view.k=k;
+  var s = FB.pos(P, st.th, st.sig); if (!s) return;
+  var cp = FB.coupler(P, s);
+  // krug koljena
+  ctx.setLineDash([3,4]); ctx.strokeStyle=C('--rule'); ctx.lineWidth=1.2; ctx.beginPath(); ctx.arc(X(0),Y(0),P.a*k,0,TAU); ctx.stroke(); ctx.setLineDash([]);
+  // putanje točke P
+  function path(arr, col, w, dash){ ctx.beginPath(); var pen=false; arr.forEach(function(q){ if(!q){pen=false;return;} if(!pen){ctx.moveTo(X(q.xP),Y(q.yP));pen=true;} else ctx.lineTo(X(q.xP),Y(q.yP)); }); ctx.strokeStyle=col; ctx.lineWidth=w; ctx.setLineDash(dash||[]); ctx.stroke(); ctx.setLineDash([]); }
+  var nfull = sw.arc && !sw.arc.full;
+  if (nfull) path(sw.B, C('--cyan'), 1.6); else path(sw.B, C('--body'), 1, [4,4]);
+  path(sw.A, C('--cyan'), 2.2);
+  // granični položaji izlaznog člana
+  ctx.setLineDash([6,4]); ctx.strokeStyle=C('--warn'); ctx.lineWidth=1.3;
+  ext.forEach(function(e){ ctx.beginPath(); ctx.moveTo(X(P.d),Y(0)); ctx.lineTo(X(P.d+P.c*Math.cos(e.t4)),Y(P.c*Math.sin(e.t4))); ctx.stroke(); });
+  if (sw.arc && !sw.arc.full){ [sw.arc.lo, sw.arc.lo+sw.arc.len].forEach(function(t){ ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(P.a*Math.cos(t)),Y(P.a*Math.sin(t))); ctx.stroke(); }); }
+  ctx.setLineDash([]);
+  // postolje
+  ctx.strokeStyle=C('--body'); ctx.lineWidth=1.5; ctx.setLineDash([8,4]); ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(P.d),Y(0)); ctx.stroke(); ctx.setLineDash([]);
+  drawGround(ctx, X(0), Y(0)+7, 9); drawGround(ctx, X(P.d), Y(0)+7, 9);
+  // spojka (trokut A-B-P)
+  ctx.beginPath(); ctx.moveTo(X(s.Ax),Y(s.Ay)); ctx.lineTo(X(s.Bx),Y(s.By)); ctx.lineTo(X(cp.x),Y(cp.y)); ctx.closePath();
+  ctx.fillStyle=C('--fill'); ctx.fill(); ctx.strokeStyle=C('--teal'); ctx.lineWidth=1.5; ctx.stroke();
+  function link(x1,y1,x2,y2,col,w){ ctx.beginPath(); ctx.moveTo(X(x1),Y(y1)); ctx.lineTo(X(x2),Y(y2)); ctx.strokeStyle=col; ctx.lineWidth=w; ctx.lineCap='round'; ctx.stroke(); }
+  link(s.Ax,s.Ay,s.Bx,s.By,C('--teal'),6);
+  link(0,0,s.Ax,s.Ay,C('--teal-d'),7);
+  link(P.d,0,s.Bx,s.By,C('--link'),6);
+  // prijenosni kut u B
+  var muOk = s.mu*R2D>=40 && s.mu*R2D<=140, bxs=X(s.Bx), bys=Y(s.By);
+  var angA=Math.atan2(Y(s.Ay)-bys, X(s.Ax)-bxs), angO=Math.atan2(Y(0)-bys, X(P.d)-bxs);
+  var dA=FB.wpi(angO-angA); ctx.beginPath(); ctx.arc(bxs,bys,22,angA,angA+dA,dA<0); ctx.strokeStyle=muOk?C('--ok'):C('--warn'); ctx.lineWidth=2.5; ctx.stroke();
+  var am=angA+dA/2; label(ctx,'μ = '+fmt(s.mu*R2D,0)+'°', bxs+44*Math.cos(am), bys+44*Math.sin(am), muOk?C('--ok'):C('--warn'));
+  // kut θ2
+  ctx.beginPath(); ctx.arc(X(0),Y(0),18,0,-st.th,true); ctx.strokeStyle=C('--body'); ctx.lineWidth=1.2; ctx.stroke();
+  // zglobovi
+  joint(ctx,X(0),Y(0),5.5); joint(ctx,X(P.d),Y(0),5.5); joint(ctx,X(s.Ax),Y(s.Ay),5); joint(ctx,X(s.Bx),Y(s.By),5);
+  ctx.beginPath(); ctx.arc(X(cp.x),Y(cp.y),5,0,TAU); ctx.fillStyle=C('--cyan'); ctx.fill(); ctx.strokeStyle=C('--ink'); ctx.lineWidth=1.2; ctx.stroke();
+  // oznake
+  label(ctx,'O₂',X(0)-16,Y(0)-12); label(ctx,'O₄',X(P.d)+16,Y(0)-12);
+  function off(x,y,ox,oy){ return [X(x)+ox, Y(y)+oy]; }
+  var mA=Math.atan2(s.Ay,s.Ax); var la=off(s.Ax,s.Ay,14*Math.cos(mA),-14*Math.sin(mA)); label(ctx,'A',la[0],la[1]);
+  var mB=Math.atan2(s.By,s.Bx-P.d); var lb=off(s.Bx,s.By,14*Math.cos(mB),-14*Math.sin(mB)); label(ctx,'B',lb[0],lb[1]);
+  label(ctx,'P',X(cp.x)+12,Y(cp.y)-12,C('--teal'));
+  ctx.font='12px "IBM Plex Sans", system-ui, sans-serif'; ctx.fillStyle=C('--body'); ctx.textAlign='left'; ctx.textBaseline='bottom';
+  ctx.fillText('θ₂ = '+fmt(d360(st.th),1)+'°   θ₄ = '+fmt(d360(s.t4),1)+'°', 8, H-6);
+}
+
+/* ---------- dijagrami ---------- */
+function niceStep(r){ var e=Math.pow(10,Math.floor(Math.log10(r))), f=r/e; return (f<1.5?1:f<3?2:f<7?5:10)*e; }
+function plot(cv, o){
+  var g=fitCanvas(cv), ctx=g.ctx, W=g.w, H=g.h, L=46, R=8, T=8, B=22;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle=C('--paper'); ctx.fillRect(0,0,W,H);
+  var vals=[]; o.series.forEach(function(s){ s.y.forEach(function(v){ if (v!==null && isFinite(v)) vals.push(v); }); });
+  if (!vals.length){ label(ctx,'nema podataka',W/2,H/2,C('--body')); return; }
+  vals.sort(function(a,b){return a-b;});
+  var lo=vals[0], hi=vals[vals.length-1];
+  var q1=vals[Math.floor(0.02*(vals.length-1))], q2=vals[Math.ceil(0.98*(vals.length-1))];
+  if (o.robust && (hi-lo) > 4*Math.max(1e-9,q2-q1)){ var m=(q2-q1)*0.25+1e-9; lo=q1-m; hi=q2+m; }
+  if (o.yfix){ lo=Math.min(lo,o.yfix[0]); hi=Math.max(hi,o.yfix[1]); }
+  if (hi-lo < 1e-9){ hi+=1; lo-=1; }
+  var stp=niceStep((hi-lo)/4); lo=Math.floor(lo/stp)*stp; hi=Math.ceil(hi/stp)*stp;
+  if (o.yrange){ lo=o.yrange[0]; hi=o.yrange[1]; stp=o.yrange[2]; }
+  var X=function(x){return L+(x/360)*(W-L-R);}, Y=function(y){return T+(hi-y)/(hi-lo)*(H-T-B);};
+  if (o.band){ ctx.fillStyle=C('--ok-bg'); ctx.fillRect(L,Y(Math.min(o.band[1],hi)),W-L-R,Y(Math.max(o.band[0],lo))-Y(Math.min(o.band[1],hi))); }
+  ctx.strokeStyle=C('--grid'); ctx.lineWidth=1; ctx.font='11px "IBM Plex Sans", system-ui, sans-serif'; ctx.fillStyle=C('--body');
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  var dec = stp<0.1?2:stp<1?1:0;
+  for (var y=lo; y<=hi+stp*0.01; y+=stp){ ctx.beginPath(); ctx.moveTo(L,Y(y)); ctx.lineTo(W-R,Y(y)); ctx.stroke(); ctx.fillText(fmt(y,dec),L-5,Y(y)); }
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for (var x=0;x<=360;x+=90){ ctx.beginPath(); ctx.moveTo(X(x),T); ctx.lineTo(X(x),H-B); ctx.stroke(); ctx.fillText(x+'°',X(x),H-B+4); }
+  if (lo<0 && hi>0){ ctx.strokeStyle=C('--body'); ctx.beginPath(); ctx.moveTo(L,Y(0)); ctx.lineTo(W-R,Y(0)); ctx.stroke(); }
+  ctx.save(); ctx.beginPath(); ctx.rect(L,T,W-L-R,H-T-B); ctx.clip();
+  o.series.forEach(function(s){
+    ctx.beginPath(); var pen=false, prev=null;
+    for (var i=0;i<s.x.length;i++){
+      var v=s.y[i];
+      if (v===null || !isFinite(v)){ pen=false; prev=null; continue; }
+      if (s.wrap && prev!==null && Math.abs(v-prev)>180){ pen=false; }
+      var px=X(s.x[i]), py=Y(Math.max(lo-(hi-lo), Math.min(hi+(hi-lo), v)));
+      if (!pen){ ctx.moveTo(px,py); pen=true; } else ctx.lineTo(px,py);
+      prev=v;
+    }
+    ctx.strokeStyle=s.col; ctx.lineWidth=s.w||2; ctx.setLineDash(s.dash||[]); ctx.stroke(); ctx.setLineDash([]);
+  });
+  if (o.cursor!==undefined){ ctx.strokeStyle=C('--warn'); ctx.lineWidth=1.3; ctx.beginPath(); ctx.moveTo(X(o.cursor),T); ctx.lineTo(X(o.cursor),H-B); ctx.stroke(); }
+  ctx.restore();
+  ctx.strokeStyle=C('--rule'); ctx.strokeRect(L,T,W-L-R,H-T-B);
+}
+function drawPlots(){
+  var ids=['pTh4','pW4','pA4','pMu'];
+  if (!sw){ ids.forEach(function(id){ plot($(id),{series:[]}); }); return; }
+  var xs=sw.t.map(function(t){return t*R2D;}), cur=d360(st.th);
+  function ser(key, f){ return sw[key].map(function(q){ return q? f(q) : null; }); }
+  var th4f=function(q){ return d360(q.t4); };
+  var nf = sw.arc && !sw.arc.full, oc = nf ? C('--teal') : C('--body'), od = nf ? [] : [4,4], ow = nf ? 1.4 : 1.2;
+  $('plotNote').textContent = nf ? 'Pogonski član se njiše: obje krivulje zajedno čine jedan ciklus (tamo i natrag); okomita crta = trenutni θ₂.' : 'Okomita crta = trenutni θ₂; dijagrami vrijede za zadani ω₂.';
+  plot($('pTh4'),{series:[{x:xs,y:ser('B',th4f),col:oc,w:ow,dash:od,wrap:true},{x:xs,y:ser('A',th4f),col:C('--teal'),w:2.2,wrap:true}],cursor:cur});
+  plot($('pW4'),{robust:true,series:[{x:xs,y:ser('B',function(q){return q.w4;}),col:oc,w:ow,dash:od},{x:xs,y:ser('A',function(q){return q.w4;}),col:C('--teal'),w:2.2}],cursor:cur});
+  plot($('pA4'),{robust:true,series:[{x:xs,y:ser('B',function(q){return q.a4;}),col:oc,w:ow,dash:od},{x:xs,y:ser('A',function(q){return q.a4;}),col:C('--teal'),w:2.2}],cursor:cur});
+  plot($('pMu'),{band:[40,140],yrange:[0,180,45],series:[{x:xs,y:ser('B',function(q){return q.mu*R2D;}),col:oc,w:ow,dash:od},{x:xs,y:ser('A',function(q){return q.mu*R2D;}),col:C('--teal'),w:2.2}],cursor:cur});
+}
+function drawAll(){ drawMech(); drawPlots(); }
+
+/* ---------- očitanja ---------- */
+function row(k, name, val, unit){ return '<tr><td class="k"><button class="i" type="button" data-i="'+k+'" aria-label="Opis">ⓘ</button></td><th>'+name+'</th><td class="v">'+val+'</td><td class="u">'+unit+'</td></tr>'; }
+function updateReadout(){
+  var gc=$('grashofCard'), mc=$('muCard'), lc=$('limitsCard');
+  if (!gr) return;
+  var tag = gr.cls==='G'?'<span class="tag">Grashofov</span>':gr.cls==='B'?'<span class="tag warn">granični</span>':gr.cls==='N'?'<span class="tag warn">ne-Grashofov</span>':'<span class="tag warn">greška</span>';
+  gc.className = 'card' + (gr.cls==='G'?' ok':gr.cls==='X'?' warn':'');
+  gc.innerHTML = '<div class="ctl-h"><b style="flex:1">'+gr.type+'</b>'+tag+'<button class="i" type="button" data-i="grashof" aria-label="Opis">ⓘ</button></div>'+
+    '<div>s + l = '+fmt(gr.s,1)+' + '+fmt(gr.l,1)+' = '+fmt(gr.sl,1)+' mm '+(gr.cls==='B'?'=':gr.sl<gr.pq?'<':'>')+' p + q = '+fmt(gr.p,1)+' + '+fmt(gr.q,1)+' = '+fmt(gr.pq,1)+' mm</div>'+
+    '<div class="muted">'+gr.text+'</div>';
+  if (gr.cls==='X' || !sw){ mc.innerHTML=''; lc.innerHTML=''; $('readout').innerHTML=''; $('confNow').textContent=''; return; }
+  var s = FB.pos(P, st.th, st.sig), w2 = P.w2*st.dir, v = FB.va(P, s, w2), cp = FB.coupler(P, s);
+  var mu = s.mu*R2D, ok = mu>=40 && mu<=140;
+  var mus = sw.A.filter(Boolean).map(function(q){return q.mu*R2D;});
+  var mn = Math.min.apply(null,mus), mx = Math.max.apply(null,mus), allOk = mn>=40 && mx<=140;
+  mc.className = 'card' + (ok && allOk ? ' ok' : ' warn');
+  mc.innerHTML = '<div class="ctl-h"><b style="flex:1">Prijenosni kut μ = '+fmt(mu,1)+'°</b><button class="i" type="button" data-i="mu" aria-label="Opis">ⓘ</button></div>'+
+    '<div>'+(ok?'U preporučenom području 40°–140°.':'Upozorenje: μ je izvan preporučenog područja 40°–140° — loš prijenos sile, veliko opterećenje zglobova.')+'</div>'+
+    '<div class="muted">Kroz '+(sw.arc.full?'cijeli okret':'hod pogonskog člana')+': μ od '+fmt(mn,1)+'° do '+fmt(mx,1)+'°'+(allOk?'.':' — dio ciklusa je izvan 40°–140°.')+'</div>';
+  var ratio = v.w4/w2;
+  var h = '';
+  h += row('th2','θ₂ (koljeno)', fmt(d360(s.t2),1), '°');
+  h += row('th3','θ₃ (spojka)', fmt(d360(s.t3),2), '°');
+  h += row('th4','θ₄ (izlazni član)', fmt(d360(s.t4),2), '°');
+  h += row('w2now','ω₂', fmt(w2,2), 'rad/s');
+  h += row('w3','ω₃', fmt(v.w3,3), 'rad/s');
+  h += row('w4','ω₄', fmt(v.w4,3), 'rad/s');
+  h += row('a3','α₃', fmt(v.a3,2), 'rad/s²');
+  h += row('a4','α₄', fmt(v.a4,2), 'rad/s²');
+  h += row('mu','μ', fmt(mu,1), '°');
+  h += row('ratio','ω₄/ω₂', fmt(ratio,3), '');
+  h += row('ratio','T₄/T₂ = ω₂/ω₄', Math.abs(ratio)<1e-3?'→ ∞':fmt(1/ratio,2), '');
+  h += row('P','P (x, y)', fmt(cp.x,3)+'; '+fmt(cp.y,3), 'mm');
+  $('readout').innerHTML = h;
+  $('confNow').textContent = 'trenutno: ' + (FB.crossed(P, s) ? 'križna' : 'otvorena') + ' konfiguracija';
+  // granični i mrtvi položaji
+  var L = '<div class="ctl-h"><b style="flex:1">Granični položaji izlaznog člana (ω₄ = 0)</b><button class="i" type="button" data-i="extreme" aria-label="Opis">ⓘ</button></div>';
+  if (ext.length){
+    L += '<div>' + ext.map(function(e){ return 'θ₂ = '+fmt(d360(e.t2),1)+'°, θ₄ = '+fmt(d360(e.t4),1)+'° ('+e.kind+')'; }).join('<br>') + '</div>';
+    if (ext.length===2 && sw.arc.full){
+      var t4s=ext.map(function(e){return e.t4;}), psi=Math.abs(FB.wpi(t4s[1]-t4s[0]))*R2D;
+      var dl=FB.w2pi(ext[1].t2-ext[0].t2)*R2D, K=Math.max(dl,360-dl)/Math.min(dl,360-dl);
+      L += '<div class="ctl-h"><span style="flex:1">Kut zakreta ψ = '+fmt(psi,1)+'°, omjer vremena hodova K = '+fmt(K,3)+'</span><button class="i" type="button" data-i="K" aria-label="Opis">ⓘ</button></div>';
+    }
+  } else L += '<div class="muted">Nema ih: izlazni član '+(sw.arc.full?'radi pune okretaje.':'mijenja smjer samo u mrtvim položajima.')+'</div>';
+  L += '<div class="ctl-h" style="margin-top:6px"><b style="flex:1">Mrtvi položaji pri pogonu članom a (μ = 0° ili 180°)</b><button class="i" type="button" data-i="dead" aria-label="Opis">ⓘ</button></div>';
+  if (sw.arc.full) L += '<div class="muted">Nema ih: pogonski član a radi puni okretaj.</div>';
+  else {
+    var lo=sw.arc.lo, hi=sw.arc.lo+sw.arc.len;
+    L += '<div>Pogonski član a njiše se između θ₂ = '+fmt(d360(lo),1)+'° i θ₂ = '+fmt(d360(hi),1)+'° (hod '+fmt(sw.arc.len*R2D,1)+'°). U tim su položajima spojka i izlazni član kolinearni.</div>';
+  }
+  var critTouch = FB.crits(P).filter(function(c){return c.kind==='touch';});
+  if (critTouch.length) L += '<div class="muted">Točka grananja (svi članovi kolinearni): θ₂ = '+critTouch.map(function(c){return fmt(d360(c.t),0)+'°';}).join(' i ')+'.</div>';
+  lc.innerHTML = L;
+  $('r_th2').value = d360(st.th).toFixed(1); $('n_th2').value = fmt(d360(st.th),1).replace('−','-');
+}
+
+/* ---------- animacija ---------- */
+function frame(ts){
+  if (!running) return;
+  if (lastT===null) lastT=ts;
+  var dt=Math.min(0.05,(ts-lastT)/1000); lastT=ts;
+  if (gr && gr.cls!=='X'){
+    var sgBefore=st.sig, dirBefore=st.dir;
+    FB.step(P, st, P.w2*st.dir*dt*parseFloat($('tscale').value));
+    if (st.sig!==sgBefore || st.dir!==dirBefore) recompute(); else { drawAll(); updateReadout(); }
+  }
+  requestAnimationFrame(frame);
+}
+function setRun(r){ running=r; $('runBtn').textContent = r?'Zaustavi':'Pokreni'; lastT=null; if (r) requestAnimationFrame(frame); }
+$('runBtn').addEventListener('click', function(){ setRun(!running); });
+$('stepBtn').addEventListener('click', function(){
+  if (!gr || gr.cls==='X') return;
+  var sgB=st.sig, dB=st.dir;
+  FB.step(P, st, 5*D2R*(P.w2<0?-1:1)*st.dir);
+  if (st.sig!==sgB || st.dir!==dB) recompute(); else { drawAll(); updateReadout(); }
+});
+function setTh2(t){
+  if (!gr || gr.cls==='X') return;
+  t = FB.w2pi(t);
+  if (FB.isFull(P)){
+    var d = FB.wpi(t - st.th); FB.step(P, st, d);
+  } else {
+    var arc = sw && sw.arc ? sw.arc : FB.arcOf(P, st.th); if (!arc) return;
+    var rel = FB.w2pi(t - arc.lo); if (rel > arc.len) rel = (rel - arc.len < TAU - rel) ? arc.len - 1e-9 : 1e-9;
+    st.th = FB.w2pi(arc.lo + rel);
+  }
+  recompute();
+}
+$('r_th2').addEventListener('input', function(){ setTh2(parseFloat(this.value)*D2R); });
+$('n_th2').addEventListener('change', function(){ var v=parseNum(this.value); if (isFinite(v)) setTh2(v*D2R); });
+var dragging=false;
+function ptrAngle(e){ var r=mech.getBoundingClientRect(); var x=e.clientX-r.left, y=e.clientY-r.top; if(!view||!view.X) return null; return Math.atan2(view.Y(0)-y, x-view.X(0)); }
+mech.addEventListener('pointerdown', function(e){ var a=ptrAngle(e); if (a===null) return; dragging=true; mech.setPointerCapture(e.pointerId); if (running) setRun(false); setTh2(a); });
+mech.addEventListener('pointermove', function(e){ if (!dragging) return; var a=ptrAngle(e); if (a!==null) setTh2(a); });
+mech.addEventListener('pointerup', function(){ dragging=false; });
+mech.addEventListener('pointercancel', function(){ dragging=false; });
+$('conf').addEventListener('change', function(){ pickSigmaForConf(); recompute(); });
+$('preset').addEventListener('change', function(){ if (this.value) loadPreset(this.value); });
+$('tscale').addEventListener('change', function(){});
+
+/* ---------- izvoz CSV ---------- */
+function download(name, text, mime){
+  var blob = new Blob([text], {type: mime}), url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 500);
+}
+$('csvBtn').addEventListener('click', function(){
+  if (!sw) return;
+  var comma = $('csvComma').checked, sep = comma ? ';' : ',';
+  function n(x, d){ var s = isFinite(x) ? x.toFixed(d) : ''; return comma ? s.replace('.', ',') : s; }
+  var sw1 = FB.sweep(P, st, 360, P.w2);
+  var lines = ['theta2_deg','theta3_deg','theta4_deg','omega3_rad_s','omega4_rad_s','alpha3_rad_s2','alpha4_rad_s2','mu_deg','xP_mm','yP_mm'].join(sep);
+  var out=[lines];
+  sw1.A.forEach(function(q){ if (!q) return;
+    out.push([n(q.t2*R2D,1), n(d360(q.t3),4), n(d360(q.t4),4), n(q.w3,5), n(q.w4,5), n(q.a3,4), n(q.a4,4), n(q.mu*R2D,4), n(q.xP,4), n(q.yP,4)].join(sep)); });
+  var meta = 'a='+P.a+' b='+P.b+' c='+P.c+' d='+P.d+' p='+P.p+' delta='+P.delta+' w2='+P.w2;
+  download('cetverokut_'+meta.replace(/[^0-9a-z=.\-]+/gi,'_')+'.csv', '﻿'+out.join('\r\n')+'\r\n', 'text/csv;charset=utf-8');
+});
+
+/* ---------- popis formula ---------- */
+var FORM = [
+  ['fLoop','a·e^{iθ₂} + b·e^{iθ₃} − c·e^{iθ₄} − d = 0'],
+  ['fPos','f = √(a² + d² − 2ad·cos θ₂);  β = atan2(−a·sin θ₂, d − a·cos θ₂);  γ = arccos((b² + f² − c²)/(2bf));  θ₃ = β ± γ'],
+  ['fPos','A = a·e^{iθ₂};  B = A + b·e^{iθ₃};  θ₄ = atan2(y_B, x_B − d)'],
+  ['fVel','ω₃ = a·ω₂·sin(θ₄ − θ₂) / (b·sin(θ₃ − θ₄));  ω₄ = a·ω₂·sin(θ₂ − θ₃) / (c·sin(θ₄ − θ₃))'],
+  ['fAcc','α₃ = [c·ω₄² − a·ω₂²·cos(θ₂ − θ₄) − b·ω₃²·cos(θ₃ − θ₄)] / (b·sin(θ₃ − θ₄))'],
+  ['fAcc','α₄ = [a·ω₂²·cos(θ₂ − θ₃) + b·ω₃² − c·ω₄²·cos(θ₄ − θ₃)] / (c·sin(θ₄ − θ₃))'],
+  ['fMu','μ = arccos((b² + c² − f²)/(2bc))'],
+  ['fGr','s + l ≤ p + q  (Grashofov uvjet)'],
+  ['fP','x_P = a·cos θ₂ + p·cos(θ₃ + δ);  y_P = a·sin θ₂ + p·sin(θ₃ + δ)'],
+  ['K','K = (kut koljena za sporiji hod) / (kut koljena za brži hod)']
+];
+$('flist').innerHTML = FORM.map(function(f){ return '<div class="f"><button class="i" type="button" data-i="'+f[0]+'" aria-label="Opis">ⓘ</button><code>'+f[1]+'</code></div>'; }).join('');
+
+/* ---------- start ---------- */
+buildCtls();
+loadPreset('ref');
+if (window.ResizeObserver){ new ResizeObserver(function(){ drawAll(); }).observe(document.querySelector('.wrap')); }
+else window.addEventListener('resize', drawAll);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawAll);
+window.__om = {P:P, st:st, FB:FB, loadPreset:loadPreset, setTh2:setTh2, get sw(){return sw;}, get gr(){return gr;}, get ext(){return ext;}};
+})();
+</script>
+</body>
+</html>

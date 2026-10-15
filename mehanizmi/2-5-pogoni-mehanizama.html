@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2.5 Pogoni mehanizama: motor s reduktorom, koračni i servomotor, pneumatski i hidraulički cilindar — Mehanizmi | FORTRONIQ</title>
+<meta name="description" content="Mehanizam sam od sebe ne radi ništa: netko mu mora dati gibanje i snagu. U mehatroničkom sustavu to su elektromotori i cilindri, a zadatak konstruktora je iz…">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/mehanizmi/2-5-pogoni-mehanizama.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="2.5 Pogoni mehanizama: motor s reduktorom, koračni i servomotor, pneumatski i hidraulički cilindar">
+<meta property="og:description" content="Mehanizam sam od sebe ne radi ništa: netko mu mora dati gibanje i snagu. U mehatroničkom sustavu to su elektromotori i cilindri, a zadatak konstruktora je iz…">
+<meta property="og:url" content="https://dos.fortroniq.hr/mehanizmi/2-5-pogoni-mehanizama.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- dodaci DOS graditelja */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+figure.crtez .st{stroke-dasharray:14 4 2 4}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+figure.crtez img{display:block;width:100%;height:auto;background:#fff;border-radius:6px}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Mehanizmi</a><i aria-hidden="true">/</i><a href="m2-osnovni-tipovi.html">2. Osnovni tipovi mehanizama</a><i aria-hidden="true">/</i><span aria-current="page">2.5 Pogoni mehanizama: motor s reduktorom, koračni i servomotor, pneumatski i hidraulički cilindar</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">MODUL 2 &middot; OSNOVNI TIPOVI MEHANIZAMA</p><p class="nadnaslov">Nastavna jedinica 2.5</p><h1>Pogoni mehanizama: motor s reduktorom, koračni i servomotor, pneumatski i hidraulički cilindar</h1><p>Mehanizam sam od sebe ne radi ništa: netko mu mora dati gibanje i snagu. U mehatroničkom sustavu to su elektromotori i cilindri, a zadatak konstruktora je izabrati pogon koji daje dovoljan moment ili silu u svakom položaju mehanizma, a nije predimenzioniran. U ovoj jedinici povezujete kinematiku mehanizma s potrebnim momentom i silom te ih uspoređujete s karakteristikama pogona.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>nabrojati vrste pogona mehanizama i njihove tipične primjene u mehatronici</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati potrebni moment pogonskog člana iz bilance snage i prijenosne funkcije mehanizma</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>preračunati moment, brzinu vrtnje i moment inercije preko reduktora</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti razliku između koračnog motora i servomotora na temelju karakteristike moment–brzina</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izračunati silu pneumatskog i hidrauličkog cilindra i izabrati promjer uz rezervu sile</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>obrazložiti zašto se pogon bira prema vršnom, a ne prema srednjem opterećenju</span></li></ul></div></div></header><div class="omot"><section><h2>Pogonski lanac</h2><div class="crta"></div>
+<p>Pogon mehanizma čini <strong>lanac</strong>: izvor energije (električna mreža, kompresor, hidraulički agregat), pretvornik u mehanički rad (motor ili cilindar), prijenosnik (reduktor, remen, vreteno) i na kraju mehanizam s radnim članom. Svaka karika ima svoj <strong>stupanj djelovanja</strong>, pa je ukupni η = η₁·η₂·…·ηₙ. Uz pogon dolazi i upravljanje: prekidač i krajnji prekidači, frekvencijski pretvarač, upravljač koračnog motora ili servoregulator s enkoderom.</p>
+<div class="tablica-omot"><table><thead><tr><th>Pogon</th><th>Gibanje</th><th>Upravljanje položajem</th><th>Tipična primjena u laboratoriju</th></tr></thead><tbody><tr><td>elektromotor s reduktorom</td><td>vrtnja, stalna brzina</td><td>nema (krajnji prekidači) ili enkoder</td><td>transportna traka, dozator s brijegom</td></tr><tr><td>koračni motor</td><td>vrtnja u koracima</td><td>otvorena petlja, broji se korake</td><td>3D pisač, okretni stol, mali linearni modul</td></tr><tr><td>servomotor</td><td>vrtnja, bilo koji profil</td><td>zatvorena petlja s enkoderom</td><td>osi robota, CNC, prihvatnica sa servopogonom</td></tr><tr><td>pneumatski cilindar</td><td>pravocrtno, dva krajnja položaja</td><td>razvodnik, senzori na cilindru</td><td>stezanje, guranje, prihvatnica</td></tr><tr><td>hidraulički cilindar</td><td>pravocrtno, velike sile</td><td>proporcionalni ili servo ventil</td><td>preše, dizalice, mobilni strojevi</td></tr></tbody></table></div>
+<p>Mehanizam je u tom lancu prijenosnik s <strong>promjenljivim prijenosnim omjerom</strong>. Klipni mehanizam s koljenom pretvara stalni moment motora u silu na klipu koja ovisi o položaju, a cilindar koji okreće polugu daje moment koji se mijenja s kutom. Zato se pogon ne može izabrati bez kinematike mehanizma.</p>
+</section>
+<section><h2>Od mehanizma do potrebnog momenta</h2><div class="crta"></div>
+<p>Najkraći put do potrebnog momenta je <strong>bilanca snage</strong>. Ako zanemarimo trenje i masu ojnice, snaga koju daje koljeno jednaka je snazi koja se troši na radnom članu: na svladavanje vanjske sile i na ubrzavanje mase. Omjer brzine radnog člana i kutne brzine koljena je <strong>prijenosna funkcija ds/dφ</strong>, koju već znate iz kinematike.</p>
+<p class="formula">M·ω = (F_otp + m·a)·v   ⇒   M(φ) = (F_otp + m·a)·(ds/dφ) / η</p>
+<p>Ovdje je F_otp sila otpora na radnom članu (iznos), m masa radnog člana, a ubrzanje u smjeru gibanja, v brzina, a η stupanj djelovanja mehanizma. Moment se mijenja tijekom okretaja: nula je u mrtvim točkama, a najveći je ondje gdje je ds/dφ najveći. <strong>Srednji moment</strong> određuje utrošenu energiju, a <strong>najveći moment</strong> određuje veličinu pogona.</p>
+<figure class="crtez"><img src="img/2-5-pogoni-mehanizama_f1.png" alt="Slika 2.5.1: dijagram potrebnog momenta na koljenu tijekom okretaja" loading="lazy" decoding="async"><figcaption>Slika 2.5.1 Potrebni moment na koljenu klipnog dozatora (r = 25 mm, l = 100 mm, n = 60 min⁻¹, sila otpora 150 N u radnom hodu, masa klipa 0,5 kg). Najveći moment je 3,2 puta veći od srednjeg.</figcaption></figure>
+<div class="okvir"><h4>Zapamtite</h4><p>Pogon se bira prema dvama kriterijima: najveći moment (ili sila) u ciklusu mora biti manji od najvećeg koji pogon može dati, a efektivni moment kroz ciklus manji od trajnog (nazivnog) momenta, inače se motor pregrijava. Srednja snaga je samo podatak o potrošnji energije.</p></div>
+</section>
+<section><h2>Elektromotor s reduktorom</h2><div class="crta"></div>
+<p>Asinkroni i istosmjerni motori najbolje rade pri velikim brzinama vrtnje (1000–3000 min⁻¹) i malim momentima, a mehanizmi trebaju sporu vrtnju i veliki moment. <strong>Reduktor</strong> s prijenosnim omjerom i smanjuje brzinu i povećava moment, uz gubitke koje opisuje η. Čeoni reduktori imaju η od oko 0,95 po stupnju, a pužni, ovisno o omjeru, od oko 0,5 do 0,9.</p>
+<p class="formula">n_m = i·n,   M_m = M / (i·η),   P = M·ω = M·2π·n/60</p>
+<p>Masa koju pogon ubrzava također se preračunava. Moment inercije tereta J_t vidi se na vratilu motora kao <strong>J_t/i²</strong>. Zato reduktor ne štiti samo od velikog momenta nego i od velikog omjera inercija tereta i rotora, koji otežava regulaciju. Za servopogone se taj omjer obično drži ispod 10, a za vrlo dinamična gibanja i niže.</p>
+<p class="formula">J_red = J_t / i²</p>
+<p>Za dozator sa slike 2.5.1 izlazna brzina je 60 min⁻¹. Uz motor od 1500 min⁻¹ treba omjer i = 25. Najveći moment na koljenu je 3,87 N·m, a efektivni 1,89 N·m. Uz η = 0,85 motor treba dati vršno 3,87/(25·0,85) = 0,182 N·m i trajno 0,089 N·m. S faktorom sigurnosti 1,5 traži se motor s nazivnim momentom od barem 0,13 N·m i kratkotrajnim od barem 0,27 N·m. Motor od 25 W (0,16 N·m pri 1500 min⁻¹, vršno dvostruko) zadovoljava oba uvjeta, iako srednja snaga na izlazu iznosi samo 7,5 W.</p>
+</section>
+<section><h2>Koračni motor i servomotor</h2><div class="crta"></div>
+<p><strong>Koračni motor</strong> zakreće se za stalan kut po impulsu, najčešće 1,8° (200 koraka po okretaju). Upravljač s mikrokoracima dijeli korak na manje dijelove i smiruje vrtnju. Položaj se ne mjeri, nego se broje poslani impulsi. To je jeftino i dovoljno točno dok god je potrebni moment manji od <strong>momenta ispadanja iz koraka</strong>, koji brzo pada s brzinom vrtnje. Kad se prijeđe, motor tiho izgubi korake, a upravljač to ne zna.</p>
+<p><strong>Servomotor</strong> ima enkoder i regulator koji stalno uspoređuje zadani i stvarni položaj. Daje trajni (nazivni) moment do nazivne brzine i kratkotrajno <strong>vršni moment</strong>, obično dva do tri puta veći, za ubrzavanje. Zbog zatvorene petlje servopogon izvodi bilo koji zakon gibanja, pa može zamijeniti i brijeg (elektronički brijeg, jedinica 4.1).</p>
+<figure class="crtez"><img src="img/2-5-pogoni-mehanizama_f2.png" alt="Slika 2.5.2: karakteristike koračnog motora i servomotora" loading="lazy" decoding="async"><figcaption>Slika 2.5.2 Kvalitativne karakteristike moment–brzina: a) koračni motor, kod kojeg moment ispadanja iz koraka brzo opada s brzinom; b) servomotor s područjem trajnog i područjem kratkotrajnog vršnog momenta. Stvarne krivulje uzimaju se iz kataloga proizvođača.</figcaption></figure>
+<p>Kod linearnih modula motor pokreće vreteno uspona P_h. Iz bilance snage slijedi aksijalna sila F = 2π·M·η/P_h. Kuglično vreteno uspona 5 mm s η = 0,9 pretvara moment 0,5 N·m u silu od 565 N.</p>
+<p class="formula">F = 2π·M·η / P_h</p>
+</section>
+<section><h2>Pneumatski i hidraulički cilindar</h2><div class="crta"></div>
+<p>Cilindar je pogon koji daje izravno pravocrtno gibanje i silu. <strong>Teorijska sila</strong> je umnožak tlaka i djelotvorne površine klipa. Pri izvlačenju djeluje cijela površina, a pri uvlačenju površina umanjena za presjek klipnjače. Stvarna sila manja je zbog trenja brtvi (stupanj djelovanja oko 0,85–0,95) i zbog pada tlaka pri brzom gibanju.</p>
+<p class="formula">F = p·A = p·π·D²/4,   F_povr = p·π·(D² − d²)/4</p>
+<p>Cilindar Ø20 mm pri pretlaku 6 bar = 0,6 MPa: A = π·20²/4 = 314,2 mm², pa je F = 0,6 N/mm² · 314,2 mm² = <strong>188,5 N</strong>. Uz klipnjaču Ø8 povratna sila iznosi 158,3 N. Kod pneumatike se za gibanja s ubrzanjem preporučuje da potrebna sila ne prijeđe oko <strong>70 %</strong> teorijske, jer ostatak treba za trenje i ubrzanje mase, a tlak u mreži varira.</p>
+<figure class="crtez"><img src="img/2-5-pogoni-mehanizama_f3.png" alt="Slika 2.5.3: stupčasti dijagram sila pneumatskih cilindara" loading="lazy" decoding="async"><figcaption>Slika 2.5.3 Teorijske sile standardnih pneumatskih cilindara pri 6 bar. Za potrebnu silu 150 N cilindar Ø20 iskorišten je 80 %, pa se uz rezervu od 30 % bira Ø25 (294,5 N, iskorištenost 51 %).</figcaption></figure>
+<p><strong>Hidraulički cilindri</strong> rade s tlakovima od 50 do 300 bar, pa isti promjer daje desetke puta veću silu: Ø25 pri 50 bar daje 2454 N. Ulje je praktički nestlačivo, pa se hidraulički cilindar može zaustaviti u bilo kojem položaju i precizno regulirati. Zrak je stlačiv: pneumatski cilindar je brz, čist i jeftin, ali bez dodatne opreme radi samo od jednog do drugog krajnjeg položaja.</p>
+<p>Kad cilindar pokreće polugu, kao u modelu krana, moment na zglobu je umnožak sile cilindra i okomite udaljenosti njegove osi od zgloba. Ta udaljenost mijenja se s kutom poluge, pa se cilindar provjerava u najnepovoljnijem položaju, a ne u srednjem.</p>
+</section>
+<section><h2>Brojčani primjer: isti zadatak, dva pogona</h2><div class="crta"></div>
+<p>Dozator treba potisnuti klip s otporom 150 N na putu od 50 mm, jednom u sekundi. Varijanta A je klipni mehanizam r = 25 mm, l = 100 mm s motorom i reduktorom; varijanta B je pneumatski cilindar koji gura klip izravno. Svi rezultati izračunani su Python skriptom koja crta slike 2.5.1 i 2.5.3.</p>
+<div class="tablica-omot"><table><thead><tr><th>Veličina</th><th>A: motor + reduktor + koljeno</th><th>B: pneumatski cilindar</th></tr></thead><tbody><tr><td>rad po ciklusu</td><td>150 N · 0,05 m = 7,5 J</td><td>7,5 J</td></tr><tr><td>najveće opterećenje pogona</td><td>M_max = 3,87 N·m na koljenu (φ = 77°)</td><td>F = 150 N kroz cijeli hod</td></tr><tr><td>preračunato na pogon</td><td>0,182 N·m na motoru (i = 25, η = 0,85)</td><td>potrebna teorijska sila 150/0,7 = 214 N</td></tr><tr><td>izbor</td><td>motor 25 W, 0,16 N·m nazivno, 1500 min⁻¹</td><td>Ø25/10 mm: 294,5 N (Ø20 ima samo 188,5 N)</td></tr><tr><td>napomena</td><td>hod točno 2r, gibanje sinusoidalno</td><td>potrošnja oko 0,31 NL zraka po ciklusu, 19 NL/min</td></tr></tbody></table></div>
+<div class="okvir"><h4>U simulaciji</h4><p>U SolidWorks Motion Analysisu na koljeno postavite rotacijski motor stalne brzine 60 min⁻¹, a na klip silu 150 N suprotnu gibanju u radnom hodu. Iz rezultata „Motor Torque“ očitajte najveći moment i usporedite ga s 3,87 N·m. Zatim motor zamijenite linearnim pogonom (silom) na klipu i provjerite koliko sile treba kad masi klipa dodate 5 kg i povećate brzinu na 300 min⁻¹.</p></div>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Kataloška snaga motora odnosi se na nazivnu brzinu. Motor od 25 W pri 1500 min⁻¹ ne daje 25 W pri 150 min⁻¹ bez reduktora; daje približno isti moment, a deset puta manju snagu.</p></div>
+</section>
+<section><h2>Ključni pojmovi</h2><div class="crta"></div><div class="tablica-omot"><table><thead><tr><th>Pojam</th><th>Značenje</th></tr></thead><tbody><tr><td>pogonski lanac</td><td>slijed izvora energije, pretvornika, prijenosnika i mehanizma koji pokreće radni član</td></tr><tr><td>prijenosni omjer reduktora</td><td>omjer brzine vrtnje ulaza i izlaza, i = n_m/n</td></tr><tr><td>reducirani moment inercije</td><td>moment inercije tereta preračunat na vratilo motora, J_t/i²</td></tr><tr><td>efektivni moment</td><td>korijen srednje vrijednosti kvadrata momenta kroz ciklus; mjerodavan za zagrijavanje motora</td></tr><tr><td>moment držanja</td><td>najveći moment kojim napajani koračni motor u mirovanju drži položaj</td></tr><tr><td>moment ispadanja iz koraka</td><td>najveći moment koji koračni motor daje pri određenoj brzini bez gubitka koraka</td></tr><tr><td>servomotor</td><td>motor s enkoderom i regulatorom položaja u zatvorenoj petlji</td></tr><tr><td>teorijska sila cilindra</td><td>umnožak radnog tlaka i djelotvorne površine klipa</td></tr><tr><td>iskorištenost cilindra</td><td>omjer potrebne i teorijske sile; za dinamična gibanja do oko 0,7</td></tr></tbody></table></div></section><section id="procjena-znanja"><h2>Provjeri se</h2><div class="crta"></div><p>Kratka provjera prije prelaska na sljedeću jedinicu. Odgovor se potvrđuje klikom, a obrazloženje se prikazuje odmah.</p><div data-rezultat data-ukupno="4" data-tocnih="0" data-odgovoreno="0"><div class="kviz" data-tocno="1"><p class="brojac">Pitanje 1 od 4</p><p class="pit">Motor daje 0,2 N·m pri 1500 min⁻¹. Koliki je moment na izlazu reduktora s i = 20 i η = 0,9?</p><div class="odg"><button type="button">0,01 N·m</button><button type="button">3,6 N·m</button><button type="button">4,0 N·m</button><button type="button">0,22 N·m</button></div><p class="obraz">M = M_m·i·η = 0,2·20·0,9 = 3,6 N·m; brzina na izlazu je 75 min⁻¹.</p></div><div class="kviz" data-tocno="3"><p class="brojac">Pitanje 2 od 4</p><p class="pit">Koja je teorijska potisna sila pneumatskog cilindra Ø20 mm pri pretlaku 6 bar?</p><div class="odg"><button type="button">18,8 N</button><button type="button">120,6 N</button><button type="button">1885 N</button><button type="button">188,5 N</button></div><p class="obraz">F = p·A = 0,6 N/mm² · π·20²/4 mm² = 0,6 · 314,2 = 188,5 N.</p></div><div class="kviz" data-tocno="0"><p class="brojac">Pitanje 3 od 4</p><p class="pit">Što se događa kad potrebni moment premaši moment ispadanja iz koraka koračnog motora?</p><div class="odg"><button type="button">motor gubi korake, a upravljač to ne zna</button><button type="button">regulator poveća struju i ispravi pogrešku</button><button type="button">motor se automatski prebaci u mikrokorake</button><button type="button">reduktor preuzme višak momenta</button></div><p class="obraz">Koračni motor radi u otvorenoj petlji: položaj se ne mjeri, pa izgubljeni koraci ostaju neotkriveni dok se ne doda enkoder ili referentni senzor.</p></div><div class="kviz" data-tocno="2"><p class="brojac">Pitanje 4 od 4</p><p class="pit">Moment inercije tereta je 0,002 kg·m², a reduktor ima i = 10. Koliki moment inercije vidi motor?</p><div class="odg"><button type="button">0,02 kg·m²</button><button type="button">0,0002 kg·m²</button><button type="button">0,00002 kg·m²</button><button type="button">0,2 kg·m²</button></div><p class="obraz">J_red = J_t/i² = 0,002/100 = 0,00002 kg·m² = 2·10⁻⁵ kg·m².</p></div><p class="rezultat">Odgovoreno 0 od 4.</p></div></section><nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="m2-osnovni-tipovi.html">&#8592; Modul 2</a><a class="gumb" href="m2-procjena-znanja.html">Procjena znanja — modul 2 <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h9M6.5 2.2 10.3 6l-3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Autorski tim: Krunoslav Kušec, mag. ing. mech. &middot; Alen Britvić, bacc. ing. mech. &middot; dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="simulator-cetverokut.html">Simulator četverokuta</a> &middot; <a href="simulator-brijeg.html">Simulator brijega</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-mehanizmi-2-5-pogoni-mehanizama-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+(function(){
+  var k = document.getElementById('r41'); if(!k) return;
+  var jedinice = {"L": "mm", "eZ": "mm", "eS": "mm", "eR": "mm"};
+  function hr(x){
+    if (x === null || x === undefined) return '';
+    var s = String(x);
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return s;
+    var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var d = s.split('.'), c = d[0];
+    if (c.length > 4) c = c.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '-' : '') + c + (d[1] ? ',' + d[1] : '');
+  }
+  function racunaj(v){
+
+var n = Math.max(1, Math.round(v.n));
+var L = n * v.a;
+var eZ, eS, eR;
+if (v.nacin === 'lan') { eZ = n * v.t; eS = v.t; eR = Math.sqrt(n) * v.t; }
+else { eZ = v.t; eS = 2 * v.t; eR = v.t; }
+var ok = eZ <= v.z + 1e-9;
+var p = ok ? 'Zahtjev je ispunjen i u najnepovoljnijem slučaju.' : 'U najnepovoljnijem slučaju zahtjev nije ispunjen: promijenite način kotiranja ili suzite toleranciju pojedinih kota.';
+if (v.nacin === 'lan' && n > 1) { p += ' Lančano: odstupanje zadnjeg elementa raste s brojem kota, a razmak susjednih ostaje najtočniji.'; }
+if (v.nacin === 'par') { p += ' Paralelno: položaj svakog elementa neovisan je o drugima, ali razmak susjednih nosi dvostruko odstupanje.'; }
+return { L: L.toFixed(0), eZ: eZ.toFixed(2), eS: eS.toFixed(2), eR: eR.toFixed(2), _poruka: p };
+
+  }
+  function osvjezi(){
+    var v = {};
+    k.querySelectorAll('[data-ulaz]').forEach(function(e){
+      var b = parseFloat(e.value);
+      v[e.dataset.ulaz] = (e.tagName === 'SELECT' || isNaN(b)) ? e.value : b;
+      var o = document.getElementById(e.id + '-out');
+      if (o) o.textContent = hr(e.value) + (o.dataset.jed || '');
+    });
+    var r = {};
+    try { r = racunaj(v) || {}; } catch(err) { r = { _poruka: '' }; }
+    Object.keys(r).forEach(function(n){
+      if (n === '_poruka') return;
+      var el = document.getElementById('r41-o-' + n);
+      if (el) el.innerHTML = hr(r[n]) + (jedinice[n] ? '<small> ' + jedinice[n] + '</small>' : '');
+    });
+    var p = document.getElementById('r41-poruka');
+    if (p) p.textContent = r._poruka || '';
+  }
+  k.querySelectorAll('[data-ulaz]').forEach(function(e){
+    e.addEventListener('input', osvjezi); e.addEventListener('change', osvjezi);
+  });
+  osvjezi();
+})();
+
+</script>
+</body>
+</html>
