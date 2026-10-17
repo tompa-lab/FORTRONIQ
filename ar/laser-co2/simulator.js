@@ -53,7 +53,7 @@ function ucitajSkriptu(ime) {
 }
 async function ucitajPrimjer(id) {
   if (id === 'kutija265' || id === 'kutija300' || id === 'pizza32') {
-    const K = await import('../cad-modeliranje/kutija.js?v=02');
+    const K = await import('../cad-modeliranje/kutija.js?v=03');
     const p = Object.assign({}, K.ZADANO, { kutija265: {}, kutija300: { L: 318, D: 318, prozor: 240, sat: 300 }, pizza32: { L: 340, D: 340, H: 42, prozor: 0, drzaci: 0, sat: 0 } }[id]);
     const k = K.izracun(p), d = citajDXF(K.dxf(k));
     const sl = [7, 3, 4, 6, 5].map(a => ({ aci: a, mod: 'Cut', v: 50, p: 65, kp: 60, n: 1 }));

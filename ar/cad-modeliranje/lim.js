@@ -1,7 +1,7 @@
 // FORTRONIQ · CAD modeliranje · modul Sheet Metal · kartonska kutija za sat
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { izracun, dxf, putanjaReza, slojevi, ZADANO } from './kutija.js?v=02';
+import { izracun, dxf, putanjaReza, slojevi, ZADANO } from './kutija.js?v=03';
 
 const $ = s => document.querySelector(s);
 const fmt = (v, d = 1) => Number(v).toLocaleString('hr-HR', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -379,8 +379,8 @@ document.querySelectorAll('[data-pogled]').forEach(b => b.addEventListener('clic
 }));
 // stablo značajki
 const ZNACAJKE = {
-  sheet: null, base: ['dno'], edge1: ['w1L', 'w1D'], hem1: ['w2L', 'w2D'], tab: ['w2L', 'w2D', 'f2', 'dno'], usi: ['upL', 'upD', 'usL', 'usD'],
-  edge2: ['f1', 'b'], hem2: ['f2'], edge3: ['pok'], edge4: ['ppL', 'ppD', 'tk'], cut1: ['pok'], cut2: ['f1', 'f2', 'pok', 'tk'], flat: null
+  sheet: null, base: ['dno'], cut1: ['f1'], cut2: ['dno', 'w1L', 'w1D', 'b', 'pok'], sb1: ['w2L', 'w2D', 'f2'], sb2: ['upL', 'upD', 'usL', 'usD'],
+  sb3: ['ppL', 'ppD'], sb4: ['tk'], sb5: ['pok'], sb6: ['w1L', 'w1D'], sb7: ['f1', 'b'], flat: null
 };
 document.querySelectorAll('#stablo button').forEach(b => b.addEventListener('click', () => {
   document.querySelectorAll('#stablo button').forEach(x => x.setAttribute('aria-pressed', 'false'));

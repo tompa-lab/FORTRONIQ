@@ -198,6 +198,10 @@ export function izracun(p) {
     const uProrezu = mx > px0 - 0.01 && mx < px1 + 0.01 && Math.abs(my - yP1) <= prorezD + 0.01;
     if ((u1 && u2) || uProrezu) unutra.push(s); else kontura.push(s);
   }
+  // izvornik: bočni rez prednje stijenke počinje na D + k (1 mm iznad pregiba), ne na pregibu — obris je tada zatvoren
+  for (const s of kontura) for (const xr of [0, L]) if (Math.abs(s.a[0] - xr) < 1e-6 && Math.abs(s.b[0] - xr) < 1e-6) {
+    if (Math.abs(s.a[1] - D) < 1e-6 && s.b[1] > D) s.a = [xr, D + k]; else if (Math.abs(s.b[1] - D) < 1e-6 && s.a[1] > D) s.b = [xr, D + k];
+  }
   const drzRez = [], drzProrez = [];
   for (const h of drzaci) { zaBridove(h.poly, (a, b) => drzRez.push({ a, b })); zaBridove(h.prorez, (a, b) => drzProrez.push({ a, b })); }
 
