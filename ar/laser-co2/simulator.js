@@ -36,7 +36,10 @@ const PRIMJERI = [
   { id: 'kucica-0', naziv: 'Kućica — prizemlje' }, { id: 'kucica-1', naziv: 'Kućica — potkrovlje' }, { id: 'kucica-2', naziv: 'Kućica — ljestve, nosači, kapci' },
   { id: 'pcela-0', naziv: 'Pčela (rez i brojevi utora)' },
   ...[0, 1, 2, 3, 4, 5].map(i => ({ id: 'svjetionik-' + i, naziv: 'Svjetionik — ploča ' + (i + 1) })),
-  ...[0, 1, 2, 3, 4, 5].map(i => ({ id: 'sjenica-' + i, naziv: 'Sjenica — ploča ' + (i + 1) }))
+  ...[0, 1, 2, 3, 4, 5].map(i => ({ id: 'sjenica-' + i, naziv: 'Sjenica — ploča ' + (i + 1) })),
+  { id: 'casa-0', naziv: 'Čaša za olovke (šperploča 3)' },
+  ...[0, 1].map(i => ({ id: 'kutija-za-sitnice-' + i, naziv: 'Kutija za sitnice — ploča ' + (i + 1) })),
+  ...[0, 1, 2, 3].map(i => ({ id: 'adventski-stalak-' + i, naziv: 'Adventski stalak — ploča ' + (i + 1) }))
 ];
 const PRIMJER_PODACI = {};
 function ucitajSkriptu(ime) {
@@ -49,19 +52,19 @@ function ucitajSkriptu(ime) {
   });
 }
 async function ucitajPrimjer(id) {
-  if (id.startsWith('kutija') || id === 'pizza32') {
-    const K = await import('../cad-modeliranje/kutija.js?v=01');
+  if (id === 'kutija265' || id === 'kutija300' || id === 'pizza32') {
+    const K = await import('../cad-modeliranje/kutija.js?v=02');
     const p = Object.assign({}, K.ZADANO, { kutija265: {}, kutija300: { L: 318, D: 318, prozor: 240, sat: 300 }, pizza32: { L: 340, D: 340, H: 42, prozor: 0, drzaci: 0, sat: 0 } }[id]);
     const k = K.izracun(p), d = citajDXF(K.dxf(k));
     const sl = [7, 3, 4, 6, 5].map(a => ({ aci: a, mod: 'Cut', v: 50, p: 65, kp: 60, n: 1 }));
-    return { objekti: d.objekti, ime: id === 'pizza32' ? 'PIZZA32' : 'KUT' + p.L, slojevi: sl, materijal: 'karton3', opis: `DXF iz simulatora CAD modeliranja (Sheet Metal): ${d.objekti.length} linija na 5 slojeva. Slojevi su poredani kako se režu: od dna popisa prema vrhu — unutarnji rezovi, držači, prozor, perforacija, a kontura zadnja. Linije spoji (Unite lines).` };
+    return { objekti: d.objekti, ime: id === 'pizza32' ? 'PIZZA32' : 'KUT' + Math.round(p.L), slojevi: sl, materijal: 'karton3', opis: `DXF iz simulatora CAD modeliranja (Sheet Metal): ${d.objekti.length} linija na 5 slojeva. Slojevi su poredani kako se režu: od dna popisa prema vrhu — unutarnji rezovi, držač, prozor, perforacija, a kontura zadnja. Linije spoji (Unite lines). Geometrija prema izvorniku pizzakutijamala7SW.`};
   }
   if (id === 'matrica') {
     const ob = [], sl = [], boje = [5, 1, 3, 2, 6, 4, 30, 8, 7], v = [5, 8, 12], p = [60, 70, 80];
     for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) { const a = boje[r * 3 + c], x = c * 30, y = (2 - r) * 30; ob.push({ pts: [[x, y], [x + 25, y], [x + 25, y + 25], [x, y + 25], [x, y]], zatv: true, aci: a }); sl.push({ aci: a, mod: 'Cut', v: v[c], p: p[r], kp: Math.round(p[r] * 0.8), n: 1 }); }
     return { objekti: ob, ime: 'MATRICA', slojevi: sl, materijal: 'sper3', opis: 'Devet kvadrata 25 × 25 mm, svaki na svom sloju (boji): stupci brzina 5 / 8 / 12 mm/s, retci snaga 60 / 70 / 80 % (prijedlog). Nakon rezanja vidiš koji kvadrati su ispali — tako se traže parametri za novi materijal.' };
   }
-  const [ime, br] = id.split('-'); const PR = await ucitajSkriptu(ime); const pi = +br;
+  const ci = id.lastIndexOf('-'), ime = id.slice(0, ci), br = id.slice(ci + 1); const PR = await ucitajSkriptu(ime); const pi = +br;
   const pl = PR.ploce[pi], ob = [];
   for (const d of PR.dijelovi) {
     if (d.ploca !== pi) continue;
@@ -75,7 +78,7 @@ async function ucitajPrimjer(id) {
   const M = MATERIJALI[mk];
   const sl = [{ aci: mat.dxfBoja || 7, mod: 'Cut', v: M.v, p: M.p, kp: Math.round(M.p * 0.8), n: 1 }, { aci: 5, mod: 'Cut', v: M.v, p: M.p, kp: Math.round(M.p * 0.8), n: 1 }];
   if (PR.gravura) sl.push({ aci: 1, mod: 'Cut', v: 100, p: 15, kp: 12, n: 1 });
-  return { objekti: ob, ime: (ime.slice(0, 5) + (pi + 1)).toUpperCase(), slojevi: sl, materijal: mk, opis: `${pl.naziv}: ${ob.length} obrisa. Plavo = rupe i utori (režu se prvi), ${mat.dxfBoja === 7 ? 'crno' : 'boja materijala'} = vanjski obris${PR.gravura ? ', crveno = brojevi utora (označavanje niskom snagom, prijedlog)' : ''}.` };
+  return { objekti: ob, ime: (ime.replace(/-/g, '').slice(0, 5) + (pi + 1)).toUpperCase(), slojevi: sl, materijal: mk, opis: `${pl.naziv}: ${ob.length} obrisa. Plavo = rupe i utori (režu se prvi), ${mat.dxfBoja === 7 ? 'crno' : 'boja materijala'} = vanjski obris${PR.gravura ? ', crveno = brojevi utora (označavanje niskom snagom, prijedlog)' : ''}.` };
 }
 
 // ── stanje ──
