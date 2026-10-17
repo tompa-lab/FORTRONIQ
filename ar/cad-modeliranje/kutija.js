@@ -44,6 +44,7 @@ function pomakni(p, dx, dy) { return p.map(([x, y]) => [x + dx, y + dy]); }
 
 // Mjere i oblici prema izvorniku pizzakutijamala7SW.DXF (SolidWorks Sheet Metal, 265 × 265 × 50, karton 3 mm).
 // Male mjere izvornika (2,5 mm skošenja, 1,66 mm do utora …) skaliraju se s debljinom kartona: k = T / 3.
+// Funkcijske mjere (jezičci 50, brava 48 × 20, držač 100 × 48, perforacija) ne ovise o debljini.
 export function izracun(p) {
   const P = Object.assign({}, ZADANO, p || {});
   const { L, D, H, T } = P;
@@ -55,7 +56,6 @@ export function izracun(p) {
   const Tk = H - 5 * k;              // prednji preklop poklopca (45)
   const rz = Math.min(10, H / 5);    // zaobljenja R10
   const jez = 2 * T;                 // visina jezička (6)
-  const jezS = 50 * k, utorS = jezS + 2 * k; // jezičac 50, utor 52
   const utorBok = 0.553 * T, utorPr = 0.357 * T; // utor od pregiba: bok 1,66 / sprijeda 1,07
   const cB = [0.25086 * D, 0.75289 * D];          // središta bočnih jezičaca (66,3 / 198,9)
   const cBu = [0.25219 * D, 0.75289 * D];         // središta bočnih utora (66,6 / 198,9)
@@ -64,10 +64,12 @@ export function izracun(p) {
   const eS = e - k;                               // stražnje uši (100)
   const ux0 = -H + 2.84 * k, ux1 = -0.76 * T;     // uho: od −47,2 do −2,3 (širina 45)
   const sk = 2.5 * k;                             // skošenje pri dnu uha i unutarnjeg sloja
+  // jezičac 50, utor 52; kod male kutije jezičac se skraćuje da ne uđe u zaobljenje R (inače se obris presijeca)
+  const jezS = Math.max(10, Math.min(50, 2 * (0.25086 * D - sk - rz - 1), 2 * (L / 4 - rz - 1))), utorS = jezS + 2 * k;
   const wf = P.preklopi ? 0.4 * H : 0;            // bočni preklop poklopca (20)
   const skP = 5 * k;                              // skošenje bočnog preklopa (5)
-  const bravaS = 48 * k, bravaV = 20 * k, bravaR = 5 * k; // jezičac brave 48 × 40, R5
-  const prorezS = 50 * k, prorezD = 2 * k / 1;    // prorez brave 50 × 4 (po 2 mm s obje strane pregiba)
+  const bravaS = 48, bravaV = 20, bravaR = 5; // jezičac brave 48 × 40, R5 (funkcijske mjere, ne ovise o debljini)
+  const prorezS = bravaS + 2, prorezD = (T + 1) / 2; // prorez brave 50 × 4 kod T = 3 (širina T + 1, po pola s obje strane pregiba)
   const xT0 = 0, xT1 = L;                         // prednji preklop poklopca preko cijele širine
 
   const dijelovi = [];
@@ -121,7 +123,7 @@ export function izracun(p) {
   dijelovi.push({ ime: 'f1', naziv: 'Prednja stijenka s jezičcem brave', poly: f1, rupe: [], roditelj: 'dno', sarka: [[0, D], [L, D]], kut: 90, znacajka: 'edge2', perf: { zabrane: zabraneFront } });
   rezUnutra.push([[bx0, yF - bravaV], [bx0, yF]], [[bx1, yF - bravaV], [bx1, yF]]);
   // šarka jezička (10 mm crtice) na yF − 20
-  const crticeJez = (y) => [[bx0 + 10 * k, bx0 + 20 * k], [bx0 + 28 * k, bx0 + 38 * k]].map(([a, b]) => ({ a: [a, y], b: [b, y] }));
+  const crticeJez = (y) => [[bx0 + 10, bx0 + 20], [bx0 + 28, bx0 + 38]].map(([a, b]) => ({ a: [a, y], b: [b, y] }));
   dodatnaPerf.push(...crticeJez(yF - bravaV), ...crticeJez(yF));
   // unutarnji prednji sloj s izrezom oko jezička i jezičcima u utore
   const yF2 = yF + F2;
@@ -147,13 +149,13 @@ export function izracun(p) {
   }
   const yT = yP1 - Tk;
   const tuck = [...luk(xT0 + rz, yT + rz, rz, PI, 1.5 * PI, 6), ...luk(xT1 - rz, yT + rz, rz, 1.5 * PI, 2 * PI, 6), [xT1, yP1], [px1, yP1], [px1, yP1 - prorezD], [px0, yP1 - prorezD], [px0, yP1], [xT0, yP1]];
-  dijelovi.push({ ime: 'tk', naziv: 'Prednji preklop poklopca (ulazi iza prednje stijenke)', poly: tuck, rupe: [], roditelj: 'pok', sarka: [[xT0, yP1], [xT1, yP1]], kut: 90, znacajka: 'edge4', bezPregiba: [[px0, px1]], perf: { s: 15 * k, rez: 25 * k, most: 27.28 * k, zabrane: [[px0, px1]] } });
+  dijelovi.push({ ime: 'tk', naziv: 'Prednji preklop poklopca (ulazi iza prednje stijenke)', poly: tuck, rupe: [], roditelj: 'pok', sarka: [[xT0, yP1], [xT1, yP1]], kut: 90, znacajka: 'edge4', bezPregiba: [[px0, px1]], perf: { s: 15, rez: 25, most: 27.28, zabrane: [[px0, px1]] } });
 
   for (const d of dijelovi) { if (povrsina(d.poly) < 0) d.poly.reverse(); d.rupe = d.rupe.map(h => povrsina(h) > 0 ? h.slice().reverse() : h); }
 
   // ── držači: iz kruga prozora (izvornik: jedan, 100 × 48, R10, prorez 75 × 2,5) ──
   const drzaci = [];
-  const hl = Math.min(100 * k, prozor ? 1.0 * prozor.r : 100), hw = 0.48 * hl, hs = 0.75 * hl, hsw = 0.833 * T;
+  const hl = Math.min(100, prozor ? 1.0 * prozor.r : 100), hw = 0.48 * hl, hs = 0.75 * hl, hsw = 0.833 * T;
   if (P.drzaci > 0) {
     const n = Math.min(4, P.drzaci);
     const cx0 = prozor ? prozor.cx - 0.16 * hl : L + 2 * H + 30 + hl / 2;
@@ -161,7 +163,7 @@ export function izracun(p) {
     const pomaci = n === 1 ? [0.48] : n === 2 ? [0.48, -0.48] : n === 3 ? [0.96, 0, -0.96] : [1.44, 0.48, -0.48, -1.44];
     for (const f of pomaci) {
       const cx = cx0, cy = cy0 + f * hl;
-      drzaci.push({ poly: pravokutnik(cx - hl / 2, cy - hw / 2, cx + hl / 2, cy + hw / 2, Math.min(10 * k, hw / 4), 'dlddgdgl'), prorez: pravokutnik(cx - hs / 2, cy - hsw / 2, cx + hs / 2, cy + hsw / 2), cx, cy });
+      drzaci.push({ poly: pravokutnik(cx - hl / 2, cy - hw / 2, cx + hl / 2, cy + hw / 2, Math.min(10, hw / 4), 'dlddgdgl'), prorez: pravokutnik(cx - hs / 2, cy - hsw / 2, cx + hs / 2, cy + hsw / 2), cx, cy });
     }
     if (prozor && drzaci.some(d => d.poly.some(([x, y]) => Math.hypot(x - prozor.cx, y - prozor.cy) > prozor.r - 1))) {
       drzaci.forEach((d, i) => { const dx = (L + 2 * H + 30 + hl / 2) - d.cx, dy = (D / 2 + (i - (n - 1) / 2) * (hw + 8)) - d.cy; d.poly = pomakni(d.poly, dx, dy); d.prorez = pomakni(d.prorez, dx, dy); d.cx += dx; d.cy += dy; d.izvan = true; });
@@ -193,7 +195,7 @@ export function izracun(p) {
   for (const s of rez) {
     const mx = (s.a[0] + s.b[0]) / 2, my = (s.a[1] + s.b[1]) / 2;
     const dx = s.b[0] - s.a[0], dy = s.b[1] - s.a[1], l = Math.hypot(dx, dy) || 1;
-    const nx = -dy / l * 0.4, ny = dx / l * 0.4;
+    const o = Math.min(0.4, 0.25 * T), nx = -dy / l * o, ny = dx / l * o; // pomak provjere < najmanje mjere (T = 0,5: uho 0,38 od pregiba)
     const u1 = uMaterijalu(dijelovi, mx + nx, my + ny), u2 = uMaterijalu(dijelovi, mx - nx, my - ny);
     const uProrezu = mx > px0 - 0.01 && mx < px1 + 0.01 && Math.abs(my - yP1) <= prorezD + 0.01;
     if ((u1 && u2) || uProrezu) unutra.push(s); else kontura.push(s);
@@ -211,7 +213,7 @@ export function izracun(p) {
   for (const g of pregibi) {
     const pf = g.perf;
     if (pf.usi) { perforacija.push(...perfUho(g.a, g.b, pf.usi, P.perfRez, k)); continue; }
-    perforacija.push(...perfSim(g.a, g.b, pf.s ?? 20 * k, pf.rez ?? P.perfRez, pf.most ?? P.perfMost, pf.zabrane || []));
+    perforacija.push(...perfSim(g.a, g.b, pf.s ?? 20, pf.rez ?? P.perfRez, pf.most ?? P.perfMost, pf.zabrane || []));
   }
   perforacija.push(...dodatnaPerf);
 
@@ -244,7 +246,7 @@ function perfSim(a, b, s, rez, most, zabrane) {
 }
 // uho: dvije crtice (15 mm) s mostom 5 mm u sredini širine uha; [xa, xb] je uho u apsolutnim koordinatama
 function perfUho(a, b, [xa, xb], rez, k) {
-  const y = a[1], c = (xa + xb) / 2, m = 2.5 * k;
+  const y = a[1], c = (xa + xb) / 2, m = 2.5;
   return [{ a: [c - m - rez, y], b: [c - m, y] }, { a: [c + m, y], b: [c + m + rez, y] }];
 }
 

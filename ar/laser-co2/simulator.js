@@ -3,6 +3,7 @@
 import { Stroj3D } from './stroj3d.js';
 import { Kontroler } from './kontroler.js';
 import { LaserCut } from './lc-prozor.js';
+import { materijali, VRSTE } from './debljine.js?v=01';
 import { zadaniWorktable, citajDXF, leca, prorez, vrijeme, imeBoje } from './lc-jezgra.js';
 
 const $ = s => document.querySelector(s);
@@ -14,16 +15,8 @@ const STROJEVI = {
   LC1390N: { naziv: 'G.Weike LC1390N', radno: '1300 × 900 mm', snaga: 100, cijev: 'CO₂ 100 W', zOs: true, Imax: 28, hladnjak: 'CW-5000', yTrans: 31.75, xTrans: 31.75 }
 };
 const Y_ROT = 80; // Move osi Y kad je spojen rotacijski dodatak (Tomislav: 45.501 ↔ 80)
-// materijali: preporuke iz Tomislavovih poslova (medijan) i programa kutije; debljina je zadana u simulatoru
-const MATERIJALI = {
-  karton3: { naziv: 'Karton 3 mm (valoviti)', T: 3, p: 65, v: 50, izvor: 'program 265X50MMPIZZA4', boja2d: '#C9A46E', rezKroz: '#2a1a0a', rezPola: '#8a6236' },
-  sper3: { naziv: 'Šperploča 3 mm', T: 3, p: 75, v: 8, izvor: 'medijan tvojih poslova (šperploča)', boja2d: '#E6CFA3', zrnato: true, rezKroz: '#1b0f06', rezPola: '#7a5230' },
-  sper4: { naziv: 'Šperploča 4 mm', T: 4, p: 75, v: 6, izvor: 'primjer Svjetionik', boja2d: '#D9BC8A', zrnato: true, rezKroz: '#1b0f06', rezPola: '#7a5230' },
-  mdf3: { naziv: 'Mediapan (MDF) 3 mm', T: 3, p: 75, v: 5, izvor: 'medijan tvojih poslova (MDF)', boja2d: '#BE9A6E', rezKroz: '#120a04', rezPola: '#6b4423' },
-  mdf6: { naziv: 'Mediapan (MDF) 6 mm', T: 6, p: 75, v: 5, izvor: 'primjer Svjetionik', boja2d: '#B8946A', rezKroz: '#120a04', rezPola: '#6b4423' },
-  drvo6: { naziv: 'Drvo 6 mm', T: 6, p: 70, v: 8.5, izvor: 'tvoja testiranja: 70 %, 7–10 mm/s', boja2d: '#D7B47E', zrnato: true, rezKroz: '#1b0f06', rezPola: '#7a5230' },
-  pleksi3: { naziv: 'Pleksiglas 3 mm', T: 3, p: 65, v: 22, izvor: 'medijan tvojih poslova (pleksi)', boja2d: '#CFE8EF', proziran: true, rezKroz: '#f4fbfd', rezPola: '#a9cfda' }
-};
+// materijali: vrsta × debljina 0,5–3 mm (+ 4 i 6 mm iz primjera); sidra iz Tomislavovih programa, ostalo procjena — debljine.js
+const MATERIJALI = materijali([['sper', 4], ['sper', 6], ['mdf', 6], ['drvo', 6]]);
 const GRAVURA = { drvo: [30, 600], staklo: [50, 600], kamen: [25, 600] }; // %, mm/s (medijani graviranja)
 const LECE = [[38.1, '1,5″ (38,1 mm)', 2], [50.8, '2″ (50,8 mm)', 5], [63.5, '2,5″ (63,5 mm)', 9], [101.6, '4″ (101,6 mm)', 25]]; // f, naziv, razmak žarišta ispod mlaznice (procjena)
 
@@ -53,7 +46,7 @@ function ucitajSkriptu(ime) {
 }
 async function ucitajPrimjer(id) {
   if (id === 'kutija265' || id === 'kutija300' || id === 'pizza32') {
-    const K = await import('../cad-modeliranje/kutija.js?v=03');
+    const K = await import('../cad-modeliranje/kutija.js?v=04');
     const p = Object.assign({}, K.ZADANO, { kutija265: {}, kutija300: { L: 318, D: 318, prozor: 240, sat: 300 }, pizza32: { L: 340, D: 340, H: 42, prozor: 0, drzaci: 0, sat: 0 } }[id]);
     const k = K.izracun(p), d = citajDXF(K.dxf(k));
     const sl = [7, 3, 4, 6, 5].map(a => ({ aci: a, mod: 'Cut', v: 50, p: 65, kp: 60, n: 1 }));
@@ -247,7 +240,12 @@ function postaviStroj(t) {
 document.querySelectorAll('[data-stroj]').forEach(b => b.addEventListener('click', () => postaviStroj(b.dataset.stroj)));
 
 // materijal, leća, rotacija
-const selM = $('#materijal'); for (const [k, m] of Object.entries(MATERIJALI)) selM.append(new Option(`${m.naziv} — ${m.p} % / ${m.v} mm/s`, k));
+const selM = $('#materijal');
+for (const [vr, V] of Object.entries(VRSTE)) {
+  const g = document.createElement('optgroup'); g.label = `${V.naziv} (${V.opis})`;
+  for (const [k, m] of Object.entries(MATERIJALI)) if (m.vrsta === vr) g.append(new Option(`${m.naziv} — ${m.p} % / ${String(m.v).replace('.', ',')} mm/s${m.procjena ? ' (procjena)' : ''}`, k));
+  selM.append(g);
+}
 selM.value = S.mat; selM.addEventListener('change', () => postaviMaterijal(selM.value));
 const selL = $('#leca'); for (const [f, n] of LECE) selL.append(new Option(n, f)); selL.value = S.leca;
 selL.addEventListener('change', () => { S.leca = +selL.value; osvjeziFokus(); dnevnik(`Leća ${LECE.find(l => l[0] === S.leca)[1]}: ${stroj().zOs ? 'ponovi autofokus (Z, pa Datum).' : 'ponovno postavi visinu glave mjerkom.'}`); });

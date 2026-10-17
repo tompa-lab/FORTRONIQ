@@ -1,7 +1,8 @@
 // FORTRONIQ · CAD modeliranje · modul Sheet Metal · kartonska kutija za sat
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { izracun, dxf, putanjaReza, slojevi, ZADANO } from './kutija.js?v=03';
+import { izracun, dxf, putanjaReza, slojevi, ZADANO } from './kutija.js?v=04';
+import { parametri as laserPar } from '../laser-co2/debljine.js?v=01';
 
 const $ = s => document.querySelector(s);
 const fmt = (v, d = 1) => Number(v).toLocaleString('hr-HR', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -203,14 +204,16 @@ function istakni(imena) {
 const platno = $('#mreza'), ctx = platno.getContext('2d');
 const BOJE = { UNUTARNJI: '#3B82C4', DRZACI: '#B04AC4', PROZOR: '#16A6B0', PERFORACIJA: '#2E9E57', KONTURA: null };
 let put = null, laserD = 0, laserUkupno = 0, laserSvira = false;
-const BRZ_REZ = 50, BRZ_PRAZNO = 200; // mm/s: rez kartona (Tomislavov program 65 % / 50 mm/s), prazni hod (Quick speed 200)
+const BRZ_PRAZNO = 200; // mm/s: prazni hod (Quick speed 200)
+// rez kartona ovisi o debljini: 3 mm = Tomislavov program 65 % / 50 mm/s, ostalo procjena (debljine.js)
+const LP = () => laserPar('karton', P.T) || { p: 65, v: 50, procjena: true, izvor: '' };
 function pripremiLaser() {
   put = putanjaReza(K);
   let t = 0; laserUkupno = 0;
   for (const k of put.koraci) {
     k.lp = Math.hypot(k.prazni[1][0] - k.prazni[0][0], k.prazni[1][1] - k.prazni[0][1]);
     k.lr = k.rez.reduce((s, q) => s + Math.hypot(q.b[0] - q.a[0], q.b[1] - q.a[1]), 0);
-    k.t0 = t; t += k.lp / BRZ_PRAZNO + k.lr / BRZ_REZ; k.t1 = t;
+    k.t0 = t; t += k.lp / BRZ_PRAZNO + k.lr / LP().v; k.t1 = t;
   }
   laserUkupno = t;
   $('#laser-klizac').max = laserUkupno; laserD = Math.min(laserD, laserUkupno);
@@ -245,7 +248,7 @@ function crtajMrezu() {
     const b = BOJE[sl[k.sloj].ime] || ink;
     const tp = k.lp / BRZ_PRAZNO;
     if (t < k.t0 + tp) { const f = (t - k.t0) / tp; glava = [k.prazni[0][0] + (k.prazni[1][0] - k.prazni[0][0]) * f, k.prazni[0][1] + (k.prazni[1][1] - k.prazni[0][1]) * f]; slojSad = k.sloj; break; }
-    let ostatak = (Math.min(t, k.t1) - k.t0 - tp) * BRZ_REZ;
+    let ostatak = (Math.min(t, k.t1) - k.t0 - tp) * LP().v;
     for (const q of k.rez) {
       const lq = Math.hypot(q.b[0] - q.a[0], q.b[1] - q.a[1]);
       if (ostatak >= lq) { crtSeg(q, b, 1, 2); ostatak -= lq; glava = q.b; }
@@ -263,7 +266,7 @@ function crtajMrezu() {
   const mm = Math.floor(t / 60), ss = Math.floor(t % 60);
   const hh = Math.floor(mm / 60);
   $('#lcd-file').textContent = `KUT${Math.round(P.L)}`.slice(0, 8);
-  $('#lcd-power').textContent = slojSad >= 0 || t > 0 ? '65/65%' : '0/0%';
+  $('#lcd-power').textContent = slojSad >= 0 || t > 0 ? `${LP().p}/${LP().p}%` : '0/0%';
   $('#lcd-time').textContent = `${String(hh).padStart(2, '0')}:${String(mm % 60).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
   $('#lcd-sloj').textContent = slojSad >= 0 ? sl[slojSad].ime : (t >= laserUkupno && t > 0 ? 'GOTOVO' : '—');
   $('#laser-klizac').value = t;
@@ -292,7 +295,8 @@ function proracun() {
   const lRez = k.duljine.unutra + k.duljine.drzaci + k.duljine.prozor + k.duljine.kontura;
   const red = (a, b, c = '') => `<tr><th scope="row">${a}</th><td>${b}</td><td>${c}</td></tr>`;
   $('#proracun').innerHTML =
-    red('Debljina kartona T', `${fmt(T, 1)} mm`, 'valoviti karton') +
+    red('Debljina lima (kartona) T', `${fmt(T, 1)} mm`, T <= 1 ? 'ljepenka / tanki karton' : 'valoviti karton') +
+    red('Laser: rez kartona', `${LP().p} % · ${fmt(LP().v, 1)} mm/s`, LP().procjena ? LP().izvor : 'tvoj program 265X50MMPIZZA4') +
     red('K-faktor · polumjer R', `${fmt(P.K, 2)} · ${fmt(P.R, 1)} mm`, 'kao u Sheet-Metal1') +
     red('Dodatak savijanja BA (90°)', `${fmt(sw.BA90, 2)} mm`, 'BA = π/2 · (R + K · T)') +
     red('Odbitak savijanja BD (90°)', `${fmt(sw.BD90, 2)} mm`, 'BD = 2 · (R + T) − BA') +
@@ -305,7 +309,7 @@ function proracun() {
     red('Karton', `${fmt(plocaW * plocaH / 1e6, 2)} m²`, '') +
     red('Rez (bez perforacije)', `${fmt(lRez / 1000, 2)} m`, `kontura ${fmt(k.duljine.kontura / 1000, 2)} m`) +
     red('Perforacija', `${fmt(k.duljine.perforacija / 1000, 2)} m`, `pregibi ${fmt(k.duljine.pregibi / 1000, 2)} m`) +
-    red('Vrijeme na stroju', `≈ ${fmt(laserUkupno / 60, 1)} min`, 'rez 50 mm/s, prazni hod 200 mm/s') +
+    red('Vrijeme na stroju', `≈ ${fmt(laserUkupno / 60, 1)} min`, `rez ${fmt(LP().v, 1)} mm/s, prazni hod 200 mm/s`) +
     red('G.Weike LG500DM (500 × 300)', stane(500, 300) ? 'stane' : 'ne stane', '') +
     red('G.Weike LC1390N (1300 × 900)', stane(1300, 900) ? 'stane' : 'ne stane', stane(1300, 900) ? `${Math.max(1, Math.floor(1300 / plocaW) * Math.floor(900 / plocaH), Math.floor(900 / plocaW) * Math.floor(1300 / plocaH))} kom. po ploči` : '');
   $('#slojevi').innerHTML = slojevi(K).map((s, i) => `<li><span class="kvadrat" style="background:${BOJE[s.ime] || 'var(--ink)'}"></span><b>${i + 1}. ${s.ime}</b> · DXF boja ${s.boja} · ${s.opis}</li>`).join('');

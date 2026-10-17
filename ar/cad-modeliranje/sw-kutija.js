@@ -1,7 +1,7 @@
 // FORTRONIQ · CAD modeliranje · SolidWorks Sheet Metal: kartonska kutija za sat (stablo značajki korak po korak)
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { izracun, ZADANO } from './kutija.js?v=03';
+import { izracun, ZADANO } from './kutija.js?v=04';
 
 const $ = s => document.querySelector(s);
 const P = Object.assign({}, ZADANO);
