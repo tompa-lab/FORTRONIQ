@@ -1,7 +1,7 @@
 // FORTRONIQ · CAD modeliranje · modul Sheet Metal · kartonska kutija za sat
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { izracun, dxf, putanjaReza, slojevi, ZADANO } from './kutija.js?v=01';
+import { izracun, dxf, putanjaReza, slojevi, ZADANO } from './kutija.js?v=02';
 
 const $ = s => document.querySelector(s);
 const fmt = (v, d = 1) => Number(v).toLocaleString('hr-HR', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -11,28 +11,30 @@ const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).
 let P = Object.assign({}, ZADANO);
 let K = izracun(P);
 const PRIMJERI = {
-  sat265: { naziv: 'Kutija za sat 265 × 265 × 50', p: { L: 265, D: 265, H: 50, T: 3, prozor: 200, drzaci: 2, sat: 250, preklopi: true } },
-  pizza32: { naziv: 'Pizza 32 cm, bez prozora', p: { L: 340, D: 340, H: 42, T: 3, prozor: 0, drzaci: 0, sat: 0, preklopi: true } },
-  sat300: { naziv: 'Kutija za sat Ø 300', p: { L: 318, D: 318, H: 50, T: 3, prozor: 240, drzaci: 2, sat: 300, preklopi: true } }
+  sat265: { naziv: 'Kutija za sat 265 × 265 × 50', p: { L: 264.6, D: 264.1, H: 50, T: 3, prozor: 200, drzaci: 1, usi: 101, sat: 250, preklopi: true } },
+  pizza32: { naziv: 'Pizza 32 cm, bez prozora', p: { L: 340, D: 340, H: 42, T: 3, prozor: 0, drzaci: 0, usi: 101, sat: 0, preklopi: true } },
+  sat300: { naziv: 'Kutija za sat Ø 300', p: { L: 318, D: 318, H: 50, T: 3, prozor: 240, drzaci: 1, usi: 101, sat: 300, preklopi: true } }
 };
 
-// ── koraci sastavljanja (prema videu „Bending" i „Assembly") ──────────
+// ── koraci sastavljanja (prema videu „Bending" i „Assembly" i fotografijama kutije) ──
 const KORACI = [
-  { t: 'Izrezana mreža na stolu', o: 'Laser je izrezao obris, utore, prozor i perforacije. Otpad iz prozora se izvadi, držači se izvade iz kruga.' },
-  { t: 'Biganje', o: 'Svaki pregib se prelomi rukom i vrati. Perforacija (rez 15 mm, most 15 mm) vodi pregib točno po crti.' },
+  { t: 'Izrezana mreža na stolu', o: 'Laser je izrezao utore, držač, prozor, perforacije i obris. Otpad iz prozora se izvadi, a držač istisne iz kruga.' },
+  { t: 'Biganje', o: 'Svaki pregib se prelomi rukom i vrati. Perforacija (rez 15 mm, most 15 mm, na krajevima 20 mm) vodi pregib točno po crti.' },
   { t: 'Bočne stijenke gore', o: 'Vanjske bočne stijenke se podignu za 90°. Uši na njihovim krajevima ostaju ravne.' },
-  { t: 'Uši prema unutra', o: 'Uši se savijaju za 90° prema unutrašnjosti, uz mjesto gdje će stajati prednja i stražnja stijenka.' },
-  { t: 'Prednja i stražnja stijenka gore', o: 'Prednja i stražnja stijenka podignu se preko ušiju. Poklopac se diže zajedno sa stražnjom stijenkom.' },
-  { t: 'Unutarnji prednji sloj, jezičci u utore', o: 'Unutarnji sloj prednje stijenke savija se za 180° preko prednjih ušiju i jezičci ulaze u utore u dnu. Jezičac brave ostaje uspravan.' },
+  { t: 'Prednje uši prema unutra', o: 'Prednje uši savijaju se za 90° prema unutra, uz mjesto gdje će stajati prednja stijenka.' },
+  { t: 'Prednja i stražnja stijenka gore', o: 'Prednja stijenka podiže se preko prednjih ušiju, a stražnja zajedno s poklopcem.' },
+  { t: 'Unutarnji prednji sloj, jezičci u utore', o: 'Unutarnji sloj prednje stijenke savija se za 180° preko prednjih ušiju i jezičci ulaze u utore uz prednji rub dna. Jezičac brave ostaje uspravan.' },
   { t: 'Unutarnji bočni slojevi, jezičci u utore', o: 'Unutarnji bočni slojevi savijaju se za 180° (porub). Jezičci ulaze u utore uz rub dna i zaključavaju kutiju bez ljepila.' },
-  { t: 'Sat i držači', o: 'Sat se položi na dno. Držači u kutovima drže ga da se ne pomiče, a poklopac ne pritišće kazaljke.' },
+  { t: 'Sat na dno', o: 'Sat se položi na dno kutije.' },
+  { t: 'Stražnje uši preko ruba sata', o: 'Stražnje uši savijaju se koso u kutove. Puni dio uha stoji na dnu uz kut, a suženi dio prelazi preko ruba sata i drži ga da se ne pomiče (kutni jezičci).' },
+  { t: 'Držač preko kazaljki', o: 'Kazaljke se poravnaju s prorezom i držač se položi preko njih, da se u prijevozu ne savinu. Položaj držača u 3D-u je procjena.' },
   { t: 'Preklopi poklopca', o: 'Bočni preklopi i prednji preklop poklopca savijaju se za 90°.' },
-  { t: 'Zatvaranje, brava u prorez', o: 'Poklopac se spusti, preklop uđe iza prednje stijenke, a jezičac brave u prorez na pregibu poklopca. Kutija je gotova.' }
+  { t: 'Zatvaranje, brava u prorez', o: 'Poklopac se spusti, prednji preklop uđe iza prednje stijenke, a jezičac brave u prorez na pregibu poklopca. Kutija je gotova.' }
 ];
 const N = KORACI.length - 1;
 const sglatko = f => f <= 0 ? 0 : f >= 1 ? 1 : f * f * (3 - 2 * f);
 function kutDijela(ime, cilj, s) {
-  const pocetak = { w1: 2, up: 3, us: 3, f1: 4, b: 4, f2: 5, w2: 6, pp: 8, tk: 8, pok: 9 };
+  const pocetak = { w1: 2, up: 3, f1: 4, b: 4, f2: 5, w2: 6, us: 8, pp: 10, tk: 10, pok: 11 };
   const i = pocetak[ime.replace(/[LD]$/, '')];
   if (!i) return 0;
   const f = sglatko(s - (i - 1));                       // korak i traje od s = i − 1 do s = i
@@ -110,37 +112,37 @@ function gradiSat(g) {
   const drvo = new THREE.MeshStandardMaterial({ color: 0xE6CFA3, roughness: 0.7 });
   const tamno = new THREE.MeshStandardMaterial({ color: 0x8A5A2B, roughness: 0.8 });
   const crno = new THREE.MeshStandardMaterial({ color: 0x1E2326, roughness: 0.5 });
-  const meh = new THREE.Mesh(new THREE.BoxGeometry(56, 56, 16), crno); meh.position.set(0, 0, 8); g.add(meh);
-  const ploca = new THREE.Mesh(new THREE.CylinderGeometry(R, R, h, 96), drvo); ploca.rotation.x = Math.PI / 2; ploca.position.z = 16 + h / 2; g.add(ploca);
-  const prsten = new THREE.Mesh(new THREE.RingGeometry(R - 9, R - 7, 96), tamno); prsten.position.z = 16 + h + 0.2; g.add(prsten);
+  const zM = 13; // mehanizam: ploča sata mora ostati ispod suženog dijela stražnjih ušiju
+  const meh = new THREE.Mesh(new THREE.BoxGeometry(56, 56, zM), crno); meh.position.set(0, 0, zM / 2); g.add(meh);
+  const ploca = new THREE.Mesh(new THREE.CylinderGeometry(R, R, h, 96), drvo); ploca.rotation.x = Math.PI / 2; ploca.position.z = zM + h / 2; g.add(ploca);
+  const prsten = new THREE.Mesh(new THREE.RingGeometry(R - 9, R - 7, 96), tamno); prsten.position.z = zM + h + 0.2; g.add(prsten);
   for (let i = 0; i < 12; i++) {
     const a = i / 12 * Math.PI * 2, d = i % 3 === 0 ? 16 : 9;
     const c = new THREE.Mesh(new THREE.BoxGeometry(i % 3 === 0 ? 4 : 2.5, d, 0.6), tamno);
-    c.position.set(Math.sin(a) * (R - 26), Math.cos(a) * (R - 26), 16 + h + 0.3); c.rotation.z = -a; g.add(c);
+    c.position.set(Math.sin(a) * (R - 26), Math.cos(a) * (R - 26), zM + h + 0.3); c.rotation.z = -a; g.add(c);
   }
   const ruka = (dl, s, a, z, m) => { const r = new THREE.Mesh(new THREE.BoxGeometry(s, dl, 1), m); r.geometry.translate(0, dl / 2 - 8, 0); r.position.z = z; r.rotation.z = -a; g.add(r); };
-  ruka(R * 0.55, 5, 2.1, 16 + h + 3, crno); ruka(R * 0.8, 3.5, 0.6, 16 + h + 4.5, crno);
-  const sek = new THREE.MeshStandardMaterial({ color: 0xD8322A }); ruka(R * 0.85, 1.2, 4.2, 16 + h + 6, sek);
+  ruka(R * 0.55, 5, 1.5 * Math.PI, zM + h + 1, crno); ruka(R * 0.8, 3.5, 0.5 * Math.PI, zM + h + 1.6, crno);
+  const sek = new THREE.MeshStandardMaterial({ color: 0xD8322A }); ruka(R * 0.85, 1.2, 1.5 * Math.PI, zM + h + 2.2, sek);
+  g.userData.vrh = zM + h + 2.6;
   g.position.set(P.L / 2, P.D / 2, P.T);
   g.userData.cilj = g.position.z;
 }
 function gradiDrzace(g) {
-  if (!P.drzaci) return;
+  if (!P.drzaci || !K.drzaci.length) return;
   const T = P.T, m = K.mjere;
-  const visina = Math.min(m.hw, P.H - T - 2);
   const mat = new THREE.MeshStandardMaterial({ color: KRAFT, roughness: 0.9 });
-  const dl = Math.min(m.hl, 0.3 * P.L);
-  const kutovi = [[1, 1], [-1, -1], [1, -1], [-1, 1]];
-  for (let i = 0; i < P.drzaci; i++) {
-    const [sx, sy] = kutovi[i % 4];
-    const b = new THREE.Mesh(new THREE.BoxGeometry(dl, T, visina), mat);
-    const r = Math.min(K.unutarnje.L, K.unutarnje.D) / 2;
-    const d = r * 0.86;
-    b.position.set(P.L / 2 + sx * d * 0.70710678, P.D / 2 + sy * d * 0.70710678, T + visina / 2);
-    b.rotation.z = Math.atan2(sy, sx) + Math.PI / 2;
-    b.add(new THREE.LineSegments(new THREE.EdgesGeometry(b.geometry), new THREE.LineBasicMaterial({ color: KRAFT_RUB })));
+  const vrh = (satGrupa && satGrupa.userData.vrh) || 20;
+  // držač leži preko kazaljki (poravnatih na 9:15), prorez uzduž kazaljki — procjena
+  K.drzaci.forEach((d, i) => {
+    const sh = new THREE.Shape(d.poly.map(([x, y]) => new THREE.Vector2(x - d.cx, y - d.cy)));
+    sh.holes.push(new THREE.Path(d.prorez.map(([x, y]) => new THREE.Vector2(x - d.cx, y - d.cy))));
+    const geo = new THREE.ExtrudeGeometry(sh, { depth: T, bevelEnabled: false, curveSegments: 16 });
+    const b = new THREE.Mesh(geo, mat);
+    b.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 25), new THREE.LineBasicMaterial({ color: KRAFT_RUB })));
+    b.position.set(P.L / 2, P.D / 2 + (i - (K.drzaci.length - 1) / 2) * (m.hw + 6), T + vrh);
     g.add(b);
-  }
+  });
 }
 function postaviKorak(s) {
   korakS = s;
@@ -155,7 +157,7 @@ function postaviKorak(s) {
     satGrupa.visible = f > 0;
     satGrupa.position.z = P.T + (1 - f) * (P.H * 4);
   }
-  if (drzGrupa) { const f = sglatko((s - 6.4) * 1.6); drzGrupa.visible = f > 0; drzGrupa.position.z = (1 - f) * P.H * 3; }
+  if (drzGrupa) { const f = sglatko(s - 8); drzGrupa.visible = f > 0; drzGrupa.position.z = (1 - f) * P.H * 3; }
   const i = Math.min(N, Math.round(s));
   $('#korak-br').textContent = `${i} / ${N}`;
   $('#korak-naslov').textContent = KORACI[i].t;
