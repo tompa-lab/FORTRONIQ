@@ -74,6 +74,7 @@
     <div class="kartica" data-s="2"><span class="broj">2</span><canvas width="600" height="330"></canvas><h2>Nikin rođendan</h2><p>Crveni traktor u džungli</p></div>
     <div class="kartica" data-s="3"><span class="broj">3</span><canvas width="600" height="330"></canvas><h2>Žuta trokolica</h2><p>Una vozi, Niko maše</p></div>
     <div class="kartica" data-s="4"><span class="broj">4</span><canvas width="600" height="330"></canvas><h2>Rođendanska zabava</h2><p>Svi gosti za stolom</p></div>
+    <div class="kartica" data-s="5"><span class="broj">5</span><canvas width="600" height="330"></canvas><h2>Poljoprivredni strojevi</h2><p>Tko vozi što?</p></div>
   </div>
   <div class="napomena" id="odbrojavanje">Pritisni 1, 2 ili 3</div>
 </div>
@@ -113,6 +114,7 @@ const SCENARIJI = {
   1: { naziv: 'Una i zeleni traktor · Farma', traktor: 'zeleni', vozac: 'una', nebo: ['#5fc4ff', '#c9efff'], brda: ['#9ed98a', '#86cf6f'], sunce: [0.10, 0.14, '#ffe066', '#ffd23f'], pjesma: 0, suncokreti: false, bale: false },
   2: { naziv: 'Nikin rođendan · Džungla', traktor: 'crveni', vozac: 'niko', dzungla: true, nebo: ['#9fdcff', '#eafaf0'], brda: ['#7cc48a', '#5fae6c'], sunce: [0.12, 0.13, '#ffe066', '#ffd23f'], pjesma: 3, suncokreti: false, bale: false },
   4: { naziv: 'Rođendanska zabava', traktor: 'zeleni', vozac: 'una', zabava: true, nebo: ['#8fd8ff', '#e8f8ff'], brda: ['#86cf6f', '#6dbb58'], sunce: [0.9, 0.2, '#ffe066', '#ffd23f'], pjesma: 3 },
+  5: { naziv: 'Poljoprivredni strojevi · Tko vozi što?', traktor: 'zeleni', vozac: 'una', strojevi: true, nebo: ['#7fd0ff', '#e6f7ff'], brda: ['#a8d98f', '#8fcf73'], sunce: [0.12, 0.13, '#ffe066', '#ffd23f'], pjesma: 0 },
   3: { naziv: 'Žuta trokolica · Una vozi, Niko maše', traktor: 'trokolica', vozac: 'una', putnik: 'niko', nebo: ['#7fd3ff', '#e6f8ff'], brda: ['#a8e08f', '#8fd173'], sunce: [0.10, 0.14, '#ffe066', '#ffd23f'], pjesma: 2, suncokreti: true, bale: false, leptiri: true },
 };
 let SC = SCENARIJI[1], brojScenarija = 1;
@@ -126,6 +128,7 @@ addEventListener('resize', velicina);
 
 // ---------- statična pozadina (bez štale, drveta i ograde — oni su zasebni slojevi zbog dubine) ----------
 function gradiPozadinu() {
+  if (SC.strojevi) { gradiPolje(); return; }
   if (SC.zabava) { gradiZabavu(); return; }
   if (SC.dzungla) { gradiDzunglu(); return; }
   pozadina = platno(W, H); const p = pozadina.getContext('2d');
@@ -1218,6 +1221,183 @@ function crtajLeptire(dt, t) {
   }
 }
 
+// ---------- proslave: podaci o slavljeniku, spremanje u datoteku (Drive, WhatsApp, e-mail), otvaranje, više proslava na uređaju ----------
+// Osobni podaci (prezime, datum, mjesto) nisu u stranici — upisuju se u aplikaciji ili dolaze iz datoteke proslave.
+const KLJUC_PROSLAVA = 'vidov-poklon-niki-proslava-v1';
+const PROSLAVA_ZADANA = { id: 'niko-1', naslov: 'Vidov poklon Niki za 1. rođendan', ime: 'Niko', prezime: '', vokativ: 'Niko', broj: 1, datum: '', mjesto: '', traka: 'VIDOV POKLON',
+  posveta: 'Dragi Niko i Una, ovo je Vidov poklon Niki za 1. rođendan! 🎁 Vozite traktore i trokolicu, nacrtajte životinje i uslikajte ih da uskoče na farmu, a na rođendanskoj zabavi za stol s tortom sjedaju svi gosti.',
+  domacini: 'una-niko', scena: 0, tema: '' };
+let PROSLAVA = (() => { try { return { ...PROSLAVA_ZADANA, ...JSON.parse(localStorage.getItem(KLJUC_PROSLAVA) || '{}') }; } catch (e) { return { ...PROSLAVA_ZADANA }; } })();
+function spremiProslavu() { try { localStorage.setItem(KLJUC_PROSLAVA, JSON.stringify(PROSLAVA)); } catch (e) { } }
+const natpisRodj = () => `SRETAN ${PROSLAVA.broj}. ROĐENDAN, ${(PROSLAVA.vokativ || PROSLAVA.ime).toUpperCase()}!`;
+const cestitka = () => `Sretan rođendan, ${PROSLAVA.vokativ || PROSLAVA.ime}!`;
+function datumHR(d) { if (!d) return ''; const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d); return m ? `${+m[3]}. ${+m[2]}. ${m[1]}.` : d; }
+function esc(s) { return String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+// tekstovi u stranici prema proslavi
+function primijeniProslavu() {
+  document.title = PROSLAVA.naslov || 'Rođendan';
+  const h = document.querySelector('#izbornik h1'); if (h) h.textContent = PROSLAVA.naslov;
+  const ps = ui.posveta && ui.posveta.querySelector('.posveta');
+  if (ps) { const kad = [PROSLAVA.datum ? '📅 ' + datumHR(PROSLAVA.datum) : '', PROSLAVA.mjesto ? '📍 ' + esc(PROSLAVA.mjesto) : ''].filter(Boolean).join(' · ');
+    ps.innerHTML = `<b>${esc(PROSLAVA.naslov)}</b>${kad ? '<br><span style="font-size:.85em">' + kad + '</span>' : ''}<br>${esc(PROSLAVA.posveta)}`; }
+  const uh = ui.upute && ui.upute.querySelector('p'); if (uh) uh.textContent = PROSLAVA.naslov + ' 🎁';
+  NATPIS = natpisRodj();
+  const k2 = document.querySelector('.kartica[data-s="2"] h2'); if (k2) k2.textContent = 'Rođendan u džungli';
+  const k2p = document.querySelector('.kartica[data-s="2"] p'); if (k2p) k2p.textContent = 'Crveni traktor i torta';
+  if (typeof nacrtajPosvetu === 'function') nacrtajPosvetu();
+}
+// ---- izvoz i uvoz ----
+const blobUData = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); });
+const dataUBlob = d => fetch(d).then(r => r.blob());
+async function sadrzajProslave() {
+  const ls = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+  const crtezi = ls(KLJUC) || [], zvukovi = {};
+  for (const c of crtezi) { try { const b = await citajZvuk(c.id); if (b) zvukovi[c.id] = await blobUData(b); } catch (e) { } }
+  return { vrsta: 'vidov-poklon-proslava', verzija: 1, spremljeno: new Date().toISOString(), proslava: PROSLAVA, sadrzaj: true,
+    crtezi, osobe: ls(KLJUC_OSOBE) || [], zabava: ls(KLJUC_ZAB), strojevi: ls(KLJUC_STROJ), likPostavke: ls(KLJUC_LIK), zvukovi, scenarij: brojScenarija };
+}
+async function postaviSadrzaj(d) {
+  const set = (k, v) => { try { if (v === null || v === undefined) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) { throw new Error('Na uređaju nema mjesta za ovu proslavu.'); } };
+  // stari zvukovi van
+  try { for (const c of (JSON.parse(localStorage.getItem(KLJUC) || '[]'))) await brisiZvuk(c.id); } catch (e) { }
+  set(KLJUC, d.crtezi || []); set(KLJUC_OSOBE, d.osobe || []); set(KLJUC_ZAB, d.zabava || null); set(KLJUC_STROJ, d.strojevi || null); if (d.likPostavke) set(KLJUC_LIK, d.likPostavke);
+  for (const [id, du] of Object.entries(d.zvukovi || {})) { try { await spremiZvuk(id, await dataUBlob(du)); } catch (e) { } }
+  PROSLAVA = { ...PROSLAVA_ZADANA, ...(d.proslava || {}) }; spremiProslavu();
+  try { const post = JSON.parse(localStorage.getItem('farma-une-i-nike-postavke') || '{}'); post.scenarij = d.proslava && d.proslava.scena ? d.proslava.scena : (d.scenarij || post.scenarij || 1); localStorage.setItem('farma-une-i-nike-postavke', JSON.stringify(post)); } catch (e) { }
+}
+// arhiva proslava na uređaju (IndexedDB)
+const PRDB = { db: null };
+function proslaveBaza() { return new Promise((res, rej) => { if (PRDB.db) return res(PRDB.db); const r = indexedDB.open('vidov-poklon-niki-proslave', 1); r.onupgradeneeded = () => r.result.createObjectStore('p'); r.onsuccess = () => { PRDB.db = r.result; res(r.result); }; r.onerror = () => rej(r.error); }); }
+async function arhivaSpremi(d) { const db = await proslaveBaza(); return new Promise((res, rej) => { const tx = db.transaction('p', 'readwrite'); tx.objectStore('p').put(JSON.stringify(d), d.proslava.id); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
+async function arhivaSve() { const db = await proslaveBaza(); return new Promise((res, rej) => { const out = [], q = db.transaction('p').objectStore('p').openCursor(); q.onsuccess = () => { const c = q.result; if (!c) return res(out); try { const d = JSON.parse(c.value); out.push({ id: c.key, proslava: d.proslava, spremljeno: d.spremljeno, n: (d.crtezi || []).length + (d.osobe || []).length }); } catch (e) { } c.continue(); }; q.onerror = () => rej(q.error); }); }
+async function arhivaCitaj(id) { const db = await proslaveBaza(); return new Promise((res, rej) => { const q = db.transaction('p').objectStore('p').get(id); q.onsuccess = () => res(q.result ? JSON.parse(q.result) : null); q.onerror = () => rej(q.error); }); }
+async function arhivaBrisi(id) { const db = await proslaveBaza(); db.transaction('p', 'readwrite').objectStore('p').delete(id); }
+async function arhivirajTrenutnu() { try { await arhivaSpremi(await sadrzajProslave()); return true; } catch (e) { return false; } }
+function imeDatoteke(nastavak) { const s = `${PROSLAVA.ime || 'proslava'}_${PROSLAVA.broj}_rodjendan${PROSLAVA.datum ? '_' + PROSLAVA.datum : ''}`.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[đĐ]/g, 'd').replace(/[^\w.-]+/g, '_'); return s + nastavak; }
+async function podijeliProslavu() {
+  const d = await sadrzajProslave(), tekst = JSON.stringify(d);
+  // dijeljenje (Android/iPhone: Google Drive, WhatsApp, e-mail…) — .txt jer preglednici JSON ne dijele
+  const f = new File([tekst], imeDatoteke('.proslava.txt'), { type: 'text/plain' });
+  if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: PROSLAVA.naslov, text: PROSLAVA.naslov + ' — datoteka proslave (otvara se u poklonu: 🎂 Proslava → Otvori iz datoteke)' }); javi('Proslava je poslana / spremljena. 🎉'); return; } catch (e) { if (e.name === 'AbortError') return; } }
+  preuzmiProslavu(tekst);
+}
+async function preuzmiProslavu(tekst) {
+  tekst = tekst || JSON.stringify(await sadrzajProslave());
+  const a = el('a', { href: URL.createObjectURL(new Blob([tekst], { type: 'application/json' })), download: imeDatoteke('.proslava.json') }); document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+  javi('Datoteka proslave je u Preuzimanjima — možete je spremiti na Google Drive.');
+}
+async function otvoriDatotekuProslave(f) {
+  let d; try { d = JSON.parse(await f.text()); } catch (e) { javi('Ovo nije datoteka proslave.'); return; }
+  if (!d || d.vrsta !== 'vidov-poklon-proslava' || !d.proslava) { javi('Ovo nije datoteka proslave.'); return; }
+  // datoteka samo s podacima o slavljeniku: ista proslava → dopuni podatke, inače nova prazna proslava
+  if (d.sadrzaj === false && d.proslava.id === PROSLAVA.id) { PROSLAVA = { ...PROSLAVA, ...d.proslava }; spremiProslavu(); primijeniProslavu(); popuniFormuProslave(); javi('Podaci o proslavi su dopunjeni.'); return; }
+  await arhivirajTrenutnu();
+  try { await postaviSadrzaj(d.sadrzaj === false ? { proslava: d.proslava, crtezi: [], osobe: [], zabava: d.zabava || null, strojevi: d.strojevi || null } : d); }
+  catch (e) { javi(e.message); return; }
+  sessionStorage.setItem('vidov-poklon-niki-otvoreno', '1'); location.reload();
+}
+async function otvoriIzArhive(id) {
+  if (id === PROSLAVA.id) { javi('Ova proslava je već otvorena.'); return; }
+  const d = await arhivaCitaj(id); if (!d) return; await arhivirajTrenutnu();
+  try { await postaviSadrzaj(d); } catch (e) { javi(e.message); return; }
+  sessionStorage.setItem('vidov-poklon-niki-otvoreno', '1'); location.reload();
+}
+async function novaProslava() {
+  await arhivirajTrenutnu();
+  const id = 'p' + Date.now();
+  await postaviSadrzaj({ proslava: { ...PROSLAVA_ZADANA, id, naslov: 'Rođendan', ime: '', vokativ: '', broj: 1, traka: 'SRETAN ROĐENDAN', posveta: 'Sretan rođendan! 🎁', domacini: 'slavljenik', scena: 4, tema: 'dzungla' }, crtezi: [], osobe: [] });
+  sessionStorage.setItem('vidov-poklon-niki-otvoreno', 'nova'); location.reload();
+}
+// ---- dijalog ----
+function gradiDijalogProslave() {
+  document.head.appendChild(el('style', {}, `
+  #proslava .karta { text-align:left; padding:2vmin 3vmin; max-width:min(96vw,980px); }
+  #proslava h1 { font-size:4.8vmin; text-align:center; margin:0 0 1vmin; }
+  #proslava .forma { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(40vmin,260px),1fr)); gap:1.2vmin 2vmin; }
+  #proslava label { font-size:2.7vmin; font-weight:bold; display:flex; flex-direction:column; gap:.4vmin; }
+  #proslava input, #proslava textarea, #proslava select { font:inherit; font-size:3.2vmin; padding:.7vmin 1.2vmin; border-radius:1.6vmin; border:.35vmin solid #e9468f; background:#fff; font-weight:normal; }
+  #proslava textarea { min-height:12vmin; }
+  #proslava .siroko { grid-column:1/-1; }
+  #proslava h2 { font-size:3.6vmin; margin:2vmin 0 .6vmin; }
+  #proslava .popis-p { display:flex; flex-direction:column; gap:1vmin; }
+  #proslava .popis-p div { display:flex; gap:1.2vmin; align-items:center; background:#fff; border-radius:2vmin; padding:1vmin 1.4vmin; border:.3vmin solid #e6d6c4; font-size:2.9vmin; flex-wrap:wrap; }
+  #proslava .popis-p div b { flex:1 1 30vmin; }
+  #proslava .popis-p button { font:inherit; font-size:2.7vmin; padding:.6vmin 1.4vmin; border-radius:2vmin; border:.3vmin solid #e9468f; background:#fff; cursor:pointer; }
+  #proslava .popis-p .trenutna { border-color:#2e8b45; background:#effbe9; }
+  #proslava .napomena { font-size:2.5vmin; opacity:.78; }
+  #proslava .gumbi-red .veliki { font-size:3.6vmin; }
+  `));
+  ui.proslava = el('div', { className: 'ploha skriven', id: 'proslava' }, `<div class="karta"><h1>🎂 Proslava</h1>
+    <div class="forma">
+      <label class="siroko">Naslov<input id="pr-naslov" maxlength="60" placeholder="npr. Vidov 3. rođendan"></label>
+      <label>Ime slavljenika<input id="pr-ime" maxlength="20"></label>
+      <label>Prezime (po želji)<input id="pr-prezime" maxlength="30"></label>
+      <label>Kako ga dozivamo (npr. Vide, Niko)<input id="pr-vokativ" maxlength="20"></label>
+      <label>Koji rođendan<input id="pr-broj" type="number" min="1" max="120"></label>
+      <label>Datum<input id="pr-datum" type="date"></label>
+      <label>Mjesto<input id="pr-mjesto" maxlength="40"></label>
+      <label>Natpis na vrpci<input id="pr-traka" maxlength="24" placeholder="npr. VIDOV POKLON"></label>
+      <label>Za stolom uz tortu<select id="pr-domacini"><option value="una-niko">Una i Niko (nacrtani)</option><option value="slavljenik">Slavljenik s fotografije (gost označen kao slavljenik)</option></select></label>
+      <label>Početna vožnja<select id="pr-scena"><option value="0">Izbornik vožnji</option><option value="1">Farma i zeleni traktor</option><option value="2">Džungla</option><option value="3">Trokolica</option><option value="4">Rođendanska zabava</option><option value="5">Poljoprivredni strojevi</option></select></label>
+      <label class="siroko">Posveta na početku<textarea id="pr-posveta" maxlength="400"></textarea></label>
+    </div>
+    <div class="gumbi-red"><button class="veliki" id="pr-spremi">Spremi podatke ✔</button><button class="veliki sivi" id="pr-zatvori">Zatvori</button></div>
+    <h2>💾 Spremi ili otvori proslavu</h2>
+    <p class="napomena">Datoteka proslave sadrži sve: podatke, likove, ukrase, zvukove, goste, tortu, temu i strojeve. Spremite je na Google Drive, pošaljite e-poštom ili na WhatsApp, pa je otvorite na drugom mobitelu ili za godinu dana.</p>
+    <div class="gumbi-red" style="justify-content:flex-start"><button class="veliki" id="pr-podijeli">📤 Spremi na Drive / pošalji</button><button class="veliki" id="pr-preuzmi">💾 Preuzmi datoteku</button><button class="veliki" id="pr-otvori">📂 Otvori iz datoteke</button><button class="veliki sivi" id="pr-nova">➕ Nova proslava</button></div>
+    <h2>📱 Proslave na ovom uređaju</h2><div class="popis-p" id="pr-popis"></div>
+    <p class="napomena">Kad otvorite drugu proslavu, trenutna se sama spremi ovdje. Sve ostaje na ovom uređaju dok je sami ne spremite ili pošaljete.</p>
+  </div>`);
+  document.body.appendChild(ui.proslava);
+  const q = s => ui.proslava.querySelector(s);
+  const ulaz = el('input', { type: 'file', accept: '.json,.txt,application/json,text/plain' }); ulaz.style.display = 'none'; document.body.appendChild(ulaz);
+  ulaz.onchange = () => { const f = ulaz.files && ulaz.files[0]; ulaz.value = ''; if (f) otvoriDatotekuProslave(f); };
+  q('#pr-otvori').onclick = () => ulaz.click();
+  q('#pr-podijeli').onclick = () => { procitajFormu(); podijeliProslavu(); };
+  q('#pr-preuzmi').onclick = () => { procitajFormu(); preuzmiProslavu(); };
+  q('#pr-nova').onclick = e => { const b = e.currentTarget; if (b.dataset.potvrda) novaProslava(); else { b.dataset.potvrda = '1'; b.textContent = '➕ Sigurno? Dodirni opet'; setTimeout(() => { delete b.dataset.potvrda; b.textContent = '➕ Nova proslava'; }, 4000); } };
+  q('#pr-spremi').onclick = () => { procitajFormu(); javi('Spremljeno! 🎂'); ui.proslava.classList.add('skriven'); };
+  q('#pr-zatvori').onclick = () => ui.proslava.classList.add('skriven');
+}
+function procitajFormu() {
+  const q = s => ui.proslava.querySelector(s), staro = natpisRodj();
+  Object.assign(PROSLAVA, { naslov: q('#pr-naslov').value.trim() || PROSLAVA.naslov, ime: q('#pr-ime').value.trim(), prezime: q('#pr-prezime').value.trim(), vokativ: q('#pr-vokativ').value.trim() || q('#pr-ime').value.trim(),
+    broj: Math.max(1, +q('#pr-broj').value || 1), datum: q('#pr-datum').value, mjesto: q('#pr-mjesto').value.trim(), traka: q('#pr-traka').value.trim(), domacini: q('#pr-domacini').value, scena: +q('#pr-scena').value, posveta: q('#pr-posveta').value.trim() });
+  spremiProslavu();
+  // natpisi zabave prate slavljenika ako nisu ručno mijenjani
+  if (zab.natpis === staro || zab.natpis === 'SRETAN 1. ROĐENDAN, NIKO!') { zab.natpis = natpisRodj(); okvirZabave = null; }
+  if (zab.avion === staro || zab.avion === 'SRETAN 1. ROĐENDAN, NIKO!') zab.avion = natpisRodj();
+  spremiZabavu(); if (SC.zabava) { gradiZabavu(); gradiOkvirZabave && gradiOkvirZabave(); }
+  zabavaPoz = null; primijeniProslavu();
+}
+function popuniFormuProslave() {
+  if (!ui.proslava) return; const q = s => ui.proslava.querySelector(s), P = PROSLAVA;
+  q('#pr-naslov').value = P.naslov || ''; q('#pr-ime').value = P.ime || ''; q('#pr-prezime').value = P.prezime || ''; q('#pr-vokativ').value = P.vokativ || ''; q('#pr-broj').value = P.broj || 1;
+  q('#pr-datum').value = P.datum || ''; q('#pr-mjesto').value = P.mjesto || ''; q('#pr-traka').value = P.traka || ''; q('#pr-domacini').value = P.domacini || 'una-niko'; q('#pr-scena').value = String(P.scena || 0); q('#pr-posveta').value = P.posveta || '';
+}
+async function osvjeziPopisProslava() {
+  const pop = ui.proslava.querySelector('#pr-popis'); pop.innerHTML = '';
+  let lista = []; try { lista = await arhivaSve(); } catch (e) { }
+  const sve = [{ id: PROSLAVA.id, proslava: PROSLAVA, trenutna: true }, ...lista.filter(x => x.id !== PROSLAVA.id)];
+  for (const s of sve) { const P = s.proslava || {}, d = el('div', { className: s.trenutna ? 'trenutna' : '' });
+    d.appendChild(el('b', { textContent: `${P.naslov || 'Proslava'}${P.datum ? ' · ' + datumHR(P.datum) : ''}${P.mjesto ? ' · ' + P.mjesto : ''}` }));
+    if (s.trenutna) d.appendChild(el('span', { textContent: '✔ otvorena' }));
+    else { const o = el('button', { textContent: '📂 Otvori' }); o.onclick = () => otvoriIzArhive(s.id); d.appendChild(o);
+      const x = el('button', { textContent: '✕ Obriši' }); x.onclick = async () => { if (!x.dataset.p) { x.dataset.p = 1; x.textContent = 'Sigurno? Dodirni opet'; return; } await arhivaBrisi(s.id); osvjeziPopisProslava(); }; d.appendChild(x); }
+    pop.appendChild(d); }
+}
+function otvoriProslavu() { if (!ui.proslava) gradiDijalogProslave(); popuniFormuProslave(); osvjeziPopisProslava(); ui.proslava.classList.remove('skriven'); }
+
+// svjećica u obliku broja (koji rođendan); p je već pomaknut i umanjen, dno svjećice na y0, visina vis
+function svjecaBroj(p, x, y0, vis) {
+  const tx = String(PROSLAVA.broj || 1); p.save(); p.font = `900 ${vis}px "Arial Rounded MT Bold", "Comic Sans MS", sans-serif`; p.textAlign = 'center'; p.textBaseline = 'alphabetic';
+  const w = p.measureText(tx).width; p.lineJoin = 'round'; p.lineWidth = vis * 0.22; p.strokeStyle = '#4a3428'; p.strokeText(tx, x, y0);
+  p.fillStyle = lin(p, x - w / 2, 0, x + w / 2, 0, [[0, '#7fd0ff'], [1, '#2f8fd8']]); p.fillText(tx, x, y0);
+  p.lineWidth = vis * 0.04; p.strokeStyle = 'rgba(255,255,255,.6)'; p.setLineDash([vis * 0.08, vis * 0.08]); p.strokeText(tx, x, y0); p.setLineDash([]);
+  p.beginPath(); p.moveTo(x, y0 - vis * 0.72); p.lineTo(x, y0 - vis * 0.86); p.lineWidth = vis * 0.04; p.strokeStyle = '#4a3428'; p.stroke(); p.restore();
+  return y0 - vis * 0.88;   // vrh fitilja
+}
+
 // ---------- Una i Niko: crtani likovi (glatko, sjenčano) — raspored kao Vidov izrez 405×480 (vozač za volanom) ----------
 const LK = { obris: '#4a3428', koza1: '#ffe6d3', koza2: '#f0b48f', obraz: 'rgba(255,120,130,.45)' };
 function grad(p, x0, y0, r0, x1, y1, r1, stops) { const g2 = p.createRadialGradient(x0, y0, r0, x1, y1, r1); stops.forEach(([o, c]) => g2.addColorStop(o, c)); return g2; }
@@ -1395,8 +1575,9 @@ function ploca(p, x, y, s) {
   p.fillStyle = lin(p, 0, -370, 0, -170, [[0, '#d9a066'], [0.5, '#c08245'], [1, '#9c6230']]); p.fill(); bezSjene(p); p.lineWidth = 8; p.strokeStyle = '#4a2d14'; p.stroke();
   p.strokeStyle = 'rgba(90,55,25,.35)'; p.lineWidth = 3; for (let i = 0; i < 5; i++) { p.beginPath(); p.moveTo(-185, -335 + i * 34); p.bezierCurveTo(-60, -342 + i * 34, 60, -328 + i * 34, 185, -335 + i * 34); p.stroke(); }
   p.textAlign = 'center'; p.textBaseline = 'middle';
-  p.font = 'bold 92px "Comic Sans MS", "Segoe UI Rounded", sans-serif'; p.lineWidth = 10; p.strokeStyle = '#5c3a1c'; p.strokeText('NIKO', 0, -298); p.fillStyle = lin(p, 0, -340, 0, -258, [[0, '#ffe7b0'], [1, '#e9b45e']]); p.fillText('NIKO', 0, -298);
-  p.font = 'bold 46px "Comic Sans MS", "Segoe UI Rounded", sans-serif'; p.lineWidth = 7; p.strokeText('1. ROĐENDAN', 0, -218); p.fillStyle = '#fff1cf'; p.fillText('1. ROĐENDAN', 0, -218);
+  const IMEP = (PROSLAVA.ime || 'SRETAN').toUpperCase(), RODP = (PROSLAVA.ime ? PROSLAVA.broj + '. ' : '') + 'ROĐENDAN';
+  p.font = 'bold 92px "Comic Sans MS", "Segoe UI Rounded", sans-serif'; const sI = Math.min(1, 350 / p.measureText(IMEP).width); p.save(); p.translate(0, -298); p.scale(sI, sI); p.lineWidth = 10; p.strokeStyle = '#5c3a1c'; p.strokeText(IMEP, 0, 0); p.fillStyle = lin(p, 0, -42, 0, 40, [[0, '#ffe7b0'], [1, '#e9b45e']]); p.fillText(IMEP, 0, 0); p.restore();
+  p.font = 'bold 46px "Comic Sans MS", "Segoe UI Rounded", sans-serif'; p.lineWidth = 7; p.strokeText(RODP, 0, -218); p.fillStyle = '#fff1cf'; p.fillText(RODP, 0, -218);
   // lijane i listovi
   p.lineWidth = 7; p.strokeStyle = '#3f8f3f';
   for (const sx of [-1, 1]) { p.beginPath(); p.moveTo(sx * 200, -360); p.bezierCurveTo(sx * 150, -420, sx * 60, -400, sx * 30, -372); p.stroke(); }
@@ -1419,13 +1600,11 @@ function crtajTortu(t) {
   };
   kat(170, 110, -10, '#ffb3c7', '#f27aa0'); kat(125, 95, -120, '#bde7ff', '#7fbfe8'); kat(85, 80, -215, '#fff0a8', '#f0c94a');
   // svjećica "1" s plamenom
-  g.beginPath(); g.moveTo(-14, -300); g.lineTo(6, -330); g.lineTo(16, -330); g.lineTo(16, -255); g.lineTo(-4, -255); g.lineTo(-4, -310); g.closePath();
-  g.fillStyle = lin(g, -14, 0, 16, 0, [[0, '#7fd0ff'], [1, '#2f8fd8']]); g.fill(); g.lineWidth = 4; g.strokeStyle = '#4a3428'; g.stroke();
-  g.beginPath(); g.moveTo(6, -330); g.lineTo(6, -342); g.lineWidth = 3; g.stroke();
+  const vrh = svjecaBroj(g, 0, -248, 100), fx = 0;
   const tr = Math.sin(t * 0.02) * 3, vis = 26 + Math.sin(t * 0.031) * 4;
-  g.beginPath(); g.moveTo(6, -344); g.quadraticCurveTo(-10 + tr, -350 - vis * 0.5, 6 + tr, -344 - vis); g.quadraticCurveTo(22 + tr, -350 - vis * 0.5, 6, -344);
-  g.fillStyle = grad(g, 6, -352, 2, 6, -350, vis, [[0, '#fffbe0'], [0.4, '#ffd23f'], [1, '#ff7b29']]); g.fill();
-  g.globalAlpha = 0.25; g.beginPath(); g.arc(6, -356, 34, 0, TAU); g.fillStyle = '#fff3a0'; g.fill(); g.globalAlpha = 1;
+  g.beginPath(); g.moveTo(fx, vrh); g.quadraticCurveTo(fx - 16 + tr, vrh - 6 - vis * 0.5, fx + tr, vrh - vis); g.quadraticCurveTo(fx + 16 + tr, vrh - 6 - vis * 0.5, fx, vrh);
+  g.fillStyle = grad(g, fx, vrh - 8, 2, fx, vrh - 6, vis, [[0, '#fffbe0'], [0.4, '#ffd23f'], [1, '#ff7b29']]); g.fill();
+  g.globalAlpha = 0.25; g.beginPath(); g.arc(fx, vrh - 12, 34, 0, TAU); g.fillStyle = '#fff3a0'; g.fill(); g.globalAlpha = 1;
   g.restore();
 }
 function crtajZirafuSprijeda(t) {
@@ -1557,7 +1736,7 @@ let okvirDzungle = null;
 
 // ---------- slavlje: avion s natpisom, baloni, konfeti, zvučni efekti ----------
 const slavlje = { avion: null, baloni: [], konfeti: [], tAvion: 4 };
-let NATPIS = 'SRETAN 1. ROĐENDAN, NIKO!';
+let NATPIS = natpisRodj();
 function pokreniAvion() { slavlje.avion = { x: -0.35 * W, y: H * rnd(0.10, 0.18), v: W / 14 }; zvukAvion(); }
 function crtajAvion(dt, t) {
   slavlje.tAvion -= dt; if (!slavlje.avion && slavlje.tAvion <= 0) { pokreniAvion(); slavlje.tAvion = 45; }
@@ -1664,7 +1843,7 @@ function gradiSucelje() {
   const alati = el('div', { id: 'alati' });
   const gumbi = [
     ['📷', 'Dodaj lik', () => uslikaj(), 'glavni'], ['🎉', 'Slavlje', () => slavi()], ['🎵', 'Glazba', () => { glazba.ukljucena = !glazba.ukljucena; if (glazba.glavni) glazba.glavni.gain.value = glazba.ukljucena ? glazba.glasnoca : 0; javi(glazba.ukljucena ? 'Glazba svira' : 'Glazba utišana'); }],
-    ['🎂', 'Torta', () => otvoriGoste('torta'), 'tortab'], ['🎨', 'Tema i natpis', () => otvoriTemu()], ['🚜', 'Vožnje', () => otvoriIzbornik(false)], ['✎', 'Uredi', () => otvoriUredi()], ['⛶', 'Cijeli ekran', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => { }); else document.exitFullscreen(); }], ['❓', 'Upute', () => prikaziUpute(true)],
+    ['🎂', 'Torta', () => otvoriGoste('torta'), 'tortab'], ['🚜', 'Strojevi', () => otvoriStrojeve(), 'strojb'], ['🎨', 'Tema i natpis', () => otvoriTemu()], ['🗺️', 'Vožnje', () => otvoriIzbornik(false)], ['🎈', 'Proslava', () => otvoriProslavu()], ['✎', 'Uredi', () => otvoriUredi()], ['⛶', 'Cijeli ekran', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => { }); else document.exitFullscreen(); }], ['❓', 'Upute', () => prikaziUpute(true)],
   ];
   for (const [ik, nat, fn, kl] of gumbi) { const b = el('button', { className: kl || '', title: nat }, `<b>${ik}</b><span>${nat}</span>`); b.onclick = e => { e.stopPropagation(); zvukPokreni(); fn(); }; alati.appendChild(b); }
   document.body.appendChild(alati); ui.alati = alati;
@@ -1688,7 +1867,7 @@ function gradiSucelje() {
   ui.posveta = el('div', { className: 'ploha', id: 'posveta' }, `<div class="karta pozivnica">
     <canvas id="posveta-slika" width="1000" height="560"></canvas>
     <p class="posveta">Dragi Niko i Una, ovo je <b>Vidov poklon Niki za 1. rođendan</b>! 🎁<br>Vozite traktore i trokolicu, nacrtajte životinje i uslikajte ih da uskoče na farmu, a na <b>rođendanskoj zabavi</b> za stol s tortom sjedaju svi gosti.</p>
-    <div class="gumbi-red"><button class="veliki" id="kreni">Kreni ▶</button><button class="veliki sivi" id="upute-gumb">Upute ❓</button></div></div>`);
+    <div class="gumbi-red"><button class="veliki" id="kreni">Kreni ▶</button><button class="veliki sivi" id="upute-gumb">Upute ❓</button><button class="veliki sivi" id="proslava-gumb">🎈 Proslava</button></div></div>`);
   document.body.appendChild(ui.posveta);
   ui.upute = el('div', { className: 'ploha skriven' }, `<div class="karta">
     <h1>Upute za mamu i tatu</h1><p style="text-align:center">Vidov poklon Niki za 1. rođendan 🎁</p>
@@ -1705,6 +1884,13 @@ function gradiSucelje() {
     <li>Ako je slika okrenuta: <b>↺ / ↻ Okreni</b>. Po želji: <b>Nagib lika</b>, <b>Prozirnost</b> (npr. duh ili oblak) i <b>Natpis uz lik</b> (ime ispod lika).</li>
     <li><b>Izgled:</b> 🎨 <b>Crtani</b> ili 📷 <b>Realno</b>. U malom prozoru vidite kako će izgledati; zatim <b>Dodaj na farmu</b> i odaberite: 🚶 hoda (osoba sama krene hodati), 🐾 skakuće, 🕊️ leti, 🐟 pliva ili 🛣️ vozi po cesti.</li>
     <li>Krivi ili prevelik lik: <b>✎ Uredi</b>, dodirnite sličicu, pa ✕ (makni) ili <b>− Manji</b> / <b>+ Veći</b>. <b>Zatvori ✔</b> vraća gumbe.</li></ul>
+    <h2>🚜 Poljoprivredni strojevi (vožnja 5)</h2>
+    <ul><li>Kombajn žanje pšenicu, roto kosi livadu, balirka radi bale, utovarivač ih slaže na hrpu, plug ore, sijačica sije (pa niče), a traktor s prikolicom vozi po cesti.</li>
+    <li><b>🚜 Strojevi</b>: za svaki stroj odaberite vozača (Una, Niko ili bilo koji dodani lik — i fotografija) i polje. Dodirnite stroj: zatrubi, a vozač progovori (ili pusti svoj zvuk).</li></ul>
+    <h2>🎈 Proslava — spremanje i otvaranje</h2>
+    <ul><li><b>🎈 Proslava</b>: upišite slavljenika, koji je rođendan, datum, mjesto i posvetu; to se vidi na početku, na zastavicama, avionu i torti.</li>
+    <li><b>📤 Spremi na Drive / pošalji</b> spremi cijelu proslavu (likove, ukrase, zvukove, goste, tortu, strojeve) u jednu datoteku — na Google Drive, e-poštom ili na WhatsApp. <b>📂 Otvori iz datoteke</b> je vraća, i na drugom mobitelu.</li>
+    <li><b>➕ Nova proslava</b> počinje praznu; prethodna ostaje pod <b>Proslave na ovom uređaju</b>. Gost označen kao <b>🎂 Slavljenik</b> sjeda uz tortu.</li></ul>
     <h2>🎭 Ukrasi i zvuk</h2>
     <ul><li>Nakon dodavanja lika pritisnite <b>🎭 Ukrasi i zvuk</b> (ili kasnije <b>✎ Uredi</b> → odaberite lik → <b>🎭 Ukrasi i zvuk</b>).</li>
     <li>Žuti krug povucite na lice. Zatim birajte: animaciju (💬 govori, 🎤 pjeva, 💃 pleše, 👋 maše) i tekst u oblačiću; kosu i boju kose (ćelav, kovrče, punđa, repići, duga kosa, krijesta); kapicu, krunu, šešir, mašnu ili vjenčić; brkove, bradu, naočale, klaunski nos; mišiće, balon, poklon, mikrofon, suncokret, plašt ili gitaru; srca, zvjezdice, note ili mjehuriće.</li>
@@ -1725,7 +1911,8 @@ function gradiSucelje() {
     <p style="text-align:center;opacity:.75">Sve ostaje samo na vašem uređaju — ništa se ne šalje na internet.</p>
     <div class="gumbi-red"><button class="veliki" id="upute-zatvori">U redu ✔</button></div></div>`);
   document.body.appendChild(ui.upute);
-  ui.posveta.querySelector('#kreni').onclick = () => { zvukPokreni(); ui.posveta.classList.add('skriven'); otvoriIzbornik(false); konfeti(80); };
+  ui.posveta.querySelector('#kreni').onclick = () => { zvukPokreni(); ui.posveta.classList.add('skriven'); if (PROSLAVA.scena) odaberiScenarij(PROSLAVA.scena); else otvoriIzbornik(false); konfeti(80); };
+  ui.posveta.querySelector('#proslava-gumb').onclick = () => otvoriProslavu();
   ui.posveta.querySelector('#upute-gumb').onclick = () => prikaziUpute(true);
   ui.upute.querySelector('#upute-zatvori').onclick = () => prikaziUpute(false);
 }
@@ -1750,13 +1937,14 @@ function nacrtajPosvetu() {
     // vrpca "VIDOV POKLON"
     p.save(); p.translate(500, 418); p.beginPath(); p.moveTo(-190, -12); p.lineTo(190, -12); p.lineTo(170, 22); p.lineTo(190, 56); p.lineTo(-190, 56); p.lineTo(-170, 22); p.closePath();
     p.fillStyle = lin(p, 0, -12, 0, 56, [[0, '#ffe7a6'], [1, '#e9b45e']]); p.fill(); p.lineWidth = 5; p.strokeStyle = '#8a5a2b'; p.stroke();
-    p.font = 'bold 36px "Comic Sans MS", "Segoe UI Rounded", sans-serif'; p.textAlign = 'center'; p.textBaseline = 'middle'; p.fillStyle = '#5c3a1c'; p.fillText('VIDOV POKLON', 0, 23); p.restore();
+    p.font = 'bold 36px "Comic Sans MS", "Segoe UI Rounded", sans-serif'; p.textAlign = 'center'; p.textBaseline = 'middle'; p.fillStyle = '#5c3a1c'; const TR = (PROSLAVA.traka || '').toUpperCase(); p.save(); p.scale(Math.min(1, 330 / Math.max(1, p.measureText(TR).width)), 1); p.fillText(TR, 0, 23); p.restore(); p.restore();
     // Una i Niko
-    const u = glavaIzLika('una'), n = glavaIzLika('niko');
-    if (u) p.drawImage(u, 175, 330, 190, 190 * u.height / u.width); if (n) p.drawImage(n, 640, 325, 190, 190 * n.height / n.width);
     p.font = 'bold 44px "Comic Sans MS", "Segoe UI Rounded", sans-serif'; p.textAlign = 'center'; p.lineWidth = 8; p.strokeStyle = '#fff';
     const nat = (tx, x, y, b) => { p.strokeText(tx, x, y); p.fillStyle = b; p.fillText(tx, x, y); };
-    nat('Una', 270, 548, '#3a8fd8'); nat('Niko', 735, 548, '#e0732b');
+    if (PROSLAVA.domacini !== 'slavljenik') { const u = glavaIzLika('una'), n = glavaIzLika('niko');
+      if (u) p.drawImage(u, 175, 330, 190, 190 * u.height / u.width); if (n) p.drawImage(n, 640, 325, 190, 190 * n.height / n.width);
+      nat('Una', 270, 548, '#3a8fd8'); nat('Niko', 735, 548, '#e0732b'); }
+    else { const sl = osobe.filter(o => o.skupina === 'slavljenik').slice(0, 2); sl.forEach((o, i) => { const x = sl.length === 1 ? 270 : [270, 735][i]; p.drawImage(o.glava, x - 85, 360, 170, 170); nat(o.ime, x, 560, '#d6336c'); }); }
   } finally { U = U0; }
 }
 const POSV = {};
@@ -1787,7 +1975,7 @@ function slavi() { konfeti(160); pustiBalone(12); pokreniAvion(); if (PJESME[3])
 const DZUNGLA_ZIV = {};
 function postaviZivotinje() {
   for (let i = zivotinje.length - 1; i >= 0; i--) if (zivotinje[i].zadano) zivotinje.splice(i, 1);
-  osvjeziGumbe(); if (SC.zabava) return;
+  osvjeziGumbe(); if (SC.zabava || SC.strojevi) return;
   const d = (sl, o) => { if (!sl) return; const z = dodaj(sl, o); z.zadano = true; z.glas = o.glas; };
   if (SC.dzungla) {
     if (!DZUNGLA_ZIV.slon) { DZUNGLA_ZIV.slon = slonPlatno(); DZUNGLA_ZIV.lav = lavPlatno(); DZUNGLA_ZIV.zebra = zebraPlatno(); DZUNGLA_ZIV.zirafa = zirafaPlatno(); }
@@ -1808,10 +1996,11 @@ function dodir(e) {
   zvukPokreni();
   const r = platnoF.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height;
   if (SC.zabava) { zabavaDodir(x, y); return; }
+  if (SC.strojevi) { strojeviDodir(x, y); return; }
   let najbolji = null, d0 = 1e9;
   for (const z of zivotinje) { const h = z.visina(), w = h * z.slika.width / z.slika.height; if (Math.abs(x - z.x) < w * 0.55 && y < z.y + h * 0.1 && y > z.y - h * 1.05) { const dd = Math.abs(x - z.x) + Math.abs(y - (z.y - h / 2)); if (dd < d0) { d0 = dd; najbolji = z; } } }
   if (najbolji) { najbolji.tap = 0.6; if (najbolji.ukrasi && najbolji.ukrasi.zvuk) pustiZvukLika(najbolji); else zvukZivotinje(najbolji); for (let k = 0; k < 6; k++) iskrica(najbolji.x + rnd(-30, 30) * U, najbolji.y - najbolji.visina() * rnd(0.3, 1)); return; }
-  if (Math.abs(x - traktor.x) < 500 * traktor.k && y > traktor.y - 900 * traktor.k && y < traktor.y + 40 * U) { trubi(); reci(SC.dzungla ? 'Sretan rođendan, Niko!' : 'Tut-tut!', 2.2); return; }
+  if (Math.abs(x - traktor.x) < 500 * traktor.k && y > traktor.y - 900 * traktor.k && y < traktor.y + 40 * U) { trubi(); reci(SC.dzungla ? cestitka() : 'Tut-tut!', 2.2); return; }
   if (y < H * 0.35) { pustiBalone(3); zvukPop(); }
 }
 
@@ -1819,7 +2008,7 @@ function dodir(e) {
 const KLJUC_OSOBE = 'vidov-poklon-niki-osobe-v2', KLJUC_ZAB = 'vidov-poklon-niki-zabava-v2', MAKS_OSOBA = 50;
 const BOJE_MAJICA = [['#ff8fab', '#e9467a'], ['#7fd0ff', '#2f8fd8'], ['#9be38b', '#3fa34d'], ['#ffd56b', '#f0a020'], ['#c9a7ff', '#8a5cf0'], ['#ffb38a', '#f0703a'], ['#8ff0e0', '#22b3a0']];
 const osobe = [];   // { id, ime, glava, kvadrat, skupina:'obitelj'|'gost', odrasla, boja, faza, tap, ulaz }
-const zab = { tema: 'dzungla', natpis: 'SRETAN 1. ROĐENDAN, NIKO!', avion: 'SRETAN 1. ROĐENDAN, NIKO!', torta: null, tortaSrc: null, pozadina: null, pozadinaSrc: null };
+const zab = { tema: PROSLAVA.tema || 'dzungla', natpis: natpisRodj(), avion: natpisRodj(), torta: null, tortaSrc: null, pozadina: null, pozadinaSrc: null };
 let zabavaPoz = null; const svjecica = { ugasena: 0 };
 const TEME = {
   dzungla: { naziv: 'Džungla (kao na pozivnici)', nebo: ['#bfe9ff', '#f4fbef'], tlo: ['#a6dc84', '#5cb847'], zastavice: ['#e0a458', '#7bbf5a', '#f2c14e', '#4f9d4a', '#d9822b'] },
@@ -1963,7 +2152,10 @@ const TRIBINE = [10, 11, 13, 14];   // mjesta po redu (u prva dva reda sredina j
 function rasporedSjedala() {
   if (zabavaPoz && zabavaPoz.n === osobe.length && zabavaPoz.W === W && zabavaPoz.v === zabavaPoz.vv) return zabavaPoz;
   const mjesta = new Map(), stol = X_STOL.slice();
-  const obitelj = osobe.filter(o => o.skupina === 'obitelj'), gostiL = osobe.filter(o => o.skupina !== 'obitelj');
+  const slavlj = PROSLAVA.domacini === 'slavljenik' ? osobe.filter(o => o.skupina === 'slavljenik').slice(0, 2) : [];
+  slavlj.forEach((o, i) => mjesta.set(o.id, { x: X_DOMACINI[i], red: 0, velika: true }));
+  if (PROSLAVA.domacini === 'slavljenik' && slavlj.length < 2) stol.unshift(...X_DOMACINI.slice(slavlj.length));
+  const obitelj = osobe.filter(o => o.skupina === 'obitelj' || (o.skupina === 'slavljenik' && !slavlj.includes(o))), gostiL = osobe.filter(o => o.skupina !== 'obitelj' && o.skupina !== 'slavljenik');
   for (const o of obitelj) { if (stol.length) mjesta.set(o.id, { x: stol.shift(), red: 0 }); else gostiL.unshift(o); }
   let red = 1, slobodno = [];
   const sljedeciRed = () => { const k = TRIBINE[red - 1] || 12, xs = []; for (let i = 0; i < k; i++) { const x = 0.06 + 0.88 * (k === 1 ? 0.5 : i / (k - 1)); if (red <= 2 && Math.abs(x - 0.5) < 0.075) continue; xs.push(x); } xs.sort((a, b) => Math.abs(a - 0.5) - Math.abs(b - 0.5)); return xs; };
@@ -2045,8 +2237,8 @@ function crtajTortuStol(t) {
   const kat = (w, h, y0, b1, b2) => { g.beginPath(); g.moveTo(-w, y0); g.lineTo(-w, y0 - h); g.ellipse(0, y0 - h, w, w * 0.18, 0, Math.PI, 0); g.lineTo(w, y0); g.ellipse(0, y0, w, w * 0.18, 0, 0, Math.PI); g.closePath(); g.fillStyle = lin(g, -w, 0, w, 0, [[0, b2], [0.45, b1], [1, b2]]); g.fill(); g.lineWidth = 5; g.strokeStyle = '#4a3428'; g.stroke(); g.beginPath(); g.ellipse(0, y0 - h, w, w * 0.18, 0, 0, TAU); g.fillStyle = '#fffaf2'; g.fill(); g.stroke(); for (let i = 0; i < 9; i++) { g.beginPath(); g.arc(-w * 0.8 + i * w * 0.2, y0 - h * 0.45 + (i % 2) * 10, 7, 0, TAU); g.fillStyle = ['#ff5d73', '#ffd23f', '#4cc9f0', '#7bd389'][i % 4]; g.fill(); } };
   const tb = zab.tema === 'dzungla' ? [['#ffe2a8', '#e9b45e'], ['#c9f0b0', '#8cc66a']] : [['#ffb3c7', '#f27aa0'], ['#bde7ff', '#7fbfe8']];
   kat(150, 95, 0, tb[0][0], tb[0][1]); kat(105, 80, -95, tb[1][0], tb[1][1]);
-  g.beginPath(); g.moveTo(-14, -255); g.lineTo(6, -285); g.lineTo(16, -285); g.lineTo(16, -190); g.lineTo(-4, -190); g.lineTo(-4, -265); g.closePath(); g.fillStyle = lin(g, -14, 0, 16, 0, [[0, '#7fd0ff'], [1, '#2f8fd8']]); g.fill(); g.lineWidth = 4; g.strokeStyle = '#4a3428'; g.stroke();
-  g.restore(); plamen(x + 6 * s, y - 290 * s, t, s);
+  const vrh = svjecaBroj(g, 0, -182, 120);
+  g.restore(); plamen(x, y + (vrh - 2) * s, t, s);
 }
 function crtajBukeBalona(t) {
   const T = TEME[zab.tema] || TEME.dzungla;
@@ -2083,12 +2275,13 @@ function crtajZabavu(dt, t) {
     for (const o of osobe) { const m = rp.mjesta.get(o.id); if (m && m.red === r && !(o.ulaz > 0)) crtajIme(W * m.x, r, o.boja, o.ime); }
   }
   if (okvirZabave) g.drawImage(okvirZabave, 0, 0);
-  for (const o of osobe) { const m = rp.mjesta.get(o.id); if (m && m.red === 0) crtajOsobu(o.glava, W * m.x, 0, o.boja, o.faza, o.tap, t, false, o.odrasla, o.ulaz); }
-  crtajOsobu(domacini.una.glava, W * X_DOMACINI[0], 0, 0, domacini.una.faza, domacini.una.tap, t, true, false, 0);
-  crtajOsobu(domacini.niko.glava, W * X_DOMACINI[1], 0, 1, domacini.niko.faza, domacini.niko.tap, t, true, false, 0);
+  const unaNiko = PROSLAVA.domacini !== 'slavljenik';
+  for (const o of osobe) { const m = rp.mjesta.get(o.id); if (m && m.red === 0) crtajOsobu(o.glava, W * m.x, 0, o.boja, o.faza, o.tap, t, !!m.velika, o.odrasla, o.ulaz); }
+  if (unaNiko) { crtajOsobu(domacini.una.glava, W * X_DOMACINI[0], 0, 0, domacini.una.faza, domacini.una.tap, t, true, false, 0);
+    crtajOsobu(domacini.niko.glava, W * X_DOMACINI[1], 0, 1, domacini.niko.faza, domacini.niko.tap, t, true, false, 0); }
   crtajStol();
-  crtajTanjure([...X_DOMACINI.map(x => W * x), ...[...rp.mjesta.values()].filter(m => m.red === 0).map(m => W * m.x)]);
-  crtajIme(W * X_DOMACINI[0], 0, 0, 'Una'); crtajIme(W * X_DOMACINI[1], 0, 1, 'Niko');
+  crtajTanjure([...(unaNiko ? X_DOMACINI.map(x => W * x) : []), ...[...rp.mjesta.values()].filter(m => m.red === 0).map(m => W * m.x)]);
+  if (unaNiko) { crtajIme(W * X_DOMACINI[0], 0, 0, 'Una'); crtajIme(W * X_DOMACINI[1], 0, 1, 'Niko'); }
   for (const o of osobe) { const m = rp.mjesta.get(o.id); if (m && m.red === 0 && !(o.ulaz > 0)) crtajIme(W * m.x, 0, o.boja, o.ime); }
   crtajMaskote(t);
   crtajTortuStol(t);
@@ -2101,8 +2294,8 @@ function crtajZabavu(dt, t) {
 }
 function zabavaDodir(x, y) {
   const torta = zab.torta ? H * 0.32 : H * 0.33;
-  if (Math.abs(x - W * 0.5) < W * 0.09 && y > H * STOL_Y - torta && y < H * STOL_Y + H * 0.02) { if (svjecica.ugasena <= 0) { svjecica.ugasena = 5; konfeti(160, W * 0.5, H * 0.4); pustiBalone(10); slavi(); javi('Puuuh! Sretan rođendan, Niko! 🎂'); } return true; }
-  const rp = rasporedSjedala(), kand = [{ x: X_DOMACINI[0], red: 0, o: domacini.una }, { x: X_DOMACINI[1], red: 0, o: domacini.niko }];
+  if (Math.abs(x - W * 0.5) < W * 0.09 && y > H * STOL_Y - torta && y < H * STOL_Y + H * 0.02) { if (svjecica.ugasena <= 0) { svjecica.ugasena = 5; konfeti(160, W * 0.5, H * 0.4); pustiBalone(10); slavi(); javi('Puuuh! ' + cestitka() + ' 🎂'); } return true; }
+  const rp = rasporedSjedala(), kand = PROSLAVA.domacini === 'slavljenik' ? [] : [{ x: X_DOMACINI[0], red: 0, o: domacini.una }, { x: X_DOMACINI[1], red: 0, o: domacini.niko }];
   for (const o of osobe) { const m = rp.mjesta.get(o.id); if (m) kand.push({ ...m, o }); }
   let naj = null, d0 = 1e9;
   for (const k of kand) { const { s, baza } = redGeom(k.red), R = H * 0.075 * s, cy = baza - R * 2.3, dd = Math.hypot(x - W * k.x, y - cy); if (dd < R * 1.6 && dd < d0) { d0 = dd; naj = k; } }
@@ -2186,6 +2379,7 @@ function gradiDijalogGosta() {
         <div class="izbor2 samo-osoba">
           <label><input type="radio" name="skupina" value="gost" checked> Gost</label>
           <label><input type="radio" name="skupina" value="obitelj"> Obitelj — uz slavljenike za stolom</label>
+          <label><input type="radio" name="skupina" value="slavljenik"> 🎂 Slavljenik — uz tortu</label>
           <label><input type="checkbox" id="gost-odrasla"> Odrasla osoba</label>
         </div>
         <div class="pretpregled"><canvas id="gost-pre" width="200" height="200"></canvas><span class="napomena" id="gost-pre-tekst">Ovako će izgledati na zabavi.</span></div>
@@ -2273,6 +2467,7 @@ function dodajGosta() {
   const skupina = q('input[name=skupina]:checked').value, odrasla = q('#gost-odrasla').checked;
   if (skupina === 'obitelj' && osobe.filter(o => o.skupina === 'obitelj').length >= X_STOL.length) javi('Za stolom više nema mjesta — sjest će na tribinu.');
   const kv = obradiKvadrat(izvorIzreza(), izr.x - izr.vel / 2, izr.y - izr.vel / 2, izr.vel, 160);
+  if (skupina === 'slavljenik' && PROSLAVA.domacini !== 'slavljenik') { PROSLAVA.domacini = 'slavljenik'; spremiProslavu(); }
   const o = { id: 'o' + Date.now(), ime, kvadrat: kv.toDataURL('image/jpeg', 0.86), glava: maskiraj(kv, 'krug'), skupina, odrasla, boja: (osobe.length + 2) % BOJE_MAJICA.length, faza: rnd(0, TAU), tap: 0, ulaz: 1 };
   osobe.push(o); zabavaPoz = null; const ok = spremiOsobe();
   izr.slika = null; izr.slikaBez = null; q('#gost-pozadina-stanje').textContent = ''; q('#gost-ime').value = ''; q('#gost-odrasla').checked = false; q('input[name=skupina][value=gost]').checked = true; crtajIzrez(); q('#gost-pre').getContext('2d').clearRect(0, 0, 200, 200);
@@ -2323,6 +2518,7 @@ function oznaciTemu() { if (ui.tema) ui.tema.querySelectorAll('.teme button').fo
 function osvjeziGumbe() {
   const b = ui.alati && ui.alati.querySelector('button.glavni'); if (b) b.innerHTML = SC.zabava ? '<b>🧒</b><span>Dodaj osobu</span>' : '<b>📷</b><span>Dodaj lik</span>';
   const t = ui.alati && ui.alati.querySelector('button.tortab'); if (t) t.style.display = SC.zabava ? '' : 'none';
+  const s2 = ui.alati && ui.alati.querySelector('button.strojb'); if (s2) s2.style.display = SC.strojevi ? '' : 'none';
 }
 function crtajZabavaKartica(p) {
   p.setTransform(1, 0, 0, 1, 0, 0); const w = p.canvas.width, h = p.canvas.height;
@@ -2604,6 +2800,7 @@ async function dodajLikNaFarmu() {
   while (zivotinje.filter(a => a.crtez).length > MAKS_CRTEZA) { const i = zivotinje.findIndex(a => a.crtez); obrisi(zivotinje[i].id); zivotinje.splice(i, 1); }
   spremi(z); zvukPop(); konfeti(60, W * 0.5, H * 0.2); javi(z.vrsta === 'covjek' ? 'Stiže na farmu i hoda! Ili odaberi drugo kretanje.' : 'Novi stanovnik farme! Kako se kreće?');
   ui.izbor.querySelectorAll('button').forEach(b => b.classList.toggle('akt', b.dataset.v === z.vrsta));
+  if (SC.strojevi) { javi('Dodan! Odaberi ga za vozača 🚜'); setTimeout(() => otvoriStrojeve(), 1200); dl.slika = null; dl.gotov = null; dl.maskaZa = null; ui.likOcisti(); crtajIzrezLika(); nacrtajPretpregledLika(null); return z; }
   dl.slika = null; dl.gotov = null; dl.maskaZa = null; ui.likOcisti(); crtajIzrezLika(); nacrtajPretpregledLika(null);
   ui.izbor.classList.remove('skriven'); clearTimeout(ui.tIzbor); ui.tIzbor = setTimeout(() => ui.izbor.classList.add('skriven'), 15000);
   return z;
@@ -2901,6 +3098,354 @@ function otvoriUkrase(z) {
 }
 function zatvoriUkrase() { if (uk.rad) zaustaviSnimanje(); zaustaviZvukLika(); ui.ukrasi.classList.add('skriven'); if (uk.z) { spremiKasnije(uk.z); uk.z.tap = 0.6; } }
 
+// ---------- vožnja 5: poljoprivredni strojevi — tko vozi koji stroj i gdje radi ----------
+// Polja (pšenica, livada, oranica) mijenjaju se iza strojeva: kombajn žanje, roto kosi, balirka radi bale,
+// utovarivač ih slaže, plug ore, sijačica sije (niče), traktor s prikolicom vozi po cesti.
+const KLJUC_STROJ = 'vidov-poklon-niki-strojevi-v1';
+const ZONE = {
+  psenica: { y: 0.52, s: 0.56, naziv: '🌾 Pšenica' },
+  livada: { y: 0.675, s: 0.72, naziv: '🌿 Livada' },
+  oranica: { y: 0.83, s: 0.88, naziv: '🟫 Oranica' },
+  cesta: { y: 0.968, s: 1.0, naziv: '🛣️ Cesta' },
+};
+const RED_ZONA = ['psenica', 'livada', 'oranica', 'cesta'];
+const STROJEVI_ZADANO = [
+  { id: 'kombajn', naziv: 'Kombajn', ikona: '🌾', zona: 'psenica', vozac: 'una', boja: '#3fa34d', radi: true },
+  { id: 'roto', naziv: 'Traktor s roto kosilicom', ikona: '🌀', zona: 'livada', vozac: 'niko', boja: '#d62839', radi: true },
+  { id: 'balirka', naziv: 'Traktor s balirkom', ikona: '🟡', zona: 'livada', vozac: 'una', boja: '#2f8fd8', radi: true },
+  { id: 'utovarivac', naziv: 'Traktor s utovarivačem (vozi bale)', ikona: '🏗️', zona: 'livada', vozac: 'niko', boja: '#f2a516', radi: true },
+  { id: 'plug', naziv: 'Traktor s plugom', ikona: '⛏️', zona: 'oranica', vozac: 'una', boja: '#3fa34d', radi: true },
+  { id: 'sijacica', naziv: 'Traktor sa sijačicom', ikona: '🌱', zona: 'oranica', vozac: 'niko', boja: '#7f5af0', radi: true },
+  { id: 'prikolica', naziv: 'Traktor s prikolicom', ikona: '🚜', zona: 'cesta', vozac: 'una', boja: '#d62839', radi: true },
+];
+const STR = { lista: [], polje: null, bale: [], hrpa: 0, hrpaT: 0, ptice: [], gotov: {}, N: 96 };
+function ucitajStrojeve() {
+  let sp = []; try { sp = JSON.parse(localStorage.getItem(KLJUC_STROJ) || '[]'); } catch (e) { }
+  STR.lista = STROJEVI_ZADANO.map(d => { const s = sp.find(x => x.id === d.id) || {}; return { ...d, zona: s.zona || d.zona, vozac: s.vozac !== undefined ? s.vozac : d.vozac, radi: s.radi !== undefined ? s.radi : d.radi, x: 0, smjer: 1, okret: 0, kut: 0, faza: Math.random() * 10, tekstT: 0, tekst: '' }; });
+}
+function spremiStrojeve() { try { localStorage.setItem(KLJUC_STROJ, JSON.stringify(STR.lista.map(s => ({ id: s.id, zona: s.zona, vozac: s.vozac, radi: s.radi })))); } catch (e) { } }
+function resetPolja() {
+  const N = STR.N;
+  STR.polje = { psenica: new Float32Array(N).fill(1), livada: new Uint8Array(N), oranica: new Uint8Array(N), rast: new Float32Array(N), bal: 0 };
+  STR.bale = []; STR.hrpa = 0; STR.gotov = {};
+  STR.lista.forEach((s, i) => { s.x = W * (0.2 + 0.6 * ((i * 0.37) % 1)); s.smjer = i % 2 ? -1 : 1; s.okret = 0; s.stanje = ''; s.bala = null; s.dizanje = 0; s.spremnik = 0; s.istovar = 0; });
+}
+// geometrija zone: tlo (y), mjerilo (s), visina pojasa
+function zonaG(z) { const Z = ZONE[z]; return { y: H * Z.y, s: Z.s, k: Z.s * W / 2700, bh: H * 0.105 * Z.s }; }
+// ---- pozadina (statična): nebo, brda, daleka šuma i farma ----
+function gradiPolje() {
+  pozadina = platno(W, H); const p = pozadina.getContext('2d');
+  p.fillStyle = lin(p, 0, 0, 0, H * 0.45, [[0, '#7fd0ff'], [1, '#e6f7ff']]); p.fillRect(0, 0, W, H);
+  // sunce
+  p.fillStyle = grad(p, W * 0.12, H * 0.13, 0, W * 0.12, H * 0.13, H * 0.16, [[0, 'rgba(255,240,150,.9)'], [1, 'rgba(255,240,150,0)']]); p.fillRect(0, 0, W * 0.3, H * 0.35);
+  p.beginPath(); p.arc(W * 0.12, H * 0.13, H * 0.06, 0, TAU); p.fillStyle = '#ffd23f'; p.fill(); p.lineWidth = 4 * U; p.strokeStyle = OL; p.stroke();
+  // brda
+  for (const [y0, b, a] of [[0.36, '#a8d98f', 0.03], [0.41, '#8fcf73', 0.025]]) { p.beginPath(); p.moveTo(0, H); p.lineTo(0, H * y0); for (let x = 0; x <= W; x += W / 40) p.lineTo(x, H * (y0 - a * Math.sin(x / W * 6 + y0 * 20) - a * 0.6 * Math.sin(x / W * 13))); p.lineTo(W, H); p.closePath(); p.fillStyle = b; p.fill(); p.lineWidth = 3 * U; p.strokeStyle = 'rgba(43,45,47,.5)'; p.stroke(); }
+  // daleka šuma
+  for (let i = 0; i < 26; i++) { const x = W * (i / 25) + Math.sin(i * 3.1) * W * 0.01, y = H * (0.425 + Math.sin(i * 1.7) * 0.008), r = H * (0.022 + 0.01 * Math.abs(Math.sin(i * 2.3))); p.beginPath(); p.arc(x, y, r, 0, TAU); p.fillStyle = ['#4f9d4a', '#5fae55', '#3f8f45'][i % 3]; p.fill(); p.lineWidth = 2.5 * U; p.strokeStyle = 'rgba(43,45,47,.6)'; p.stroke(); }
+  // štala i silos u daljini
+  p.save(); p.translate(W * 0.82, H * 0.435); p.scale(U * 0.7, U * 0.7);
+  p.beginPath(); p.roundRect(-20, -150, 60, 150, 26); p.fillStyle = '#cfd8dc'; p.fill(); p.lineWidth = 5; p.strokeStyle = OL; p.stroke();
+  p.beginPath(); p.moveTo(40, 0); p.lineTo(40, -90); p.lineTo(105, -140); p.lineTo(170, -90); p.lineTo(170, 0); p.closePath(); p.fillStyle = '#d62839'; p.fill(); p.stroke();
+  p.beginPath(); p.rect(85, -60, 40, 60); p.fillStyle = '#fff'; p.fill(); p.stroke(); p.restore();
+  // travnata podloga ispod polja
+  p.fillStyle = lin(p, 0, H * 0.44, 0, H, [[0, '#8fd06f'], [1, '#5fae4a']]); p.fillRect(0, H * 0.445, W, H * 0.56);
+}
+// ---- pojasi polja (dinamični) ----
+function crtajPojas(zona) {
+  const G = zonaG(zona), N = STR.N, cw = W / N, y1 = G.y + G.bh * 0.12, y0 = G.y - G.bh, P = STR.polje;
+  g.save();
+  if (zona === 'cesta') { g.fillStyle = '#d8b98a'; g.fillRect(0, y0, W, y1 - y0); g.strokeStyle = 'rgba(120,85,50,.35)'; g.lineWidth = 3 * U; for (const f of [0.35, 0.7]) { g.beginPath(); g.moveTo(0, y0 + (y1 - y0) * f); g.lineTo(W, y0 + (y1 - y0) * f); g.stroke(); } g.restore(); return; }
+  for (let i = 0; i < N; i++) {
+    const x = i * cw;
+    if (zona === 'psenica') {
+      const h = P.psenica[i];
+      g.fillStyle = '#d8c27a'; g.fillRect(x, y0 + (y1 - y0) * 0.55, cw + 1, (y1 - y0) * 0.45);
+      g.fillStyle = h > 0.05 ? '#e9c46a' : '#d8c27a'; const top = y1 - (y1 - y0) * (0.25 + 0.75 * h); g.fillRect(x, top, cw + 1, y1 - top);
+      if (h > 0.05) { g.strokeStyle = '#c9a227'; g.lineWidth = 1.6 * U; for (let k = 0; k < 2; k++) { const sx = x + cw * (0.3 + 0.4 * k); g.beginPath(); g.moveTo(sx, y1); g.lineTo(sx, top + 2 * U); g.stroke(); g.beginPath(); g.ellipse(sx, top + 3 * U, 1.8 * U * G.s * 2, 4.5 * U * G.s * 2, 0, 0, TAU); g.fillStyle = '#f4d58d'; g.fill(); } }
+      else { g.strokeStyle = '#b89a50'; g.lineWidth = 1.2 * U; for (let k = 0; k < 3; k++) { const sx = x + cw * (0.2 + 0.3 * k); g.beginPath(); g.moveTo(sx, y1); g.lineTo(sx + 1, y1 - (y1 - y0) * 0.2); g.stroke(); } }
+    } else if (zona === 'livada') {
+      const st = P.livada[i];
+      g.fillStyle = st === 0 ? '#5fae4a' : st === 1 ? '#a7c957' : '#b9cf72'; g.fillRect(x, y0, cw + 1, y1 - y0);
+      if (st === 0) { g.strokeStyle = '#3f8f3f'; g.lineWidth = 1.5 * U; for (let k = 0; k < 3; k++) { const sx = x + cw * (0.15 + 0.35 * k), sy = y0 + (y1 - y0) * (0.3 + 0.25 * ((i + k) % 3)); g.beginPath(); g.moveTo(sx, sy + 6 * U); g.lineTo(sx + 2 * U, sy - 4 * U); g.stroke(); } }
+      if (st === 1) { g.fillStyle = '#d4b85a'; g.beginPath(); g.ellipse(x + cw / 2, y0 + (y1 - y0) * 0.62, cw * 0.75, (y1 - y0) * 0.13, 0, 0, TAU); g.fill(); }
+    } else if (zona === 'oranica') {
+      const st = P.oranica[i];
+      g.fillStyle = st === 0 ? '#c9c27a' : '#7a4a2a'; g.fillRect(x, y0, cw + 1, y1 - y0);
+      if (st >= 1) { g.strokeStyle = '#5c3820'; g.lineWidth = 2 * U; for (let k = 1; k < 4; k++) { const yy = y0 + (y1 - y0) * k / 4; g.beginPath(); g.moveTo(x, yy); g.lineTo(x + cw + 1, yy); g.stroke(); } }
+      if (st === 2) { const r = P.rast[i]; g.strokeStyle = '#3fa34d'; g.lineWidth = 2 * U; for (let k = 1; k < 4; k++) { const yy = y0 + (y1 - y0) * k / 4; for (const f of [0.3, 0.75]) { g.beginPath(); g.moveTo(x + cw * f, yy); g.lineTo(x + cw * f, yy - (2 + r * 10) * U * G.s); g.stroke(); } } }
+      if (st === 0) { g.strokeStyle = '#a89c55'; g.lineWidth = 1.2 * U; for (let k = 0; k < 3; k++) { const sx = x + cw * (0.2 + 0.3 * k); g.beginPath(); g.moveTo(sx, y1 - 2 * U); g.lineTo(sx + 1, y1 - (y1 - y0) * 0.25); g.stroke(); } }
+    }
+  }
+  g.strokeStyle = 'rgba(43,45,47,.35)'; g.lineWidth = 2.5 * U; g.beginPath(); g.moveTo(0, y0); g.lineTo(W, y0); g.stroke();
+  g.restore();
+}
+// ---- osnovni dijelovi ----
+function kotacS(p, x, y, r, kut, felga) {
+  p.save(); p.translate(x, y); p.beginPath(); p.arc(0, 0, r, 0, TAU); p.fillStyle = '#2b2d2f'; p.fill();
+  p.rotate(kut); p.fillStyle = '#4a4e52'; for (let i = 0; i < 12; i++) { p.save(); p.rotate(i / 12 * TAU); p.fillRect(r * 0.82, -r * 0.09, r * 0.2, r * 0.18); p.restore(); }
+  p.beginPath(); p.arc(0, 0, r * 0.58, 0, TAU); p.fillStyle = felga; p.fill(); p.lineWidth = r * 0.06; p.strokeStyle = OL; p.stroke();
+  for (let i = 0; i < 6; i++) { p.save(); p.rotate(i / 6 * TAU); p.beginPath(); p.arc(r * 0.35, 0, r * 0.06, 0, TAU); p.fillStyle = OL; p.fill(); p.restore(); }
+  p.beginPath(); p.arc(0, 0, r * 0.18, 0, TAU); p.fillStyle = '#ddd'; p.fill(); p.stroke(); p.restore();
+}
+const _glave = new WeakMap();
+function glavaSlike(c) { if (!c) return null; let gl = _glave.get(c); if (!gl || (gl.t && performance.now() - gl.t > 60000)) { gl = procijeniGlavu(c); _glave.set(c, gl); } return gl; }
+function vozacPodaci(v) {
+  if (v === 'una' || v === 'niko') { const c = LIKOVI[v]; return c ? { c, gl: glavaSlike(c), z: null } : null; }
+  const z = zivotinje.find(a => a.id === v); if (!z) return null;
+  return { c: z.slika, gl: (z.ukrasi && z.ukrasi.glava) || glavaSlike(z.slika), z };
+}
+// vozač u prozoru kabine (glava i ramena), s ukrasima i ustima koja se miču
+function crtajVozacaU(p, v, x, y, w, h) {
+  const d = vozacPodaci(v); p.save(); p.beginPath(); p.rect(x, y, w, h); p.clip();
+  p.fillStyle = '#b9e2f5'; p.fillRect(x, y, w, h);
+  if (d && d.c) { const R = h * 0.3, sc = R / (d.gl.r * d.c.height), iw = d.c.width * sc, ih = d.c.height * sc, tx = x + w * 0.5, ty = y + h * 0.4, ix = tx - d.gl.x * iw, iy = ty - d.gl.y * ih;
+    p.drawImage(d.c, ix, iy, iw, ih);
+    if (d.z && d.z.ukrasi) { p.save(); p.translate(ix + iw / 2, iy + ih); crtajUkrase(p, d.z, iw, ih, 'ispred'); p.restore(); } }
+  p.fillStyle = 'rgba(255,255,255,.22)'; p.beginPath(); p.moveTo(x, y); p.lineTo(x + w * 0.35, y); p.lineTo(x, y + h * 0.5); p.fill();
+  p.restore(); p.beginPath(); p.rect(x, y, w, h); p.lineWidth = 7; p.strokeStyle = OL; p.stroke();
+}
+// traktor (pogled sa strane, prednji kraj prema +x), tlo y = 0; vraća točke za priključke
+function traktorS(p, s, t) {
+  const B = s.boja, kut = s.kut;
+  // auspuh
+  p.beginPath(); p.roundRect(52, -205, 14, 90, 5); p.fillStyle = '#495057'; p.fill(); p.lineWidth = 6; p.strokeStyle = OL; p.stroke();
+  // kabina: vozač, okvir, krov
+  crtajVozacaU(p, s.vozac, -128, -226, 104, 108);
+  p.beginPath(); p.moveTo(-136, -118); p.lineTo(-136, -232); p.moveTo(-18, -118); p.lineTo(-18, -232); p.lineWidth = 12; p.strokeStyle = OL; p.stroke(); p.lineWidth = 6; p.strokeStyle = B; p.stroke();
+  p.beginPath(); p.roundRect(-150, -252, 146, 24, 10); p.fillStyle = B; p.fill(); p.lineWidth = 6; p.strokeStyle = OL; p.stroke();
+  // haube i trup
+  p.beginPath(); p.roundRect(-40, -128, 196, 76, 20); p.fillStyle = B; p.fill(); p.stroke();
+  p.beginPath(); p.moveTo(-26, -112); p.lineTo(140, -112); p.lineWidth = 7; p.strokeStyle = 'rgba(255,255,255,.35)'; p.stroke(); p.strokeStyle = OL; p.lineWidth = 6;
+  p.beginPath(); p.roundRect(146, -120, 16, 62, 6); p.fillStyle = '#343a40'; p.fill(); p.stroke();
+  for (let i = 0; i < 4; i++) { p.beginPath(); p.moveTo(149, -110 + i * 14); p.lineTo(159, -110 + i * 14); p.lineWidth = 3; p.strokeStyle = '#aaa'; p.stroke(); } p.lineWidth = 6; p.strokeStyle = OL;
+  p.beginPath(); p.arc(150, -132, 9, 0, TAU); p.fillStyle = '#fff3a0'; p.fill(); p.stroke();
+  p.beginPath(); p.roundRect(-140, -125, 128, 70, 12); p.fillStyle = B; p.fill(); p.stroke();
+  // blatobran i kotači
+  kotacS(p, 96, -38, 38, kut * 1.6, '#ffd23f');
+  kotacS(p, -72, -64, 64, kut, '#ffd23f');
+  p.beginPath(); p.arc(-72, -64, 76, Math.PI * 1.05, Math.PI * 1.95); p.lineWidth = 16; p.strokeStyle = OL; p.stroke(); p.lineWidth = 10; p.strokeStyle = B; p.stroke();
+  p.lineWidth = 6; p.strokeStyle = OL;
+}
+function bala(p, x, y, r, rot) { p.save(); p.translate(x, y); p.rotate(rot || 0); p.beginPath(); p.arc(0, 0, r, 0, TAU); p.fillStyle = '#e9c46a'; p.fill(); p.lineWidth = Math.max(3, r * 0.08); p.strokeStyle = OL; p.stroke(); p.beginPath(); for (let a = 0; a < 14; a += 0.3) { const rr = r * (0.1 + a / 16); p.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } p.strokeStyle = '#b8902e'; p.lineWidth = Math.max(2, r * 0.05); p.stroke(); p.restore(); }
+// ---- strojevi ----
+function crtajStroj(s, t) {
+  const G = zonaG(s.zona), k = G.k, okr = s.okret > 0 ? Math.sin(Math.min(1, s.okret / 1.2) * Math.PI) : 0, dig = s.okret > 0 ? 1 : 0;
+  g.save(); g.translate(s.x, G.y); g.scale(s.smjer * k, k);
+  // sjena
+  g.save(); g.globalAlpha = 0.18; g.fillStyle = '#000'; g.beginPath(); g.ellipse(-60, 2, s.id === 'kombajn' ? 300 : 260, 14, 0, 0, TAU); g.fill(); g.restore();
+  g.translate(0, Math.sin(s.faza * 2) * 2 * (s.miruje ? 0 : 1));
+  g.lineJoin = 'round'; g.lineCap = 'round';
+  if (s.id === 'kombajn') kombajnS(g, s, t);
+  else {
+    if (s.id === 'plug') plugS(g, s, dig);
+    if (s.id === 'sijacica') sijacicaS(g, s, dig, t);
+    if (s.id === 'roto') rotoS(g, s, dig, t);
+    if (s.id === 'balirka') balirkaS(g, s, t);
+    if (s.id === 'prikolica') prikolicaS(g, s);
+    traktorS(g, s, t);
+    if (s.id === 'utovarivac') utovarivacS(g, s);
+  }
+  g.restore();
+  // oblačić (bez zrcaljenja)
+  if (s.tekstT > 0) { const fs = Math.max(16 * U, 34 * U * G.s); g.save(); g.font = `bold ${fs}px "Comic Sans MS", sans-serif`; const tw = g.measureText(s.tekst).width + fs * 1.2, bx = Math.max(tw / 2, Math.min(W - tw / 2, s.x)), by = G.y - 300 * k - fs * 1.6;
+    g.beginPath(); g.roundRect(bx - tw / 2, by, tw, fs * 1.7, fs * 0.8); g.fillStyle = '#fff'; g.fill(); g.lineWidth = 3 * U; g.strokeStyle = OL; g.stroke(); g.fillStyle = OL; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(s.tekst, bx, by + fs * 0.88); g.restore(); }
+}
+function kuka(p) { p.beginPath(); p.moveTo(-140, -70); p.lineTo(-175, -55); p.lineTo(-175, -40); p.lineWidth = 10; p.strokeStyle = OL; p.stroke(); p.lineWidth = 6; }
+function plugS(p, s, dig) {
+  kuka(p); const dy = dig ? -45 : 0;
+  p.beginPath(); p.moveTo(-170, -60); p.lineTo(-340, -30 + dy); p.lineWidth = 16; p.strokeStyle = OL; p.stroke(); p.lineWidth = 10; p.strokeStyle = '#d62839'; p.stroke(); p.lineWidth = 6; p.strokeStyle = OL;
+  for (let i = 0; i < 3; i++) { const x = -210 - i * 55; p.beginPath(); p.moveTo(x + 12, -46 + i * 6 + dy); p.quadraticCurveTo(x + 18, -8 + dy, x - 6, 8 + dy); p.lineTo(x - 34, 6 + dy); p.quadraticCurveTo(x - 10, -12 + dy, x - 8, -42 + i * 6 + dy); p.closePath(); p.fillStyle = '#9aa5b1'; p.fill(); p.stroke(); }
+}
+function sijacicaS(p, s, dig, t) {
+  kuka(p); const dy = dig ? -25 : 0;
+  p.beginPath(); p.moveTo(-170, -55); p.lineTo(-190, -60); p.stroke();
+  p.beginPath(); p.moveTo(-190, -150 + dy); p.lineTo(-330, -150 + dy); p.lineTo(-310, -60 + dy); p.lineTo(-210, -60 + dy); p.closePath(); p.fillStyle = '#7f5af0'; p.fill(); p.stroke();
+  p.beginPath(); p.roundRect(-335, -165 + dy, 150, 18, 6); p.fillStyle = '#5a3cc8'; p.fill(); p.stroke();
+  for (let i = 0; i < 5; i++) { p.beginPath(); p.moveTo(-220 - i * 20, -60 + dy); p.lineTo(-225 - i * 20, -6 + dy); p.lineWidth = 4; p.stroke(); } p.lineWidth = 6;
+  kotacS(p, -260, -24, 24, s.kut * 2.5, '#ffd23f');
+  if (!dig && !s.miruje) for (let i = 0; i < 4; i++) { const f = (t * 0.004 + i / 4) % 1; p.beginPath(); p.arc(-225 - i * 20, -6 + f * 6, 3, 0, TAU); p.fillStyle = '#ffe08a'; p.fill(); }
+}
+function rotoS(p, s, dig, t) {
+  kuka(p); const dy = dig ? -40 : 0;
+  p.beginPath(); p.moveTo(-170, -55); p.lineTo(-200, -40 + dy); p.lineWidth = 12; p.stroke(); p.lineWidth = 6;
+  p.beginPath(); p.roundRect(-340, -50 + dy, 150, 42, 14); p.fillStyle = '#d62839'; p.fill(); p.stroke();
+  for (let i = 0; i < 3; i++) { const cx = -310 + i * 50; p.save(); p.translate(cx, -6 + dy); p.scale(1, 0.3); p.rotate(t * 0.03 + i); p.beginPath(); p.moveTo(-22, 0); p.lineTo(22, 0); p.moveTo(0, -22); p.lineTo(0, 22); p.lineWidth = 8; p.strokeStyle = '#ddd'; p.stroke(); p.restore(); }
+  p.strokeStyle = OL;
+}
+function balirkaS(p, s, t) {
+  kuka(p); p.beginPath(); p.moveTo(-175, -45); p.lineTo(-210, -45); p.lineWidth = 12; p.stroke(); p.lineWidth = 6;
+  const vr = s.vrata || 0;
+  p.beginPath(); p.roundRect(-380, -190, 175, 165, 40); p.fillStyle = '#2f8fd8'; p.fill(); p.stroke();
+  p.beginPath(); p.arc(-292, -108, 62, 0, TAU); p.fillStyle = '#1c5f9e'; p.fill(); p.stroke();
+  const pun = Math.min(1, (STR.polje ? STR.polje.bal : 0) / 14); if (pun > 0.05) bala(p, -292, -108, 56 * pun, t * 0.004);
+  // stražnja vrata (otvaraju se kad izbaci balu)
+  p.save(); p.translate(-300, -190); p.rotate(-vr * 1.1); p.beginPath(); p.roundRect(-82, 0, 100, 165, [40, 0, 0, 40]); p.fillStyle = '#2f8fd8'; p.fill(); p.stroke(); p.restore();
+  p.beginPath(); p.moveTo(-215, -18); p.lineTo(-180, -18); p.lineWidth = 8; p.strokeStyle = '#ddd'; p.stroke(); p.strokeStyle = OL; p.lineWidth = 6;
+  kotacS(p, -290, -26, 26, s.kut * 2, '#ffd23f');
+}
+function prikolicaS(p, s) {
+  kuka(p); p.beginPath(); p.moveTo(-175, -45); p.lineTo(-215, -45); p.lineWidth = 12; p.stroke(); p.lineWidth = 6;
+  for (const [bx, by] of [[-280, -130], [-350, -130], [-315, -200]]) bala(p, bx, by, 36, 0);
+  p.beginPath(); p.roundRect(-400, -100, 200, 40, 8); p.fillStyle = '#d62839'; p.fill(); p.stroke();
+  kotacS(p, -330, -32, 30, s.kut * 2, '#ffd23f'); kotacS(p, -260, -32, 30, s.kut * 2, '#ffd23f');
+}
+function utovarivacS(p, s) {
+  const a = -0.15 - (s.dizanje || 0) * 0.55;   // kut ruke
+  p.save(); p.translate(-20, -150); p.rotate(a);
+  p.beginPath(); p.moveTo(0, 0); p.lineTo(225, 40); p.lineWidth = 16; p.strokeStyle = OL; p.stroke(); p.lineWidth = 10; p.strokeStyle = '#f2a516'; p.stroke();
+  p.translate(225, 40); p.rotate(-a);
+  p.beginPath(); p.moveTo(0, -30); p.lineTo(0, 30); p.lineWidth = 10; p.strokeStyle = OL; p.stroke();
+  p.beginPath(); p.moveTo(0, 18); p.lineTo(70, 18); p.lineWidth = 6; p.stroke();
+  if (s.bala) bala(p, 50, -14, 42, 0);
+  p.restore(); p.lineWidth = 6; p.strokeStyle = OL;
+}
+function kombajnS(p, s, t) {
+  const B = s.boja;
+  // rotor (motovilo) i heder
+  p.beginPath(); p.roundRect(140, -78, 175, 62, 10); p.fillStyle = '#ffd23f'; p.fill(); p.lineWidth = 6; p.strokeStyle = OL; p.stroke();
+  for (let i = 0; i < 9; i++) { p.beginPath(); p.moveTo(150 + i * 18, -16); p.lineTo(158 + i * 18, -4); p.lineWidth = 4; p.stroke(); } p.lineWidth = 6;
+  p.save(); p.translate(230, -110); p.rotate(s.miruje ? 0 : -t * 0.004); for (let i = 0; i < 6; i++) { p.save(); p.rotate(i / 6 * TAU); p.beginPath(); p.moveTo(0, 0); p.lineTo(50, 0); p.lineWidth = 5; p.strokeStyle = OL; p.stroke(); p.beginPath(); p.moveTo(50, -12); p.lineTo(50, 12); p.lineWidth = 6; p.stroke(); p.restore(); } p.beginPath(); p.arc(0, 0, 9, 0, TAU); p.fillStyle = '#ddd'; p.fill(); p.stroke(); p.restore();
+  p.beginPath(); p.moveTo(130, -70); p.lineTo(230, -110); p.lineWidth = 8; p.stroke(); p.lineWidth = 6;
+  // tijelo
+  p.beginPath(); p.roundRect(-260, -270, 400, 205, 26); p.fillStyle = B; p.fill(); p.stroke();
+  p.beginPath(); p.moveTo(-245, -250); p.lineTo(120, -250); p.lineWidth = 8; p.strokeStyle = 'rgba(255,255,255,.35)'; p.stroke(); p.strokeStyle = OL; p.lineWidth = 6;
+  // spremnik žita
+  p.beginPath(); p.moveTo(-200, -270); p.lineTo(-180, -330); p.lineTo(-10, -330); p.lineTo(10, -270); p.closePath(); p.fillStyle = tamnija(B, 0.8); p.fill(); p.stroke();
+  const sp = s.spremnik || 0; if (sp > 0.05) { p.beginPath(); p.ellipse(-95, -330, 85 * Math.min(1, sp + 0.2), 26 * sp, 0, Math.PI, 0); p.fillStyle = '#f4d58d'; p.fill(); p.stroke(); }
+  // cijev za istovar
+  const ist = s.istovar > 0 ? 1 : 0; p.save(); p.translate(-150, -300); p.rotate(ist ? -0.35 : 0.05); p.beginPath(); p.roundRect(-10, -12, ist ? -230 : 230, 24, 10); p.fillStyle = B; p.fill(); p.stroke(); p.restore();
+  // kabina
+  crtajVozacaU(p, s.vozac, 30, -390, 110, 104);
+  p.beginPath(); p.roundRect(20, -405, 132, 22, 8); p.fillStyle = B; p.fill(); p.stroke();
+  p.beginPath(); p.moveTo(24, -284); p.lineTo(24, -390); p.moveTo(146, -284); p.lineTo(146, -390); p.lineWidth = 10; p.stroke(); p.lineWidth = 6;
+  // kotači
+  kotacS(p, 60, -78, 78, s.kut, '#ffd23f'); kotacS(p, -195, -46, 46, s.kut * 1.7, '#ffd23f');
+  p.beginPath(); p.arc(60, -78, 90, Math.PI * 1.05, Math.PI * 1.95); p.lineWidth = 14; p.strokeStyle = OL; p.stroke(); p.lineWidth = 8; p.strokeStyle = B; p.stroke(); p.strokeStyle = OL; p.lineWidth = 6;
+}
+// ---- kretanje i rad ----
+function celijeOd(x0, x1) { const cw = W / STR.N; return [Math.max(0, Math.floor(Math.min(x0, x1) / cw)), Math.min(STR.N - 1, Math.floor(Math.max(x0, x1) / cw))]; }
+function korakStrojeva(dt, t) {
+  const P = STR.polje;
+  for (const s of STR.lista) {
+    if (!s.radi) continue; const G = zonaG(s.zona), k = G.k, duz = s.id === 'kombajn' ? 330 : 250;
+    if (s.tekstT > 0) s.tekstT -= dt;
+    if (s.vrata > 0) s.vrata = Math.max(0, s.vrata - dt * 0.7);
+    if (s.istovar > 0) { s.istovar -= dt; s.spremnik = Math.max(0, s.spremnik - dt * 0.35); if (Math.random() < 0.6) cestice.push({ x: s.x - s.smjer * 380 * k, y: G.y - 280 * k, vx: -s.smjer * rnd(20, 60), vy: rnd(10, 60), r: rnd(3, 6) * U, t: 0, zivot: 1, boja: '#f4d58d', vrsta: 'p' }); s.miruje = true; continue; }
+    // utovarivač: traži balu, nosi je na hrpu
+    let v = (s.id === 'kombajn' ? 55 : s.id === 'prikolica' ? 95 : 70) * U * G.s * 1.2;
+    if (s.id === 'utovarivac') {
+      if (s.dizanje > 0 && s.dizanje < 1 && s.stanje === 'dize') { s.dizanje = Math.min(1, s.dizanje + dt * 1.2); s.miruje = true; if (s.dizanje >= 1) s.stanje = 'nosi'; continue; }
+      if (s.stanje === 'spusta') { s.dizanje = Math.max(0, s.dizanje - dt * 1.2); s.miruje = true; if (s.dizanje <= 0) s.stanje = ''; continue; }
+      const prednji = s.x + s.smjer * 290 * k;
+      if (s.stanje === 'nosi') { const cilj = W * 0.93; if (s.smjer < 0) { s.okret = s.okret || 0.01; } else if (prednji >= cilj - 20 * U) { s.bala.stanje = 'hrpa'; s.bala = null; STR.hrpa++; s.stanje = 'spusta'; zvukPop(); if (STR.hrpa >= 6) { STR.hrpaT = 4; konfeti(80, W * 0.93, G.y - H * 0.1); } continue; } }
+      else if (s.zona === 'livada') { const bale = STR.bale.filter(b => b.stanje === 'lezi'); if (bale.length) { let naj = null, d0 = 1e9; for (const b of bale) { const d = Math.abs(b.x - prednji); if (d < d0) { d0 = d; naj = b; } } const ispred = (naj.x - s.x) * s.smjer > 0;
+          if (!ispred && !s.okret) s.okret = 0.01; else if (Math.abs(naj.x - prednji) < 25 * U) { naj.stanje = 'nosi'; s.bala = naj; s.stanje = 'dize'; s.dizanje = 0.01; zvukBoing(); continue; } } }
+    }
+    if (s.okret > 0) { s.okret += dt; s.miruje = true; if (s.okret > 0.6 && !s.okrenut) { s.smjer *= -1; s.okrenut = true; } if (s.okret > 1.2) { s.okret = 0; s.okrenut = false; } continue; }
+    s.miruje = false; s.x += s.smjer * v * dt; s.kut += s.smjer * v * dt / (60 * k) ; s.faza += dt * 6;
+    const lijevo = duz * k * 0.6 + W * 0.02, desno = W - duz * k * 0.6 - W * 0.02;
+    if ((s.x > desno && s.smjer > 0) || (s.x < lijevo && s.smjer < 0)) { s.okret = 0.01; continue; }
+    // rad priključka
+    const alat = (off, sir) => celijeOd(s.x - s.smjer * off * k - sir * k / 2, s.x - s.smjer * off * k + sir * k / 2);
+    if (s.zona === 'psenica' && s.id === 'kombajn') { const [a, b] = celijeOd(s.x + s.smjer * 140 * k, s.x + s.smjer * 315 * k); let n = 0; for (let i = a; i <= b; i++) if (P.psenica[i] > 0.1) { P.psenica[i] = 0; n++; } if (n) { s.spremnik = Math.min(1, (s.spremnik || 0) + n * 0.012); if (Math.random() < 0.7) cestice.push({ x: s.x - s.smjer * 260 * k, y: G.y - 90 * k, vx: -s.smjer * rnd(30, 80), vy: rnd(-30, 10), r: rnd(3, 6) * U, t: 0, zivot: 1.2, boja: '#e9c46a', vrsta: 'p' }); } if (s.spremnik >= 1) { s.istovar = 3; s.tekst = 'Spremnik pun!'; s.tekstT = 2; } }
+    if (s.zona === 'livada' && s.id === 'roto') { const [a, b] = alat(265, 140); for (let i = a; i <= b; i++) if (P.livada[i] === 0) { P.livada[i] = 1; if (Math.random() < 0.3) cestice.push({ x: (i + 0.5) * W / STR.N, y: G.y - 10 * k, vx: rnd(-40, 40), vy: rnd(-60, -20), r: rnd(2, 4) * U, t: 0, zivot: 0.8, boja: '#7bc043', vrsta: 'p' }); } }
+    if (s.zona === 'livada' && s.id === 'balirka') { const [a, b] = alat(200, 40); for (let i = a; i <= b; i++) if (P.livada[i] === 1) { P.livada[i] = 2; P.bal++; } if (P.bal >= 14) { P.bal = 0; s.vrata = 1; STR.bale.push({ x: s.x - s.smjer * 400 * k, stanje: 'lezi', rot: 0, vx: -s.smjer * 60 * U * G.s }); zvukPop(); } }
+    if (s.zona === 'oranica' && s.id === 'plug') { const [a, b] = alat(270, 150); for (let i = a; i <= b; i++) if (P.oranica[i] === 0) P.oranica[i] = 1; }
+    if (s.zona === 'oranica' && s.id === 'sijacica') { const [a, b] = alat(260, 120); for (let i = a; i <= b; i++) if (P.oranica[i] === 1) { P.oranica[i] = 2; P.rast[i] = 0; } }
+  }
+  // bale se otkotrljaju malo nakon izbacivanja
+  for (const b of STR.bale) if (b.vx) { b.x += b.vx * dt; b.rot += b.vx * dt / (30 * U); b.vx *= Math.pow(0.15, dt); if (Math.abs(b.vx) < 3) b.vx = 0; }
+  if (STR.hrpaT > 0) { STR.hrpaT -= dt; if (STR.hrpaT <= 0) { STR.bale = STR.bale.filter(b => b.stanje !== 'hrpa'); STR.hrpa = 0; } }
+  // rast i obnova polja
+  for (let i = 0; i < STR.N; i++) if (P.oranica[i] === 2) P.rast[i] = Math.min(1, P.rast[i] + dt * 0.04);
+  obnovi('psenica', () => P.psenica.every(h => h < 0.1), () => { for (let i = 0; i < STR.N; i++) if (Math.random() < dt * 0.6) P.psenica[i] = Math.min(1, P.psenica[i] + 0.25); }, () => P.psenica.every(h => h >= 1));
+  obnovi('livada', () => P.livada.every(x => x > 0) && !STR.bale.some(b => b.stanje === 'lezi'), () => { for (let i = 0; i < STR.N; i++) if (Math.random() < dt * 0.5) P.livada[i] = 0; }, () => P.livada.every(x => x === 0));
+  obnovi('oranica', () => P.oranica.every((x, i) => x === 2 ? P.rast[i] >= 1 : false) || P.oranica.every(x => x > 0) && !STR.lista.some(s => s.radi && s.id === 'sijacica' && s.zona === 'oranica'), () => { for (let i = 0; i < STR.N; i++) if (Math.random() < dt * 0.5) P.oranica[i] = 0; }, () => P.oranica.every(x => x === 0));
+  // ptice za plugom
+  const plug = STR.lista.find(s => s.id === 'plug' && s.radi && s.zona === 'oranica');
+  if (plug) { while (STR.ptice.length < 3) STR.ptice.push({ x: plug.x, y: 0, f: Math.random() * 10 }); STR.ptice.forEach((b, i) => { const G = zonaG('oranica'), cx = plug.x - plug.smjer * (380 + i * 70) * G.k; b.x += (cx - b.x) * dt * 1.5; b.f += dt * 8; b.y = G.y - G.bh * 0.3 - Math.abs(Math.sin(b.f)) * 10 * U; }); } else STR.ptice.length = 0;
+}
+function obnovi(z, gotovo, raste, nazad) {
+  const st = STR.gotov[z] || (STR.gotov[z] = { t: 0, raste: false });
+  if (st.raste) { raste(); if (nazad()) { st.raste = false; st.t = 0; } return; }
+  if (gotovo()) { st.t += 1 / 60; if (st.t > 3) { st.raste = true; if (z === 'livada') STR.bale = STR.bale.filter(b => b.stanje !== 'lezi'); } } else st.t = 0;
+}
+function crtajStrojeve(dt, t) {
+  if (!STR.polje || STR.W !== W) { if (!STR.lista.length) ucitajStrojeve(); resetPolja(); STR.W = W; }
+  crtajOblake(dt);
+  korakStrojeva(dt, t);
+  for (const z of RED_ZONA) {
+    crtajPojas(z);
+    const G = zonaG(z);
+    if (z === 'livada') { for (const b of STR.bale) if (b.stanje === 'lezi') bala(g, b.x, G.y - 42 * G.k, 42 * G.k, b.rot);
+      // hrpa bala na kraju livade
+      for (let i = 0; i < STR.hrpa; i++) { const red = i < 3 ? 0 : i < 5 ? 1 : 2, uR = i < 3 ? i : i < 5 ? i - 3 : 0, nR = [3, 2, 1][red]; bala(g, W * 0.955 + (uR - (nR - 1) / 2) * 84 * G.k, G.y - 42 * G.k - red * 72 * G.k, 42 * G.k, 0); } }
+    for (const s of STR.lista) if (s.radi && s.zona === z) crtajStroj(s, t);
+    if (z === 'oranica') for (const b of STR.ptice) { g.save(); g.translate(b.x, b.y); g.scale(U * 1.2, U * 1.2); g.beginPath(); g.ellipse(0, 0, 10, 6, 0, 0, TAU); g.fillStyle = '#2b2d2f'; g.fill(); g.beginPath(); g.arc(8, -5, 4.5, 0, TAU); g.fill(); g.beginPath(); g.moveTo(12, -5); g.lineTo(18, -4); g.lineTo(12, -2); g.fillStyle = '#ffb703'; g.fill(); g.restore(); }
+  }
+  if (!STR.lista.some(s => s.radi) && (t % 8000) < 5000) { const fs = 28 * U; g.font = `bold ${fs}px "Comic Sans MS", sans-serif`; const tx = 'Odaberi strojeve: 🚜 Strojevi', tw = g.measureText(tx).width + fs * 1.4; g.beginPath(); g.roundRect(W / 2 - tw / 2, H * 0.2, tw, fs * 1.8, fs * 0.7); g.fillStyle = 'rgba(255,253,246,.95)'; g.fill(); g.lineWidth = 3 * U; g.strokeStyle = '#e9468f'; g.stroke(); g.fillStyle = '#4a3428'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(tx, W / 2, H * 0.2 + fs * 0.9); }
+}
+function strojeviDodir(x, y) {
+  let naj = null, d0 = 1e9;
+  for (const s of STR.lista) { if (!s.radi) continue; const G = zonaG(s.zona), w = 320 * G.k, h = 330 * G.k, cx = s.x - s.smjer * 60 * G.k; if (Math.abs(x - cx) < w && y < G.y + 10 * U && y > G.y - h) { const d = Math.abs(x - cx); if (d < d0) { d0 = d; naj = s; } } }
+  if (naj) { trubi(); const d = vozacPodaci(naj.vozac); let tekst = 'Brm, brm!';
+    if (d && d.z) { if (d.z.ukrasi && d.z.ukrasi.zvuk) pustiZvukLika(d.z); if (d.z.ukrasi && d.z.ukrasi.tekst) tekst = d.z.ukrasi.tekst; else if (d.z.natpis) tekst = 'Vozi ' + d.z.natpis + '!'; }
+    else if (naj.vozac === 'una' || naj.vozac === 'niko') tekst = (naj.vozac === 'una' ? 'Una' : 'Niko') + ' vozi!';
+    naj.tekst = tekst; naj.tekstT = 2.5; return true; }
+  if (y < H * 0.4) { pustiBalone(3); zvukPop(); return true; }
+  return false;
+}
+// ---- dijalog: koji stroj, tko vozi, gdje ----
+function opcijeVozaca() {
+  const o = [['una', 'Una (nacrtana)'], ['niko', 'Niko (nacrtan)']];
+  zivotinje.filter(z => z.crtez).forEach((z, i) => o.push([z.id, (z.natpis || ('Lik ' + (i + 1))) + (z.ukrasi && z.ukrasi.zvuk ? ' 🔊' : '')]));
+  return o;
+}
+function gradiDijalogStrojeva() {
+  document.head.appendChild(el('style', {}, `
+  #strojevi .karta { text-align:left; padding:2vmin 3vmin; max-width:min(96vw,1000px); }
+  #strojevi h1 { font-size:4.6vmin; text-align:center; margin:0 0 1vmin; }
+  #strojevi .red-s { display:flex; align-items:center; gap:1.4vmin; flex-wrap:wrap; padding:1vmin 0; border-bottom:.3vmin dashed #e6d6c4; }
+  #strojevi .ime-s { flex:1 1 30vmin; font-size:3.2vmin; font-weight:bold; display:flex; align-items:center; gap:1vmin; }
+  #strojevi .ime-s input { width:4.5vmin; height:4.5vmin; accent-color:#2e8b45; }
+  #strojevi select { font:inherit; font-size:3vmin; padding:.6vmin 1vmin; border-radius:1.6vmin; border:.35vmin solid #e9468f; background:#fff; max-width:42vmin; }
+  #strojevi canvas { width:9vmin; height:9vmin; border-radius:1.4vmin; background:#b9e2f5; }
+  #strojevi .napomena { font-size:2.5vmin; opacity:.78; }
+  `));
+  ui.strojevi = el('div', { className: 'ploha skriven', id: 'strojevi' }, `<div class="karta"><h1>🚜 Tko vozi što i gdje?</h1>
+    <p class="napomena">Za svaki stroj odaberi vozača i polje. Vozači su Una, Niko i svi likovi koje ste dodali (📷 Dodaj lik) — i fotografije, s ukrasima i zvukom.</p>
+    <div id="str-popis"></div>
+    <div class="gumbi-red"><button class="veliki" id="str-gotovo">Kreni ✔</button><button class="veliki sivi" id="str-polje">🔄 Novo polje</button></div></div>`);
+  document.body.appendChild(ui.strojevi);
+  ui.strojevi.querySelector('#str-gotovo').onclick = () => { ui.strojevi.classList.add('skriven'); spremiStrojeve(); zvukKonfeti(); };
+  ui.strojevi.querySelector('#str-polje').onclick = () => { resetPolja(); javi('Novo polje — sve iznova!'); };
+}
+function otvoriStrojeve() {
+  if (!ui.strojevi) gradiDijalogStrojeva(); if (!STR.lista.length) ucitajStrojeve();
+  const pop = ui.strojevi.querySelector('#str-popis'); pop.innerHTML = ''; const vozaci = opcijeVozaca();
+  for (const s of STR.lista) {
+    const r = el('div', { className: 'red-s' }), lab = el('label', { className: 'ime-s' }), cb = el('input', { type: 'checkbox', checked: s.radi });
+    lab.appendChild(cb); lab.appendChild(document.createTextNode(s.ikona + ' ' + s.naziv)); r.appendChild(lab);
+    const sv = el('select', { title: 'Vozač' }); for (const [v, n] of vozaci) sv.appendChild(el('option', { value: v, textContent: '🧑 ' + n })); sv.value = vozaci.some(x => x[0] === s.vozac) ? s.vozac : 'una';
+    const sz = el('select', { title: 'Gdje' }); for (const z of RED_ZONA) sz.appendChild(el('option', { value: z, textContent: ZONE[z].naziv })); sz.value = s.zona;
+    const sl = platno(90, 90); sl.width = 90; sl.height = 90;
+    const osvj = () => { const p = sl.getContext('2d'); p.clearRect(0, 0, 90, 90); crtajVozacaU(p, sv.value, 0, 0, 90, 90); };
+    cb.onchange = () => { s.radi = cb.checked; spremiStrojeve(); }; sv.onchange = () => { s.vozac = sv.value; osvj(); spremiStrojeve(); }; sz.onchange = () => { s.zona = sz.value; spremiStrojeve(); };
+    r.appendChild(sl); r.appendChild(sv); r.appendChild(sz); pop.appendChild(r); osvj();
+  }
+  ui.strojevi.classList.remove('skriven');
+}
+// kartica u izborniku vožnji
+function crtajStrojeviKartica(p) {
+  p.setTransform(1, 0, 0, 1, 0, 0); const w = p.canvas.width, h = p.canvas.height;
+  p.fillStyle = lin(p, 0, 0, 0, h, [[0, '#9fdcff'], [0.45, '#e6f7ff'], [0.46, '#e9c46a'], [0.7, '#d8c27a'], [0.71, '#7a4a2a'], [1, '#5c3820']]); p.fillRect(0, 0, w, h);
+  const U0 = U; U = 1; const sv = { boja: '#3fa34d', vozac: 'una', kut: 0, faza: 0 };
+  p.save(); p.translate(200, 290); p.scale(0.42, 0.42); kombajnS(p, { ...sv }, 0); p.restore();
+  p.save(); p.translate(470, 300); p.scale(-0.4, 0.4); plugS(p, sv, 0); traktorS(p, { ...sv, boja: '#d62839', vozac: 'niko' }, 0); p.restore();
+  U = U0;
+}
+
 TIPOVI.trokolica = { izlaz: [575, 790], oblacic: [-60, 70], rk: 93 };
 function crtajVozilo(p, st) { if (st.tip === 'trokolica') crtajTrokolicaLik(p, st); else crtajTraktorLik(p, st); }
 
@@ -2929,7 +3474,7 @@ function nacrtajKartice() {
     const gr = p.createLinearGradient(0, 0, 0, c.height); gr.addColorStop(0, s.nebo[0]); gr.addColorStop(0.7, s.nebo[1]); gr.addColorStop(0.7, '#7cc95b'); gr.addColorStop(1, '#4fa83d');
     p.fillStyle = gr; p.fillRect(0, 0, c.width, c.height);
     p.save(); p.translate(300, 315); p.scale(0.33, 0.33); p.translate(0, -TLO);
-    osvjeziLikove(performance.now() + 1e6); SLIKE.vid_sjedi = LIKOVI[s.vozac]; if (s.zabava) crtajZabavaKartica(p); else crtajVozilo(p, { tip: s.traktor, kut: 0, hauba: 0, t: 0, radi: false, skok: 0, putnik: s.putnik ? LIKOVI.putnik : null }); p.restore(); SLIKE.vid_sjedi = LIKOVI[SC.vozac];
+    osvjeziLikove(performance.now() + 1e6); SLIKE.vid_sjedi = LIKOVI[s.vozac]; if (s.zabava) crtajZabavaKartica(p); else if (s.strojevi) crtajStrojeviKartica(p); else crtajVozilo(p, { tip: s.traktor, kut: 0, hauba: 0, t: 0, radi: false, skok: 0, putnik: s.putnik ? LIKOVI.putnik : null }); p.restore(); SLIKE.vid_sjedi = LIKOVI[SC.vozac];
   }
 }
 function otvoriIzbornik(auto) {
@@ -2955,7 +3500,7 @@ addEventListener('keydown', e => {
   zvukPokreni();
   if (tipkaUredi(e)) return;
   const k = e.key.toLowerCase();
-  if (['1', '2', '3', '4'].includes(k)) { odaberiScenarij(+k); return; }
+  if (['1', '2', '3', '4', '5'].includes(k)) { odaberiScenarij(+k); return; }
   if (!izbornik.classList.contains('skriven')) { return; }
   if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); uslikaj(); }
   else if (k === 'i' || k === 'escape') otvoriIzbornik(false);
@@ -2984,6 +3529,7 @@ function petlja(t) {
   g.drawImage(pozadina, 0, 0);
   osvjeziLikove(t); SLIKE.vid_sjedi = LIKOVI[SC.vozac || 'una'];
   if (SC.zabava) { crtajOblake(dt); crtajAvion(dt, t); crtajZabavu(dt, t); crtajCestice(dt); crtajBalone(dt, t); crtajKonfete(dt); requestAnimationFrame(petlja); return; }
+  if (SC.strojevi) { crtajStrojeve(dt, t); crtajCestice(dt); crtajAvion(dt, t); crtajBalone(dt, t); crtajKonfete(dt); requestAnimationFrame(petlja); return; }
   crtajSunce(t); crtajOblake(dt); crtajAvion(dt, t);
   for (const z of zivotinje) z.korak(dt);
   korakTraktora(dt);
@@ -3012,12 +3558,13 @@ function petlja(t) {
   const post = citajPostavke();
   if (post.glasnoca !== undefined) glazba.glasnoca = post.glasnoca; if (post.glazba === false) glazba.ukljucena = false;
   const izUrl = +new URLSearchParams(location.search).get('scenarij');
-  brojScenarija = [1, 2, 3, 4].includes(izUrl) ? izUrl : (post.scenarij || 1); SC = SCENARIJI[brojScenarija];
+  brojScenarija = [1, 2, 3, 4, 5].includes(izUrl) ? izUrl : (post.scenarij || 1); SC = SCENARIJI[brojScenarija];
   velicina();
   gradiSucelje(); osvjeziLikove(0);
   await Promise.all(['svinja', 'koka', 'pile1', 'pile2', 'pile3', 'patka'].map(ucitaj));
   traktor.s = 0;
-  ucitajCrteze(); ucitajGoste();
+  ucitajCrteze(); ucitajGoste(); primijeniProslavu();
+  { const otv = sessionStorage.getItem('vidov-poklon-niki-otvoreno'); sessionStorage.removeItem('vidov-poklon-niki-otvoreno'); if (otv === 'nova') setTimeout(() => otvoriProslavu(), 600); else if (otv) setTimeout(() => javi('Otvorena proslava: ' + PROSLAVA.naslov), 900); }
   addEventListener('pointerdown', dodir);
   setInterval(() => { if (!ui.posveta.classList.contains('skriven')) nacrtajPosvetu(); }, 60); setTimeout(() => pustiBalone(10), 800);
   requestAnimationFrame(petlja);
