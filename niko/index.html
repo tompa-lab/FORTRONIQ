@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="only light">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rođendan">
+<meta name="application-name" content="Rođendan">
 <meta property="og:title" content="Vidov poklon Niki 🎁">
 <meta property="og:description" content="Sretan 1. rođendan, Niko! Farma, džungla i rođendanska zabava za Unu i Niku.">
 <meta property="og:image" content="https://dos.fortroniq.hr/niko/pregled.png">
@@ -1828,6 +1834,18 @@ function gradiSucelje() {
   #izbor button.ukr { background:linear-gradient(#ff8fb1,#e9468f); color:#fff; }
   #izbor button { font:inherit; font-size:3.4vmin; border:0; border-radius:3vmin; padding:1.2vmin 2.2vmin; background:#fffaf0; color:#3d2c22; cursor:pointer; }
   #kamera, #pomoc, #gumb-uredi { display:none !important; }
+  #alati { right:calc(1.2vmin + env(safe-area-inset-right)); bottom:calc(1.2vmin + env(safe-area-inset-bottom)); }
+  #izbornik:not(.skriven) ~ #alati { display:none; }
+  #izbornik { overflow-y:auto; justify-content:safe center; padding:2vh 0; box-sizing:border-box; }
+  .kartica { width:18.2vw !important; padding:1.6vh 1.2vw 2.2vh !important; }
+  .kartica h2 { font-size:3.2vh !important; } .kartica p { font-size:2.2vh !important; }
+  #izbornik .kartice { gap:1.2vw !important; flex-wrap:nowrap !important; }
+  @media (orientation: portrait) { #izbornik .kartice { flex-wrap:wrap !important; } .kartica { width:44vw !important; } }
+  body.samostalno #alati button.cijeli { display:none; }
+  #pocetni .koraci li { margin:.5em 0; }
+  :root { color-scheme: only light; }
+  #izbornik h1 { font-size:min(7vh, 5vw) !important; }
+  @media (max-height: 520px) and (orientation: landscape) { #izbornik { gap:2vh !important; } .kartica .broj { font-size:3.4vh !important; margin-bottom:.5vh !important; } }
   #uredi { z-index:26; bottom:1.5vmin !important; }
   body.uredi-otvoren #alati, body.uredi-otvoren #izbor { display:none; }
   #uredi h3 { display:flex; align-items:center; gap:1.2vmin; flex-wrap:wrap; }
@@ -1843,10 +1861,11 @@ function gradiSucelje() {
   const alati = el('div', { id: 'alati' });
   const gumbi = [
     ['📷', 'Dodaj lik', () => uslikaj(), 'glavni'], ['🎉', 'Slavlje', () => slavi()], ['🎵', 'Glazba', () => { glazba.ukljucena = !glazba.ukljucena; if (glazba.glavni) glazba.glavni.gain.value = glazba.ukljucena ? glazba.glasnoca : 0; javi(glazba.ukljucena ? 'Glazba svira' : 'Glazba utišana'); }],
-    ['🎂', 'Torta', () => otvoriGoste('torta'), 'tortab'], ['🚜', 'Strojevi', () => otvoriStrojeve(), 'strojb'], ['🎨', 'Tema i natpis', () => otvoriTemu()], ['🗺️', 'Vožnje', () => otvoriIzbornik(false)], ['🎈', 'Proslava', () => otvoriProslavu()], ['✎', 'Uredi', () => otvoriUredi()], ['⛶', 'Cijeli ekran', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => { }); else document.exitFullscreen(); }], ['❓', 'Upute', () => prikaziUpute(true)],
+    ['🎂', 'Torta', () => otvoriGoste('torta'), 'tortab'], ['🚜', 'Strojevi', () => otvoriStrojeve(), 'strojb'], ['🎨', 'Tema i natpis', () => otvoriTemu()], ['🗺️', 'Vožnje', () => otvoriIzbornik(false)], ['🎈', 'Proslava', () => otvoriProslavu()], ['✎', 'Uredi', () => otvoriUredi()], ['⛶', 'Cijeli ekran', () => cijeliEkran(), 'cijeli'], ['❓', 'Upute', () => prikaziUpute(true)],
   ];
   for (const [ik, nat, fn, kl] of gumbi) { const b = el('button', { className: kl || '', title: nat }, `<b>${ik}</b><span>${nat}</span>`); b.onclick = e => { e.stopPropagation(); zvukPokreni(); fn(); }; alati.appendChild(b); }
   document.body.appendChild(alati); ui.alati = alati;
+  if (uSamostalnom()) document.body.classList.add('samostalno');
   // panel Uredi: zatvaranje i veličina odabranog lika
   const uz = document.getElementById('uredi-zatvori'); if (uz) uz.onclick = e => { e.stopPropagation(); otvoriUredi(false); };
   const velLika = f => { const z = crteziPopis()[ured.odabran]; if (!z) { javi('Prvo odaberi lik.'); return; } z.vel = Math.max(0.07, Math.min(0.5, z.vel * f)); spremi(z); zvukPop(); };
@@ -2002,6 +2021,34 @@ function dodir(e) {
   if (najbolji) { najbolji.tap = 0.6; if (najbolji.ukrasi && najbolji.ukrasi.zvuk) pustiZvukLika(najbolji); else zvukZivotinje(najbolji); for (let k = 0; k < 6; k++) iskrica(najbolji.x + rnd(-30, 30) * U, najbolji.y - najbolji.visina() * rnd(0.3, 1)); return; }
   if (Math.abs(x - traktor.x) < 500 * traktor.k && y > traktor.y - 900 * traktor.k && y < traktor.y + 40 * U) { trubi(); reci(SC.dzungla ? cestitka() : 'Tut-tut!', 2.2); return; }
   if (y < H * 0.35) { pustiBalone(3); zvukPop(); }
+}
+
+// ---------- cijeli ekran: na iPhoneu preglednik to ne dopušta (samo videu) — zato "Dodaj na početni zaslon" ----------
+function uSamostalnom() { return !!(navigator.standalone || (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches))); }
+function cijeliEkran() {
+  const d = document, e = d.documentElement, moze = d.fullscreenEnabled || d.webkitFullscreenEnabled;
+  if (moze) {
+    if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+    else { const r = (e.requestFullscreen || e.webkitRequestFullscreen).call(e); if (r && r.catch) r.catch(() => uputePocetniZaslon()); }
+    return;
+  }
+  uputePocetniZaslon();
+}
+function uputePocetniZaslon() {
+  const ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1), chromeIos = /CriOS/.test(ua), android = /Android/.test(ua);
+  if (!ui.pocetni) { ui.pocetni = el('div', { className: 'ploha skriven', id: 'pocetni' }); document.body.appendChild(ui.pocetni); ui.pocetni.onclick = e => { if (e.target === ui.pocetni || e.target.closest('.zatvori')) ui.pocetni.classList.add('skriven'); }; }
+  const koraci = ios ? (chromeIos
+      ? '<li>Gore desno u traci adrese dodirnite <b>Dijeli</b> (kvadrat sa strelicom ⬆️).</li><li>Odaberite <b>Dodaj na početni zaslon</b> (možda treba malo pomaknuti popis prema dolje).</li><li>Dodirnite <b>Dodaj</b>.</li>'
+      : '<li>Dodirnite <b>Dijeli</b> (kvadrat sa strelicom ⬆️) — dolje na sredini ili gore uz adresu.</li><li>Pomaknite popis i odaberite <b>Dodaj na početni zaslon</b>.</li><li>Dodirnite <b>Dodaj</b>.</li>')
+    : android ? '<li>Dodirnite <b>⋮</b> gore desno.</li><li>Odaberite <b>Dodaj na početni zaslon</b> ili <b>Instaliraj aplikaciju</b>.</li>'
+    : '<li>U izborniku preglednika odaberite <b>Instaliraj</b> ili <b>Dodaj na početni zaslon</b>, ili pritisnite <b>F11</b>.</li>';
+  ui.pocetni.innerHTML = `<div class="karta"><h1>⛶ Preko cijelog ekrana</h1>
+    <p>${ios ? 'Na iPhoneu preglednik (Safari i Chrome) ne dopušta stranici da sama ode preko cijelog ekrana — to Apple dopušta samo videu.' : 'Ovaj preglednik ne dopušta prikaz preko cijelog ekrana.'} Rješenje je ikona na početnom zaslonu: otvara se kao prava aplikacija, bez trake s adresom.</p>
+    <ol class="koraci">${koraci}</ol>
+    <p>Zatim otvarajte igru s nove ikone <b>Rođendan</b> na početnom zaslonu. Mobitel okrenite položeno.</p>
+    <p class="napomena" style="font-size:2.6vmin;opacity:.8">Dobro je i zato što iPhone ne briše spremljene likove i goste aplikacije s početnog zaslona.</p>
+    <div class="gumbi-red"><button class="veliki zatvori">U redu ✔</button></div></div>`;
+  ui.pocetni.classList.remove('skriven');
 }
 
 // ---------- Rođendanska zabava v2: do 50 osoba, obitelj za stolom uz slavljenike, ostali na tribinama; mamina torta; teme; vlastiti natpis ----------
