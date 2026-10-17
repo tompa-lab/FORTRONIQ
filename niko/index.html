@@ -1696,7 +1696,7 @@ function gradiSucelje() {
     <li>Krivi ili prevelik lik: <b>✎ Uredi</b>, dodirnite sličicu, pa ✕ (makni) ili <b>− Manji</b> / <b>+ Veći</b>. <b>Zatvori ✔</b> vraća gumbe.</li></ul>
     <h2>🎈 Rođendanska zabava — svi gosti za stolom</h2>
     <ul><li>U <b>🚜 Vožnje</b> odaberite <b>Rođendanska zabava</b>: Una i Niko sjede za stolom s tortom, u džungli kao na pozivnici.</li>
-    <li><b>🧒 Dodaj osobu</b>: uslikajte osobu ili odaberite fotografiju iz galerije. Prstom pomaknite sliku da lice bude u krugu, s dva prsta (ili klizačem) povećajte. Odaberite izgled 🎨 Crtani ili 📷 Realno, upišite ime i <b>Dodaj na zabavu</b>.</li>
+    <li><b>🧒 Dodaj osobu</b>: <b>📷 Uslikaj</b> otvara kameru izravno (ili dodirnite prazan okvir), <b>🖼️ Iz galerije</b> uzima spremljenu fotografiju. Prstom pomaknite sliku da lice bude u krugu, s dva prsta (ili klizačem) povećajte. Odaberite izgled 🎨 Crtani ili 📷 Realno, upišite ime i <b>Dodaj na zabavu</b>.</li>
     <li>Odaberite <b>Obitelj</b> za braću, sestre, roditelje, bake i djedove — sjedaju za stol uz slavljenike. <b>Gosti</b> popunjavaju stol, a kad se popuni, sjedaju na tribine u redovima iznad stola. Za odrasle stavite kvačicu <b>Odrasla osoba</b>. Stane do 50 osoba.</li>
     <li><b>🎂 Torta</b>: uslikajte maminu tortu i ona dolazi na stol, sa svjećicom. Dodir torte ugasi svjećicu uz konfete i pjesmu.</li>
     <li><b>🎨 Tema i natpis</b>: džungla, livada s ovčicama, podmorje, svemir ili vlastita fotografija za pozadinu; upišite svoj natpis za zastavice i za avion.</li>
@@ -2156,7 +2156,7 @@ function gradiDijalogGosta() {
       <div><canvas id="izrez" width="480" height="480"></canvas>
         <p class="napomena">Pomakni sliku prstom. Dva prsta ili klizač: povećaj ili smanji.</p></div>
       <div class="kontrole">
-        <button class="veliki" id="gost-foto">📷 Uslikaj ili odaberi iz galerije</button>
+        <div class="gumbi-red" style="justify-content:flex-start;margin-top:0"><button class="veliki" id="gost-kamera">📷 Uslikaj</button><button class="veliki" id="gost-foto">🖼️ Iz galerije</button></div>
         <label for="gost-zoom">Povećanje</label><input type="range" id="gost-zoom" min="0.15" max="1" step="0.01" value="0.6">
         <div class="samo-osoba"><label for="gost-ime">Ime</label><input type="text" id="gost-ime" maxlength="16" placeholder="npr. Lana" autocomplete="off"></div>
         <div class="izbor2 samo-osoba">
@@ -2181,6 +2181,8 @@ function gradiDijalogGosta() {
   </div>`);
   document.body.appendChild(ui.gost);
   ui.gostUlaz = el('input', { type: 'file', accept: 'image/*' }); ui.gostUlaz.style.display = 'none'; document.body.appendChild(ui.gostUlaz);
+  // kamera izravno iz aplikacije (bez izlaska u galeriju)
+  ui.gostKamera = el('input', { type: 'file', accept: 'image/*' }); ui.gostKamera.setAttribute('capture', 'environment'); ui.gostKamera.style.display = 'none'; document.body.appendChild(ui.gostKamera);
   const q = s2 => ui.gost.querySelector(s2), cv = q('#izrez'), zoom = q('#gost-zoom');
   const postaviNacin = nac => { izr.nacin = nac; q('#g-tab-osoba').classList.toggle('akt', nac === 'osoba'); q('#g-tab-torta').classList.toggle('akt', nac === 'torta');
     ui.gost.querySelectorAll('.samo-osoba').forEach(e => e.hidden = nac !== 'osoba'); q('#torta-vrati').hidden = nac !== 'torta' || !zab.torta;
@@ -2188,8 +2190,11 @@ function gradiDijalogGosta() {
   ui.postaviNacin = postaviNacin;
   ui.gost.querySelectorAll('input[name=g-izgled]').forEach(r => r.onchange = () => { izr.izgled = r.value; pretpregledGosta(); });
   q('#g-tab-osoba').onclick = () => postaviNacin('osoba'); q('#g-tab-torta').onclick = () => postaviNacin('torta');
-  q('#gost-foto').onclick = () => ui.gostUlaz.click();
-  ui.gostUlaz.onchange = () => { const f = ui.gostUlaz.files && ui.gostUlaz.files[0]; ui.gostUlaz.value = ''; if (!f) return; const im = new Image(), url = URL.createObjectURL(f);
+  q('#gost-foto').onclick = () => ui.gostUlaz.click(); q('#gost-kamera').onclick = () => ui.gostKamera.click();
+  cv.addEventListener('click', () => { if (!izr.slika) ui.gostKamera.click(); });
+  ui.gostKamera.onchange = () => { const f = ui.gostKamera.files && ui.gostKamera.files[0]; ui.gostKamera.value = ''; if (f) ucitajGosta(f); };
+  ui.gostUlaz.onchange = () => { const f = ui.gostUlaz.files && ui.gostUlaz.files[0]; ui.gostUlaz.value = ''; if (f) ucitajGosta(f); };
+  const ucitajGosta = f => { const im = new Image(), url = URL.createObjectURL(f);
     im.onload = () => { const k = Math.min(1, 1400 / Math.max(im.width, im.height)), c = platno(im.width * k, im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
       izr.slika = c; izr.slikaBez = null; const m = Math.min(c.width, c.height); zoom.value = 0.6; izr.vel = m * 0.6; izr.x = c.width / 2; izr.y = c.height * (izr.nacin === 'osoba' ? 0.4 : 0.5); crtajIzrez(true);
       if (izr.nacin === 'osoba' && q('#gost-pozadina').checked) pripremiBezPozadine(c); };
@@ -2225,7 +2230,7 @@ function gradiDijalogGosta() {
 function crtajIzrez(sPretpregledom) {
   const cv = ui.gost.querySelector('#izrez'), p = cv.getContext('2d'), N2 = cv.width;
   p.fillStyle = '#eadfce'; p.fillRect(0, 0, N2, N2);
-  if (!izr.slika) { p.fillStyle = '#8a6b5a'; p.font = 'bold 30px "Comic Sans MS", sans-serif'; p.textAlign = 'center'; p.fillText('Ovdje dolazi', N2 / 2, N2 / 2 - 20); p.fillText(izr.nacin === 'osoba' ? 'fotografija' : 'fotografija torte', N2 / 2, N2 / 2 + 22); return; }
+  if (!izr.slika) { p.fillStyle = '#8a6b5a'; p.font = 'bold 30px "Comic Sans MS", sans-serif'; p.textAlign = 'center'; p.font = '90px sans-serif'; p.fillText('📷', N2 / 2, N2 / 2 - 50); p.font = 'bold 30px "Comic Sans MS", sans-serif'; p.fillText('Dodirni za kameru', N2 / 2, N2 / 2 + 30); p.font = '24px "Comic Sans MS", sans-serif'; p.fillText(izr.nacin === 'osoba' ? 'ili 🖼️ Iz galerije' : 'ili 🖼️ Iz galerije (torta)', N2 / 2, N2 / 2 + 70); return; p.fillText(izr.nacin === 'osoba' ? 'fotografija' : 'fotografija torte', N2 / 2, N2 / 2 + 22); return; }
   // ograniči pomak da krug uvijek ima sliku
   const h = izr.vel / 2; izr.x = Math.max(h * 0.2, Math.min(izr.slika.width - h * 0.2, izr.x)); izr.y = Math.max(h * 0.2, Math.min(izr.slika.height - h * 0.2, izr.y));
   const k = N2 * 0.8 / izr.vel; p.save(); p.translate(N2 / 2, N2 / 2); p.scale(k, k); p.drawImage(izvorIzreza(), -izr.x, -izr.y); p.restore();
@@ -2487,7 +2492,7 @@ function gradiDijalogLika() {
   const kraj = e => { dl.prsti.delete(e.pointerId); if (!dl.prsti.size) pretpregledLika(); };
   cv.addEventListener('pointerup', kraj); cv.addEventListener('pointercancel', kraj);
   cv.addEventListener('wheel', e => { if (!dl.slika) return; e.preventDefault(); zoom.value = Math.max(0.1, Math.min(1, +zoom.value + (e.deltaY > 0 ? 0.03 : -0.03))); zoom.oninput(); }, { passive: false });
-  cv.addEventListener('click', () => { if (!dl.slika) ulazG.click(); });
+  cv.addEventListener('click', () => { if (!dl.slika) ulazK.click(); });
   q('#lik-dodaj').onclick = () => dodajLikNaFarmu();
   q('#lik-zatvori').onclick = () => ui.lik.classList.add('skriven');
   ui.likOznaci(); crtajIzrezLika();
@@ -2505,7 +2510,7 @@ function ucitajSlikuLika(f, sKamere) {
 function crtajIzrezLika() {
   const cv = ui.lik.querySelector('#lik-izrez'), p = cv.getContext('2d'), N2 = cv.width, ok = N2 * 0.84;
   p.fillStyle = '#eadfce'; p.fillRect(0, 0, N2, N2);
-  if (!dl.slika) { p.fillStyle = '#8a6b5a'; p.font = 'bold 30px "Comic Sans MS", sans-serif'; p.textAlign = 'center'; p.fillText('📷 Uslikaj ili', N2 / 2, N2 / 2 - 20); p.fillText('🖼️ odaberi sliku', N2 / 2, N2 / 2 + 24); return; }
+  if (!dl.slika) { p.fillStyle = '#8a6b5a'; p.font = 'bold 30px "Comic Sans MS", sans-serif'; p.textAlign = 'center'; p.font = '90px sans-serif'; p.fillText('📷', N2 / 2, N2 / 2 - 50); p.font = 'bold 30px "Comic Sans MS", sans-serif'; p.fillText('Dodirni za kameru', N2 / 2, N2 / 2 + 30); p.font = '24px "Comic Sans MS", sans-serif'; p.fillText('ili 🖼️ Iz galerije', N2 / 2, N2 / 2 + 70); return; }
   const h = dl.vel / 2; dl.x = Math.max(-h * 0.6, Math.min(dl.slika.width + h * 0.6, dl.x)); dl.y = Math.max(-h * 0.6, Math.min(dl.slika.height + h * 0.6, dl.y));
   const k = ok / dl.vel; p.save(); p.translate(N2 / 2, N2 / 2); p.scale(k, k); p.drawImage(dl.slika, -dl.x, -dl.y); p.restore();
   const o0 = (N2 - ok) / 2; p.save(); p.fillStyle = 'rgba(40,30,25,.55)'; p.beginPath(); p.rect(0, 0, N2, N2); p.roundRect(o0, o0, ok, ok, 18); p.fill('evenodd'); p.restore();
