@@ -1842,7 +1842,12 @@ function gradiSucelje() {
   #izbornik .kartice { gap:1.2vw !important; flex-wrap:nowrap !important; }
   @media (orientation: portrait) { #izbornik .kartice { flex-wrap:wrap !important; } .kartica { width:44vw !important; } }
   body.samostalno #alati button.cijeli { display:none; }
-  #pocetni .koraci li { margin:.5em 0; }
+  #pocetni .koraci li { margin:.25em 0; }
+  #pocetni .karta.mala { position:relative; padding:2vmin 4vmin 2vmin; max-height:92vh; }
+  #pocetni .karta.mala h1 { font-size:min(6vmin,30px); margin:.1em 0 .3em; }
+  #pocetni .karta.mala p, #pocetni .karta.mala li { font-size:min(3.6vmin,17px); line-height:1.35; margin:.3em 0; }
+  #pocetni .karta.mala .gumbi-red { margin-top:1vmin; } #pocetni .karta.mala .veliki { font-size:min(4.2vmin,20px); padding:1vmin 3vmin; }
+  #pocetni .x { position:absolute; top:1vmin; right:1.5vmin; width:min(9vmin,44px); height:min(9vmin,44px); border-radius:50%; border:0; background:#e9468f; color:#fff; font-size:min(5vmin,22px); cursor:pointer; }
   :root { color-scheme: only light; }
   #izbornik h1 { font-size:min(7vh, 5vw) !important; }
   @media (max-height: 520px) and (orientation: landscape) { #izbornik { gap:2vh !important; } .kartica .broj { font-size:3.4vh !important; margin-bottom:.5vh !important; } }
@@ -2038,15 +2043,14 @@ function uputePocetniZaslon() {
   const ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1), chromeIos = /CriOS/.test(ua), android = /Android/.test(ua);
   if (!ui.pocetni) { ui.pocetni = el('div', { className: 'ploha skriven', id: 'pocetni' }); document.body.appendChild(ui.pocetni); ui.pocetni.onclick = e => { if (e.target === ui.pocetni || e.target.closest('.zatvori')) ui.pocetni.classList.add('skriven'); }; }
   const koraci = ios ? (chromeIos
-      ? '<li>Gore desno u traci adrese dodirnite <b>Dijeli</b> (kvadrat sa strelicom ⬆️).</li><li>Odaberite <b>Dodaj na početni zaslon</b> (možda treba malo pomaknuti popis prema dolje).</li><li>Dodirnite <b>Dodaj</b>.</li>'
-      : '<li>Dodirnite <b>Dijeli</b> (kvadrat sa strelicom ⬆️) — dolje na sredini ili gore uz adresu.</li><li>Pomaknite popis i odaberite <b>Dodaj na početni zaslon</b>.</li><li>Dodirnite <b>Dodaj</b>.</li>')
+      ? '<li>Gore desno dodirnite <b>Dijeli</b> (kvadrat sa strelicom ⬆️).</li><li><b>Dodaj na početni zaslon</b> (pomaknite popis dolje) → <b>Dodaj</b>.</li>'
+      : '<li>Dodirnite <b>Dijeli</b> (kvadrat sa strelicom ⬆️).</li><li><b>Dodaj na početni zaslon</b> (pomaknite popis dolje) → <b>Dodaj</b>.</li>')
     : android ? '<li>Dodirnite <b>⋮</b> gore desno.</li><li>Odaberite <b>Dodaj na početni zaslon</b> ili <b>Instaliraj aplikaciju</b>.</li>'
     : '<li>U izborniku preglednika odaberite <b>Instaliraj</b> ili <b>Dodaj na početni zaslon</b>, ili pritisnite <b>F11</b>.</li>';
-  ui.pocetni.innerHTML = `<div class="karta"><h1>⛶ Preko cijelog ekrana</h1>
-    <p>${ios ? 'Na iPhoneu preglednik (Safari i Chrome) ne dopušta stranici da sama ode preko cijelog ekrana — to Apple dopušta samo videu.' : 'Ovaj preglednik ne dopušta prikaz preko cijelog ekrana.'} Rješenje je ikona na početnom zaslonu: otvara se kao prava aplikacija, bez trake s adresom.</p>
+  ui.pocetni.innerHTML = `<div class="karta mala"><button class="zatvori x" title="Zatvori">✕</button><h1>⛶ Preko cijelog ekrana</h1>
+    <p>${ios ? 'iPhone to stranicama ne dopušta (samo videu).' : 'Ovaj preglednik to ne dopušta.'} Napravite ikonu na početnom zaslonu — otvara se bez trake s adresom:</p>
     <ol class="koraci">${koraci}</ol>
-    <p>Zatim otvarajte igru s nove ikone <b>Rođendan</b> na početnom zaslonu. Mobitel okrenite položeno.</p>
-    <p class="napomena" style="font-size:2.6vmin;opacity:.8">Dobro je i zato što iPhone ne briše spremljene likove i goste aplikacije s početnog zaslona.</p>
+    <p>Zatim igru otvarajte s ikone <b>Rođendan</b>. Tada se ni spremljeni likovi ne brišu.</p>
     <div class="gumbi-red"><button class="veliki zatvori">U redu ✔</button></div></div>`;
   ui.pocetni.classList.remove('skriven');
 }
