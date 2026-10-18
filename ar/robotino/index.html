@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mobilni robot Robotino u proširenoj stvarnosti | FORTRONIQ</title>
+<meta name="description" content="Svesmjerni mobilni robot Robotino s nadogradnjom za nosače izradaka u trodimenzionalnom prikazu i u proširenoj stvarnosti: postavi ga u stvarnoj veličini na pod, vozi ga u svim smjerovima, pokreni pristajanje na stanicu za punjenje i isprobaj nužni stop.">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/ar/robotino/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Mobilni robot Robotino u proširenoj stvarnosti">
+<meta property="og:description" content="Svesmjerni mobilni robot Robotino s nadogradnjom za nosače izradaka u trodimenzionalnom prikazu i u proširenoj stvarnosti: postavi ga u stvarnoj veličini na pod, vozi ga u svim smjerovima, pokreni pristajanje na stanicu za punjenje i isprobaj nužni stop.">
+<meta property="og:url" content="https://dos.fortroniq.hr/ar/robotino/">
+<link rel="icon" href="../../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+.podnaslov{font-size:.95rem;margin:14px 0 6px}.hero .stanice{margin-top:10px;font-size:.95rem}.hero .stanice a{font-weight:600}
+
+.lcd{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;background:#B9D84A;color:#1D2A0E;border:6px solid #2F3A3E;border-radius:8px;padding:8px 12px;display:grid;grid-template-columns:auto 1fr;gap:0 14px;font-size:.92rem;line-height:1.45;max-width:300px;box-shadow:inset 0 0 12px rgba(0,0,0,.25)}
+.lcd b{font-weight:600;letter-spacing:.04em}
+.pad{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.koraci-popis{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.koraci-popis button{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:6px 10px;border-radius:8px;font-size:.88rem;color:var(--body);border:1px solid transparent}
+.koraci-popis button:hover,.koraci-popis button:focus-visible{border-color:var(--rule);outline:none}
+.koraci-popis li.aktivan button{background:var(--tanko,rgba(46,202,212,.14));color:var(--ink);border-color:var(--teal)}
+.korak-tekst{min-height:3.2em;font-size:.92rem;color:var(--body);margin:6px 0 0}
+.korak-tekst b{color:var(--ink)}
+.stablo{list-style:none;margin:0;padding:0;font-size:.88rem}
+.stablo li{margin:0}
+.stablo button{all:unset;cursor:pointer;display:flex;gap:8px;align-items:center;width:100%;box-sizing:border-box;padding:4px 8px;border-radius:6px;color:var(--ink)}
+.stablo button[aria-pressed="true"]{background:var(--tanko,rgba(46,202,212,.14))}
+.stablo button:focus-visible{outline:2px solid var(--teal)}
+.stablo .uv{padding-left:22px}
+.stablo i{display:inline-block;width:14px;height:14px;border-radius:3px;border:1.5px solid var(--teal);flex:none}
+.stablo small{color:var(--body)}
+.tbl{width:100%;border-collapse:collapse;font-size:.86rem}
+.tbl th,.tbl td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--rule);vertical-align:top}
+.tbl th{font-weight:500;color:var(--ink)}
+.tbl td:last-child{color:var(--body);font-size:.8rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.polja label{display:flex;flex-direction:column;gap:3px;font-size:.82rem;color:var(--body)}
+.polja input[type=number],.polja select{font:inherit;font-size:.9rem;padding:4px 6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);text-align:right;width:100%;box-sizing:border-box}
+.polja select{text-align:left}
+#mreza{display:block;width:100%;height:clamp(380px,70vh,720px);background:var(--paper)}
+.slojevi-popis{list-style:none;margin:6px 0 0;padding:0;font-size:.84rem;color:var(--body);display:grid;gap:3px}
+.tekst-sim{max-width:860px}
+.tekst-sim h2{margin-top:34px}
+.tekst-sim p,.tekst-sim li{color:var(--body);line-height:1.62}
+.galerija{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin:12px 0 0}
+.galerija a{display:block;border:1px solid var(--rule);border-radius:12px;padding:14px;text-decoration:none;color:var(--ink);background:var(--paper)}
+.galerija a:hover{border-color:var(--teal)}
+.galerija b{display:block;margin-bottom:4px}
+.galerija span{font-size:.84rem;color:var(--body)}
+.modul-zn{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--rule);color:var(--body);margin-left:6px;vertical-align:2px}
+</style>
+
+<style>
+.ar-tijelo{padding:34px 0 56px}
+.ar-mreza{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:26px;align-items:start}
+.karta{background:var(--paper);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+.karta-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.karta-h h2{margin:0;font-size:1.05rem;color:var(--ink);font-weight:600}
+.karta-in{padding:16px 18px}
+#scena{position:relative;height:clamp(360px,64vh,620px);touch-action:none;cursor:grab;outline:none;
+  background:radial-gradient(ellipse at 50% 85%,rgba(46,202,212,.10),transparent 62%)}
+#scena:focus-visible{box-shadow:inset 0 0 0 2px var(--cyan)}
+#scena:active{cursor:grabbing}
+#scena canvas{display:block;width:100%;height:100%}
+.uputa{position:absolute;left:12px;bottom:10px;margin:0;font-size:.82rem;color:var(--body);
+  background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:4px 9px;opacity:.92;max-width:calc(100% - 24px)}
+.ucitavanje{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--body);font-size:.95rem;text-align:center;padding:0 16px}
+.stanje-red{margin:0;padding:10px 18px;border-top:1px solid var(--rule);font-size:.9rem;line-height:1.45;color:var(--ink);min-height:3.1em}
+.gumbi{display:flex;gap:8px;flex-wrap:wrap}
+.gumb.tanki[aria-pressed="true"]{background:var(--tanko);box-shadow:inset 0 0 0 2px var(--teal)}
+.gumb.tanki{cursor:pointer}
+.gumb.tanki:disabled{opacity:.45;cursor:default}
+.gumb.tanki.stop{color:#B23B2A;border-color:#B23B2A}
+.gumb.tanki.stop[aria-pressed="true"]{background:#B23B2A;color:#fff;box-shadow:none}
+.ar-gumb{width:100%;justify-content:center;font-size:1.02rem;padding:14px 16px;font-weight:600}
+.ar-gumb img{width:22px;height:22px}
+.qr{display:flex;gap:18px;align-items:center}
+.qr-slika{flex:0 0 auto;background:#fff;padding:10px;border-radius:10px;border:1px solid var(--rule);line-height:0}
+.qr-slika svg{width:156px;height:156px}
+.qr p,.mob p,.napomena,.ishodi li,.tablica td{text-align:left;hyphens:manual}
+.qr p,.mob p{margin:0 0 8px;color:var(--body);font-size:.93rem;line-height:1.5}
+.qr p b,.mob p b{color:var(--ink)}
+.adresa{font-size:.8rem;word-break:break-all;color:var(--teal)}
+.mob{display:none}
+.je-mob .mob{display:block}.je-mob .qr{display:none}
+.tablica{width:100%;border-collapse:collapse;font-size:.92rem}
+.tablica th,.tablica td{text-align:left;vertical-align:top;padding:8px 0;border-bottom:1px solid var(--rule)}
+.tablica th{color:var(--ink);font-weight:600;padding-right:14px;width:42%}
+.tablica td{color:var(--body)}
+.tablica tr:last-child th,.tablica tr:last-child td{border-bottom:0}
+.pp{display:inline-block;font-size:.72rem;line-height:1.5;padding:0 6px;border-radius:6px;border:1px solid var(--rule);color:var(--body);margin-left:6px;white-space:nowrap;vertical-align:1px}
+.pp.sukob{border-color:#C9862B;color:#C9862B}
+.os{display:grid;grid-template-columns:1fr 84px;gap:2px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule)}
+.os:last-child{border-bottom:0}
+.os label{grid-column:1/-1;display:flex;gap:8px;align-items:baseline;font-size:.88rem;color:var(--body)}
+.os label b{color:var(--ink);font-weight:600;white-space:nowrap}
+.os input{width:100%;accent-color:var(--teal);margin:0}
+.os output{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;font-size:.92rem;white-space:nowrap}
+.voznja{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.voznja .klizaci{flex:1 1 230px;min-width:0}
+.pad{position:relative;width:176px;height:176px;flex:0 0 auto;border-radius:50%;border:1px solid var(--rule);
+  background:radial-gradient(circle,var(--tanko) 0 62%,transparent 63%),var(--paper);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;margin:0 auto}
+.pad::before,.pad::after{content:"";position:absolute;background:var(--rule)}
+.pad::before{left:50%;top:14%;bottom:14%;width:1px}
+.pad::after{top:50%;left:14%;right:14%;height:1px}
+.pad:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.pad-gumb{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:var(--teal);
+  box-shadow:0 2px 8px rgba(0,0,0,.25);transition:transform .14s ease-out;z-index:1;pointer-events:none}
+.pad.vuce .pad-gumb{transition:none}
+.pad-n{position:absolute;left:0;right:0;font-size:.7rem;color:var(--body);text-align:center;pointer-events:none;line-height:1}
+.pad-n.gore{top:7px}.pad-n.dolje{bottom:7px}
+.pad-n.lijevo,.pad-n.desno{top:50%;margin-top:-.35rem;left:auto;right:auto}
+.pad-n.lijevo{left:6px}.pad-n.desno{right:6px}
+.motori{display:grid;gap:7px;margin-top:16px}
+.mot{display:grid;grid-template-columns:92px minmax(0,1fr) 96px;gap:10px;align-items:center;font-size:.88rem}
+.mot b{color:var(--ink);font-weight:600;white-space:nowrap}
+.mot .traka{height:9px;border-radius:5px;background:var(--tanko);position:relative;overflow:hidden;border:1px solid var(--rule)}
+.mot .traka i{position:absolute;top:0;bottom:0;left:50%;width:0;background:var(--teal)}
+.mot .traka::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--body);opacity:.5}
+.mot output{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.poza{font-size:.86rem;margin:12px 0 0;font-variant-numeric:tabular-nums;color:var(--body)}
+.poza b{color:var(--ink);font-weight:600}
+.red-gumbi{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 4px}
+.svj-gumbi .gumb .tocka{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;border:1px solid rgba(0,0,0,.25);flex:0 0 auto}
+.svj-znacenje{margin:10px 0 0;font-size:.88rem;line-height:1.5}
+.svj-znacenje b{color:var(--ink)}
+.stup{display:flex;flex-direction:column;gap:22px}
+.napomena{font-size:.84rem;color:var(--body);line-height:1.55;margin:14px 0 0}
+.formula{font-size:.92rem;color:var(--ink);background:var(--tanko);border:1px solid var(--rule);border-radius:8px;padding:8px 10px;margin:10px 0 0;overflow-x:auto;white-space:nowrap}
+.ishodi{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ishodi li{display:flex;gap:10px;color:var(--body);font-size:.93rem;line-height:1.45}
+.ishodi svg{flex:0 0 14px;width:14px;height:14px;margin-top:4px;color:var(--teal)}
+.izvori{margin:0;padding-left:18px;display:grid;gap:6px;font-size:.88rem;line-height:1.45}
+.izvori a{color:var(--teal);word-break:break-word}
+.pretp summary{cursor:pointer;color:var(--teal);font-size:.92rem}
+.pretp ul{margin:10px 0 0;padding-left:18px;display:grid;gap:7px;font-size:.84rem;line-height:1.45}
+.pretp li b{color:var(--ink);font-weight:600}
+.veze{display:grid;gap:10px}
+.veze .ar-gumb{font-size:.95rem;padding:11px 14px}
+#xr-gumb{margin-bottom:10px}
+#xr-gumb[hidden]{display:none}
+.ar-gumb.tanki{background:transparent}
+.ar-gumb.tanki img{display:none}
+#xr-sloj{position:fixed;inset:0;z-index:100;pointer-events:none;font-family:inherit;color:#fff}
+#xr-sloj[hidden]{display:none}
+.xr-vrh,.xr-dno{pointer-events:auto;background:rgba(6,30,36,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.xr-vrh{position:absolute;left:10px;right:10px;top:10px;border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:.92rem;line-height:1.35}
+.xr-dno{position:absolute;left:10px;right:10px;bottom:10px;border-radius:14px;padding:10px 12px 8px;max-height:52vh;overflow:auto}
+.xr-gumbi{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+#xr-sloj button{font:inherit;font-size:.86rem;font-weight:600;color:#fff;background:#17656E;border:0;border-radius:9px;padding:8px 10px;flex:1}
+#xr-sloj button[aria-pressed="true"],#xr-sloj button[aria-selected="true"]{background:#2ECAD4;color:#06262B}
+#xr-sloj button.stop{background:#7A2A20}
+#xr-sloj button.stop[aria-pressed="true"]{background:#E0442F;color:#fff}
+#xr-izlaz{flex:0 0 auto!important;background:#B23B2A!important}
+.xr-gumbi button{min-width:30%}
+.xr-kartice{display:flex;gap:6px;margin-bottom:8px}
+.xr-stanje{margin:4px 0 0;font-size:.8rem;color:#CFE9EC;line-height:1.35}
+.xr-voz{display:flex;gap:12px;align-items:center}
+.xr-desno{flex:1;min-width:0;display:grid;gap:6px}
+#xr-sloj .pad{width:128px;height:128px;margin:0;background:radial-gradient(circle,rgba(255,255,255,.10) 0 62%,transparent 63%);border-color:rgba(255,255,255,.3)}
+#xr-sloj .pad::before,#xr-sloj .pad::after{background:rgba(255,255,255,.25)}
+#xr-sloj .pad-gumb{width:44px;height:44px;margin:-22px 0 0 -22px;background:#2ECAD4}
+#xr-sloj .pad-n{color:#CFE9EC}
+.xr-os{display:grid;grid-template-columns:22px 1fr 74px;gap:8px;align-items:center}
+.xr-os b{font-size:.86rem;font-weight:600}
+.xr-os input{width:100%;accent-color:#2ECAD4;margin:0;height:26px}
+.xr-os output{text-align:right;font-size:.82rem;font-variant-numeric:tabular-nums}
+@media (max-width:900px){
+  .ar-mreza{display:flex;flex-direction:column;gap:20px;align-items:stretch}
+  .stup{display:contents}
+  #k-scena{order:1}#k-voznja{order:2}#ar{order:3}#k-demo{order:4}#k-sigurnost{order:5}#k-spec{order:6}#k-kin{order:7}#k-dalje{order:8}#k-ishodi{order:9}#k-pretp{order:10}#k-izvori{order:11}
+}
+@media (max-width:680px){
+  .ar-tijelo{padding:20px 0 40px}
+  #scena{height:clamp(320px,60vh,480px)}
+  .karta-h,.karta-in{padding-left:14px;padding-right:14px}
+  .stanje-red{padding-left:14px;padding-right:14px}
+  .tablica th{width:46%}
+  .mot{grid-template-columns:70px minmax(0,1fr) 90px}
+  .karta-h .gumbi .gumb{padding-left:10px;padding-right:10px;font-size:.88rem}
+}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="../../mobilni-robot-robotino/index.html">Mobilni robot Robotino</a><i aria-hidden="true">/</i><span aria-current="page">Proširena stvarnost</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="nadnaslov">Proširena stvarnost &middot; svesmjerni mobilni robot</p><h1>Mobilni robot Robotino u proširenoj stvarnosti</h1><p>Robot za prijevoz nosača izradaka u pametnoj tvornici, u stvarnim mjerama. Vozi ga naprijed, u stranu i u krug bez zakretanja, pokreni pristajanje na stanicu za punjenje i isprobaj nužni stop. Na mobitelu ga postaviš na pod i obiđeš ga kao da stoji ispred tebe.</p></div></header>
+
+<section class="ar-tijelo"><div class="omot"><div class="ar-mreza">
+
+<div class="stup">
+<div class="karta" id="k-scena">
+<div class="karta-h"><h2>Trodimenzionalni prikaz</h2><div class="gumbi"><button type="button" class="gumb tanki" data-akcija="pocetni">Početni položaj</button><button type="button" class="gumb tanki" data-akcija="stanica" aria-pressed="true">Stanica</button><button type="button" class="gumb tanki" data-akcija="ir" aria-pressed="false">IR zrake</button><button type="button" class="gumb tanki" data-akcija="laser" aria-pressed="false">Laser</button><button type="button" class="gumb tanki" data-akcija="rastavi" aria-pressed="false">Rastavi</button><button type="button" class="gumb tanki" data-akcija="mjerilo" aria-pressed="false">Mjerilo 1 : 1</button></div></div>
+<div id="scena" tabindex="0" aria-label="Trodimenzionalni model mobilnog robota Robotino; povuci za okretanje pogleda, kotačićem ili s dva prsta za približavanje; strelice ili W, A, S, D voze robota, Q i E ga zakreću"><div class="ucitavanje" id="ucitavanje">Učitavam model robota…</div><p class="uputa">Povuci za okretanje &middot; kotačić ili dva prsta za zum</p></div>
+<p class="stanje-red" id="stanje" aria-live="polite">Robot stoji na početnom mjestu, ispred njega je stanica za punjenje.</p>
+</div>
+
+<div class="karta" id="k-voznja">
+<div class="karta-h"><h2>Vožnja</h2><div class="gumbi"><button type="button" class="gumb tanki" data-akcija="stani">Stani</button></div></div>
+<div class="karta-in">
+<div class="voznja"><div class="pad" id="pad" tabindex="0" role="group" aria-label="Upravljačka ploha za vožnju: povuci kružić od središta ili drži strelice na tipkovnici"><span class="pad-n gore">naprijed</span><span class="pad-n dolje">natrag</span><span class="pad-n lijevo">L</span><span class="pad-n desno">D</span><span class="pad-gumb"></span></div><div class="klizaci">
+<div class="os"><label for="vx"><b>v<sub>x</sub></b><span>naprijed (+) / natrag (−)</span></label><input type="range" id="vx" value="0" aria-label="Brzina vx naprijed ili natrag"><output id="vx-out" for="vx">0</output></div>
+<div class="os"><label for="vy"><b>v<sub>y</sub></b><span>lijevo (+) / desno (−)</span></label><input type="range" id="vy" value="0" aria-label="Brzina vy u stranu"><output id="vy-out" for="vy">0</output></div>
+<div class="os"><label for="w"><b>ω</b><span>zakretanje: lijevo (+) / desno (−)</span></label><input type="range" id="w" value="0" aria-label="Kutna brzina omega"><output id="w-out" for="w">0</output></div>
+</div></div>
+<div class="motori" id="motori"></div>
+<p class="poza" id="poza"></p>
+<p class="napomena">Ploha zadaje v<sub>x</sub> i v<sub>y</sub> dok je držiš, klizači zadaju stalnu brzinu. Na tipkovnici (kad je odabran prikaz ili ploha): strelice ili W, A, S, D za vožnju, Q i E za zakretanje. Brzine motora računaju se inverznom kinematikom svesmjernog pogona; ako bi koji motor prešao najveću brzinu, cijeli se vektor brzine smanji, pa smjer vožnje ostaje isti.</p>
+</div>
+</div>
+
+<div class="karta" id="k-demo">
+<div class="karta-h"><h2>Demonstracije</h2></div>
+<div class="karta-in">
+<div class="red-gumbi"><button type="button" class="gumb tanki" data-akcija="kvadrat" aria-pressed="false">Kvadrat</button><button type="button" class="gumb tanki" data-akcija="krug" aria-pressed="false">Krug</button><button type="button" class="gumb tanki" data-akcija="rak" aria-pressed="false">Rak (bočno)</button><button type="button" class="gumb tanki" data-akcija="okret" aria-pressed="false">Okret na mjestu</button><button type="button" class="gumb tanki" data-akcija="pristajanje" aria-pressed="false">Pristajanje na stanicu</button></div>
+<p class="napomena"><b>Kvadrat</b> i <b>rak</b>: robot vozi naprijed, u stranu i natrag, a da se pritom ne zakreće — to može samo svesmjerni pogon. <b>Krug</b>: istodobno vozi naprijed i zakreće se, pa je uvijek okrenut u smjeru vožnje. <b>Okret na mjestu</b>: sva tri motora vrte se istom brzinom u istom smjeru. <b>Pristajanje</b>: robot obiđe stanicu ako treba, poravna se na normalu njezine prednje plohe i polako vozi do dodira kontakta za punjenje.</p>
+<p class="napomena">Demonstracije su vožnja po zadanim brzinama (bez povratne veze), kao naredbe <i>vx, vy, ω</i> iz programa. Pristajanje je pojednostavljeni regulator položaja: stvarni robot položaj stanice dobiva iz reflektorskih markera (laser) ili iz osvijetljenog 2D markera (kamera).</p>
+</div>
+</div>
+
+<div class="karta" id="k-sigurnost">
+<div class="karta-h"><h2>Signalni stup i nužni stop</h2></div>
+<div class="karta-in">
+<div class="red-gumbi svj-gumbi"><button type="button" class="gumb tanki" data-akcija="auto" aria-pressed="true">Automatski</button><button type="button" class="gumb tanki" data-akcija="crvena"><span class="tocka" style="background:#d4261c"></span>Crvena</button><button type="button" class="gumb tanki" data-akcija="narancasta"><span class="tocka" style="background:#ff6a00"></span>Narančasta</button><button type="button" class="gumb tanki" data-akcija="zelena"><span class="tocka" style="background:#1fdc6a"></span>Zelena</button></div>
+<p class="svj-znacenje" id="svj-znacenje"></p>
+<div class="red-gumbi" style="margin-top:14px"><button type="button" class="gumb tanki stop" data-akcija="gljiva" aria-pressed="false">Nužni stop</button><button type="button" class="gumb tanki" data-akcija="reset">RESET</button></div>
+<p class="napomena">U načinu <b>Automatski</b> stup prati stanje robota. Gumbi boja ručno mijenjaju segment: ugašen → stalno → treperi. <b>Nužni stop</b> odmah isključuje pogone; robot ne kreće ni kad otpustiš gljivu — potrebno je pritisnuti <b>RESET</b>, a lampica tipkala Reset svijetli dok sigurnosni krug čeka potvrdu.</p>
+</div>
+</div>
+</div>
+
+<div class="stup">
+<div class="karta" id="ar">
+<div class="karta-h"><h2>Robot u tvom prostoru</h2></div>
+<div class="karta-in">
+<div class="qr">
+<div class="qr-slika" id="qr" role="img" aria-label="QR kod s adresom ove stranice"></div>
+<div><p><b>Skeniraj kod kamerom mobitela.</b> Otvorit će se ova stranica; dodirni gumb za proširenu stvarnost i usmjeri kameru prema podu.</p><p class="adresa" id="adresa"></p></div>
+</div>
+<div class="mob">
+<p><b>Usmjeri kameru prema podu</b> i polako pomiči mobitel. Kad se pojavi krug veličine robota, dodirni ga i robot se postavi u stvarnoj veličini, okrenut od tebe. Ostavi oko sebe barem 2 m slobodnog prostora — robot vozi, a stanica za punjenje stoji 1 m ispred njega.</p>
+<button type="button" class="gumb ar-gumb" id="xr-gumb" hidden><img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%271.8%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M12 2.5 20.5 7v10L12 21.5 3.5 17V7z%27/%3E%3Cpath d=%27M3.5 7 12 11.5 20.5 7M12 11.5v10%27/%3E%3C/svg%3E" alt="">Postavi robota i vozi ga</button>
+<a class="gumb ar-gumb" id="ar-gumb" href="#ar"><img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%271.8%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M12 2.5 20.5 7v10L12 21.5 3.5 17V7z%27/%3E%3Cpath d=%27M3.5 7 12 11.5 20.5 7M12 11.5v10%27/%3E%3C/svg%3E" alt="">Postavi robota u prostor</a>
+<p class="napomena" id="ar-poruka"></p>
+</div>
+</div>
+</div>
+
+<div class="karta" id="k-spec">
+<div class="karta-h"><h2>Značajke</h2></div>
+<div class="karta-in">
+<table class="tablica"><tbody id="spec">
+<tr><td>Učitavam podatke…</td></tr>
+</tbody></table>
+<p class="napomena">Oznaka <span class="pp">pretpostavka</span> znači da podatak nije pronađen u dokumentaciji proizvođača, a <span class="pp sukob">sukob</span> da se izvori ne slažu (vidi popis niže).</p>
+</div>
+</div>
+
+<div class="karta" id="k-kin">
+<div class="karta-h"><h2>Kinematika svesmjernog pogona</h2></div>
+<div class="karta-in">
+<p class="napomena" style="margin-top:0">Tri kotača stoje na kutovima <span id="kin-kutovi"></span> od osi x robota. Brzina motora <i>i</i> u 1/min:</p>
+<p class="formula" id="kin-formula">m<sub>i</sub> = k · (−sin θ<sub>i</sub> · v<sub>x</sub> + cos θ<sub>i</sub> · v<sub>y</sub> + r<sub>b</sub> · ω)</p>
+<p class="napomena" id="kin-k"></p>
+<p class="napomena">Čista vožnja naprijed (samo v<sub>x</sub>) ne pokreće motor M2 jer mu je kotač okomit na smjer vožnje — taj se kotač samo kotrlja po svojim valjcima. Pri okretu na mjestu sva tri motora imaju istu brzinu.</p>
+</div>
+</div>
+
+<div class="karta" id="k-dalje">
+<div class="karta-h"><h2>Više o ovom robotu</h2></div>
+<div class="karta-in veze">
+<a class="gumb ar-gumb tanki" href="../../mobilni-robot-robotino/index.html">&#8592; Mobilni robot Robotino: sva poglavlja</a>
+<a class="gumb ar-gumb tanki" href="../../mobilni-robot-robotino/upoznavanje-robota.html">Upoznavanje robota (dio po dio)</a>
+<a class="gumb ar-gumb tanki" href="../../mobilni-robot-robotino/upravljanje-robotom.html">Upravljanje robotom (simulator)</a>
+</div>
+</div>
+
+<div class="karta" id="k-ishodi">
+<div class="karta-h"><h2>Uz ovaj prikaz moći ću</h2></div>
+<div class="karta-in">
+<ul class="ishodi">
+<li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>procijeniti veličinu mobilnog robota s nadogradnjom i prostor koji mu treba za vožnju i pristajanje</span></li>
+<li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pokazati kako svesmjerni pogon vozi u svim smjerovima bez zakretanja i povezati brzine motora sa zadanim v<sub>x</sub>, v<sub>y</sub> i ω</span></li>
+<li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>opisati tijek pristajanja na stanicu za punjenje: obilazak, poravnanje i vožnju do kontakta</span></li>
+<li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>protumačiti stanja signalnog stupa i ispravno postupiti nakon nužnog stopa (otpuštanje, RESET)</span></li>
+</ul>
+</div>
+</div>
+
+<div class="karta" id="k-pretp">
+<div class="karta-h"><h2>Što je pretpostavka</h2></div>
+<div class="karta-in">
+<p class="napomena" style="margin-top:0" id="pretp-uvod"></p>
+<details class="pretp"><summary id="pretp-sazetak">Popis pretpostavki</summary><ul id="pretp-popis"></ul></details>
+</div>
+</div>
+
+<div class="karta" id="k-izvori">
+<div class="karta-h"><h2>Izvori</h2></div>
+<div class="karta-in">
+<ol class="izvori" id="izvori"></ol>
+<p class="napomena">3D model je naš crtež općeg izgleda prema fotografiji robota i objavljenim mjerama; nije službeni model proizvođača. Unutrašnjost je načelni prikaz. U proširenoj stvarnosti senzori „vide” samo stanicu za punjenje, ne i stvarne predmete u tvojoj prostoriji.</p>
+</div>
+</div>
+</div>
+
+</div></div></section>
+</main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Autori: dr.sc. Tomislav Pavlic, mag.ing.mech., Krunoslav Kušec, mag.ing.mech., Alen Britvić, bacc.ing.mech.</p><p><a href="../../index.html">Sva područja</a> &middot; <a href="../../mobilni-robot-robotino/index.html">Naslovnica područja</a></p></div></footer>
+<div id="xr-sloj" hidden>
+<div class="xr-vrh"><span id="xr-uputa">Usmjeri kameru prema podu i dodirni krug da postaviš robota.</span><button type="button" id="xr-izlaz">Izlaz</button></div>
+<div class="xr-dno"><div class="xr-kartice" role="tablist" aria-label="Skupine naredbi"><button type="button" role="tab" data-kartica="voz" aria-selected="true">Vožnja</button><button type="button" role="tab" data-kartica="demo" aria-selected="false">Demo</button><button type="button" role="tab" data-kartica="svj" aria-selected="false">Sigurnost</button><button type="button" role="tab" data-kartica="pri" aria-selected="false">Prikaz</button></div><div class="xr-ploca" data-ploca="voz"><div class="xr-voz"><div class="pad" id="xr-pad" tabindex="0" role="group" aria-label="Upravljačka ploha za vožnju: povuci kružić od središta ili drži strelice na tipkovnici"><span class="pad-n gore">naprijed</span><span class="pad-n dolje">natrag</span><span class="pad-n lijevo">L</span><span class="pad-n desno">D</span><span class="pad-gumb"></span></div><div class="xr-desno"><div class="xr-os"><b>ω</b><input type="range" id="xr-w" value="0" aria-label="Kutna brzina omega"><output id="xr-w-out">0</output></div><p class="xr-stanje" id="xr-mot">M1 0 · M2 0 · M3 0 1/min</p><button type="button" data-akcija="stani">Stani</button></div></div></div><div class="xr-ploca" data-ploca="demo" hidden><div class="xr-gumbi"><button type="button" data-akcija="kvadrat" aria-pressed="false">Kvadrat</button><button type="button" data-akcija="krug" aria-pressed="false">Krug</button><button type="button" data-akcija="rak" aria-pressed="false">Rak</button><button type="button" data-akcija="okret" aria-pressed="false">Okret</button><button type="button" data-akcija="pristajanje" aria-pressed="false">Pristajanje</button><button type="button" data-akcija="stani">Stani</button></div></div><div class="xr-ploca" data-ploca="svj" hidden><div class="xr-gumbi"><button type="button" data-akcija="gljiva" aria-pressed="false" class="stop">Nužni stop</button><button type="button" data-akcija="reset">RESET</button><button type="button" data-akcija="auto" aria-pressed="true">Auto</button><button type="button" data-akcija="crvena">Crvena</button><button type="button" data-akcija="narancasta">Narančasta</button><button type="button" data-akcija="zelena">Zelena</button></div></div><div class="xr-ploca" data-ploca="pri" hidden><div class="xr-gumbi"><button type="button" data-akcija="stanica" aria-pressed="true">Stanica</button><button type="button" data-akcija="ir" aria-pressed="false">IR zrake</button><button type="button" data-akcija="laser" aria-pressed="false">Laser</button><button type="button" data-akcija="rastavi" aria-pressed="false">Rastavi</button><button type="button" data-akcija="mjerilo" aria-pressed="false">Mjerilo 1 : 1</button><button type="button" data-akcija="pocetni">Početni</button><button type="button" id="xr-premjesti">Premjesti</button></div></div><p id="xr-poruka" class="xr-stanje" aria-live="polite"></p><p id="xr-sidro" class="xr-stanje" aria-live="polite"></p></div>
+</div>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-ar-robotino-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+</script>
+<script src="../lib/qrcode.js"></script>
+<script>
+(function(){
+  var KANON = 'https://dos.fortroniq.hr/ar/robotino/';
+  var ua = navigator.userAgent || '';
+  var ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var android = /Android/i.test(ua);
+  var adresa = /^https?:/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname) ? location.href.split('#')[0] : KANON;
+  if (ios || android) document.documentElement.classList.add('je-mob');
+  try {
+    var q = qrcode(0, 'M'); q.addData(adresa); q.make();
+    document.getElementById('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+  } catch (e) { document.getElementById('qr').textContent = 'QR kod nije dostupan.'; }
+  document.getElementById('adresa').textContent = adresa;
+
+  var g = document.getElementById('ar-gumb'), poruka = document.getElementById('ar-poruka');
+  var glb = new URL('robotino.glb', adresa).href;
+  if (ios) {
+    g.setAttribute('rel', 'ar');
+    g.setAttribute('href', 'robotino.usdz#allowsContentScaling=1');
+  } else if (android) {
+    g.setAttribute('href', 'intent://arvr.google.com/scene-viewer/1.0?file=' + encodeURIComponent(glb) +
+      '&mode=ar_preferred&title=' + encodeURIComponent('Mobilni robot Robotino') +
+      '#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;' +
+      'S.browser_fallback_url=' + encodeURIComponent(adresa) + ';end;');
+    poruka.textContent = 'Za proširenu stvarnost potrebna je Googleova aplikacija s podrškom za ARCore. Ako se ništa ne dogodi, mobitel tu mogućnost ne podržava.';
+  }
+})();
+</script>
+<script type="importmap">{"imports":{"three":"../lib/three.module.min.js","three/addons/":"../lib/addons/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { KONFIG, MJERE, POGON, SENZORI, IZVORI, nadjiDio, pretpostavke, TEKST_PRETPOSTAVKE } from './robotino_podaci.js';
+import { napraviRobotino } from './robotino_model.js?v=01';
+import * as K from './robotino_kin.js?v=01';
+
+var PI = Math.PI, D = PI / 180;
+/* parametri prikaza (nisu podaci robota): razmak stanice pri postavljanju, glatko ubrzanje, granica vožnje */
+var RAZMAK_STANICE = 1.0, AMAX = 1.0, ALFA = 3.0, GRANICA = 4.0;
+var OGR = POGON.ogranicenja, VMAX = OGR.vMax, WMAX = OGR.wMax;
+var rafId = 0, zadnjeT = 0, _p = new THREE.Vector3(), xr = null, xrSmjer = 0, zadnjiIspis = '', ispisT = 0;
+
+/* ------------------------------------------------------------------ oblikovanje brojeva (hrvatski zarez) */
+function br(v, d) { var p = Math.pow(10, d); v = Math.round(v * p) / p; if (Object.is(v, -0) || Math.abs(v) < 0.5 / p) v = 0; return (v < 0 ? '−' : '') + Math.abs(v).toFixed(d).replace('.', ','); }
+function mm(v) { return br(v * 1000, 0) + ' mm'; }
+function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+/* ------------------------------------------------------------------ prikaz */
+var kut = document.getElementById('scena');
+var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+kut.insertBefore(renderer.domElement, kut.firstChild);
+
+var scena = new THREE.Scene();
+var kamera = new THREE.PerspectiveCamera(34, 1, 0.02, 60);
+kamera.position.set(-1.75, 1.6, 2.35);
+var upr = new OrbitControls(kamera, renderer.domElement);
+upr.target.set(0.38, 0.52, 0); upr.enableDamping = true; upr.minDistance = 0.5; upr.maxDistance = 7;
+upr.maxPolarAngle = PI * 0.495;
+
+scena.add(new THREE.HemisphereLight(0xffffff, 0x8899a0, 1.6));
+var sunce = new THREE.DirectionalLight(0xffffff, 2.2);
+sunce.castShadow = true; sunce.shadow.mapSize.set(1024, 1024); sunce.shadow.normalBias = 0.004;
+var sc = sunce.shadow.camera; sc.near = 0.3; sc.far = 7;
+scena.add(sunce); scena.add(sunce.target);
+var dopuna = new THREE.DirectionalLight(0xffffff, 0.7); dopuna.position.set(-1.5, 1, -1); scena.add(dopuna);
+function sjenaOkvir(m) { var a = 1.5 * m; sc.left = -a; sc.right = a; sc.top = a; sc.bottom = -a; sc.updateProjectionMatrix(); }
+sjenaOkvir(1);
+
+/* svijet = sve što stoji na podu (robot, stanica, sjena, mreža); u proširenoj stvarnosti on se sidri i mjeri */
+var svijet = new THREE.Group(); scena.add(svijet);
+var pod = new THREE.Mesh(new THREE.CircleGeometry(3, 72), new THREE.ShadowMaterial({ opacity: 0.2 }));
+pod.rotation.x = -PI / 2; pod.receiveShadow = true; svijet.add(pod);
+var mreza = new THREE.PolarGridHelper(2, 16, 8, 72);
+mreza.material.transparent = true; mreza.material.opacity = 0.32; svijet.add(mreza);
+var rOb = MJERE.promjerOsnovice / 2;
+var krug = new THREE.Mesh(new THREE.RingGeometry(rOb - 0.022, rOb, 64).rotateX(-PI / 2), new THREE.MeshBasicMaterial({ color: 0x2ECAD4 }));
+krug.matrixAutoUpdate = false; krug.visible = false; scena.add(krug);
+
+function boje() {
+  var c = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--teal').trim() || '#17656E');
+  mreza.material.color = c;
+  if (mreza.material.vertexColors) { mreza.material.vertexColors = false; mreza.material.needsUpdate = true; }
+  crtaj();
+}
+
+/* ------------------------------------------------------------------ model (zajednički modul područja) */
+var r = napraviRobotino(THREE, {});
+r.korijen.traverse(function (o) { if (o.isMesh) o.castShadow = true; });
+svijet.add(r.korijen);
+var imaStanicu = !!r.stanica;
+if (imaStanicu) { r.stanica.grupa.traverse(function (o) { if (o.isMesh) o.castShadow = true; }); svijet.add(r.stanica.grupa); }
+r.tipkalo('plavo'); r.lampicaReset(false); r.postaviNosac(0, true);
+document.getElementById('ucitavanje').remove();
+
+/* ------------------------------------------------------------------ stanje simulacije */
+var odo = new K.Odometrija();
+var st = {
+  kut: [0, 0, 0], valj: [0, 0, 0], v: { vx: 0, vy: 0, w: 0 }, m: [0, 0, 0], faktor: 1,
+  rucno: { vx: 0, vy: 0, w: 0 }, tipke: { vx: 0, vy: 0, w: 0 },
+  demo: null, dock: null, gljiva: false, resetCeka: false, spojen: false,
+  rast: 0, rastCilj: 0, mjerilo: 1, stanica: false, sx: 0, sy: 0, sphi: 0,
+  ir: false, laser: false, auto: true, svj: { crvena: 0, narancasta: 0, zelena: 1 }, irMin: null, poruka: ''
+};
+function poza() { return { x: odo.x, y: odo.y, phi: odo.phi }; }
+function prepreke(za) { return st.stanica ? K.preprekeStanice(st.sx, st.sy, st.sphi, { za: za }) : []; }
+function oznaci(ime, v) { document.querySelectorAll('[data-akcija="' + ime + '"]').forEach(function (b) { b.setAttribute('aria-pressed', v ? 'true' : 'false'); }); }
+function poruka(t) {
+  st.poruka = t;
+  var a = document.getElementById('stanje'), b = document.getElementById('xr-poruka');
+  if (a.textContent !== t) a.textContent = t;
+  if (b.textContent !== t) b.textContent = t;
+}
+
+/* ------------------------------------------------------------------ podaci na stranici (sve iz robotino_podaci.js) */
+var PRETP = pretpostavke();
+function oznakaPP(sto) {
+  var p = PRETP.find(function (q) { return q.sto && q.sto.indexOf(sto) === 0; });
+  return p ? ' <span class="pp' + (p.vrsta === 'sukob' ? ' sukob' : '') + '" title="' + esc(p.napomena) + '">' + (p.vrsta === 'sukob' ? 'sukob' : 'pretpostavka') + '</span>' : '';
+}
+(function podaciNaStranici() {
+  var L = KONFIG.laser ? SENZORI.laser[KONFIG.laser] : null, KAM = KONFIG.kamera ? SENZORI.kamera[KONFIG.kamera] : null;
+  var S = nadjiDio('stanica'), sP = {}; if (S) S.podaci.forEach(function (p) { sP[p[0]] = p[1]; });
+  var red = [
+    ['Izvedba', 'svesmjerni mobilni robot, tri pogonske jedinice na ' + MJERE.kutoviKotaca.join('°, ') + '°'],
+    ['Promjer osnovice', mm(MJERE.promjerOsnovice) + oznakaPP('Promjer osnovice')],
+    ['Visina osnovice', mm(MJERE.visinaOsnovice)]
+  ];
+  if (KONFIG.nadogradnja) {
+    red.push(['Visina s tornjem', mm(MJERE.visinaSTornjem)]);
+    red.push(['Visina s nadogradnjom', mm(MJERE.visinaUkupno)]);
+    red.push(['Širina s nadogradnjom', mm(MJERE.sirinaSNadogradnjom)]);
+  }
+  red.push(['Kotači', '3 svesmjerna, Ø' + br(2 * MJERE.rw * 1000, 0) + ' mm, ' + MJERE.valjci.poKotacu + ' valjaka po kotaču' + oznakaPP('Polumjer kotača')]);
+  red.push(['Središte–kotač r<sub>b</sub>', mm(MJERE.rb) + oznakaPP('Udaljenost središte–kotač')]);
+  red.push(['Pogon', POGON.motor.tip + ', ' + POGON.reduktor.tip + ' (' + POGON.gear + ' : 1), remen']);
+  red.push(['Najveća brzina motora', br(POGON.nMotMax, 0) + ' 1/min']);
+  red.push(['Enkoder', POGON.enkoder.tip + ', ' + POGON.enkoder.inkPoOkr + ' inkremenata po okretaju motora']);
+  red.push(['Brzine u ovom prikazu', 'do ' + br(VMAX, 2) + ' m/s i ' + br(WMAX, 1) + ' rad/s' + oznakaPP('Najveća brzina u simulatoru')]);
+  red.push(['Senzori udaljenosti', SENZORI.ir.broj + ' × ' + SENZORI.ir.tip + ', ' + br(SENZORI.ir.dometMin * 100, 0) + '–' + br(SENZORI.ir.dometMax * 100, 0) + ' cm, razmak ' + SENZORI.ir.razmak + '°']);
+  if (L) red.push(['Laserski skener', L.naziv + ', ' + br(L.kutMax - L.kutMin, 0) + '°, domet ' + br(L.domet, 1).replace(',0', '') + ' m']);
+  if (KAM) red.push(['Kamera', KAM.naziv]);
+  if (S) red.push(['Stanica za punjenje', [sP['Mjere'], sP['Snaga']].filter(Boolean).join(', ')]);
+  document.getElementById('spec').innerHTML = red.map(function (q) { return '<tr><th scope="row">' + q[0] + '</th><td>' + q[1] + '</td></tr>'; }).join('');
+
+  document.getElementById('kin-kutovi').textContent = MJERE.kutoviKotaca.map(function (a, i) { return 'M' + (i + 1) + ' = ' + a + '°'; }).join(', ');
+  document.getElementById('kin-k').innerHTML = 'k = 60 · i / (2π · r<sub>w</sub>) = 60 · ' + POGON.gear + ' / (2π · ' + br(POGON.rw, 4) + ' m) ≈ ' + br(K.faktorK(), 0) +
+    ' (1/min)/(m/s); r<sub>b</sub> = ' + br(POGON.rb, 3) + ' m. Vožnja brzinom ' + br(VMAX, 2) + ' m/s naprijed traži ' +
+    K.inverzna(VMAX, 0, 0).map(function (m, i) { return 'M' + (i + 1) + ' = ' + br(m, 0); }).join(', ') + ' 1/min.';
+
+  document.getElementById('pretp-uvod').textContent = TEKST_PRETPOSTAVKE;
+  document.getElementById('pretp-sazetak').textContent = 'Popis pretpostavki i sukoba izvora (' + PRETP.length + ')';
+  document.getElementById('pretp-popis').innerHTML = PRETP.map(function (p) {
+    return '<li><b>' + esc(p.sto) + '</b>' + (p.vrijednost ? ': ' + esc(p.vrijednost) : '') + (p.vrsta === 'sukob' ? ' <span class="pp sukob">sukob</span>' : '') + ' — ' + esc(p.napomena) + '</li>';
+  }).join('');
+  document.getElementById('izvori').innerHTML = ['IP4-OV', 'IP4-OMNI', 'IP4-GEAR', 'R4-MAN', 'HABR', 'IP4-DIST', 'IP4-LASER', 'CPMR-C', 'FAC-248', 'OR-DOCK'].filter(function (k) { return IZVORI[k]; }).map(function (k) {
+    var u = IZVORI[k]; return '<li><a href="' + esc(u) + '" rel="noopener">' + esc(u.replace(/^https?:\/\//, '')) + '</a></li>';
+  }).join('');
+
+  /* motori: oznake iz kutova kotača */
+  document.getElementById('motori').innerHTML = MJERE.kutoviKotaca.map(function (a, i) {
+    return '<div class="mot"><b>M' + (i + 1) + ' (' + a + '°)</b><span class="traka" aria-hidden="true"><i></i></span><output id="m' + (i + 1) + '-out">0 1/min</output></div>';
+  }).join('');
+})();
+
+/* ------------------------------------------------------------------ klizači i ploha */
+var ULAZI = { vx: document.getElementById('vx'), vy: document.getElementById('vy'), w: document.getElementById('w') };
+[['vx', VMAX, 0.01], ['vy', VMAX, 0.01], ['w', WMAX, 0.05]].forEach(function (q) { var u = ULAZI[q[0]]; u.min = -q[1]; u.max = q[1]; u.step = q[2]; u.value = 0; });
+var xrW = document.getElementById('xr-w'); xrW.min = -WMAX; xrW.max = WMAX; xrW.step = 0.05; xrW.value = 0;
+function jedinica(k) { return k === 'w' ? ' rad/s' : ' m/s'; }
+function postaviRucno(vx, vy, w, izvor) {
+  st.rucno.vx = vx; st.rucno.vy = vy; st.rucno.w = w;
+  ['vx', 'vy', 'w'].forEach(function (k) {
+    if (izvor !== k) ULAZI[k].value = st.rucno[k];
+    document.getElementById(k + '-out').textContent = br(st.rucno[k], 2) + jedinica(k);
+  });
+  if (izvor !== 'xr-w') xrW.value = w;
+  document.getElementById('xr-w-out').textContent = br(w, 2) + ' rad/s';
+  if (vx || vy || w) { if (st.demo || st.dock) zaustaviProgram(); if (blokirano()) javiBlok(); }
+  crtaj();
+}
+['vx', 'vy', 'w'].forEach(function (k) {
+  ULAZI[k].addEventListener('input', function () { var v = +ULAZI[k].value; postaviRucno(k === 'vx' ? v : st.rucno.vx, k === 'vy' ? v : st.rucno.vy, k === 'w' ? v : st.rucno.w, k); });
+});
+xrW.addEventListener('input', function () { postaviRucno(st.rucno.vx, st.rucno.vy, +xrW.value, 'xr-w'); });
+postaviRucno(0, 0, 0);
+
+function napraviPad(el) {
+  var g = el.querySelector('.pad-gumb'), id = null;
+  function pomak(e) {
+    var b = el.getBoundingClientRect(), R = b.width / 2 - 14;
+    var dx = e.clientX - (b.left + b.width / 2), dy = e.clientY - (b.top + b.height / 2), n = Math.hypot(dx, dy);
+    if (n > R) { dx *= R / n; dy *= R / n; }
+    g.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    postaviRucno(br3(-dy / R * VMAX), br3(-dx / R * VMAX), st.rucno.w, 'pad');
+  }
+  el.addEventListener('pointerdown', function (e) { id = e.pointerId; el.setPointerCapture(id); el.classList.add('vuce'); pomak(e); e.preventDefault(); });
+  el.addEventListener('pointermove', function (e) { if (e.pointerId === id) pomak(e); });
+  function kraj(e) { if (e.pointerId !== id) return; id = null; el.classList.remove('vuce'); g.style.transform = ''; postaviRucno(0, 0, st.rucno.w, 'pad'); }
+  el.addEventListener('pointerup', kraj); el.addEventListener('pointercancel', kraj);
+  el.addEventListener('keydown', tipkaDolje); el.addEventListener('keyup', tipkaGore);
+}
+function br3(v) { return Math.round(v * 1000) / 1000; }
+/* tipkovnica: drži tipku za vožnju (W/S ili ↑/↓ = vx, A/D ili ←/→ = vy, Q/E = ω) */
+var TIPKE = { ArrowUp: ['vx', 1], KeyW: ['vx', 1], ArrowDown: ['vx', -1], KeyS: ['vx', -1], ArrowLeft: ['vy', 1], KeyA: ['vy', 1], ArrowRight: ['vy', -1], KeyD: ['vy', -1], KeyQ: ['w', 1], KeyE: ['w', -1] };
+var drzi = {};
+function tipkaDolje(e) {
+  var t = TIPKE[e.code]; if (!t) return; e.preventDefault(); drzi[e.code] = true; tipkeStanje();
+}
+function tipkaGore(e) { if (!TIPKE[e.code]) return; delete drzi[e.code]; tipkeStanje(); }
+function tipkeStanje() {
+  var s = { vx: 0, vy: 0, w: 0 };
+  Object.keys(drzi).forEach(function (c) { var t = TIPKE[c]; s[t[0]] += t[1]; });
+  st.tipke.vx = Math.sign(s.vx) * VMAX * 0.6; st.tipke.vy = Math.sign(s.vy) * VMAX * 0.6; st.tipke.w = Math.sign(s.w) * WMAX * 0.6;
+  if ((s.vx || s.vy || s.w) && (st.demo || st.dock)) zaustaviProgram();
+  if ((s.vx || s.vy || s.w) && blokirano()) javiBlok();
+  crtaj();
+}
+kut.addEventListener('keydown', tipkaDolje); kut.addEventListener('keyup', tipkaGore);
+kut.addEventListener('blur', function () { drzi = {}; tipkeStanje(); });
+napraviPad(document.getElementById('pad'));
+napraviPad(document.getElementById('xr-pad'));
+
+/* ------------------------------------------------------------------ demonstracije i pristajanje */
+function putanja(ime) {
+  var v = Math.min(0.3, VMAX), w = Math.min(1.0, WMAX), a = 0.6, Rk = 0.5, P = 0.7, s = [];
+  function seg(vx, vy, ww, t) { s.push({ vx: vx, vy: vy, w: ww, t: t }); }
+  if (ime === 'kvadrat') { seg(v, 0, 0, a / v); seg(0, 0, 0, P); seg(0, v, 0, a / v); seg(0, 0, 0, P); seg(-v, 0, 0, a / v); seg(0, 0, 0, P); seg(0, -v, 0, a / v); seg(0, 0, 0, P); }
+  else if (ime === 'krug') { var vk = Math.min(v, WMAX * Rk); seg(vk, 0, vk / Rk, 2 * PI * Rk / vk); seg(0, 0, 0, P); }
+  else if (ime === 'rak') { seg(0, v, 0, 0.5 / v); seg(0, 0, 0, P); seg(0, -v, 0, 1.0 / v); seg(0, 0, 0, P); seg(0, v, 0, 0.5 / v); seg(0, 0, 0, P); }
+  else if (ime === 'okret') { seg(0, 0, w, 2 * PI / w); seg(0, 0, 0, P); seg(0, 0, -w, 2 * PI / w); seg(0, 0, 0, P); }
+  return s;
+}
+var NAZIV_DEMO = { kvadrat: 'kvadrat stranice 60 cm — robot se ne zakreće', krug: 'krug polumjera 50 cm — robot je uvijek okrenut u smjeru vožnje', rak: 'bočna vožnja lijevo i desno', okret: 'okret na mjestu, puni krug u oba smjera' };
+function pokreniDemo(ime) {
+  if (blokirano()) { javiBlok(); return; }
+  var bio = st.demo && st.demo.ime === ime;
+  zaustaviProgram();
+  if (bio) { poruka('Demonstracija je zaustavljena.'); return; }
+  postaviRucno(0, 0, 0);
+  st.demo = { ime: ime, seg: putanja(ime), i: 0, t: 0 }; st.spojen = false;
+  oznaci(ime, true); poruka('Demonstracija: ' + NAZIV_DEMO[ime] + '.'); svjetlaAuto(); crtaj();
+}
+function korakDemo(dt) {
+  var d = st.demo; d.t += dt;
+  while (d.i < d.seg.length && d.t >= d.seg[d.i].t) { d.t -= d.seg[d.i].t; d.i++; }
+  if (d.i >= d.seg.length) { oznaci(d.ime, false); st.demo = null; poruka('Demonstracija je gotova.'); return { vx: 0, vy: 0, w: 0 }; }
+  var s = d.seg[d.i]; return { vx: s.vx, vy: s.vy, w: s.w };
+}
+function zaustaviProgram() {
+  if (st.demo) oznaci(st.demo.ime, false);
+  st.demo = null; st.dock = null; oznaci('pristajanje', false); svjetlaAuto();
+}
+function kutRazlika(a) { while (a > PI) a -= 2 * PI; while (a < -PI) a += 2 * PI; return a; }
+function uLokalno(x, y) { var c = Math.cos(st.sphi), s = Math.sin(st.sphi), dx = x - st.sx, dy = y - st.sy; return [dx * c + dy * s, -dx * s + dy * c]; }
+function uSvijet(lx, ly) { var c = Math.cos(st.sphi), s = Math.sin(st.sphi); return [st.sx + lx * c - ly * s, st.sy + lx * s + ly * c]; }
+function pokreniPristajanje() {
+  if (blokirano()) { javiBlok(); return; }
+  if (st.dock) { zaustaviProgram(); poruka('Pristajanje je prekinuto.'); return; }
+  zaustaviProgram(); postaviRucno(0, 0, 0);
+  if (!imaStanicu) return;
+  if (!st.stanica) postaviStanicu(true);
+  /* točke u KS stanice (x = normala prednje plohe prema robotu): obilazak sa strane, točka ispred stanice, dodir */
+  var L = uLokalno(odo.x, odo.y), dP = MJERE.stanica.pristajanje, PRE = dP + 0.35, SY = MJERE.stanica.sirina / 2 + rOb + 0.12, sg = L[1] >= 0 ? 1 : -1, t = [];
+  if (L[0] < PRE - 0.05) {
+    if (Math.abs(L[1]) < SY) t.push([L[0], sg * SY]);
+    t.push([PRE, sg * SY]);
+  }
+  t.push([PRE, 0]); t.push([dP, 0]);
+  st.dock = { tocke: t, i: 0, phi: st.sphi + PI }; st.spojen = false;
+  oznaci('pristajanje', true); poruka('Pristajanje: robot traži točku ispred stanice i poravnava se na njezinu normalu…'); svjetlaAuto(); crtaj();
+}
+function korakPristajanja() {
+  var P = st.dock, zad = P.i === P.tocke.length - 1, W = uSvijet(P.tocke[P.i][0], P.tocke[P.i][1]);
+  var ex = W[0] - odo.x, ey = W[1] - odo.y, c = Math.cos(odo.phi), s = Math.sin(odo.phi);
+  var exr = ex * c + ey * s, eyr = -ex * s + ey * c, eph = kutRazlika(P.phi - odo.phi), dist = Math.hypot(ex, ey);
+  var vm = zad ? 0.08 : Math.min(0.3, VMAX), kp = zad ? 1.5 : 1.8;
+  var vx = kp * exr, vy = kp * eyr, n = Math.hypot(vx, vy);
+  if (n > vm) { vx *= vm / n; vy *= vm / n; }
+  else if (zad && n > 1e-9 && n < 0.015 && dist > 0.0015) { vx *= 0.015 / n; vy *= 0.015 / n; }
+  var w = Math.max(-1, Math.min(1, 2.2 * eph));
+  if (zad && Math.abs(eph) > 0.03) { vx = 0; vy = 0; }
+  if (dist < (zad ? 0.002 : 0.03) && Math.abs(eph) < (zad ? 0.006 : 0.06)) {
+    P.i++;
+    if (P.i === P.tocke.length - 1) poruka('Pristajanje: robot je poravnat i polako vozi do kontakta za punjenje…');
+    if (P.i >= P.tocke.length) {
+      st.dock = null; st.spojen = true; oznaci('pristajanje', false);
+      poruka('Robot je pristao: kontakt za punjenje dodiruje kontaktnu ploču stanice. Dok je spojen, robot radi na mrežnom napajanju i ne prazni baterije.');
+      return { vx: 0, vy: 0, w: 0 };
+    }
+  }
+  return { vx: vx, vy: vy, w: w };
+}
+
+/* ------------------------------------------------------------------ sigurnost i signalni stup */
+function blokirano() { return st.gljiva || st.resetCeka || st.rast > 0 || st.rastCilj > 0; }
+function javiBlok() {
+  if (st.gljiva) poruka('Nužni stop je pritisnut: pogoni su isključeni. Otpusti gljivu, pa pritisni RESET.');
+  else if (st.resetCeka) poruka('Gljiva je otpuštena, ali sigurnosni krug čeka potvrdu: pritisni RESET.');
+  else poruka('Robot je rastavljen — sastavi ga prije vožnje.');
+}
+var ZNACENJE = {};
+[['crvena', 'svjetloCrveno'], ['narancasta', 'svjetloNarancasto'], ['zelena', 'svjetloZeleno']].forEach(function (q) {
+  var d = nadjiDio(q[1]), o = {}; if (d) d.podaci.forEach(function (p) { o[p[0]] = p[1]; }); ZNACENJE[q[0]] = { naziv: d ? d.naziv : q[0], stalno: o['Stalno'] || '', treperi: o['Treperi'] || '' };
+});
+var IME_BOJE = { crvena: 'Crvena', narancasta: 'Narančasta', zelena: 'Zelena' };
+function primijeniSvjetla() {
+  r.signalniStup(st.svj);
+  var dijelovi = [];
+  ['crvena', 'narancasta', 'zelena'].forEach(function (k) {
+    var s = st.svj[k], z = ZNACENJE[k];
+    document.querySelectorAll('[data-akcija="' + k + '"]').forEach(function (b) { b.setAttribute('aria-pressed', s ? 'true' : 'false'); b.title = s === 'treperi' ? 'treperi' : s ? 'svijetli stalno' : 'ugašeno'; });
+    if (s) dijelovi.push('<b>' + IME_BOJE[k] + (s === 'treperi' ? ' treperi' : ' svijetli') + '</b>: ' + esc(s === 'treperi' ? z.treperi : z.stalno));
+  });
+  document.getElementById('svj-znacenje').innerHTML = dijelovi.length ? dijelovi.join(' · ') : 'Svi segmenti su ugašeni.';
+  crtaj();
+}
+function svjetlaAuto() {
+  if (!st.auto) return;
+  var s = (st.gljiva || st.resetCeka) ? { crvena: 0, narancasta: 'treperi', zelena: 0 }
+    : (st.demo || st.dock) ? { crvena: 0, narancasta: 0, zelena: 'treperi' } : { crvena: 0, narancasta: 0, zelena: 1 };
+  if (s.crvena !== st.svj.crvena || s.narancasta !== st.svj.narancasta || s.zelena !== st.svj.zelena) { st.svj = s; primijeniSvjetla(); }
+}
+function treperi() { return st.svj.crvena === 'treperi' || st.svj.narancasta === 'treperi' || st.svj.zelena === 'treperi'; }
+
+/* ------------------------------------------------------------------ prikaz: stanica, zrake, rastavljanje, mjerilo */
+function postaviStanicu(v) {
+  if (!imaStanicu) return;
+  st.stanica = !!v;
+  if (st.stanica) {
+    st.sx = odo.x + Math.cos(odo.phi) * RAZMAK_STANICE; st.sy = odo.y + Math.sin(odo.phi) * RAZMAK_STANICE; st.sphi = odo.phi + PI;
+    r.stanica.postaviPozu(st.sx, st.sy, st.sphi);
+  } else { if (st.dock) zaustaviProgram(); st.spojen = false; }
+  r.stanica.grupa.visible = st.stanica; oznaci('stanica', st.stanica);
+  azurirajZrake(); crtaj();
+}
+function azurirajZrake() {
+  var p = poza();
+  if (st.ir) { var d = K.senzoriIR(p, prepreke('ir')); r.zrakeIR(d); st.irMin = Math.min.apply(null, d); } else { r.zrakeIR(null); st.irMin = null; }
+  if (st.laser && MJERE.laser && KONFIG.laser) r.zrakeLaser(K.laserSken(p, prepreke('laser'), 241).dometi); else r.zrakeLaser(null);
+}
+function postaviMjerilo(m) {
+  var k = m / st.mjerilo; st.mjerilo = m;
+  if (xr && xr.postavljen) korijenXR();
+  else if (!xr) { svijet.scale.setScalar(m); upr.target.multiplyScalar(k); kamera.position.multiplyScalar(k); upr.update(); }
+  sjenaOkvir(m);
+  var t = 'Mjerilo 1 : ' + (m === 1 ? '1' : '2');
+  document.querySelectorAll('[data-akcija="mjerilo"]').forEach(function (b) { b.textContent = t; b.setAttribute('aria-pressed', m !== 1 ? 'true' : 'false'); });
+  poruka(m === 1 ? 'Robot je u stvarnoj veličini.' : 'Robot je prikazan u pola stvarne veličine (mjerilo 1 : 2).');
+  crtaj();
+}
+function pocetniPolozaj(tiho) {
+  zaustaviProgram(); postaviRucno(0, 0, 0); drzi = {}; tipkeStanje();
+  odo.postavi(0, 0, 0); odo.resetirajInkremente(); st.v = { vx: 0, vy: 0, w: 0 }; st.m = [0, 0, 0];
+  st.kut = [0, 0, 0]; st.valj = [0, 0, 0]; st.spojen = false;
+  r.postaviPozu(0, 0, 0); r.postaviKotace(st.kut, st.valj);
+  if (st.stanica) postaviStanicu(true);
+  azurirajZrake(); ispisi(true);
+  if (!tiho) poruka('Robot je na početnom mjestu' + (st.stanica ? ', stanica za punjenje je 1 m ispred njega.' : '.'));
+  crtaj();
+}
+
+/* ------------------------------------------------------------------ naredbe (isti gumbi na stranici i u AR sloju) */
+function akcija(ime) {
+  switch (ime) {
+    case 'stani': zaustaviProgram(); postaviRucno(0, 0, 0); poruka('Robot stoji.'); break;
+    case 'kvadrat': case 'krug': case 'rak': case 'okret': pokreniDemo(ime); break;
+    case 'pristajanje': pokreniPristajanje(); break;
+    case 'pocetni': pocetniPolozaj(false); break;
+    case 'stanica': postaviStanicu(!st.stanica); poruka(st.stanica ? 'Stanica za punjenje je postavljena 1 m ispred robota.' : 'Stanica za punjenje je sakrivena.'); break;
+    case 'ir': st.ir = !st.ir; oznaci('ir', st.ir); azurirajZrake(); poruka(st.ir ? 'Zrake ' + SENZORI.ir.broj + ' infracrvenih senzora (domet ' + br(SENZORI.ir.dometMax * 100, 0) + ' cm); narančasta zraka je pogodila prepreku.' : 'Zrake IR senzora su skrivene.'); break;
+    case 'laser': st.laser = !st.laser; oznaci('laser', st.laser); azurirajZrake(); poruka(st.laser ? 'Lepeza laserskog skenera; crvene točke su odrazi (stanica je niža od ravnine skeniranja, pa laser vidi samo njezine markere).' : 'Lepeza lasera je skrivena.'); break;
+    case 'rastavi':
+      st.rastCilj = st.rastCilj > 0 ? 0 : 1; oznaci('rastavi', st.rastCilj > 0);
+      if (st.rastCilj > 0) { zaustaviProgram(); postaviRucno(0, 0, 0); poruka('Robot se rastavlja: obod, pokrovi, upravljačka jedinica, pogonske jedinice, baterije i nadogradnja razmiču se.'); }
+      else poruka('Robot se sastavlja.');
+      break;
+    case 'mjerilo': postaviMjerilo(st.mjerilo === 1 ? 0.5 : 1); break;
+    case 'auto': st.auto = !st.auto; oznaci('auto', st.auto); svjetlaAuto(); poruka(st.auto ? 'Signalni stup prati stanje robota.' : 'Signalni stup upravljaš ručno.'); break;
+    case 'crvena': case 'narancasta': case 'zelena':
+      st.auto = false; oznaci('auto', false);
+      var s = st.svj[ime]; st.svj = Object.assign({}, st.svj); st.svj[ime] = s === 0 ? 1 : s === 1 ? 'treperi' : 0; primijeniSvjetla();
+      var z = ZNACENJE[ime]; poruka(IME_BOJE[ime] + ': ' + (st.svj[ime] === 0 ? 'ugašena.' : st.svj[ime] === 1 ? 'svijetli stalno — ' + z.stalno + '.' : 'treperi — ' + z.treperi + '.'));
+      break;
+    case 'gljiva':
+      st.gljiva = !st.gljiva; oznaci('gljiva', st.gljiva);
+      document.querySelectorAll('[data-akcija="gljiva"]').forEach(function (b) { b.textContent = st.gljiva ? 'Otpusti nužni stop' : 'Nužni stop'; });
+      if (st.gljiva) { st.resetCeka = true; zaustaviProgram(); postaviRucno(0, 0, 0); st.v = { vx: 0, vy: 0, w: 0 }; r.lampicaReset(true); poruka('NUŽNI STOP: pogoni su isključeni, robot je odmah stao. Lampica Reset svijetli.'); }
+      else poruka('Gljiva je otpuštena — robot i dalje ne smije krenuti. Pritisni RESET.');
+      svjetlaAuto(); break;
+    case 'reset':
+      if (st.gljiva) poruka('RESET ne djeluje dok je gljiva nužnog stopa pritisnuta — najprije je otpusti.');
+      else if (st.resetCeka) { st.resetCeka = false; r.lampicaReset(false); poruka('RESET: sigurnosni krug je potvrđen, lampica Reset se ugasila — robot smije voziti.'); }
+      else poruka('RESET nije potreban: sigurnosni krug je u radnom stanju.');
+      svjetlaAuto(); break;
+  }
+  crtaj();
+}
+document.addEventListener('click', function (e) {
+  var b = e.target.closest ? e.target.closest('[data-akcija]') : null;
+  if (b) akcija(b.getAttribute('data-akcija'));
+});
+
+/* ------------------------------------------------------------------ korak simulacije */
+function korak(dt) {
+  if (!(dt > 0)) return;
+  if (st.rast !== st.rastCilj) {
+    var dd = dt / 0.9; st.rast = st.rastCilj > st.rast ? Math.min(st.rastCilj, st.rast + dd) : Math.max(st.rastCilj, st.rast - dd);
+    var u = st.rast; r.rastavi(u * u * (3 - 2 * u));
+  }
+  var c = { vx: 0, vy: 0, w: 0 }, stop = st.gljiva || st.resetCeka;
+  if (!blokirano()) {
+    if (st.demo) c = korakDemo(dt);
+    else if (st.dock) c = korakPristajanja();
+    else c = { vx: st.rucno.vx + st.tipke.vx, vy: st.rucno.vy + st.tipke.vy, w: st.rucno.w + st.tipke.w };
+  }
+  var o = K.ogranici(c.vx, c.vy, c.w, OGR); st.faktor = o.faktor;
+  var dvx = o.vx - st.v.vx, dvy = o.vy - st.v.vy, dw = o.w - st.v.w;
+  var n = stop ? 1 : Math.max(1, Math.hypot(dvx, dvy) / (AMAX * dt), Math.abs(dw) / (ALFA * dt));
+  st.v.vx += dvx / n; st.v.vy += dvy / n; st.v.w += dw / n;
+  if (Math.abs(st.v.vx) < 1e-7 && Math.abs(st.v.vy) < 1e-7 && Math.abs(st.v.w) < 1e-7) st.v = { vx: 0, vy: 0, w: 0 };
+  var m = K.inverzna(st.v.vx, st.v.vy, st.v.w), giba = m.some(function (q) { return q !== 0; });
+  if (giba) {
+    var x0 = odo.x, y0 = odo.y, p0 = odo.phi;
+    odo.korak(dt, m);
+    var sudar = st.stanica && K.sudarKrug(poza(), prepreke('sudar')), van = Math.hypot(odo.x, odo.y) > GRANICA;
+    if (sudar || van) {
+      odo.x = x0; odo.y = y0; odo.phi = p0; st.v = { vx: 0, vy: 0, w: 0 }; m = [0, 0, 0]; giba = false;
+      zaustaviProgram(); postaviRucno(0, 0, 0); drzi = {}; st.tipke = { vx: 0, vy: 0, w: 0 };
+      poruka(sudar ? 'Robot bi udario u stanicu za punjenje — zaustavljen je. Odvezi ga u drugom smjeru ili pokreni pristajanje.'
+        : 'Robot je stigao do ruba prikaza (' + br(GRANICA, 0) + ' m od početnog mjesta). Vrati ga ili pritisni Početni položaj.');
+    }
+    if (st.spojen && !st.dock) { var Dp = K.pozaPristajanja(st.sx, st.sy, st.sphi); if (Math.hypot(odo.x - Dp.x, odo.y - Dp.y) > 0.005) { st.spojen = false; poruka('Robot se odvojio od stanice za punjenje.'); } }
+  }
+  st.m = m;
+  var bv = K.brzineValjaka(st.v.vx, st.v.vy, st.v.w), rv = MJERE.valjci.promjer / 2;
+  for (var i = 0; i < 3; i++) { st.kut[i] += K.kutKotaca(m[i], dt); st.valj[i] += bv[i] / rv * dt; }
+  if (giba) { r.postaviKotace(st.kut, st.valj); r.postaviPozu(odo.x, odo.y, odo.phi); azurirajZrake(); }
+  svjetlaAuto();
+  ispisT += dt; if (ispisT > 0.1 || !giba) { ispisT = 0; ispisi(); }
+}
+function ispisi(sve) {
+  var nm = POGON.nMotMax, t = st.m.map(function (q) { return Math.round(q); }).join(',') + '|' + br(odo.x, 2) + br(odo.y, 2) + br(odo.phi, 2) + st.irMin + st.faktor;
+  if (!sve && t === zadnjiIspis) return; zadnjiIspis = t;
+  st.m.forEach(function (q, i) {
+    document.getElementById('m' + (i + 1) + '-out').textContent = br(q, 0) + ' 1/min';
+    var bar = document.querySelectorAll('#motori .traka i')[i], f = Math.min(1, Math.abs(q) / nm) * 50;
+    bar.style.left = (q >= 0 ? 50 : 50 - f) + '%'; bar.style.width = f + '%';
+  });
+  var fi = odo.phi / D; fi = ((fi + 180) % 360 + 360) % 360 - 180;
+  document.getElementById('poza').innerHTML = 'Položaj: <b>x = ' + br(odo.x, 2) + ' m</b>, <b>y = ' + br(odo.y, 2) + ' m</b>, <b>φ = ' + br(fi, 0) + '°</b>' +
+    ' · brzina ' + br(Math.hypot(st.v.vx, st.v.vy), 2) + ' m/s, ' + br(st.v.w, 2) + ' rad/s' +
+    (st.faktor < 0.999 ? ' · <b>ograničeno na ' + br(st.faktor * 100, 0) + ' %</b>' : '') +
+    (st.irMin != null ? ' · najbliža prepreka (IR): ' + (st.irMin < SENZORI.ir.dometMax - 1e-6 ? br(st.irMin * 100, 0) + ' cm' : 'nema u dometu') : '');
+  document.getElementById('xr-mot').textContent = st.m.map(function (q, i) { return 'M' + (i + 1) + ' ' + br(q, 0); }).join(' · ') + ' 1/min';
+}
+
+/* ------------------------------------------------------------------ iscrtavanje na zahtjev (izvan proširene stvarnosti) */
+function aktivno() {
+  return !!(st.demo || st.dock || st.rast !== st.rastCilj || treperi() || st.rucno.vx || st.rucno.vy || st.rucno.w || st.tipke.vx || st.tipke.vy || st.tipke.w ||
+    Math.abs(st.v.vx) > 0 || Math.abs(st.v.vy) > 0 || Math.abs(st.v.w) > 0);
+}
+function pratiSunce() {
+  r.korijen.getWorldPosition(_p); var m = st.mjerilo;
+  sunce.position.set(_p.x + 1.2 * m, _p.y + 2.6 * m, _p.z + 1.4 * m); sunce.target.position.copy(_p);
+}
+function crtaj() { if (renderer.xr.isPresenting) return; if (!rafId) rafId = requestAnimationFrame(petlja); }
+function petlja(t) {
+  rafId = 0;
+  if (renderer.xr.isPresenting) return;
+  var dt = zadnjeT ? Math.min(0.05, (t - zadnjeT) / 1000) : 0; zadnjeT = t;
+  korak(dt);
+  var pomak = upr.update();
+  pratiSunce();
+  renderer.render(scena, kamera);
+  if (aktivno() || pomak) crtaj(); else zadnjeT = 0;
+}
+upr.addEventListener('change', crtaj);
+
+/* početni pogled: na uskom zaslonu (mobitel) kamera se odmakne da robot i stanica stanu u prikaz */
+var POGLED = kamera.position.clone().sub(upr.target), okrenuto = false;
+upr.addEventListener('start', function () { okrenuto = true; });
+function velicina() {
+  var w = kut.clientWidth, h = kut.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h, false); kamera.aspect = w / h; kamera.updateProjectionMatrix();
+  if (!okrenuto && !renderer.xr.isPresenting) kamera.position.copy(upr.target).addScaledVector(POGLED, Math.max(1, 1.05 * h / w) * st.mjerilo);
+  crtaj();
+}
+new ResizeObserver(velicina).observe(kut); velicina();
+new MutationObserver(boje).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', boje);
+boje();
+
+/* ------------------------------------------------------------------ proširena stvarnost u pregledniku (WebXR: Chrome na Androidu) */
+/* sidro (WebXR Anchors): svijet ostaje vezan uz stvarnu točku na podu dok se robot obilazi.
+   svijet = A_sad · inv(A_0) · T(p0) · Ry(smjer) · S(mjerilo); A_0 je prva poza sidra, A_sad trenutna (standard v06). */
+var sidroP0 = new THREE.Vector3(), sidroSad = new THREE.Matrix4(), sidroInv0 = new THREE.Matrix4(), korM = new THREE.Matrix4(), pomM = new THREE.Matrix4();
+var _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _Y = new THREE.Vector3(0, 1, 0);
+function korijenXR() {
+  korM.compose(sidroP0, _q.setFromAxisAngle(_Y, xrSmjer), _s.setScalar(st.mjerilo));
+  if (xr && xr.sidro && xr.imaPozu) korM.premultiply(pomM.multiplyMatrices(sidroSad, sidroInv0));
+  korM.decompose(svijet.position, svijet.quaternion, svijet.scale);
+}
+var XR_INACICA = 'v06';
+var sloj = document.getElementById('xr-sloj'), uputa = document.getElementById('xr-uputa'), xrGumb = document.getElementById('xr-gumb');
+function stanjeSidra(t) { var el = document.getElementById('xr-sidro'); if (el && el.textContent !== t) el.textContent = t; }
+function presidri() {
+  sidroP0.copy(svijet.position);
+  xrSmjer = new THREE.Euler().setFromQuaternion(svijet.quaternion, 'YXZ').y;
+  pustiSidro(); korijenXR(); xr.trebaSidro = true; xr.slobodno = true; xr.presidreno++;
+}
+function pustiSidro() {
+  if (xr && xr.sidro) { try { xr.sidro.delete(); } catch (e) { } }
+  if (xr) { xr.sidro = null; xr.imaPozu = false; xr.trebaSidro = false; }
+}
+function sidriUOkviru(frame, ref) {
+  xr.trebaSidro = false;
+  function gotovo(a) {
+    if (!xr || !xr.postavljen) { try { a.delete(); } catch (e) { } return; }
+    xr.sidro = a; xr.imaPozu = false; xr.izgubljeno = 0; xr.sidroStanje = 'da'; uputa.textContent = 'Robot je usidren na podu. Vozi ga plohom, a robota slobodno obiđi.';
+  }
+  function nijeUspjelo() { if (xr) xr.sidroStanje = 'ne'; if (xr && !xr.presidreno) uputa.textContent = 'Robot je postavljen (uređaj ne podržava sidra, pa može malo plivati). Vozi ga plohom.'; }
+  try {
+    var rr = xr.izvor ? frame.getHitTestResults(xr.izvor) : [];
+    var hp = rr.length ? rr[0].getPose(ref) : null;
+    if (!xr.slobodno && hp && rr[0].createAnchor && Math.hypot(hp.transform.position.x - sidroP0.x, hp.transform.position.y - sidroP0.y, hp.transform.position.z - sidroP0.z) < 0.25) {
+      rr[0].createAnchor().then(gotovo, nijeUspjelo); return;
+    }
+    if (frame.createAnchor) {
+      frame.createAnchor(new XRRigidTransform({ x: sidroP0.x, y: sidroP0.y, z: sidroP0.z }), ref).then(gotovo, nijeUspjelo); return;
+    }
+  } catch (e) { }
+  nijeUspjelo();
+}
+['.xr-vrh', '.xr-dno'].forEach(function (q) {
+  sloj.querySelector(q).addEventListener('beforexrselect', function (e) { e.preventDefault(); });
+});
+sloj.querySelectorAll('[data-kartica]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var k = b.getAttribute('data-kartica');
+    sloj.querySelectorAll('[data-kartica]').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+    sloj.querySelectorAll('[data-ploca]').forEach(function (p) { p.hidden = p.getAttribute('data-ploca') !== k; });
+  });
+});
+if (navigator.xr && navigator.xr.isSessionSupported) {
+  navigator.xr.isSessionSupported('immersive-ar').then(function (ok) {
+    if (!ok) return;
+    xrGumb.hidden = false;
+    var stari = document.getElementById('ar-gumb');
+    stari.classList.add('tanki');
+    stari.lastChild.textContent = 'Brzi prikaz (bez vožnje)';
+    document.getElementById('ar-poruka').textContent = '';
+  }).catch(function () {});
+}
+function novoStanjeXR(s) {
+  return { s: s, izvor: null, postavljen: false, sidro: null, imaPozu: false, trebaSidro: false, slobodno: false, izgubljeno: 0, presidreno: 0, sidroStanje: '', okvir: 0 };
+}
+/* postavljanje na točku p (krug iz hit-testa); prednja strana robota (os x, laser) okrenuta od kamere c, stanica 1 m dalje */
+function postaviNa(p, c) {
+  sidroP0.copy(p);
+  xrSmjer = Math.atan2(-(p.z - c.z), p.x - c.x);
+  pocetniPolozaj(true);
+  pustiSidro(); korijenXR();
+  svijet.visible = true; xr.postavljen = true; xr.trebaSidro = true; xr.slobodno = false; xr.presidreno = 0; xr.sidroStanje = 'čekam'; krug.visible = false;
+  uputa.textContent = 'Robot je postavljen, sidrim ga na pod…';
+}
+var xrZadnjeT = 0;
+function xrPetlja(t, frame) {
+  var dt = xrZadnjeT ? Math.min(0.05, (t - xrZadnjeT) / 1000) : 0; xrZadnjeT = t;
+  korak(dt);
+  if (frame && xr) okvirXR(frame, renderer.xr.getReferenceSpace());
+  pratiSunce();
+  renderer.render(scena, kamera);
+}
+xrGumb.addEventListener('click', function () {
+  sloj.hidden = false;
+  navigator.xr.requestSession('immersive-ar', {
+    requiredFeatures: ['hit-test'], optionalFeatures: ['dom-overlay', 'anchors'], domOverlay: { root: sloj }
+  }).then(function (s) {
+    renderer.xr.enabled = true;
+    renderer.xr.setReferenceSpaceType('local');
+    return renderer.xr.setSession(s).then(function () {
+      xr = novoStanjeXR(s); xrZadnjeT = 0;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+      renderer.setAnimationLoop(xrPetlja);
+      mreza.visible = false; svijet.visible = false;
+      uputa.textContent = 'Usmjeri kameru prema podu i polako pomiči mobitel dok se ne pojavi krug.'; stanjeSidra('');
+      s.requestReferenceSpace('viewer').then(function (vs) {
+        return s.requestHitTestSource({ space: vs });
+      }).then(function (iz) { if (xr) xr.izvor = iz; });
+      s.addEventListener('select', function () {
+        if (!xr || xr.postavljen || !krug.visible) return;
+        postaviNa(new THREE.Vector3().setFromMatrixPosition(krug.matrix), renderer.xr.getCamera().position);
+      });
+      s.addEventListener('end', function () {
+        if (xr && xr.izvor) xr.izvor.cancel();
+        pustiSidro(); xr = null; renderer.setAnimationLoop(null); renderer.xr.enabled = false; sloj.hidden = true;
+        svijet.position.set(0, 0, 0); svijet.rotation.set(0, 0, 0); svijet.scale.setScalar(st.mjerilo); svijet.visible = true;
+        xrSmjer = 0; mreza.visible = true; krug.visible = false; zadnjeT = 0; velicina(); crtaj();
+      });
+    });
+  }).catch(function (e) {
+    sloj.hidden = true;
+    document.getElementById('ar-poruka').textContent = 'Proširena stvarnost u pregledniku nije se mogla pokrenuti (' + (e && e.message ? e.message : e) + '). Probaj brzi prikaz.';
+  });
+});
+document.getElementById('xr-izlaz').addEventListener('click', function () { if (xr) xr.s.end(); });
+document.getElementById('xr-premjesti').addEventListener('click', function () {
+  if (!xr) return; pustiSidro(); stanjeSidra(''); xr.postavljen = false; svijet.visible = false;
+  uputa.textContent = 'Dodirni krug na podu da ponovno postaviš robota.';
+});
+var _sk = new THREE.Matrix4();
+/* jedan okvir proširene stvarnosti: krug iz hit-testa, sidro, obnova sidra, red stanja (standard v06) */
+function okvirXR(frame, ref) {
+  if (!xr.postavljen && xr.izvor) {
+    var rr = frame.getHitTestResults(xr.izvor);
+    var p = rr.length ? rr[0].getPose(ref) : null;
+    if (p) { krug.visible = true; krug.matrix.fromArray(p.transform.matrix).multiply(_sk.makeScale(st.mjerilo, st.mjerilo, st.mjerilo)); uputa.textContent = 'Dodirni krug da postaviš robota (krug je veličine njegove osnovice).'; }
+    else krug.visible = false;
+  }
+  if (xr.postavljen) {
+    if (xr.trebaSidro) sidriUOkviru(frame, ref);
+    if (xr.sidro) {
+      var ap = frame.trackedAnchors && !frame.trackedAnchors.has(xr.sidro) ? null : frame.getPose(xr.sidro.anchorSpace, ref);
+      if (ap) { sidroSad.fromArray(ap.transform.matrix); if (!xr.imaPozu) { sidroInv0.copy(sidroSad).invert(); xr.imaPozu = true; } korijenXR(); xr.izgubljeno = 0; }
+      else if (xr.imaPozu && ++xr.izgubljeno > 45) presidri();
+    }
+    if (++xr.okvir % 15 === 0) {
+      var vp = frame.getViewerPose(ref);
+      stanjeSidra(vp && vp.emulatedPosition ? 'Praćenje kamere je slabo: polako pomiči mobitel, osvijetli pod ili stavi na pod nešto s uzorkom.'
+        : xr.sidroStanje === 'da' ? 'Sidro: aktivno' + (xr.presidreno ? ' (obnovljeno ' + xr.presidreno + '×)' : '') + (xr.izgubljeno ? ', traži plohu…' : '') + ' · ' + XR_INACICA
+        : xr.sidroStanje === 'ne' ? 'Sidro: preglednik ga ne podržava · ' + XR_INACICA : 'Sidro: postavljam… · ' + XR_INACICA);
+    }
+  }
+}
+
+/* početno stanje */
+postaviStanicu(true); primijeniSvjetla(); azurirajZrake(); ispisi(true); crtaj();
+
+/* za provjeru (testovi): stanje, model, korak simulacije i logika sidra s lažnim okvirima */
+window.FTQ_AR = {
+  model: r, renderer: renderer, svijet: svijet, korijen: svijet, stanje: st, odo: odo, K: K, akcija: akcija, postaviRucno: postaviRucno,
+  korak: function (dt, n) { for (var i = 0; i < (n || 1); i++) korak(dt); r.postaviPozu(odo.x, odo.y, odo.phi); ispisi(true); crtaj(); return poza(); },
+  korijenXR: korijenXR, xrPokreni: function (s) { xr = novoStanjeXR(s); return xr; }, xrStanje: function () { return xr; },
+  postaviNa: postaviNa, okvirXR: okvirXR, aktivno: aktivno, spreman: true
+};
+</script>
+</body>
+</html>
