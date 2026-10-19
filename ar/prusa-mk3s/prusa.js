@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import * as CIT from './citac.js?v=01';
+import * as CIT from './citac.js?v=02';
 
 const $ = id => document.getElementById(id);
 const D2R = Math.PI / 180;
@@ -87,13 +87,20 @@ glbLoader.load('prusa_mk3s.glb', g => {
   pogled('pisac'); window.FTQ_SPREMNO = true;
 }, undefined, () => { $('ucitavanje').textContent = 'Model pisača se nije mogao učitati. Stranicu otvori preko poslužitelja, ne izravno iz datoteke.'; });
 
-// ---------------- model na podlozi ----------------
-const M = { ime: '', T0: null, rot: new THREE.Matrix4(), rz: 0, mj: 100, x: RADNI.x / 2, y: RADNI.y / 2, kopije: 1, T: null, an: null, postavke3mf: null };
-const duh = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshStandardMaterial({ color: 0x2ECAD4, transparent: true, opacity: 0.35, roughness: 0.6, metalness: 0, side: THREE.DoubleSide, depthWrite: false }));
+// ---------------- predmeti na podlozi (jedan ili više različitih modela) ----------------
+// Svaki predmet ima svoj položaj, zakret, mjerilo i broj komada. M.ime, M.T0, M.rot, M.rz, M.mj, M.x, M.y, M.kopije su polja ODABRANOG predmeta;
+// M.T su trokuti svih predmeta zajedno (to se reže), M.uk ukupne mjere, M.cx/M.cy središte svih predmeta.
+const PRED = []; let A = -1;
+const PRAZNO = { ime: '', T0: null, rot: new THREE.Matrix4(), rz: 0, mj: 100, x: RADNI.x / 2, y: RADNI.y / 2, kopije: 1 };
+const M = { T: null, an: null, postavke3mf: null, cx: RADNI.x / 2, cy: RADNI.y / 2 };
+['ime', 'T0', 'rot', 'rz', 'mj', 'x', 'y', 'kopije'].forEach(k => Object.defineProperty(M, k, { enumerable: true, get: () => (PRED[A] || PRAZNO)[k], set: v => { (PRED[A] || PRAZNO)[k] = v; } }));
+const RAZMAK = 6;   // razmak komada istog predmeta (mm)
+const duh = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, transparent: true, opacity: 0.35, roughness: 0.6, metalness: 0, side: THREE.DoubleSide, depthWrite: false }));
 duh.renderOrder = 2; stol.add(duh);
-function postavljeniTrokuti() {
-  const T0 = M.T0; if (!T0) return null;
-  const m = new THREE.Matrix4().makeRotationZ(M.rz * D2R).multiply(M.rot), e = m.elements, s = M.mj / 100;
+const BOJA_AKT = new THREE.Color(0x2ECAD4), BOJA_OST = new THREE.Color(0xA9BCC6);
+function trokutiPredmeta(p) {   // trokuti jednog predmeta (sa svim komadima) na podlozi, u mm
+  const T0 = p.T0;
+  const m = new THREE.Matrix4().makeRotationZ(p.rz * D2R).multiply(p.rot), e = m.elements, s = p.mj / 100;
   const n = T0.length / 3, P = new Float32Array(T0.length);
   let x0 = 1e9, y0 = 1e9, z0 = 1e9, x1 = -1e9, y1 = -1e9, z1 = -1e9;
   for (let i = 0; i < n; i++) {
@@ -102,28 +109,147 @@ function postavljeniTrokuti() {
     P[3 * i] = X; P[3 * i + 1] = Y; P[3 * i + 2] = Z;
     if (X < x0) x0 = X; if (X > x1) x1 = X; if (Y < y0) y0 = Y; if (Y > y1) y1 = Y; if (Z < z0) z0 = Z; if (Z > z1) z1 = Z;
   }
-  const w = x1 - x0, d = y1 - y0, k = Math.max(1, Math.min(9, M.kopije | 0)), stup = Math.ceil(Math.sqrt(k)), red = Math.ceil(k / stup), razmak = 6;
-  const W = stup * w + (stup - 1) * razmak, D = red * d + (red - 1) * razmak;
-  const out = new Float32Array(P.length * k);
-  for (let c = 0; c < k; c++) {
-    const ox = M.x - W / 2 + (c % stup) * (w + razmak) - x0, oy = M.y - D / 2 + Math.floor(c / stup) * (d + razmak) - y0;
-    for (let i = 0; i < n; i++) { out[(c * n + i) * 3] = P[3 * i] + ox; out[(c * n + i) * 3 + 1] = P[3 * i + 1] + oy; out[(c * n + i) * 3 + 2] = P[3 * i + 2] - z0; }
+  const w = x1 - x0, d = y1 - y0, k = Math.max(1, Math.min(9, p.kopije | 0)), stup = Math.ceil(Math.sqrt(k)), red = Math.ceil(k / stup);
+  const W = stup * w + (stup - 1) * RAZMAK, Dd = red * d + (red - 1) * RAZMAK;
+  return { P, n, k, stup, w, d, x0, y0, z0, dim: [w, d, z1 - z0], uk: [W, Dd, z1 - z0] };
+}
+function smjestiPredmet(p, r, out, o) {   // upiši komade predmeta p (r = trokutiPredmeta(p)) u out od indeksa o
+  const W = r.uk[0], Dd = r.uk[1];
+  for (let c = 0; c < r.k; c++) {
+    const ox = p.x - W / 2 + (c % r.stup) * (r.w + RAZMAK) - r.x0, oy = p.y - Dd / 2 + Math.floor(c / r.stup) * (r.d + RAZMAK) - r.y0;
+    for (let i = 0; i < r.n; i++) { const j = o + (c * r.n + i) * 3; out[j] = r.P[3 * i] + ox; out[j + 1] = r.P[3 * i + 1] + oy; out[j + 2] = r.P[3 * i + 2] - r.z0; }
   }
-  return { T: out, dim: [w, d, z1 - z0], uk: [W, D, z1 - z0] };
+  return o + r.k * r.n * 3;
+}
+function postavljeniTrokuti() {
+  if (!PRED.length) return null;
+  const R = PRED.map(trokutiPredmeta);
+  let n = 0; R.forEach(r => n += r.k * r.n * 3);
+  const T = new Float32Array(n), C = new Float32Array(n), dijelovi = [];
+  let o = 0, X0 = 1e9, Y0 = 1e9, X1 = -1e9, Y1 = -1e9, H = 0;
+  PRED.forEach((p, i) => {
+    const r = R[i], o1 = smjestiPredmet(p, r, T, o), c = PRED.length > 1 && i !== A ? BOJA_OST : BOJA_AKT;
+    for (let j = o; j < o1; j += 3) { C[j] = c.r; C[j + 1] = c.g; C[j + 2] = c.b; }
+    const b = [p.x - r.uk[0] / 2, p.y - r.uk[1] / 2, p.x + r.uk[0] / 2, p.y + r.uk[1] / 2];
+    dijelovi.push({ od: o / 3, do: o1 / 3, box: b, dim: r.dim, uk: r.uk });
+    X0 = Math.min(X0, b[0]); Y0 = Math.min(Y0, b[1]); X1 = Math.max(X1, b[2]); Y1 = Math.max(Y1, b[3]); H = Math.max(H, r.uk[2]);
+    o = o1;
+  });
+  const a = dijelovi[Math.max(0, A)];
+  return { T, C, dijelovi, dim: a.dim, ukA: a.uk, uk: [X1 - X0, Y1 - Y0, H], sred: [(X0 + X1) / 2, (Y0 + Y1) / 2], box: [X0, Y0, X1, Y1] };
+}
+let raspored = null;
+function preklapanja(r) {   // parovi predmeta čiji se tlocrti preklapaju
+  const L = [], d = r.dijelovi;
+  for (let i = 0; i < d.length; i++) for (let j = i + 1; j < d.length; j++) {
+    const a = d[i].box, b = d[j].box;
+    if (a[0] < b[2] - 0.01 && b[0] < a[2] - 0.01 && a[1] < b[3] - 0.01 && b[1] < a[3] - 0.01) L.push([i, j]);
+  }
+  return L;
 }
 function obnoviModel(bezRezanja) {
   const r = postavljeniTrokuti(); if (!r) return;
-  M.T = r.T; M.dim = r.dim; M.uk = r.uk;
-  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(r.T, 3)); g.computeVertexNormals();
+  raspored = r; M.T = r.T; M.dim = r.dim; M.uk = r.uk; M.cx = r.sred[0]; M.cy = r.sred[1];
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(r.T, 3)); g.setAttribute('color', new THREE.BufferAttribute(r.C, 3)); g.computeVertexNormals();
   duh.geometry.dispose(); duh.geometry = g;
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (let i = 0; i < r.T.length; i += 3) { x0 = Math.min(x0, r.T[i]); x1 = Math.max(x1, r.T[i]); y0 = Math.min(y0, r.T[i + 1]); y1 = Math.max(y1, r.T[i + 1]); }
   const stane = x0 >= -0.01 && y0 >= -0.01 && x1 <= RADNI.x + 0.01 && y1 <= RADNI.y + 0.01 && r.uk[2] <= RADNI.z + 0.01;
   M.stane = stane;
-  $('stane').textContent = 'Model ' + br(r.dim[0]) + ' × ' + br(r.dim[1]) + ' × ' + br(r.dim[2]) + ' mm' + (M.kopije > 1 ? ' · ' + M.kopije + ' kom. zauzimaju ' + br(r.uk[0]) + ' × ' + br(r.uk[1]) + ' mm' : '') +
-    (stane ? ' — stane u radni prostor 250 × 210 × 210 mm.' : ' — NE stane u radni prostor 250 × 210 × 210 mm: smanji mjerilo, okreni ili pomakni model.');
-  $('stane').className = 'pom' + (stane ? '' : ' upoz');
+  const prek = PRED.length > 1 ? preklapanja(r) : [];
+  M.preklapanja = prek;
+  let t;
+  if (PRED.length > 1) {
+    const kom = PRED.reduce((s, p) => s + Math.max(1, p.kopije | 0), 0);
+    t = 'Odabrani predmet ' + M.ime + ': ' + br(r.dim[0]) + ' × ' + br(r.dim[1]) + ' × ' + br(r.dim[2]) + ' mm' + (M.kopije > 1 ? ', ' + M.kopije + ' kom.' : '') + '. Svi predmeti (' + PRED.length + ', ukupno ' + kom + ' kom.) zauzimaju ' + br(r.uk[0]) + ' × ' + br(r.uk[1]) + ' × ' + br(r.uk[2]) + ' mm' +
+      (stane ? ' — stanu u radni prostor 250 × 210 × 210 mm.' : ' — NE stanu u radni prostor 250 × 210 × 210 mm: klikni „Najveće zajedničko mjerilo”, „Složi sve” ili ukloni predmet.');
+    if (prek.length) t += ' Preklapaju se: ' + prek.slice(0, 4).map(([i, j]) => PRED[i].ime + ' i ' + PRED[j].ime).join('; ') + (prek.length > 4 ? ' i još ' + (prek.length - 4) : '') + ' — klikni „Složi sve” ili ih pomakni.';
+  } else
+    t = 'Model ' + br(r.dim[0]) + ' × ' + br(r.dim[1]) + ' × ' + br(r.dim[2]) + ' mm' + (M.kopije > 1 ? ' · ' + M.kopije + ' kom. zauzimaju ' + br(r.ukA[0]) + ' × ' + br(r.ukA[1]) + ' mm' : '') +
+      (stane ? ' — stane u radni prostor 250 × 210 × 210 mm.' : ' — NE stane u radni prostor 250 × 210 × 210 mm: smanji mjerilo, okreni ili pomakni model.');
+  $('stane').textContent = t;
+  $('stane').className = 'pom' + (stane && !prek.length ? '' : ' upoz');
+  osvjeziPredmete();
   analiziraj();
   if (!bezRezanja) zakaziRezanje();
+}
+function obojiOdabrani() {   // samo boje (bez ponovnog rezanja) kad se promijeni odabrani predmet
+  if (!raspored || !duh.geometry.attributes.color) return;
+  const C = duh.geometry.attributes.color.array;
+  raspored.dijelovi.forEach((d, i) => { const c = PRED.length > 1 && i !== A ? BOJA_OST : BOJA_AKT; for (let j = 3 * d.od; j < 3 * d.do; j += 3) { C[j] = c.r; C[j + 1] = c.g; C[j + 2] = c.b; } });
+  duh.geometry.attributes.color.needsUpdate = true;
+}
+function volumenT0(T) {   // volumen zatvorene mreže u mm³ (zbroj tetraedara)
+  let v = 0; for (let i = 0; i < T.length; i += 9) v += (T[i] * (T[i + 4] * T[i + 8] - T[i + 5] * T[i + 7]) - T[i + 1] * (T[i + 3] * T[i + 8] - T[i + 5] * T[i + 6]) + T[i + 2] * (T[i + 3] * T[i + 7] - T[i + 4] * T[i + 6])) / 6;
+  return Math.abs(v);
+}
+function ulazi() {   // polja „Postavljanje” prema odabranom predmetu
+  $('p-x').value = Math.round(M.x * 10) / 10; $('p-y').value = Math.round(M.y * 10) / 10; $('p-rz').value = Math.round(M.rz); $('p-rz-out').textContent = Math.round(M.rz) + '°';
+  $('p-mj').value = Math.round(M.mj * 100) / 100; $('p-kopije').value = M.kopije;
+}
+function odaberi(i) {
+  if (i < 0 || i >= PRED.length) return;
+  A = i; ulazi(); obojiOdabrani();
+  const d = raspored && raspored.dijelovi[i]; if (d) M.dim = d.dim;
+  osvjeziPredmete();
+  if (raspored) { const r = d; $('stane').textContent = $('stane').textContent.replace(/^Odabrani predmet .*? mm(, \d+ kom\.)?\./, () => 'Odabrani predmet ' + M.ime + ': ' + br(r.dim[0]) + ' × ' + br(r.dim[1]) + ' × ' + br(r.dim[2]) + ' mm' + (M.kopije > 1 ? ', ' + M.kopije + ' kom.' : '') + '.'); }
+}
+const imeP = p => p.ime.replace(/\.(stl|obj|3mf|ply|glb|gltf|step|stp|iges|igs)$/i, '').replace(/</g, '&lt;');
+function osvjeziPredmete() {   // popis predmeta, izbornik i gumbi
+  const vise = PRED.length > 1, sel = $('p-predmet');
+  $('p-predmeti').hidden = !PRED.length;
+  sel.innerHTML = PRED.map((p, i) => '<option value="' + i + '"' + (i === A ? ' selected' : '') + '>' + (i + 1) + '. ' + imeP(p) + '</option>').join('');
+  $('p-ukloni').disabled = !vise; $('p-slozi').disabled = !PRED.length; $('p-najvece').disabled = !PRED.length;
+  const tb = $('p-popis');
+  $('p-red-predmet').hidden = !vise; tb.parentElement.hidden = !vise; tb.hidden = !vise;
+  if (!vise) { tb.innerHTML = ''; return; }
+  let uk = 0, kom = 0;
+  const redovi = PRED.map((p, i) => {
+    const d = raspored && raspored.dijelovi[i], k = Math.max(1, p.kopije | 0), v = p.vol0 * Math.pow(p.mj / 100, 3) * k / 1000; uk += v; kom += k;
+    return '<tr' + (i === A ? ' class="akt"' : '') + '><td><button type="button" class="pr-odaberi" data-i="' + i + '" aria-pressed="' + (i === A) + '">' + (i + 1) + '. ' + imeP(p) + '</button></td><td>' + br(p.mj, p.mj % 1 ? 1 : 0) + ' %</td><td>' + k + '</td><td>' + br(v, 2) + '</td><td>' + (d ? br(d.dim[0], 1) + ' × ' + br(d.dim[1], 1) + ' × ' + br(d.dim[2], 1) : '–') + '</td></tr>';
+  });
+  tb.innerHTML = '<thead><tr><th>Predmet</th><th>Mjerilo</th><th>Kom.</th><th>cm³</th><th>Mjere (mm)</th></tr></thead><tbody>' + redovi.join('') + '</tbody><tfoot><tr><th>Ukupno (' + PRED.length + ')</th><td></td><td>' + kom + '</td><td>' + br(uk, 2) + '</td><td></td></tr></tfoot>';
+  tb.hidden = false;
+}
+function noviPredmet(d, mj) {   // d = { T, ime, info } → predmet sa središtem tlocrta u 0 i dnom na 0
+  const T = d.T; let lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+  for (let i = 0; i < T.length; i += 3) for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], T[i + k]); hi[k] = Math.max(hi[k], T[i + k]); }
+  const c = [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, lo[2]];
+  const T0 = new Float32Array(T.length); for (let i = 0; i < T.length; i += 3) { T0[i] = T[i] - c[0]; T0[i + 1] = T[i + 1] - c[1]; T0[i + 2] = T[i + 2] - c[2]; }
+  return { ime: d.ime, info: d.info, T0, rot: new THREE.Matrix4(), rz: 0, mj, x: c[0], y: c[1], kopije: 1, vol0: volumenT0(T0), dim0: [hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]], lo, hi };
+}
+// Složi sve: police (redovi) slijeva nadesno i sprijeda prema natrag, najdublji prvi; po potrebi zakret 90° (uži tlocrt u dubinu)
+function rubSlaganja() { const v = id => parseFloat(String($(id).value).replace(',', '.')) || 0, o = v('s-obrub') | 0; return { rub: Math.max(2, v('s-brim') + (o > 0 ? 4 + o * 0.45 : 0) + 1), razmak: Math.max(5, 2 * v('s-brim') + 2) }; }
+function slagaj(dim, dimR, okreni, g, Wmax) {
+  const it = dim.map((d, i) => { const r = okreni && dimR[i][1] < d[1] - 0.01 && dimR[i][0] <= Wmax; return { i, w: r ? dimR[i][0] : d[0], h: r ? dimR[i][1] : d[1], r }; });
+  it.sort((a, b) => b.h - a.h || b.w - a.w);
+  let x = 0, y = 0, vis = 0, W = 0; const poz = [];
+  for (const t of it) { if (x > 0 && x + t.w > Wmax + 1e-6) { y += vis + g; x = 0; vis = 0; } poz[t.i] = [x + t.w / 2, y + t.h / 2, t.r]; x += t.w + g; vis = Math.max(vis, t.h); W = Math.max(W, x - g); }
+  return { poz, W, D: y + vis };
+}
+function slozi(bezObnove) {
+  if (!PRED.length) return false;
+  const { rub, razmak } = rubSlaganja(), Wm = RADNI.x - 2 * rub, Dm = RADNI.y - 2 * rub;
+  const dim = PRED.map(p => trokutiPredmeta(p).uk), dimR = PRED.map(p => trokutiPredmeta({ ...p, rz: p.rz + 90 }).uk);
+  const v = [slagaj(dim, dimR, false, razmak, Wm), slagaj(dim, dimR, true, razmak, Wm)];
+  const st = x => x.W <= Wm + 1e-6 && x.D <= Dm + 1e-6;
+  const b = v.filter(st).sort((p, q) => p.D * p.W - q.D * q.W)[0] || v.sort((p, q) => p.D - q.D)[0];
+  const ox = (RADNI.x - b.W) / 2, oy = (RADNI.y - b.D) / 2;
+  PRED.forEach((p, i) => { const [x, y, r] = b.poz[i]; if (r) { p.rz += 90; if (p.rz > 180) p.rz -= 360; } p.x = ox + x; p.y = oy + y; });
+  if (!bezObnove) { ulazi(); obnoviModel(); }
+  return st(b);
+}
+function najveceMjerilo() {   // najveće ISTO mjerilo za sve predmete s kojim svi stanu na podlogu (s razmakom i rubom za obrub)
+  if (!PRED.length) return;
+  const rz0 = PRED.map(p => p.rz), mj0 = PRED.map(p => p.mj);
+  const probaj = s => { PRED.forEach((p, i) => { p.mj = s; p.rz = rz0[i]; }); return slozi(true) && Math.max(...PRED.map(p => trokutiPredmeta(p).uk[2])) <= RADNI.z + 1e-6; };
+  let lo = 0, hi = 100;
+  if (probaj(hi)) { lo = hi; hi = 100000; if (probaj(hi)) lo = hi; }
+  for (let k = 0; k < 40 && hi - lo > 0.01; k++) { const m = (lo + hi) / 2; if (probaj(m)) lo = m; else hi = m; }
+  const s = Math.floor(lo * 10) / 10;
+  if (s <= 0 || !probaj(s)) { PRED.forEach((p, i) => { p.mj = mj0[i]; p.rz = rz0[i]; }); $('najbolji-txt').textContent = 'Predmeti ne stanu na podlogu ni uz vrlo malo mjerilo — ukloni neke predmete ili smanji broj komada.'; ulazi(); obnoviModel(); return; }
+  const { rub, razmak } = rubSlaganja();
+  $('najbolji-txt').textContent = 'Najveće zajedničko mjerilo: ' + br(s, 1) + ' % — ' + (PRED.length > 1 ? 'svih ' + PRED.length + ' predmeta stane' : 'predmet stane') + ' na podlogu (razmak ' + br(razmak, 0) + ' mm, ' + br(rub, 0) + ' mm od ruba zbog obruba i ruba).';
+  ulazi(); obnoviModel(); if (pisacUcitan) pogled('podloga');
 }
 
 // ---------------- radnik: rezanje, G-kod, procjena ----------------
@@ -379,7 +505,7 @@ function gkodProzor(linija) {
   $('gk').innerHTML = h;
 }
 function imeGkoda() {
-  const S = postavke(), osnova = (M.ime || 'model').replace(/\.[^.]+$/, '').replace(/[^A-Za-z0-9_-]+/g, '_');
+  const S = postavke(), osnova = ((PRED[0] || M).ime || 'model').replace(/\.[^.]+$/, '').replace(/[^A-Za-z0-9_-]+/g, '_') + (PRED.length > 1 ? '_i_jos_' + (PRED.length - 1) : '');
   const t = rez ? Math.round(rez.ukupno.t / 60) : 0, hm = t >= 60 ? Math.floor(t / 60) + 'h' + (t % 60) + 'm' : t + 'm';
   return izvor === 'gkod' ? osnova + '.gcode' : osnova + '_' + S.h.toFixed(2) + 'mm_' + S.materijal + '_MK3S_' + hm + '.gcode';
 }
@@ -392,8 +518,10 @@ $('gk-izvoz').addEventListener('click', () => {
 // ---------------- analiza modela ----------------
 function prikaziAnalizu() {
   const a = M.an; if (!a) return;
-  const red = [['Mjere', br(a.hi[0] - a.lo[0], 1) + ' × ' + br(a.hi[1] - a.lo[1], 1) + ' × ' + br(a.hi[2] - a.lo[2], 1) + ' mm'],
-    ['Volumen tijela', br(a.volumen / Math.max(1, M.kopije), 2) + ' cm³' + (M.kopije > 1 ? ' po komadu' : '')], ['Oplošje', br(a.povrsina / Math.max(1, M.kopije), 1) + ' cm²'],
+  const vise = PRED.length > 1, kom = vise ? PRED.reduce((s, p) => s + Math.max(1, p.kopije | 0), 0) : Math.max(1, M.kopije);
+  const red = [[vise ? 'Mjere svih predmeta' : 'Mjere', br(a.hi[0] - a.lo[0], 1) + ' × ' + br(a.hi[1] - a.lo[1], 1) + ' × ' + br(a.hi[2] - a.lo[2], 1) + ' mm'],
+    vise ? ['Volumen tijela', br(a.volumen, 2) + ' cm³ — svi predmeti (' + PRED.length + ', ' + kom + ' kom.)'] : ['Volumen tijela', br(a.volumen / kom, 2) + ' cm³' + (kom > 1 ? ' po komadu' : '')],
+    vise ? ['Oplošje', br(a.povrsina, 1) + ' cm² — svi predmeti'] : ['Oplošje', br(a.povrsina / kom, 1) + ' cm²'],
     ['Trokuta', br(a.trokuta, 0)], ['Otvoreni rubovi', br(a.otvoreni, 0)], ['Rubovi s više od dvije plohe', br(a.viseStruki, 0)], ['Krivo okrenute plohe (rubovi)', br(a.krivi, 0)],
     ['Prepusti (tlocrt)', br(a.prepust, 1) + ' cm² pod kutom manjim od ' + $('s-kut').value + '° od vodoravne'], ['Dodir s podlogom', br(a.dodir, 1) + ' cm²']];
   $('analiza').innerHTML = '<tbody>' + red.map(r => '<tr><th>' + r[0] + '</th><td>' + r[1] + '</td></tr>').join('') + '</tbody>';
@@ -410,45 +538,81 @@ function prikaziAnalizu() {
 }
 
 // ---------------- učitavanje modela ----------------
-function postaviModel(T, ime, info, postavke3mf) {
-  // središte tlocrta na 0, dno na 0 (orijentacija kako je model izvezen: Z gore)
-  let lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
-  for (let i = 0; i < T.length; i += 3) for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], T[i + k]); hi[k] = Math.max(hi[k], T[i + k]); }
-  const c = [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, lo[2]];
-  const T0 = new Float32Array(T.length); for (let i = 0; i < T.length; i += 3) { T0[i] = T[i] - c[0]; T0[i + 1] = T[i + 1] - c[1]; T0[i + 2] = T[i + 2] - c[2]; }
-  Object.assign(M, { ime, T0, rot: new THREE.Matrix4(), rz: 0, mj: 100, x: RADNI.x / 2, y: RADNI.y / 2, kopije: 1, postavke3mf: postavke3mf || null });
-  $('p-x').value = M.x; $('p-y').value = M.y; $('p-rz').value = 0; $('p-rz-out').textContent = '0°'; $('p-mj').value = 100; $('p-kopije').value = 1;
-  const dim = [hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]].map(v => br(v, 1)).join(' × ');
-  $('model-info').innerHTML = '<b>' + ime.replace(/</g, '&lt;') + '</b> · ' + info + ' · ' + br(T.length / 9, 0) + ' trokuta · ' + dim + ' mm';
-  $('s-3mf').hidden = !postavke3mf;
+function postaviModel(T, ime, info, postavke3mf) { postaviPredmete([{ T, ime, info }], postavke3mf, false, false); }
+// lista = [{ T, ime, info }]; dodaj = uz predmete koji su već na podlozi; polozaji = zadrži položaje iz datoteke (3MF s više predmeta)
+function postaviPredmete(lista, postavke3mf, dodaj, polozaji) {
+  if (!dodaj) { PRED.length = 0; M.postavke3mf = null; }
+  const prvi = PRED.length, mj = prvi && $('p-isto').checked ? M.mj : 100;
+  lista.forEach(d => PRED.push(noviPredmet(d, mj)));
+  if (postavke3mf) M.postavke3mf = postavke3mf;
+  A = prvi;
+  if (polozaji && !prvi) {   // položaji iz projekta; ako skupina ne stane, pomakni je na sredinu podloge
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; PRED.forEach(p => { x0 = Math.min(x0, p.lo[0]); y0 = Math.min(y0, p.lo[1]); x1 = Math.max(x1, p.hi[0]); y1 = Math.max(y1, p.hi[1]); });
+    if (x0 < 0 || y0 < 0 || x1 > RADNI.x || y1 > RADNI.y) { const dx = RADNI.x / 2 - (x0 + x1) / 2, dy = RADNI.y / 2 - (y0 + y1) / 2; PRED.forEach(p => { p.x += dx; p.y += dy; }); }
+  } else if (PRED.length === 1) { PRED[0].x = RADNI.x / 2; PRED[0].y = RADNI.y / 2; }
+  else slozi(true);
+  ulazi();
+  const ntri = PRED.reduce((s, p) => s + p.T0.length / 9, 0);
+  if (PRED.length === 1) { const p = PRED[0]; $('model-info').innerHTML = '<b>' + p.ime.replace(/</g, '&lt;') + '</b> · ' + p.info + ' · ' + br(ntri, 0) + ' trokuta · ' + p.dim0.map(v => br(v, 1)).join(' × ') + ' mm'; }
+  else $('model-info').innerHTML = '<b>' + PRED.length + ' predmeta na podlozi</b>' + (dodaj && prvi ? ' (dodano ' + lista.length + ')' : '') + ' · ' + br(ntri, 0) + ' trokuta ukupno · odabrani predmet je istaknut, ostali su sivi; odaberi ga u popisu ili klikom na model.';
+  $('s-3mf').hidden = !M.postavke3mf;
   izvor = 'model'; rez = null; gkodTekst = ''; zaustavi();
   [traka, crte, hodovi].forEach(m => m.geometry.setDrawRange(0, 0));
   duh.visible = true; $('pr-model').checked = true; omoguciPostavke(true);
   obnoviModel();
   if (pisacUcitan) pogled('podloga');
 }
+function ukloni() {
+  if (PRED.length < 2) return;
+  PRED.splice(A, 1); A = Math.min(A, PRED.length - 1); ulazi();
+  $('model-info').innerHTML = PRED.length > 1 ? '<b>' + PRED.length + ' predmeta na podlozi</b>' : '<b>' + PRED[0].ime.replace(/</g, '&lt;') + '</b> · ' + PRED[0].info + ' · ' + br(PRED[0].T0.length / 9, 0) + ' trokuta';
+  rez = null; zaustavi(); [traka, crte, hodovi].forEach(m => m.geometry.setDrawRange(0, 0));
+  obnoviModel();
+}
 function omoguciPostavke(da) { document.querySelectorAll('#k-postavke input, #k-postavke select, #k-polozaj input, #k-polozaj button').forEach(e => e.disabled = !da); $('gk-napomena').hidden = da; }
 function ucitajGkod(tekst, ime) {
-  zaustavi(); M.ime = ime; izvor = 'gkod'; omoguciPostavke(false);
+  zaustavi(); PRED.length = 0; A = -1; raspored = null; M.ime = ime; izvor = 'gkod'; omoguciPostavke(false); osvjeziPredmete();
   duh.visible = false; $('pr-model').checked = false;
   $('model-info').innerHTML = '<b>' + ime.replace(/</g, '&lt;') + '</b> · G-kod · ' + br(tekst.length / 1e6, 2) + ' MB';
   posao++; $('rez-napredak').value = 0.3; $('rez-txt').textContent = 'Čitam G-kod i računam trajanje…';
   radnik.postMessage({ vrsta: 'gkod', id: posao, gkod: tekst, S: postavke() });
 }
-async function datoteka(f) {
+async function datoteka(f, dodaj) {
   $('model-info').textContent = 'Učitavam ' + f.name + '…';
   try {
     const r = await CIT.ucitaj(f);
     if (r.gkod != null) ucitajGkod(r.gkod, f.name);
-    else postaviModel(r.T, f.name, r.info, r.postavke);
+    else if (r.dijelovi) postaviPredmete(r.dijelovi.map(d => ({ T: d.T, ime: d.ime, info: 'iz ' + f.name })), r.postavke, dodaj, !dodaj);
+    else postaviPredmete([{ T: r.T, ime: f.name, info: r.info }], r.postavke, dodaj, false);
   } catch (e) { $('model-info').innerHTML = '<span class="upoz">' + (e.message || e) + '</span>'; }
 }
-$('datoteka').addEventListener('change', e => { if (e.target.files[0]) datoteka(e.target.files[0]); e.target.value = ''; });
+async function datoteke(popis, dodaj) {   // više datoteka odjednom (odabir ili povlačenje); G-kod se uvijek otvara sam
+  const f = [...popis].sort((a, b) => a.name.localeCompare(b.name, 'hr', { numeric: true })); if (!f.length) return;
+  const gk = f.find(x => /\.(gcode|gco|g|bgcode)$/i.test(x.name));
+  if (gk) return datoteka(gk);
+  if (f.length === 1) return datoteka(f[0], dodaj);
+  const lista = [], greske = []; let post = null;
+  for (let i = 0; i < f.length; i++) {
+    $('model-info').textContent = 'Učitavam ' + (i + 1) + ' / ' + f.length + ': ' + f[i].name + '…';
+    try {
+      const r = await CIT.ucitaj(f[i]);
+      if (r.gkod != null) continue;
+      if (r.dijelovi) r.dijelovi.forEach(d => lista.push({ T: d.T, ime: d.ime, info: 'iz ' + f[i].name })); else lista.push({ T: r.T, ime: f[i].name, info: r.info });
+      if (r.postavke) post = r.postavke;
+    } catch (e) { greske.push(f[i].name + ': ' + (e.message || e)); }
+  }
+  if (lista.length) postaviPredmete(lista, post, dodaj, false);
+  if (greske.length) $('model-info').insertAdjacentHTML('beforeend', '<br><span class="upoz">Nije učitano: ' + greske.map(t => t.replace(/</g, '&lt;')).join('; ') + '</span>');
+}
+$('datoteka').multiple = true;
+$('datoteka').addEventListener('change', e => { if (e.target.files.length) datoteke(e.target.files, false); e.target.value = ''; });
+$('datoteka-dodaj').addEventListener('change', e => { if (e.target.files.length) datoteke(e.target.files, true); e.target.value = ''; });
+$('dodaj-model').addEventListener('click', () => $('datoteka-dodaj').click());
 const zona = $('ispust');
 ['dragenter', 'dragover'].forEach(t => zona.addEventListener(t, e => { e.preventDefault(); zona.classList.add('iznad'); }));
 ['dragleave', 'drop'].forEach(t => zona.addEventListener(t, e => { e.preventDefault(); zona.classList.remove('iznad'); }));
-zona.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) datoteka(f); });
-document.addEventListener('dragover', e => e.preventDefault()); document.addEventListener('drop', e => { e.preventDefault(); if (e.target.closest && !e.target.closest('#ispust') && e.dataTransfer.files[0]) datoteka(e.dataTransfer.files[0]); });
+zona.addEventListener('drop', e => { if (e.dataTransfer.files.length) datoteke(e.dataTransfer.files, $('ispust-dodaj').checked); });
+document.addEventListener('dragover', e => e.preventDefault()); document.addEventListener('drop', e => { e.preventDefault(); if (e.target.closest && !e.target.closest('#ispust') && e.dataTransfer.files.length) datoteke(e.dataTransfer.files, $('ispust-dodaj').checked); });
 function primjer(k) {
   const p = window.FTQ_PRIMJERI[k]; if (!p) return;
   const T = new Float32Array(p.f.length * 3); for (let i = 0; i < p.f.length; i++) for (let j = 0; j < 3; j++) T[3 * i + j] = p.v[3 * p.f[i] + j];
@@ -469,11 +633,38 @@ $('p-x').addEventListener('change', () => { M.x = broj('p-x'); obnoviModel(); })
 $('p-y').addEventListener('change', () => { M.y = broj('p-y'); obnoviModel(); });
 $('p-rz').addEventListener('input', () => { $('p-rz-out').textContent = $('p-rz').value + '°'; M.rz = +$('p-rz').value; obnoviModel(true); });
 $('p-rz').addEventListener('change', () => zakaziRezanje());
-$('p-mj').addEventListener('change', () => { M.mj = Math.max(1, broj('p-mj')); obnoviModel(); });
+$('p-mj').addEventListener('change', () => {
+  const s = Math.max(0.1, broj('p-mj') || 100);
+  if ($('p-isto').checked && PRED.length > 1) {
+    PRED.forEach(p => { p.mj = s; });
+    const r = postavljeniTrokuti(); if (r) { raspored = r; if (preklapanja(r).length || r.box[0] < 0 || r.box[1] < 0 || r.box[2] > RADNI.x || r.box[3] > RADNI.y) slozi(true); }
+  } else M.mj = s;
+  ulazi(); obnoviModel();
+});
+$('p-predmet').addEventListener('change', e => odaberi(+e.target.value));
+$('p-popis').addEventListener('click', e => { const b = e.target.closest('.pr-odaberi'); if (b) odaberi(+b.dataset.i); });
+$('p-ukloni').addEventListener('click', ukloni);
+$('p-slozi').addEventListener('click', () => { const ok = slozi(); if (pisacUcitan) pogled('podloga'); const { rub, razmak } = rubSlaganja(); $('najbolji-txt').textContent = ok ? 'Složeno: razmak ' + br(razmak, 0) + ' mm, ' + br(rub, 0) + ' mm od ruba podloge (obrub i rub).' : 'Predmeti ne stanu na podlogu ni složeni — smanji mjerilo („Najveće zajedničko mjerilo”) ili ukloni predmet.'; });
+$('p-najvece').addEventListener('click', najveceMjerilo);
+{ // odabir predmeta klikom na model u prizoru (bez povlačenja)
+  const zraka = new THREE.Raycaster(), mis = new THREE.Vector2(); let dolje = null;
+  renderer.domElement.addEventListener('pointerdown', e => { dolje = [e.clientX, e.clientY]; });
+  renderer.domElement.addEventListener('pointerup', e => {
+    const d = dolje; dolje = null;
+    if (!d || PRED.length < 2 || !duh.visible || xr || !raspored || Math.hypot(e.clientX - d[0], e.clientY - d[1]) > 5) return;
+    const r = renderer.domElement.getBoundingClientRect(); mis.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+    zraka.setFromCamera(mis, kamera); const h = zraka.intersectObject(duh, false)[0]; if (!h) return;
+    const v = h.faceIndex * 3, i = raspored.dijelovi.findIndex(q => v >= q.od && v < q.do); if (i >= 0 && i !== A) odaberi(i);
+  });
+}
 $('p-kopije').addEventListener('change', () => { M.kopije = Math.max(1, Math.min(9, broj('p-kopije') | 0)); obnoviModel(); });
 $('rot-x').addEventListener('click', () => { M.rot.premultiply(new THREE.Matrix4().makeRotationX(Math.PI / 2)); obnoviModel(); });
 $('rot-y').addEventListener('click', () => { M.rot.premultiply(new THREE.Matrix4().makeRotationY(Math.PI / 2)); obnoviModel(); });
-$('centriraj').addEventListener('click', () => { M.x = RADNI.x / 2; M.y = RADNI.y / 2; $('p-x').value = M.x; $('p-y').value = M.y; obnoviModel(); });
+$('centriraj').addEventListener('click', () => {   // jedan predmet na sredinu; više predmeta: cijela skupina na sredinu
+  if (PRED.length > 1 && raspored) { const dx = RADNI.x / 2 - raspored.sred[0], dy = RADNI.y / 2 - raspored.sred[1]; PRED.forEach(p => { p.x += dx; p.y += dy; }); }
+  else { M.x = RADNI.x / 2; M.y = RADNI.y / 2; }
+  ulazi(); obnoviModel();
+});
 function okreniPrema(n) {   // zakreni model tako da normala n gleda prema dolje (−Z)
   const q = new THREE.Quaternion().setFromUnitVectors(n.clone().normalize(), new THREE.Vector3(0, 0, -1));
   M.rot = new THREE.Matrix4().makeRotationFromQuaternion(q); M.rz = 0; $('p-rz').value = 0; $('p-rz-out').textContent = '0°';
@@ -550,8 +741,8 @@ function pogled(v) {
   const c = new THREE.Vector3(), smjer = new THREE.Vector3(); let dist;
   const fov = Math.min(kamera.fov, 2 * Math.atan(Math.tan(kamera.fov * D2R / 2) * kamera.aspect) / D2R) * D2R;
   if (v === 'podloga' || v === 'prati') {
-    const p = stol.localToWorld(new THREE.Vector3(M.T ? M.x : RADNI.x / 2, M.T ? M.y : RADNI.y / 2, 0));
-    c.copy(p); const r = M.T ? Math.max(45, Math.hypot(...(M.uk || [80, 80, 30])) * 1.2) / 1000 : 0.16;
+    const p = stol.localToWorld(new THREE.Vector3(M.T ? M.cx : RADNI.x / 2, M.T ? M.cy : RADNI.y / 2, 0));
+    c.copy(p); const r = M.T ? Math.min(420, Math.max(45, Math.hypot(...(M.uk || [80, 80, 30])) * 1.2)) / 1000 : 0.16;
     dist = r / Math.sin(fov / 2) * 1.05; smjer.set(-0.25, 1.1, 0.75);
     if (v === 'prati') { c.copy(mlaznicaSvijet()); dist = 0.16; smjer.set(-0.4, 0.55, 1); }
   } else {
@@ -674,7 +865,7 @@ renderer.setAnimationLoop((t, frame) => {
 materijal();
 $('s-ispuna-out').textContent = $('s-ispuna').value + ' %';
 legenda();
-window.FTQ_PRUSA = { M, igra, get rez() { return rez; }, get gkod() { return gkodTekst; }, postaviT, primjer, datoteka, postaviOsi, HOME, CAD };
+window.FTQ_PRUSA = { M, PRED, odaberi, slozi, najveceMjerilo, postaviPredmete, datoteke, igra, get rez() { return rez; }, get gkod() { return gkodTekst; }, postaviT, primjer, datoteka, postaviOsi, HOME, CAD };
 (async () => {   // model poslan s druge stranice (npr. skener: ?iz=skener)
   if (/[?&]iz=/.test(location.search) && window.FTQ_PRIJENOS) {
     try { const m = await window.FTQ_PRIJENOS.uzmi(); if (m && m.buf) { const r = CIT.stl(m.buf); postaviModel(r.T, m.ime, 'preneseno sa stranice skenera', null); return; } } catch (e) { }

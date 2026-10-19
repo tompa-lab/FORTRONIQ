@@ -97,20 +97,21 @@ export async function trimf(buf) {
       obj[id] = { V, F };
     } else obj[id] = { komp: [...o.getElementsByTagName('component')].map(c => ({ id: c.getAttribute('objectid'), m: matrica3mf(c.getAttribute('transform')) })) };
   }
-  const out = [];
   // ms: matrice od unutarnje prema vanjskoj (redni vektor: p' = p · M)
-  const dodaj = (id, ms) => { const o = obj[id]; if (!o) return; if (o.V) o.F.forEach(f => f.forEach(i => { let q = o.V[i]; ms.forEach(m => { q = primijeni(m, ...q); }); out.push(...q); })); else o.komp.forEach(c => dodaj(c.id, [c.m].concat(ms))); };
-  const build = xml.getElementsByTagName('item');
-  if (build.length) for (const it of build) dodaj(it.getAttribute('objectid'), [matrica3mf(it.getAttribute('transform'))]);
-  else Object.keys(obj).forEach(id => dodaj(id, []));
+  const dodaj = (id, ms, out) => { const o = obj[id]; if (!o) return; if (o.V) o.F.forEach(f => f.forEach(i => { let q = o.V[i]; ms.forEach(m => { q = primijeni(m, ...q); }); out.push(q[0], q[1], q[2]); })); else o.komp.forEach(c => dodaj(c.id, [c.m].concat(ms), out)); };
+  const imena = {}; for (const o of xml.getElementsByTagName('object')) imena[o.getAttribute('id')] = o.getAttribute('name') || '';
+  const build = xml.getElementsByTagName('item'), dijelovi = [];   // svaki predmet iz <build> zasebno (PrusaSlicer: jedan predmet = jedan item)
+  if (build.length) for (const it of build) { const t = []; dodaj(it.getAttribute('objectid'), [matrica3mf(it.getAttribute('transform'))], t); if (t.length) dijelovi.push({ ime: imena[it.getAttribute('objectid')] || 'predmet ' + (dijelovi.length + 1), T: t }); }
+  else Object.keys(obj).forEach(id => { const t = []; dodaj(id, [], t); if (t.length) dijelovi.push({ ime: imena[id] || 'predmet ' + (dijelovi.length + 1), T: t }); });
   // postavke PrusaSlicera spremljene u projekt
   let postavke = null;
   const cfg = z.imena.find(i => /Slic3r_PE\.config$|PrusaSlicer\.config$/i.test(i));
   if (cfg) { postavke = {}; dek.decode(await z.citaj(cfg)).split(/\r?\n/).forEach(l => { const m = /^; ([a-z_0-9]+) = (.*)$/.exec(l); if (m) postavke[m[1]] = m[2]; }); }
   const jed = (xml.documentElement.getAttribute('unit') || 'millimeter');
   const k = { micron: 0.001, millimeter: 1, centimeter: 10, inch: 25.4, foot: 304.8, meter: 1000 }[jed] || 1;
-  if (k !== 1) for (let i = 0; i < out.length; i++) out[i] *= k;
-  return { T: new Float32Array(out), info: '3MF' + (postavke ? ', s postavkama PrusaSlicera' : ''), postavke, kartaVrsno: true };
+  let n = 0; dijelovi.forEach(d => { d.T = Float32Array.from(d.T); if (k !== 1) for (let i = 0; i < d.T.length; i++) d.T[i] *= k; n += d.T.length; });
+  const T = new Float32Array(n); let o = 0; dijelovi.forEach(d => { T.set(d.T, o); o += d.T.length; });
+  return { T, info: '3MF' + (postavke ? ', s postavkama PrusaSlicera' : ''), postavke, kartaVrsno: true, dijelovi: dijelovi.length > 1 ? dijelovi : null };
 }
 
 export function gltf(buf, ime) {
