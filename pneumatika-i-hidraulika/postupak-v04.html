@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postupak V04 — V7, V8 i V10 u FluidSIM-u — Pneumatika i hidraulika | FORTRONIQ</title>
+<meta name="description" content="Radni list V04 korak po korak u FluidSIM-u: logička funkcija I, vremenski član s kašnjenjem ukapčanja i tlačno upravljanje proslijednim tlačnim ventilom, sa snimkama zaslona i rješenjima.">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-v04.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-v04.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/pneumatika-i-hidraulika/postupak-v04.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-v04.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Postupak V04: V7, V8 i V10 u FluidSIM-u">
+<meta property="og:description" content="Radni list V04 korak po korak u FluidSIM-u: logička funkcija I, vremenski član s kašnjenjem ukapčanja i tlačno upravljanje proslijednim tlačnim ventilom, sa snimkama zaslona i rješenjima.">
+<meta property="og:url" content="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-v04.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- pneumatika i hidraulika */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+
+/* postupak (FluidSIM) */
+.snimka{margin:0 0 1.5rem}
+.snimka img{display:block;width:auto;max-width:100%;height:auto;border:1px solid var(--rule);border-radius:10px;background:#fff}
+.snimka a{display:inline-block;max-width:100%}
+.snimka figcaption{font-size:.88rem;color:var(--body);margin-top:.45rem}
+.dvije{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem 1.4rem;align-items:start}
+.sitno{font-size:.88rem;color:var(--body)}
+.okvir{margin:0 0 1.4rem}
+ul.datoteke{margin:0 0 1rem}
+ul.datoteke a{font-weight:600}
+.pitanje .snimka{margin-top:.8rem}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Pneumatika i hidraulika</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">Postupak V04</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">POSTUPAK &middot; RADNI LIST V04 &middot; FLUIDSIM</p><p class="nadnaslov">Postupak V04 &middot; vježbe V7, V8 i V10 &middot; 6 sati</p><h1>Postupak V04 — funkcija I, vremenski član i tlačno upravljanje u FluidSIM-u</h1><p>Cijeli radni list V04 korak po korak: logička funkcija I s ventilom dvostrukog tlaka i serijskim spojem, vremenski član s kašnjenjem ukapčanja i tlačno upravljanje proslijednim tlačnim ventilom. Uz svaki korak su snimke zaslona i potpuna rješenja.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>složiti funkciju I ventilom dvostrukog tlaka i serijskim spojem</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>proširiti funkciju I na tri uvjeta</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>složiti vremenski član s kašnjenjem ukapčanja i namjestiti vrijeme otvorom prigušnice</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pokazati ovisnost vremena kašnjenja o tlaku mreže</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>složiti tlačno upravljanje proslijednim tlačnim ventilom i pratiti tlak manometrom</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti prerano prebacivanje pri prigušivanju odvoda i ispraviti ga graničnim ventilom</span></li></ul></div></div></header><div class="omot"><section id="o-postupku"><h2>O postupku</h2><div class="crta"></div><div class="oznake-vj"><span>Radni list V04</span><span>Dio A: vježba V7 (2 sata)</span><span>Dio B: vježba V8 (2 sata)</span><span>Dio C: vježba V10 (2 sata)</span><span>FluidSIM-P 4.2</span></div><p>Ova stranica je <b>postupak</b> za radni list V04: sve što se radi na računalu, od nove sheme do predaje, redom kojim je zadano. Tekst zadatka, sheme, pitanja i rješenja isti su kao na stranicama vježbi <a href="v07-i-ventil.html">V7 Logička funkcija I — ventil dvostrukog tlaka</a> i <a href="v08-kasnjenje-ukapcanja.html">V8 Vremenski član — kašnjenje ukapčanja signala</a> i <a href="v10-proslijedni-tlacni-ventil.html">V10 Tlačno upravljanje proslijednim tlačnim ventilom</a>; ovdje su dopunjeni koracima u FluidSIM-u i rezultatima simulacije.</p><p>Rješenja su skrivena ispod svakog pitanja. Najprije riješite sami, a onda otvorite <em>Prikaži rješenje</em> i usporedite.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div><h3>Gotove sheme (rješenja) za FluidSIM</h3><ul class="datoteke"><li><a href="datoteke/PIH_V07_rjesenje_v01.ct" download>PIH_V07_rjesenje_v01.ct</a> &mdash; dio A: shema V7.1 (ventil dvostrukog tlaka 1V1)</li><li><a href="datoteke/PIH_V07_serijski_spoj_v01.ct" download>PIH_V07_serijski_spoj_v01.ct</a> &mdash; dio A: serijski spoj 1S1 → 1S2</li><li><a href="datoteke/PIH_V07_z7_rjesenje_v01.ct" download>PIH_V07_z7_rjesenje_v01.ct</a> &mdash; dio A, zadatak 7: tri uvjeta</li><li><a href="datoteke/PIH_V08_rjesenje_v01.ct" download>PIH_V08_rjesenje_v01.ct</a> &mdash; dio B: shema V8.1 (vremenski član 1V1, otvor 9 %, spremnik 0,04 l)</li><li><a href="datoteke/PIH_V10_rjesenje_v01.ct" download>PIH_V10_rjesenje_v01.ct</a> &mdash; dio C: shema V10.1 (proslijedni tlačni ventil 0,45 MPa, otpor 500 N, manometar)</li><li><a href="datoteke/PIH_V10_prigusen_odvod_v01.ct" download>PIH_V10_prigusen_odvod_v01.ct</a> &mdash; dio C: pokus s prigušivanjem odvoda</li><li><a href="datoteke/PIH_V10_z5_rjesenje_v01.ct" download>PIH_V10_z5_rjesenje_v01.ct</a> &mdash; dio C, zadatak 5: granični ventil 1S2 napaja 1V2</li></ul><p class="sitno">Datoteke se otvaraju u FluidSIM-P 4 (<i>File → Open</i>). Snimke zaslona napravljene su u FluidSIM-P 4.2 s engleskim sučeljem. Osnove rada u FluidSIM-u (nova shema, knjižnica, crtanje vodova, provjera, simulacija, dijagram put–korak) opisane su u <a href="postupak-v01.html">Postupku V01</a>, odjeljak 0.</p></section>
+<section id="pokretanje"><h2>0 &middot; Prije početka</h2><div class="crta"></div><ol class="koraci"><li><b>File → New</b> (Ctrl + N) otvara novu shemu; <b>Window → Tile Vertically</b> (Shift + F4) postavlja shemu i knjižnicu jednu uz drugu.</li><li>Elemente povucite iz knjižnice na shemu i dvoklikom otvorite njihove dijaloge. Vod crtajte povlačenjem od priključka do priključka; povlačenjem na postojeći vod nastaje račvanje.</li><li>Oznake (1A1, 1V1, 1S1, 0Z1 …) upisuju se elementom <b>Text</b> iz skupine <i>Miscellaneous</i> (uključite <i>Frame Text</i>).</li><li><b>Execute → Check Superficially</b> (F6) provjerava crtež; <b>Start</b> (F9), <b>Pause</b> (F8), <b>Stop</b> (F5).</li><li>Ručno tipkalo aktivirate klikom mišem (dok držite tipku miša); <b>Shift + klik</b> zadrži ga pritisnutim. Ručica sa zasunom prebacuje se jednim klikom i ostaje u položaju.</li><li>Granični ventil veže se uz cilindar oznakom: dvoklik na cilindar → kartica <b>Actuating Labels</b> → oznaka (npr. 1S2) i položaj na hodu (od–do u mm); ista oznaka upiše se dvoklikom na valjak graničnog ventila (<i>Mechanical connection → Label</i>).</li><li>Dijagram put–korak: iz <i>Miscellaneous</i> povucite <b>State Diagram</b> i na njega povucite cilindre i ventile čije stanje želite pratiti.</li></ol></section>
+<section id="dio-a"><h2>Dio A &middot; V7 Logička funkcija I — ventil dvostrukog tlaka</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>Na montaži okova zakivaju se čelične zakovice u nosače od lima. Zakovni žig pokreće dvoradni cilindar <b>1A1 Ø50/20 mm s hodom 60 mm</b>, a za oblikovanje glave zakovice treba oko <b>900 N</b>. Obradak se ulaže u napravu u kojoj pritišće valjak graničnog ventila <b>1S2</b> (3/2 NC) — to je potvrda da je obradak na mjestu. Radnik zatim pritisne tipkalo <b>1S1</b> (3/2 NC).</p>
+<p>Žig smije krenuti samo kada su <b>oba</b> signala prisutna. Signali se spajaju u <b>ventilu dvostrukog tlaka 1V1</b> (ventil I), čiji izlaz upravlja razvodnikom <b>5/2 s pneumatskim upravljanjem i povratnom oprugom (1V2)</b>. Klipnjača je izvučena dok traju oba signala; nestankom bilo kojega vraća se. Mreža daje 6 bar, stupanj djelovanja cilindra je 0,9, a zakiva se oko 8 komada u minuti.</p>
+<p>Složite sklop, provjerite tablicu stanja, usporedite ga sa serijskim spojem i izmjerite izlazni tlak ventila I pri različitim ulaznim tlakovima.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Cilindar Ø50 pri 6 bar daje više od 1 kN — dovoljno da ozbiljno ozlijedi prst. Na didaktičkoj ploči ne stavljajte ruke pred klipnjaču ni pri ispitivanju „uvjeta". Zapamtite i ono što se u ovoj vježbi dokazuje: <b>ventil I s dva obična tipkala nije zaštitni uređaj</b>. Stvarne preše štite se sklopovima za dvoručno uključivanje koji ispunjavaju zahtjeve norme za takve uređaje, zaštitnim poklopcima ili svjetlosnim zavjesama.</p></div>
+<h3>Shema</h3>
+<p>Ventil dvostrukog tlaka ima dva ulaza 1 i izlaz 2. Pomični klip s dvije brtvene čašice zatvara onaj ulaz na koji prvi dođe tlak; izlaz dobiva zrak tek kada tlak dođe i na drugi ulaz. Na slici V7.1 izlaz ventila 1V1 vodi na priključak 14 razvodnika 1V2. Ventil s valjkom 1S2 nacrtan je u mirovanju jer u početnom položaju obradak nije u napravi.</p>
+<figure class="crtez"><svg viewBox="0 0 640 410" role="img" aria-label="Slika V7.1: shema logičke funkcije I: tipkalo 1S1 i granični ventil prisutnosti obratka 1S2 preko ventila dvostrukog tlaka 1V1 upravljaju razvodnikom 1V2"><rect x="363.6" y="44" width="160" height="34" class="pf"/><rect x="379.6" y="57" width="162" height="8" class="pf"/><rect x="373.6" y="45.2" width="6" height="31.6" class="rf"/><line x1="377.6" y1="78" x2="377.6" y2="86" class="l" fill="none"/><line x1="509.6" y1="78" x2="509.6" y2="86" class="l" fill="none"/><text x="353.6" y="67" text-anchor="end">1A1</text><text x="363.6" y="28" class="mali">Ø50/20, s = 60 mm</text><rect x="310" y="150" width="52" height="52" class="pf"/><line x1="336" y1="199" x2="326.7" y2="158.9" class="l" fill="none"/><polygon points="325.6,154 330.6,160 323.8,161.6" class="if"/><line x1="346.4" y1="153" x2="353.3" y2="193.1" class="l" fill="none"/><polygon points="354.2,198 349.6,191.7 356.5,190.5" class="if"/><line x1="317.8" y1="202" x2="317.8" y2="193" class="l" fill="none"/><line x1="312.8" y1="193" x2="322.8" y2="193" class="l" fill="none"/><rect x="362" y="150" width="52" height="52" class="pf"/><line x1="388" y1="199" x2="397.3" y2="158.9" class="l" fill="none"/><polygon points="398.4,154 400.2,161.6 393.4,160" class="if"/><line x1="377.6" y1="153" x2="370.7" y2="193.1" class="l" fill="none"/><polygon points="369.8,198 367.5,190.5 374.4,191.7" class="if"/><line x1="406.2" y1="202" x2="406.2" y2="193" class="l" fill="none"/><line x1="401.2" y1="193" x2="411.2" y2="193" class="l" fill="none"/><line x1="377.6" y1="150" x2="377.6" y2="142" class="l" fill="none"/><text x="381.6" y="147" class="mali">4</text><line x1="398.4" y1="150" x2="398.4" y2="142" class="l" fill="none"/><text x="402.4" y="147" class="mali">2</text><line x1="369.8" y1="202" x2="369.8" y2="210" class="l" fill="none"/><text x="373.8" y="213" class="mali">5</text><line x1="388" y1="202" x2="388" y2="210" class="l" fill="none"/><text x="392" y="213" class="mali">1</text><line x1="406.2" y1="202" x2="406.2" y2="210" class="l" fill="none"/><text x="410.2" y="213" class="mali">3</text><line x1="310" y1="176" x2="304" y2="176" class="l" fill="none"/><polygon points="304,170 304,182 294,176" class="pf"/><text x="298" y="166" class="mali" text-anchor="middle">14</text><polyline points="414,176 418,169 422,183 426,169 430,183 434,169 440,176" class="l" fill="none"/><text x="446" y="181">1V2</text><polyline points="377.6,142 377.6,124 377.6,124 377.6,86" class="l" fill="none"/><polyline points="398.4,142 398.4,108 509.6,108 509.6,86" class="l" fill="none"/><line x1="369.8" y1="210" x2="369.8" y2="214" class="l" fill="none"/><polygon points="363.8,214 375.8,214 369.8,223" class="pf"/><line x1="406.2" y1="210" x2="406.2" y2="214" class="l" fill="none"/><polygon points="400.2,214 412.2,214 406.2,223" class="pf"/><rect x="150" y="226" width="56" height="22" class="pf"/><rect x="156" y="231" width="9" height="12" class="pf"/><rect x="191" y="231" width="9" height="12" class="pf"/><line x1="165" y1="237" x2="191" y2="237" class="l" fill="none"/><line x1="178" y1="226" x2="178" y2="218" class="l" fill="none"/><line x1="150" y1="237" x2="142" y2="237" class="l" fill="none"/><line x1="206" y1="237" x2="214" y2="237" class="l" fill="none"/><text x="183" y="224" class="mali">2</text><text x="148" y="230" class="mali" text-anchor="end">1</text><text x="208" y="230" class="mali">1</text><text x="178" y="266" text-anchor="middle">1V1</text><polyline points="178,218 178,176 294,176" class="l2 dash" fill="none"/><rect x="70" y="290" width="40" height="40" class="pf"/><line x1="82" y1="327" x2="82" y2="299" class="l" fill="none"/><polygon points="82,294 85.5,301 78.5,301" class="if"/><line x1="98" y1="330" x2="98" y2="321" class="l" fill="none"/><line x1="93" y1="321" x2="103" y2="321" class="l" fill="none"/><rect x="110" y="290" width="40" height="40" class="pf"/><line x1="122" y1="293" x2="135.8" y2="321.5" class="l" fill="none"/><polygon points="138,326 131.8,321.2 138.1,318.2" class="if"/><line x1="122" y1="330" x2="122" y2="321" class="l" fill="none"/><line x1="117" y1="321" x2="127" y2="321" class="l" fill="none"/><line x1="122" y1="290" x2="122" y2="282" class="l" fill="none"/><text x="126" y="287" class="mali">2</text><line x1="122" y1="330" x2="122" y2="338" class="l" fill="none"/><text x="126" y="341" class="mali">1</text><line x1="138" y1="330" x2="138" y2="338" class="l" fill="none"/><text x="142" y="341" class="mali">3</text><line x1="70" y1="310" x2="58" y2="310" class="l" fill="none"/><line x1="58" y1="302" x2="58" y2="318" class="l" fill="none"/><path d="M58 302 A8 8 0 0 0 58 318" class="l" fill="none"/><polyline points="150,310 154,303 158,317 162,303 166,317 170,303 176,310" class="l" fill="none"/><text x="44" y="315" text-anchor="end">1S1</text><line x1="138" y1="338" x2="138" y2="342" class="l" fill="none"/><polygon points="132,342 144,342 138,351" class="pf"/><rect x="236" y="290" width="40" height="40" class="pf"/><line x1="248" y1="327" x2="248" y2="299" class="l" fill="none"/><polygon points="248,294 251.5,301 244.5,301" class="if"/><line x1="264" y1="330" x2="264" y2="321" class="l" fill="none"/><line x1="259" y1="321" x2="269" y2="321" class="l" fill="none"/><rect x="276" y="290" width="40" height="40" class="pf"/><line x1="288" y1="293" x2="301.8" y2="321.5" class="l" fill="none"/><polygon points="304,326 297.8,321.2 304.1,318.2" class="if"/><line x1="288" y1="330" x2="288" y2="321" class="l" fill="none"/><line x1="283" y1="321" x2="293" y2="321" class="l" fill="none"/><line x1="288" y1="290" x2="288" y2="282" class="l" fill="none"/><text x="292" y="287" class="mali">2</text><line x1="288" y1="330" x2="288" y2="338" class="l" fill="none"/><text x="292" y="341" class="mali">1</text><line x1="304" y1="330" x2="304" y2="338" class="l" fill="none"/><text x="308" y="341" class="mali">3</text><line x1="236" y1="310" x2="226" y2="310" class="l" fill="none"/><line x1="226" y1="310" x2="219" y2="303" class="l" fill="none"/><circle cx="216" cy="300" r="5" class="l" fill="none"/><polyline points="316,310 320,303 324,317 328,303 332,317 336,303 342,310" class="l" fill="none"/><text x="210" y="315" text-anchor="end">1S2</text><line x1="304" y1="338" x2="304" y2="342" class="l" fill="none"/><polygon points="298,342 310,342 304,351" class="pf"/><polyline points="122,282 122,237 142,237" class="l2 dash" fill="none"/><polyline points="288,282 288,237 214,237" class="l2 dash" fill="none"/><circle cx="20" cy="370" r="11" class="pf"/><polygon points="20,364 15,374 25,374" class="pf"/><text x="20" y="398" class="mali" text-anchor="middle">0Z</text><line x1="31" y1="370" x2="56" y2="370" class="l" fill="none"/><rect x="56" y="354" width="48" height="32" class="pf"/><polygon points="68,360 76,370 68,380 60,370" class="pf"/><line x1="60" y1="370" x2="76" y2="370" class="l2 dash" fill="none"/><rect x="82" y="361" width="16" height="18" class="pf"/><line x1="90" y1="377" x2="90" y2="368" class="l" fill="none"/><polygon points="90,363 93.5,370 86.5,370" class="if"/><text x="80" y="404" class="mali" text-anchor="middle">0Z1</text><line x1="104" y1="370" x2="388" y2="370" class="l" fill="none"/><circle cx="122" cy="370" r="3" class="if"/><circle cx="288" cy="370" r="3" class="if"/><line x1="122" y1="370" x2="122" y2="338" class="l" fill="none"/><line x1="288" y1="370" x2="288" y2="338" class="l" fill="none"/><line x1="388" y1="370" x2="388" y2="210" class="l" fill="none"/></svg><figcaption><b>Slika V7.1</b> &mdash; Logička funkcija I: ventil dvostrukog tlaka 1V1 daje signal na priključak 14 razvodnika 1V2 samo ako istodobno postoje signal tipkala 1S1 i signal ventila s valjkom 1S2, koji potvrđuje da je obradak u napravi.</figcaption></figure>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="a1"><h2>A1 &middot; Shema V7.1 u FluidSIM-u</h2><div class="crta"></div><ol class="koraci"><li><b>File → New</b>, 0Z1 (0,6 MPa). Dvoradni cilindar <b>1A1</b>: hod <b>60</b> mm, Ø <b>50</b> / <b>20</b> mm.</li><li><b>1S1</b>: 3/2 NC s tipkalom. <b>1S2</b>: 3/2 NC s <b>valjkom</b> (obradak u napravi); da ga u simulaciji možete aktivirati mišem, u dijalogu mu uz valjak dodajte i tipkalo (<i>Manually</i> = pushbutton).</li><li>Iz <i>Shutoff Valves and Flow Control Valves</i> povucite <b>Two pressure valve</b> (ventil dvostrukog tlaka) &mdash; <b>1V1</b>; izlaz na 14 razvodnika 5/2 s pneumatskim upravljanjem i oprugom <b>1V2</b>.</li><li>Start: samo 1S1 &mdash; ništa; samo 1S2 &mdash; ništa; oba &mdash; žig izlazi (Slika A1.1). Korak 4 postupka: zabravite 1S1 (Shift + klik), pa pritisnite 1S2 &mdash; žig krene u trenutku „umetanja obratka”.</li></ol><figure class="snimka"><a href="slike/postupak-v04/01-v7-i.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/01-v7-i.webp" alt="Slika A1.1 &amp;mdash; Funkcija I: klipnjača izlazi samo kada su istodobno prisutni signali 1S1 i 1S2." loading="lazy" decoding="async" width="1164" height="714"></a><figcaption><b>Slika A1.1</b> &mdash; Funkcija I: klipnjača izlazi samo kada su istodobno prisutni signali 1S1 i 1S2.</figcaption></figure></section>
+<section id="a2"><h2>A2 &middot; Serijski spoj</h2><div class="crta"></div><ol class="koraci"><li>Shemu spremite pod drugim imenom, obrišite ventil I i 1S2 napojite iz izlaza 2 ventila 1S1; izlaz 1S2 vodite na 14 (serijski spoj).</li><li>Start i ispitajte četiri stanja: ponašanje je isto kao s ventilom dvostrukog tlaka (Slika A2.1).</li></ol><figure class="snimka"><a href="slike/postupak-v04/02-v7-serijski.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/02-v7-serijski.webp" alt="Slika A2.1 &amp;mdash; Serijski spoj 1S1 → 1S2: ista funkcija I bez dodatnog ventila." loading="lazy" decoding="async" width="1164" height="713"></a><figcaption><b>Slika A2.1</b> &mdash; Serijski spoj 1S1 → 1S2: ista funkcija I bez dodatnog ventila.</figcaption></figure><div class="okvir primjer"><h4>Pokus s 3 i 6 bar</h4><p>FluidSIM-ov ventil dvostrukog tlaka propušta niži od dvaju ulaznih tlakova, ali za pokus iz koraka 6 trebali biste u shemu dodati regulator tlaka u jedan signalni vod i manometar na izlaz 1V1. Odgovor je u pitanju 4.</p></div><p class="sitno">Rezultati u tekstu odnose se na našu simulaciju i priložene datoteke; vaša se vremena mogu malo razlikovati ako drukčije namjestite protoke ili otvore prigušnica.</p></section>
+<section id="dio-a-pitanja"><h2>A3 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Popunite tablicu stanja funkcije I i napišite logički izraz.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>0 0 → 0; 1 0 → 0; 0 1 → 0; 1 1 → 1. Izlaz je 1 samo kada su oba ulaza 1: <b>Y = 1S1 ∧ 1S2</b> („1S1 i 1S2"). Žig se giba samo u jednom od četiriju stanja.</p></div></details></div><div class="pitanje"><p><b>2.</b> Je li cilindar Ø50 pri 6 bar dovoljan za zakivanje? Koji je najmanji tlak pri kojem zakovica još dobiva punu glavu?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A = π · 50² / 4 = 1963,5 mm²; F = 0,6 · 1963,5 · 0,9 = <b>1060 N</b> &gt; 900 N, rezerva 18 %.</p><p>p<sub>min</sub> = 900 / (1963,5 · 0,9) = 0,509 N/mm² = <b>5,1 bar</b>. Pad tlaka u mreži ispod 5,1 bar dao bi nedovršene glave zakovica, pa je dobro ugraditi manometar uz prešu ili nadzirati tlak.</p></div></details></div><div class="pitanje"><p><b>3.</b> Izračunajte potrošnju zraka po ciklusu i u minuti (8 ciklusa).</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A<sub>pr</sub> = 1963,5 − 314,2 = 1649,3 mm². V = (1963,5 + 1649,3) · 60 · 6,923 / 10⁶ = <b>1,50 Nl</b> po ciklusu; u minuti 8 · 1,50 = <b>12,0 Nl/min</b>.</p></div></details></div><div class="pitanje"><p><b>4.</b> U koraku 6 na ulazima je 3 bar i 6 bar. Koliki je tlak na izlazu? Što bi se dogodilo pri 2 bar na jednom ulazu?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Na izlazu je <b>niži</b> od dvaju tlakova, 3 bar: viši tlak pomakne klip ventila tako da njegova čašica zatvori prolaz s ulaza višeg tlaka, a na izlaz prolazi zrak nižeg tlaka. Pri 2 bar na izlazu je 2 bar, što je blizu tlaka prebacivanja razvodnika 1V2 — razvodnik može prebaciti nesigurno ili nikako. Ventil dvostrukog tlaka tako se ponaša suprotno od naizmjeničnog ventila, koji propušta viši tlak.</p></div></details></div><div class="pitanje"><p><b>5.</b> Usporedite ventil dvostrukog tlaka sa serijskim spojem iz koraka 5. Navedite po jednu prednost svakog rješenja.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Oba daju funkciju I. <b>Serijski spoj</b> je jednostavniji i jeftiniji (nema dodatnog ventila), ali drugi ventil dobiva zrak tek kroz prvi, pa signali moraju biti fizički blizu i jedan element ovisi o drugome. <b>Ventil dvostrukog tlaka</b> prima dva neovisna signala koji mogu doći s bilo kojeg mjesta u sklopu i iz različitih izvora, a sklop je pregledniji za dijagnostiku. Kod serijskog spoja nema gubitka zbog dodatnog elementa, dok ventil I unosi mali pad tlaka i obujam.</p></div></details></div><div class="pitanje"><p><b>6.</b> Što se dogodilo u koraku 4, kada je radnik prvo pritisnuo tipkalo, a tek onda umetnuo obradak? Zašto je to opasno i kako se sprječava?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Klipnjača je krenula <b>u trenutku umetanja obratka</b>, dok je radnikova ruka još u napravi. Funkcija I ne razlikuje redoslijed signala: dovoljno je da su oba prisutna. Sprječava se tako da signal tipkala bude kratak impuls koji vrijedi samo ako je obradak već na mjestu (npr. ventil koji daje impuls samo pri pritisku), ili — za stvarnu prešu — ispravnim sklopom za dvoručno uključivanje i zaštitom zone rada.</p><h4>U FluidSIM-u</h4><p>U simulaciji: Shift + klik na 1S1 (tipkalo ostaje pritisnuto), zatim pritisak na 1S2 &mdash; klipnjača odmah krene (Slika A1.1, treće stanje).</p></div></details></div><div class="pitanje"><p><b>7.</b> Dodajte treći uvjet: zaštitni poklopac mora biti zatvoren, što potvrđuje ventil s valjkom 1S3. Nacrtajte signalni dio.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Za tri uvjeta potrebna su <b>dva ventila dvostrukog tlaka u nizu</b>: 1V1 povezuje 1S1 i 1S2, a 1V2 izlaz ventila 1V1 i signal 1S3. Izlaz 1V2 vodi na 14 razvodnika, koji sada nosi oznaku 1V3. Isto se može izvesti i serijskim spojem svih triju ventila.</p>
+<figure class="crtez"><svg viewBox="0 0 640 330" role="img" aria-label="Slika V7.2: signalni dio s tri uvjeta i dva ventila dvostrukog tlaka u nizu"><rect x="70" y="210" width="40" height="40" class="pf"/><line x1="82" y1="247" x2="82" y2="219" class="l" fill="none"/><polygon points="82,214 85.5,221 78.5,221" class="if"/><line x1="98" y1="250" x2="98" y2="241" class="l" fill="none"/><line x1="93" y1="241" x2="103" y2="241" class="l" fill="none"/><rect x="110" y="210" width="40" height="40" class="pf"/><line x1="122" y1="213" x2="135.8" y2="241.5" class="l" fill="none"/><polygon points="138,246 131.8,241.2 138.1,238.2" class="if"/><line x1="122" y1="250" x2="122" y2="241" class="l" fill="none"/><line x1="117" y1="241" x2="127" y2="241" class="l" fill="none"/><line x1="122" y1="210" x2="122" y2="202" class="l" fill="none"/><text x="126" y="207" class="mali">2</text><line x1="122" y1="250" x2="122" y2="258" class="l" fill="none"/><text x="126" y="261" class="mali">1</text><line x1="138" y1="250" x2="138" y2="258" class="l" fill="none"/><text x="142" y="261" class="mali">3</text><line x1="70" y1="230" x2="58" y2="230" class="l" fill="none"/><line x1="58" y1="222" x2="58" y2="238" class="l" fill="none"/><path d="M58 222 A8 8 0 0 0 58 238" class="l" fill="none"/><polyline points="150,230 154,223 158,237 162,223 166,237 170,223 176,230" class="l" fill="none"/><text x="44" y="235" text-anchor="end">1S1</text><line x1="138" y1="258" x2="138" y2="262" class="l" fill="none"/><polygon points="132,262 144,262 138,271" class="pf"/><rect x="236" y="210" width="40" height="40" class="pf"/><line x1="248" y1="247" x2="248" y2="219" class="l" fill="none"/><polygon points="248,214 251.5,221 244.5,221" class="if"/><line x1="264" y1="250" x2="264" y2="241" class="l" fill="none"/><line x1="259" y1="241" x2="269" y2="241" class="l" fill="none"/><rect x="276" y="210" width="40" height="40" class="pf"/><line x1="288" y1="213" x2="301.8" y2="241.5" class="l" fill="none"/><polygon points="304,246 297.8,241.2 304.1,238.2" class="if"/><line x1="288" y1="250" x2="288" y2="241" class="l" fill="none"/><line x1="283" y1="241" x2="293" y2="241" class="l" fill="none"/><line x1="288" y1="210" x2="288" y2="202" class="l" fill="none"/><text x="292" y="207" class="mali">2</text><line x1="288" y1="250" x2="288" y2="258" class="l" fill="none"/><text x="292" y="261" class="mali">1</text><line x1="304" y1="250" x2="304" y2="258" class="l" fill="none"/><text x="308" y="261" class="mali">3</text><line x1="236" y1="230" x2="226" y2="230" class="l" fill="none"/><line x1="226" y1="230" x2="219" y2="223" class="l" fill="none"/><circle cx="216" cy="220" r="5" class="l" fill="none"/><polyline points="316,230 320,223 324,237 328,223 332,237 336,223 342,230" class="l" fill="none"/><text x="210" y="235" text-anchor="end">1S2</text><line x1="304" y1="258" x2="304" y2="262" class="l" fill="none"/><polygon points="298,262 310,262 304,271" class="pf"/><rect x="420" y="210" width="40" height="40" class="pf"/><line x1="432" y1="247" x2="432" y2="219" class="l" fill="none"/><polygon points="432,214 435.5,221 428.5,221" class="if"/><line x1="448" y1="250" x2="448" y2="241" class="l" fill="none"/><line x1="443" y1="241" x2="453" y2="241" class="l" fill="none"/><rect x="460" y="210" width="40" height="40" class="pf"/><line x1="472" y1="213" x2="485.8" y2="241.5" class="l" fill="none"/><polygon points="488,246 481.8,241.2 488.1,238.2" class="if"/><line x1="472" y1="250" x2="472" y2="241" class="l" fill="none"/><line x1="467" y1="241" x2="477" y2="241" class="l" fill="none"/><line x1="472" y1="210" x2="472" y2="202" class="l" fill="none"/><text x="476" y="207" class="mali">2</text><line x1="472" y1="250" x2="472" y2="258" class="l" fill="none"/><text x="476" y="261" class="mali">1</text><line x1="488" y1="250" x2="488" y2="258" class="l" fill="none"/><text x="492" y="261" class="mali">3</text><line x1="420" y1="230" x2="410" y2="230" class="l" fill="none"/><line x1="410" y1="230" x2="403" y2="223" class="l" fill="none"/><circle cx="400" cy="220" r="5" class="l" fill="none"/><polyline points="500,230 504,223 508,237 512,223 516,237 520,223 526,230" class="l" fill="none"/><text x="394" y="235" text-anchor="end">1S3</text><line x1="488" y1="258" x2="488" y2="262" class="l" fill="none"/><polygon points="482,262 494,262 488,271" class="pf"/><rect x="150" y="150" width="56" height="22" class="pf"/><rect x="156" y="155" width="9" height="12" class="pf"/><rect x="191" y="155" width="9" height="12" class="pf"/><line x1="165" y1="161" x2="191" y2="161" class="l" fill="none"/><line x1="178" y1="150" x2="178" y2="142" class="l" fill="none"/><line x1="150" y1="161" x2="142" y2="161" class="l" fill="none"/><line x1="206" y1="161" x2="214" y2="161" class="l" fill="none"/><text x="183" y="148" class="mali">2</text><text x="148" y="154" class="mali" text-anchor="end">1</text><text x="208" y="154" class="mali">1</text><text x="178" y="190" text-anchor="middle">1V1</text><rect x="300" y="80" width="56" height="22" class="pf"/><rect x="306" y="85" width="9" height="12" class="pf"/><rect x="341" y="85" width="9" height="12" class="pf"/><line x1="315" y1="91" x2="341" y2="91" class="l" fill="none"/><line x1="328" y1="80" x2="328" y2="72" class="l" fill="none"/><line x1="300" y1="91" x2="292" y2="91" class="l" fill="none"/><line x1="356" y1="91" x2="364" y2="91" class="l" fill="none"/><text x="333" y="78" class="mali">2</text><text x="298" y="84" class="mali" text-anchor="end">1</text><text x="358" y="84" class="mali">1</text><text x="328" y="120" text-anchor="middle">1V2</text><polyline points="122,202 122,161 142,161" class="l2 dash" fill="none"/><polyline points="288,202 288,161 214,161" class="l2 dash" fill="none"/><polyline points="178,142 178,91 292,91" class="l2 dash" fill="none"/><polyline points="472,202 472,91 364,91" class="l2 dash" fill="none"/><polyline points="328,72 328,36 356,36" class="l2 dash" fill="none"/><polygon points="362,36 355,39.5 355,32.5" class="if"/><text x="370" y="41" class="mali">na priključak 14 razvodnika 1V3</text><circle cx="20" cy="292" r="11" class="pf"/><polygon points="20,286 15,296 25,296" class="pf"/><text x="20" y="320" class="mali" text-anchor="middle">0Z</text><line x1="31" y1="292" x2="56" y2="292" class="l" fill="none"/><rect x="56" y="276" width="48" height="32" class="pf"/><polygon points="68,282 76,292 68,302 60,292" class="pf"/><line x1="60" y1="292" x2="76" y2="292" class="l2 dash" fill="none"/><rect x="82" y="283" width="16" height="18" class="pf"/><line x1="90" y1="299" x2="90" y2="290" class="l" fill="none"/><polygon points="90,285 93.5,292 86.5,292" class="if"/><text x="80" y="326" class="mali" text-anchor="middle">0Z1</text><line x1="104" y1="292" x2="472" y2="292" class="l" fill="none"/><circle cx="122" cy="292" r="3" class="if"/><circle cx="288" cy="292" r="3" class="if"/><line x1="122" y1="292" x2="122" y2="258" class="l" fill="none"/><line x1="288" y1="292" x2="288" y2="258" class="l" fill="none"/><line x1="472" y1="292" x2="472" y2="258" class="l" fill="none"/></svg><figcaption><b>Slika V7.2</b> &mdash; Rješenje zadatka 7: tri uvjeta (tipkalo 1S1, obradak 1S2, zatvoren zaštitni poklopac 1S3). Ventil dvostrukog tlaka 1V1 povezuje 1S1 i 1S2, a 1V2 njegov izlaz i signal 1S3; razvodnik 5/2 sada nosi oznaku 1V3.</figcaption></figure><h4>U FluidSIM-u</h4><ol class="koraci"><li>Dodajte <b>1S3</b> (valjak + tipkalo za simulaciju) i drugi ventil dvostrukog tlaka: 1V1 povezuje 1S1 i 1S2, 1V2 izlaz 1V1 i 1S3, izlaz 1V2 na 14 razvodnika <b>1V3</b>.</li><li>Start: klipnjača izlazi samo kada su sva tri signala prisutna (Slika A3.1).</li></ol><figure class="snimka"><a href="slike/postupak-v04/03-v7-z7-tri-uvjeta.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/03-v7-z7-tri-uvjeta.webp" alt="Slika A3.1 &amp;mdash; Rješenje zadatka 7 u simulaciji: 1S2 i 1S3 zabravljeni, pritisak na 1S1 pokreće žig." loading="lazy" decoding="async" width="1319" height="714"></a><figcaption><b>Slika A3.1</b> &mdash; Rješenje zadatka 7 u simulaciji: 1S2 i 1S3 zabravljeni, pritisak na 1S1 pokreće žig.</figcaption></figure></div></details></div><div class="pitanje"><p><b>8.</b> Netko predlaže da se za zaštitu ruku umjesto tipkala 1S1 i ventila 1S2 ugrade dva tipkala, po jedno za svaku ruku, spojena u ventil I. Zašto to nije ispravno dvoručno uključivanje?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Ventil I samo traži da su oba signala prisutna. On ne provjerava jesu li tipkala pritisnuta <b>istodobno</b> (unutar približno 0,5 s), ne traži da se oba otpuste prije novog ciklusa i ne otkriva ako je jedno tipkalo trajno zaglavljeno ili vezano. Radnik tako može jedno tipkalo blokirati i prešu pokretati jednom rukom. Sklop za dvoručno uključivanje mora ispuniti sve te zahtjeve i biti izveden kao certificirani sigurnosni element.</p></div></details></div></div></section>
+<section id="dio-b"><h2>Dio B &middot; V8 Vremenski član — kašnjenje ukapčanja signala</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>Na liniji za sklapanje kućišta rasvjetnih tijela lijepi se prozirni poklopac na okvir. Nakon nanošenja ljepila radnik uloži dijelove u napravu i pritisne tipkalo <b>1S1</b>. Dvoradni cilindar <b>1A1 Ø40/16 mm s hodom 40 mm</b> preko ploče pritisne poklopac, a ljepilo treba <b>4 s</b> pod pritiskom da bi spoj početno očvrsnuo. Nakon toga se klipnjača sama vraća.</p>
+<p>Cilindrom upravlja bistabilni razvodnik <b>5/2 (1V2)</b>. U prednjem krajnjem položaju klipnjača pritisne granični ventil s valjkom <b>1S2</b>, čiji signal ne ide izravno na razvodnik, nego u <b>vremenski član 1V1</b> s kašnjenjem ukapčanja. Vremenski član sastoji se od prigušno-nepovratnog ventila, malog spremnika i razvodnika 3/2 NC s pneumatskim upravljanjem. Uzmimo da je obujam spremnika <b>40 cm³</b>, tlak prebacivanja razvodnika 3/2 <b>2,5 bar</b>, a da kroz namještenu prigušnicu struji približno stalnih <b>1,5 Nl/min</b>. Mreža daje 6 bar; površina lijepljenja je 25 × 60 mm.</p>
+<p>Složite sklop, namjestite vrijeme držanja na 4 s, izmjerite ga i odgovorite na pitanja.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Tijekom vremena držanja klipnjača stoji, ali pritišće punom silom od gotovo 680 N — to nije „mirno" stanje u kojem se smije posegnuti u napravu. Prije puštanja tlaka provjerite položaj bistabilnog razvodnika. Spremnik vremenskog člana ostaje pod tlakom i nakon zatvaranja uklopnog ventila ako je nepovratni ventil u krivom smjeru: prije rastavljanja provjerite manometrom da je tlak pao na nulu.</p></div>
+<h3>Shema</h3>
+<p>Vremenski član na slici V8.1 nacrtan je unutar iscrtkanog okvira jer čini jednu cjelinu. Signal iz 1S2 ulazi s lijeve strane i puni spremnik <b>kroz prigušnicu</b>; nepovratni ventil tada je zatvoren. Kada signal nestane, spremnik se prazni brzo, kroz nepovratni ventil, natrag prema ispuhu ventila 1S2. Tlak iz spremnika djeluje na upravljački priključak 12 razvodnika 3/2, koji iz mreže propušta signal na priključak 12 bistabilnog razvodnika 1V2.</p>
+<figure class="crtez"><svg viewBox="0 0 640 420" role="img" aria-label="Slika V8.1: shema s vremenskim članom s kašnjenjem ukapčanja: klipnjača drži lijepljeni spoj četiri sekunde pa se vraća"><text x="144" y="130" text-anchor="end">1V2</text><rect x="203.6" y="40" width="170" height="34" class="pf"/><rect x="219.6" y="53" width="172" height="8" class="pf"/><rect x="213.6" y="41.2" width="6" height="31.6" class="rf"/><line x1="217.6" y1="74" x2="217.6" y2="82" class="l" fill="none"/><line x1="359.6" y1="74" x2="359.6" y2="82" class="l" fill="none"/><text x="193.6" y="63" text-anchor="end">1A1</text><rect x="391.6" y="53" width="144" height="8" class="l2 dash" fill="none"/><line x1="535.6" y1="51" x2="535.6" y2="35" class="l2" fill="none"/><text x="535.6" y="31" class="mali" text-anchor="middle">1S2</text><text x="203.6" y="22" class="mali">Ø40/16, s = 40 mm</text><rect x="150" y="140" width="52" height="52" class="pf"/><line x1="176" y1="189" x2="166.7" y2="148.9" class="l" fill="none"/><polygon points="165.6,144 170.6,150 163.8,151.6" class="if"/><line x1="186.4" y1="143" x2="193.3" y2="183.1" class="l" fill="none"/><polygon points="194.2,188 189.6,181.7 196.5,180.5" class="if"/><line x1="157.8" y1="192" x2="157.8" y2="183" class="l" fill="none"/><line x1="152.8" y1="183" x2="162.8" y2="183" class="l" fill="none"/><rect x="202" y="140" width="52" height="52" class="pf"/><line x1="228" y1="189" x2="237.3" y2="148.9" class="l" fill="none"/><polygon points="238.4,144 240.2,151.6 233.4,150" class="if"/><line x1="217.6" y1="143" x2="210.7" y2="183.1" class="l" fill="none"/><polygon points="209.8,188 207.5,180.5 214.4,181.7" class="if"/><line x1="246.2" y1="192" x2="246.2" y2="183" class="l" fill="none"/><line x1="241.2" y1="183" x2="251.2" y2="183" class="l" fill="none"/><line x1="217.6" y1="140" x2="217.6" y2="132" class="l" fill="none"/><text x="221.6" y="137" class="mali">4</text><line x1="238.4" y1="140" x2="238.4" y2="132" class="l" fill="none"/><text x="242.4" y="137" class="mali">2</text><line x1="209.8" y1="192" x2="209.8" y2="200" class="l" fill="none"/><text x="213.8" y="203" class="mali">5</text><line x1="228" y1="192" x2="228" y2="200" class="l" fill="none"/><text x="232" y="203" class="mali">1</text><line x1="246.2" y1="192" x2="246.2" y2="200" class="l" fill="none"/><text x="250.2" y="203" class="mali">3</text><line x1="150" y1="166" x2="144" y2="166" class="l" fill="none"/><polygon points="144,160 144,172 134,166" class="pf"/><text x="138" y="156" class="mali" text-anchor="middle">14</text><line x1="254" y1="166" x2="260" y2="166" class="l" fill="none"/><polygon points="260,160 260,172 270,166" class="pf"/><text x="266" y="156" class="mali" text-anchor="middle">12</text><polyline points="217.6,132 217.6,116 217.6,116 217.6,82" class="l" fill="none"/><polyline points="238.4,132 238.4,100 359.6,100 359.6,82" class="l" fill="none"/><line x1="209.8" y1="200" x2="209.8" y2="204" class="l" fill="none"/><polygon points="203.8,204 215.8,204 209.8,213" class="pf"/><line x1="246.2" y1="200" x2="246.2" y2="204" class="l" fill="none"/><polygon points="240.2,204 252.2,204 246.2,213" class="pf"/><rect x="300" y="176" width="210" height="120" class="l2 dash" fill="none"/><rect x="400" y="190" width="40" height="40" class="pf"/><line x1="412" y1="227" x2="412" y2="199" class="l" fill="none"/><polygon points="412,194 415.5,201 408.5,201" class="if"/><line x1="428" y1="230" x2="428" y2="221" class="l" fill="none"/><line x1="423" y1="221" x2="433" y2="221" class="l" fill="none"/><rect x="440" y="190" width="40" height="40" class="pf"/><line x1="452" y1="193" x2="465.8" y2="221.5" class="l" fill="none"/><polygon points="468,226 461.8,221.2 468.1,218.2" class="if"/><line x1="452" y1="230" x2="452" y2="221" class="l" fill="none"/><line x1="447" y1="221" x2="457" y2="221" class="l" fill="none"/><line x1="452" y1="190" x2="452" y2="182" class="l" fill="none"/><text x="456" y="187" class="mali">2</text><line x1="452" y1="230" x2="452" y2="238" class="l" fill="none"/><text x="456" y="241" class="mali">1</text><line x1="468" y1="230" x2="468" y2="238" class="l" fill="none"/><text x="472" y="241" class="mali">3</text><line x1="400" y1="210" x2="394" y2="210" class="l" fill="none"/><polygon points="394,204 394,216 384,210" class="pf"/><text x="388" y="200" class="mali" text-anchor="middle">12</text><polyline points="480,210 484,203 488,217 492,203 496,217 500,203 506,210" class="l" fill="none"/><line x1="468" y1="238" x2="468" y2="242" class="l" fill="none"/><polygon points="462,242 474,242 468,251" class="pf"/><polyline points="384,210 360,210 360,262" class="l2 dash" fill="none"/><rect x="310" y="242" width="44" height="40" class="l2 dash" fill="none"/><line x1="304" y1="262" x2="316" y2="262" class="l2" fill="none"/><line x1="348" y1="262" x2="360" y2="262" class="l2" fill="none"/><line x1="316" y1="253" x2="316" y2="271" class="l2" fill="none"/><line x1="348" y1="253" x2="348" y2="271" class="l2" fill="none"/><line x1="316" y1="253" x2="325" y2="253" class="l2" fill="none"/><line x1="339" y1="253" x2="348" y2="253" class="l2" fill="none"/><path d="M325 248 Q332 253 339 248" class="l2" fill="none"/><path d="M325 258 Q332 253 339 258" class="l2" fill="none"/><line x1="323" y1="261" x2="337.4" y2="247.4" class="l2" fill="none"/><polygon points="341,244 338.3,251.4 333.5,246.3" class="if"/><line x1="348" y1="271" x2="335" y2="271" class="l2" fill="none"/><circle cx="332" cy="271" r="3.5" class="l2" fill="none"/><path d="M332 266 L326 271 L332 276" class="l2" fill="none"/><line x1="326" y1="271" x2="316" y2="271" class="l2" fill="none"/><line x1="300" y1="262" x2="304" y2="262" class="l2 dash" fill="none"/><polyline points="360,262 380,262" class="l2 dash" fill="none"/><rect x="380" y="253" width="34" height="18" rx="9" class="pf"/><circle cx="360" cy="262" r="3" class="if"/><text x="516" y="240">1V1</text><polyline points="452,182 452,166 270,166" class="l2 dash" fill="none"/><rect x="60" y="240" width="44" height="44" class="pf"/><line x1="73.2" y1="281" x2="73.2" y2="249" class="l" fill="none"/><polygon points="73.2,244 76.7,251 69.7,251" class="if"/><line x1="90.8" y1="284" x2="90.8" y2="275" class="l" fill="none"/><line x1="85.8" y1="275" x2="95.8" y2="275" class="l" fill="none"/><rect x="104" y="240" width="44" height="44" class="pf"/><line x1="117.2" y1="243" x2="132.7" y2="275.5" class="l" fill="none"/><polygon points="134.8,280 128.6,275.2 135,272.2" class="if"/><line x1="117.2" y1="284" x2="117.2" y2="275" class="l" fill="none"/><line x1="112.2" y1="275" x2="122.2" y2="275" class="l" fill="none"/><line x1="117.2" y1="240" x2="117.2" y2="232" class="l" fill="none"/><text x="121.2" y="237" class="mali">2</text><line x1="117.2" y1="284" x2="117.2" y2="292" class="l" fill="none"/><text x="121.2" y="295" class="mali">1</text><line x1="134.8" y1="284" x2="134.8" y2="292" class="l" fill="none"/><text x="138.8" y="295" class="mali">3</text><line x1="60" y1="262" x2="48" y2="262" class="l" fill="none"/><line x1="48" y1="254" x2="48" y2="270" class="l" fill="none"/><path d="M48 254 A8 8 0 0 0 48 270" class="l" fill="none"/><polyline points="148,262 152,255 156,269 160,255 164,269 168,255 174,262" class="l" fill="none"/><text x="34" y="267" text-anchor="end">1S1</text><line x1="134.8" y1="292" x2="134.8" y2="296" class="l" fill="none"/><polygon points="128.8,296 140.8,296 134.8,305" class="pf"/><polyline points="117.2,232 117.2,166 134,166" class="l2 dash" fill="none"/><rect x="270" y="310" width="44" height="44" class="pf"/><line x1="283.2" y1="313" x2="298.7" y2="345.5" class="l" fill="none"/><polygon points="300.8,350 294.6,345.2 301,342.2" class="if"/><line x1="283.2" y1="354" x2="283.2" y2="345" class="l" fill="none"/><line x1="278.2" y1="345" x2="288.2" y2="345" class="l" fill="none"/><rect x="314" y="310" width="44" height="44" class="pf"/><line x1="327.2" y1="351" x2="327.2" y2="319" class="l" fill="none"/><polygon points="327.2,314 330.7,321 323.7,321" class="if"/><line x1="344.8" y1="354" x2="344.8" y2="345" class="l" fill="none"/><line x1="339.8" y1="345" x2="349.8" y2="345" class="l" fill="none"/><line x1="283.2" y1="310" x2="283.2" y2="302" class="l" fill="none"/><text x="287.2" y="307" class="mali">2</text><line x1="283.2" y1="354" x2="283.2" y2="362" class="l" fill="none"/><text x="287.2" y="365" class="mali">1</text><line x1="300.8" y1="354" x2="300.8" y2="362" class="l" fill="none"/><text x="304.8" y="365" class="mali">3</text><polyline points="270,332 266,325 262,339 258,325 254,339 250,325 244,332" class="l" fill="none"/><line x1="358" y1="332" x2="368" y2="332" class="l" fill="none"/><line x1="368" y1="332" x2="375" y2="325" class="l" fill="none"/><circle cx="378" cy="322" r="5" class="l" fill="none"/><text x="396" y="337">1S2</text><line x1="300.8" y1="362" x2="300.8" y2="366" class="l" fill="none"/><polygon points="294.8,366 306.8,366 300.8,375" class="pf"/><polyline points="283.2,302 283.2,262 300,262" class="l2 dash" fill="none"/><circle cx="20" cy="386" r="11" class="pf"/><polygon points="20,380 15,390 25,390" class="pf"/><text x="20" y="414" class="mali" text-anchor="middle">0Z</text><line x1="31" y1="386" x2="56" y2="386" class="l" fill="none"/><rect x="56" y="370" width="48" height="32" class="pf"/><polygon points="68,376 76,386 68,396 60,386" class="pf"/><line x1="60" y1="386" x2="76" y2="386" class="l2 dash" fill="none"/><rect x="82" y="377" width="16" height="18" class="pf"/><line x1="90" y1="393" x2="90" y2="384" class="l" fill="none"/><polygon points="90,379 93.5,386 86.5,386" class="if"/><text x="80" y="420" class="mali" text-anchor="middle">0Z1</text><line x1="104" y1="386" x2="452" y2="386" class="l" fill="none"/><circle cx="117.2" cy="386" r="3" class="if"/><circle cx="228" cy="386" r="3" class="if"/><circle cx="283.2" cy="386" r="3" class="if"/><line x1="117.2" y1="386" x2="117.2" y2="292" class="l" fill="none"/><line x1="228" y1="386" x2="228" y2="200" class="l" fill="none"/><line x1="283.2" y1="386" x2="283.2" y2="362" class="l" fill="none"/><line x1="452" y1="386" x2="452" y2="238" class="l" fill="none"/></svg><figcaption><b>Slika V8.1</b> &mdash; Kašnjenje ukapčanja: kad klipnjača pritisne granični ventil 1S2, signal puni spremnik vremenskog člana 1V1 kroz prigušnicu. Kada tlak u spremniku dosegne tlak prebacivanja, razvodnik 3/2 u vremenskom članu daje signal 12 razvodniku 1V2 i klipnjača se vraća.</figcaption></figure>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="b1"><h2>B1 &middot; Shema V8.1 u FluidSIM-u</h2><div class="crta"></div><ol class="koraci"><li><b>File → New</b>, 0Z1 (0,6 MPa). Dvoradni cilindar <b>1A1</b>: hod <b>40</b> mm, Ø <b>40</b> / <b>16</b> mm; Actuating Labels: <b>1S2</b> na <b>38–40</b> mm.</li><li>Bistabilni razvodnik <b>1V2</b> (5/2-way impulse valve). Tipkalo <b>1S1</b> (3/2 NC) → <b>14</b>.</li><li>Granični ventil <b>1S2</b> (3/2 NC, valjak, bez <i>Piloted</i>, oznaka 1S2) ne vodi izravno na razvodnik, nego na ulaz <b>12</b> vremenskog člana.</li><li>Iz <i>Valve Groups</i> povucite <b>Time delay valve, normally closed</b> &mdash; <b>1V1</b>. To je gotova skupina: prigušno-nepovratni ventil, spremnik i razvodnik 3/2 NC. Ulaz 1 napojite iz 0Z1, izlaz 2 vodite na <b>12</b> razvodnika 1V2 (Slika B1.1).</li><li>Dvoklik na 1V1: <i>Opening Level</i> (otvor prigušnice), <i>Accumulator</i> <b>0,04</b> l (40 cm³), <i>Throttle</i> 10 l/min (Slika B1.2).</li><li>F6, State Diagram s 1A1, 1S1, 1S2 i 1V1.</li></ol><figure class="snimka"><a href="slike/postupak-v04/04-v8-shema.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/04-v8-shema.webp" alt="Slika B1.1 &amp;mdash; Shema V8.1 u FluidSIM-u: vremenski član 1V1 (Time delay valve) između graničnog ventila 1S2 i priključka 12 razvodnika 1V2." loading="lazy" decoding="async" width="1004" height="726"></a><figcaption><b>Slika B1.1</b> &mdash; Shema V8.1 u FluidSIM-u: vremenski član 1V1 (Time delay valve) između graničnog ventila 1S2 i priključka 12 razvodnika 1V2.</figcaption></figure><figure class="snimka" style="max-width:400px"><a href="slike/postupak-v04/05-v8-vremenski-clan.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/05-v8-vremenski-clan.webp" alt="Slika B1.2 &amp;mdash; Time delay valve: otvor 9 %, spremnik 0,04 l." loading="lazy" decoding="async" width="357" height="264"></a><figcaption><b>Slika B1.2</b> &mdash; Time delay valve: otvor 9 %, spremnik 0,04 l.</figcaption></figure></section>
+<section id="b2"><h2>B2 &middot; Namještanje vremena</h2><div class="crta"></div><ol class="koraci"><li>Start, kratko pritisnite 1S1. Klipnjača izađe, pritisne 1S2, a povrat počinje tek kad tlak u spremniku dosegne tlak prebacivanja razvodnika 3/2.</li><li>Na dijagramu izmjerite vrijeme od trenutka kad 1S2 postane 1 do početka povrata. Mijenjajte otvor prigušnice: u našoj simulaciji 15 % daje oko 2,2 s, 8 % oko 4,6 s, a <b>9 %</b> oko <b>4,1 s</b> (Slika B2.1).</li><li>Bez promjene otvora spustite tlak na <b>0,5</b> MPa: vrijeme držanja naraste na oko <b>4,9 s</b>. Vratite 0,6 MPa.</li><li>Izlaz vremenskog člana na dijagramu je kratak impuls: nestaje čim klipnjača napusti 1S2, jer se spremnik prazni kroz nepovratni ventil.</li></ol><figure class="snimka"><a href="slike/postupak-v04/06-v8-simulacija.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/06-v8-simulacija.webp" alt="Slika B2.1 &amp;mdash; Dijagram put–korak pri 6 bar i otvoru 9 %: klipnjača drži poklopac oko 4 s, zatim se vraća." loading="lazy" decoding="async" width="999" height="715"></a><figcaption><b>Slika B2.1</b> &mdash; Dijagram put–korak pri 6 bar i otvoru 9 %: klipnjača drži poklopac oko 4 s, zatim se vraća.</figcaption></figure><p class="sitno">Rezultati u tekstu odnose se na našu simulaciju i priložene datoteke; vaša se vremena mogu malo razlikovati ako drukčije namjestite protoke ili otvore prigušnica.</p></section>
+<section id="dio-b-pitanja"><h2>B3 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Od kojih se dijelova sastoji vremenski član s kašnjenjem ukapčanja i koju ulogu ima svaki od njih?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p><b>Prigušnica</b> ograničava protok zraka u spremnik i time određuje brzinu porasta tlaka. <b>Nepovratni ventil</b> usporedo s prigušnicom omogućuje brzo pražnjenje spremnika nakon nestanka signala. <b>Spremnik</b> je obujam koji se puni; što je veći, to je kašnjenje dulje. <b>Razvodnik 3/2 NC s pneumatskim upravljanjem</b> prebaci kada tlak u spremniku dosegne tlak prebacivanja i tada propusti puni signal iz mreže na izlaz 2.</p></div></details></div><div class="pitanje"><p><b>2.</b> Procijenite vrijeme kašnjenja za zadane vrijednosti: V = 40 cm³, tlak prebacivanja 2,5 bar, protok kroz prigušnicu 1,5 Nl/min.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Da bi se tlak u spremniku podigao s 0 na 2,5 bar pretlaka, u njega treba utjerati zrak obujma V · Δp / p<sub>a</sub> (preračunato na normalno stanje):</p><p>V<sub>n</sub> = 0,040 l · 2,5 / 1,013 = 0,0987 Nl.</p><p>t = V<sub>n</sub> / Q<sub>n</sub> = 0,0987 Nl / 1,5 Nl/min = 0,0658 min = <b>3,95 s ≈ 4 s</b>.</p><p>Pretpostavka stalnog protoka vrijedi dok je tlak iza prigušnice manji od približno 0,53 apsolutnog tlaka ispred nje (7,013 · 0,528 − 1,013 = 2,69 bar pretlaka) — tlak prebacivanja od 2,5 bar je unutar tog područja. Ovo je pojednostavljeni model; stvarno vrijeme uvijek se namješta mjerenjem.</p><h4>U FluidSIM-u</h4><p>U FluidSIM-u se procjena provjerava otvorom prigušnice: uz spremnik 0,04 l vrijeme od oko 4 s dobili smo pri otvoru 9 %.</p></div></details></div><div class="pitanje"><p><b>3.</b> Za drugi proizvod treba 6 s. Koliki bi spremnik trebao uz istu prigušnicu? Što je u praksi jednostavnije?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Uz isti protok vrijeme raste razmjerno obujmu: V = 40 cm³ · 6 / 3,95 = <b>61 cm³</b>. U praksi je jednostavnije <b>pritvoriti prigušnicu</b> dok se ne izmjeri 6 s; spremnik se mijenja kada je potrebno kašnjenje izvan raspona prigušnice (npr. više od 30 s).</p></div></details></div><div class="pitanje"><p><b>4.</b> Što se događa s vremenom kašnjenja kad tlak u mreži padne sa 6 na 5 bar? Potkrijepite procjenom.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Pri kritičnom strujanju protok kroz prigušnicu približno je razmjeran apsolutnom tlaku ispred nje: Q<sub>n</sub> = 1,5 · 6,013 / 7,013 = 1,29 Nl/min, pa je t = 0,0987 / 1,29 · 60 ≈ <b>4,6 s</b>. Uz to granica kritičnog strujanja pada na 0,528 · 6,013 − 1,013 = 2,16 bar, što je ispod tlaka prebacivanja, pa se punjenje pri kraju dodatno usporava i stvarno je vrijeme još dulje. Zaključak: <b>vrijeme pneumatskog vremenskog člana ovisi o tlaku</b>, pa za stalno vrijeme treba stalan tlak (regulator).</p><h4>U FluidSIM-u</h4><p>U našoj simulaciji, uz isti otvor (9 %), vrijeme pri 5 bar naraste s oko 4,1 s na oko 4,9 s &mdash; isti smjer kao u procjeni.</p></div></details></div><div class="pitanje"><p><b>5.</b> Nacrtajte dijagram put–vrijeme cilindra 1A1 i dijagram signala 1S2 i izlaza vremenskog člana za jedan ciklus. Uzmite izvlačenje 0,5 s, držanje 4 s i uvlačenje 0,4 s.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Signal 1S2 postaje 1 kada klipnjača dođe u prednji položaj. Izlaz vremenskog člana postaje 1 tek 4 s kasnije i tada počinje povrat. Čim klipnjača napusti 1S2, spremnik se prazni kroz nepovratni ventil i izlaz se vraća na 0 — izlaz je zato kratak impuls.</p>
+<figure class="crtez"><svg viewBox="0 0 640 350" role="img" aria-label="Slika V8.2: dijagram put–vrijeme cilindra 1A1 i dijagram signala 1S2 i izlaza vremenskog člana"><line x1="120" y1="100" x2="610" y2="100" class="l2" fill="none"/><line x1="120" y1="34" x2="120" y2="100" class="l2" fill="none"/><text x="108" y="75" text-anchor="end">1A1</text><line x1="120" y1="170" x2="610" y2="170" class="l2" fill="none"/><line x1="120" y1="134" x2="120" y2="170" class="l2" fill="none"/><text x="108" y="160" text-anchor="end">1S2</text><line x1="120" y1="240" x2="610" y2="240" class="l2" fill="none"/><line x1="120" y1="204" x2="120" y2="240" class="l2" fill="none"/><text x="108" y="230" text-anchor="end">1V1: 2</text><text x="114" y="44" class="mali" text-anchor="end">1</text><text x="114" y="104" class="mali" text-anchor="end">0</text><polyline points="120,100 136.3,100 177.2,40 503.8,40 536.5,100 610,100" class="t" fill="none"/><polyline points="120,170 177.2,170 177.2,140 512,140 512,170 610,170" class="l" fill="none"/><polyline points="120,240 503.8,240 503.8,210 512,210 512,240 610,240" class="l" fill="none"/><line x1="177.2" y1="250" x2="177.2" y2="262" class="l2" fill="none"/><line x1="503.8" y1="250" x2="503.8" y2="262" class="l2" fill="none"/><line x1="177.2" y1="256" x2="503.8" y2="256" class="l2" fill="none"/><polygon points="177.2,256 184.2,252.5 184.2,259.5" class="if"/><polygon points="503.8,256 496.8,259.5 496.8,252.5" class="if"/><text x="340.5" y="280" class="mali" text-anchor="middle">t = 4 s (kašnjenje ukapčanja)</text><text x="150.8" y="32" class="mali" text-anchor="end">0,5 s</text><text x="526.2" y="32" class="mali">0,4 s</text><line x1="136.3" y1="108" x2="136.3" y2="118" class="l2" fill="none"/><text x="136.3" y="132" class="mali" text-anchor="middle">start 1S1</text><line x1="120" y1="296" x2="120" y2="302" class="l2" fill="none"/><text x="120" y="320" class="mali" text-anchor="middle">0</text><line x1="201.7" y1="296" x2="201.7" y2="302" class="l2" fill="none"/><text x="201.7" y="320" class="mali" text-anchor="middle">1</text><line x1="283.3" y1="296" x2="283.3" y2="302" class="l2" fill="none"/><text x="283.3" y="320" class="mali" text-anchor="middle">2</text><line x1="365" y1="296" x2="365" y2="302" class="l2" fill="none"/><text x="365" y="320" class="mali" text-anchor="middle">3</text><line x1="446.7" y1="296" x2="446.7" y2="302" class="l2" fill="none"/><text x="446.7" y="320" class="mali" text-anchor="middle">4</text><line x1="528.3" y1="296" x2="528.3" y2="302" class="l2" fill="none"/><text x="528.3" y="320" class="mali" text-anchor="middle">5</text><line x1="610" y1="296" x2="610" y2="302" class="l2" fill="none"/><text x="610" y="320" class="mali" text-anchor="middle">6</text><line x1="120" y1="296" x2="610" y2="296" class="l2" fill="none"/><text x="610" y="340" class="mali" text-anchor="end">vrijeme t (s)</text></svg><figcaption><b>Slika V8.2</b> &mdash; Rješenje zadatka 5: dijagram put–vrijeme cilindra 1A1 i signali 1S2 i izlaza vremenskog člana 1V1. Izlaz se pojavljuje 4 s nakon što 1S2 postane 1, a nestaje čim klipnjača napusti 1S2.</figcaption></figure></div></details></div><div class="pitanje"><p><b>6.</b> Kolika je sila i srednji tlak na lijepljenoj površini 25 × 60 mm? Kolika je potrošnja zraka po ciklusu?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A = π · 40² / 4 = 1256,6 mm²; F = 0,6 · 1256,6 · 0,9 = <b>679 N</b>. Tlak na spoju: 679 N / 1500 mm² = <b>0,45 N/mm²</b> (0,45 MPa).</p><p>A<sub>pr</sub> = 1256,6 − 201,1 = 1055,6 mm²; V = (1256,6 + 1055,6) · 40 · 6,923 / 10⁶ = <b>0,64 Nl</b> po ciklusu. Zrak za punjenje spremnika vremenskog člana (≈ 0,1 Nl) nije uključen.</p></div></details></div><div class="pitanje"><p><b>7.</b> Zašto je nepovratni ventil u vremenskom članu važan? Što biste izmjerili u koraku 7 bez njega?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Bez nepovratnog ventila spremnik bi se i praznio kroz prigušnicu, dakle sporo. Ako bi novi ciklus počeo prije nego se spremnik isprazni, u njemu bi ostao dio tlaka i sljedeće bi kašnjenje bilo <b>kraće</b>. Nepovratni ventil osigurava da svaki ciklus počne s praznim spremnikom, pa je vrijeme ponovljivo.</p></div></details></div><div class="pitanje"><p><b>8.</b> Radnik drži tipkalo 1S1 pritisnutim cijelo vrijeme lijepljenja. Što se događa nakon isteka 4 s?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Signal 12 iz vremenskog člana dolazi dok je signal 14 još prisutan. Bistabilni razvodnik zadržava položaj „izvlačenje", pa se klipnjača ne vraća dok se 1S1 ne otpusti; tada signal 12 (koji traje dok je 1S2 pritisnut) vraća klipnjaču. To je isti blokirajući signal kao u vježbi s graničnim ventilom; rješava se impulsnim signalom starta ili nekom od metoda upravljanja.</p></div></details></div></div></section>
+<section id="dio-c"><h2>Dio C &middot; V10 Tlačno upravljanje proslijednim tlačnim ventilom</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>U montaži malih reduktora u kućište od aluminija utiskuje se <b>kuglični ležaj</b>. Ležaj mora sjesti na naslon u provrtu, ali se ne smije utisnuti silom većom od <b>800 N</b>, jer bi se oštetile staze kotrljanja. Duljina puta do naslona malo se mijenja od komada do komada, pa se povrat ne može pouzdano pokretati graničnim ventilom. Umjesto toga povrat pokreće <b>tlak</b>: kada ležaj sjedne, klipnjača stane, tlak u komori klipa raste i pri namještenoj vrijednosti proslijedni tlačni ventil daje signal za povrat.</p>
+<p>Utiskuje dvoradni cilindar <b>1A1 Ø50/20 mm s hodom 60 mm</b> (η = 0,9). Radnik pokreće ciklus tipkalom <b>1S1</b>, koje daje signal 14 bistabilnom razvodniku <b>5/2 (1V1)</b>. Komora klipa povezana je mjernim vodom s <b>proslijednim tlačnim ventilom 1V2</b>, koji se sastoji od tlačnog pilot-ventila s podesivom oprugom i razvodnika 3/2 NC; njegov izlaz daje signal 12. Sila otpora pri utiskivanju prije sjedanja iznosi oko <b>500 N</b>. Mreža daje 6 bar.</p>
+<p>Izračunajte tlak prebacivanja, složite sklop, namjestite ga i ispitajte, uključujući pokus s prigušivanjem odvoda.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>U ovom sklopu klipnjača namjerno pritišće čvrst graničnik — graničnik mora biti čvrsto učvršćen i ne smije biti ruka ni alat. Cilindar Ø50 pri punom tlaku daje više od 1 kN. Ako je proslijedni ventil namješten na tlak koji mreža ne može dati, klipnjača ostaje pritisnuta na graničnik neograničeno dugo: sklop se tada zaustavlja zatvaranjem uklopnog ventila, a ne rukom. Tlak prebacivanja namještajte polako i samo alatom predviđenim za to.</p></div>
+<h3>Shema</h3>
+<p>Proslijedni tlačni ventil 1V2 nacrtan je na slici V10.1 u iscrtkanom okviru. Tlak iz komore klipa dolazi mjernim vodom na ulaz tlačnog pilot-ventila i djeluje protiv podesive opruge. Kada tlak nadvlada oprugu, pilot-ventil propušta zrak na upravljački priključak razvodnika 3/2, koji iz mreže daje puni signal na 12 razvodnika 1V1. Mjerni vod spojen je izravno na cilindar, ne na razvodnik.</p>
+<figure class="crtez"><svg viewBox="0 0 640 420" role="img" aria-label="Slika V10.1: shema tlačnog upravljanja: proslijedni tlačni ventil 1V2 mjeri tlak u komori klipa i daje signal za povrat"><text x="144" y="140" text-anchor="end">1V1</text><rect x="203.6" y="44" width="170" height="34" class="pf"/><rect x="219.6" y="57" width="172" height="8" class="pf"/><rect x="213.6" y="45.2" width="6" height="31.6" class="rf"/><line x1="217.6" y1="78" x2="217.6" y2="86" class="l" fill="none"/><line x1="359.6" y1="78" x2="359.6" y2="86" class="l" fill="none"/><text x="193.6" y="67" text-anchor="end">1A1</text><text x="193.6" y="100" class="mali" text-anchor="end">Ø50/20</text><text x="193.6" y="116" class="mali" text-anchor="end">s = 60 mm</text><rect x="150" y="150" width="52" height="52" class="pf"/><line x1="176" y1="199" x2="166.7" y2="158.9" class="l" fill="none"/><polygon points="165.6,154 170.6,160 163.8,161.6" class="if"/><line x1="186.4" y1="153" x2="193.3" y2="193.1" class="l" fill="none"/><polygon points="194.2,198 189.6,191.7 196.5,190.5" class="if"/><line x1="157.8" y1="202" x2="157.8" y2="193" class="l" fill="none"/><line x1="152.8" y1="193" x2="162.8" y2="193" class="l" fill="none"/><rect x="202" y="150" width="52" height="52" class="pf"/><line x1="228" y1="199" x2="237.3" y2="158.9" class="l" fill="none"/><polygon points="238.4,154 240.2,161.6 233.4,160" class="if"/><line x1="217.6" y1="153" x2="210.7" y2="193.1" class="l" fill="none"/><polygon points="209.8,198 207.5,190.5 214.4,191.7" class="if"/><line x1="246.2" y1="202" x2="246.2" y2="193" class="l" fill="none"/><line x1="241.2" y1="193" x2="251.2" y2="193" class="l" fill="none"/><line x1="217.6" y1="150" x2="217.6" y2="142" class="l" fill="none"/><text x="221.6" y="147" class="mali">4</text><line x1="238.4" y1="150" x2="238.4" y2="142" class="l" fill="none"/><text x="242.4" y="147" class="mali">2</text><line x1="209.8" y1="202" x2="209.8" y2="210" class="l" fill="none"/><text x="213.8" y="213" class="mali">5</text><line x1="228" y1="202" x2="228" y2="210" class="l" fill="none"/><text x="232" y="213" class="mali">1</text><line x1="246.2" y1="202" x2="246.2" y2="210" class="l" fill="none"/><text x="250.2" y="213" class="mali">3</text><line x1="150" y1="176" x2="144" y2="176" class="l" fill="none"/><polygon points="144,170 144,182 134,176" class="pf"/><text x="138" y="166" class="mali" text-anchor="middle">14</text><line x1="254" y1="176" x2="260" y2="176" class="l" fill="none"/><polygon points="260,170 260,182 270,176" class="pf"/><text x="266" y="166" class="mali" text-anchor="middle">12</text><line x1="217.6" y1="142" x2="217.6" y2="86" class="l" fill="none"/><polyline points="238.4,142 238.4,110 359.6,110 359.6,86" class="l" fill="none"/><line x1="209.8" y1="210" x2="209.8" y2="214" class="l" fill="none"/><polygon points="203.8,214 215.8,214 209.8,223" class="pf"/><line x1="246.2" y1="210" x2="246.2" y2="214" class="l" fill="none"/><polygon points="240.2,214 252.2,214 246.2,223" class="pf"/><rect x="300" y="216" width="220" height="120" class="l2 dash" fill="none"/><rect x="336" y="230" width="40" height="40" class="pf"/><line x1="348" y1="233" x2="361.8" y2="261.5" class="l" fill="none"/><polygon points="364,266 357.8,261.2 364.1,258.2" class="if"/><line x1="348" y1="270" x2="348" y2="261" class="l" fill="none"/><line x1="343" y1="261" x2="353" y2="261" class="l" fill="none"/><rect x="376" y="230" width="40" height="40" class="pf"/><line x1="388" y1="267" x2="388" y2="239" class="l" fill="none"/><polygon points="388,234 391.5,241 384.5,241" class="if"/><line x1="404" y1="270" x2="404" y2="261" class="l" fill="none"/><line x1="399" y1="261" x2="409" y2="261" class="l" fill="none"/><line x1="348" y1="230" x2="348" y2="222" class="l" fill="none"/><text x="352" y="227" class="mali">2</text><line x1="348" y1="270" x2="348" y2="278" class="l" fill="none"/><text x="352" y="281" class="mali">1</text><line x1="364" y1="270" x2="364" y2="278" class="l" fill="none"/><text x="368" y="281" class="mali">3</text><polyline points="336,250 332,243 328,257 324,243 320,257 316,243 310,250" class="l" fill="none"/><line x1="416" y1="250" x2="422" y2="250" class="l" fill="none"/><polygon points="422,244 422,256 432,250" class="pf"/><line x1="364" y1="278" x2="364" y2="282" class="l" fill="none"/><polygon points="358,282 370,282 364,291" class="pf"/><rect x="450" y="272" width="34" height="34" class="pf"/><line x1="461.9" y1="302" x2="470.3" y2="280.7" class="l" fill="none"/><polygon points="472.1,276 472.8,283.8 466.3,281.2" class="if"/><line x1="461.9" y1="306" x2="461.9" y2="314" class="l" fill="none"/><line x1="472.1" y1="272" x2="472.1" y2="264" class="l" fill="none"/><polyline points="484,289 488,282 492,296 496,282 500,296 504,282 510,289" class="l" fill="none"/><line x1="486" y1="301" x2="504.6" y2="280.7" class="l2" fill="none"/><polygon points="508,277 505.8,284.5 500.7,279.8" class="if"/><polyline points="472.1,264 472.1,250 432,250" class="l2 dash" fill="none"/><polyline points="461.9,326 440,326 440,289 450,289" class="l2 dash" fill="none"/><line x1="461.9" y1="314" x2="461.9" y2="336" class="l2 dash" fill="none"/><circle cx="461.9" cy="326" r="3" class="if"/><text x="300" y="208">1V2</text><line x1="217.6" y1="44" x2="217.6" y2="36" class="l" fill="none"/><polyline points="217.6,36 217.6,26 596,26 596,356 461.9,356 461.9,336" class="l2 dash" fill="none"/><line x1="596" y1="200" x2="604" y2="200" class="l2" fill="none"/><circle cx="614" cy="200" r="10" class="pf"/><line x1="608" y1="206" x2="616.5" y2="197.5" class="l" fill="none"/><polygon points="620,194 617.5,201.4 612.6,196.5" class="if"/><text x="588" y="376" class="mali" text-anchor="end">namješteno 4,5 bar</text><polyline points="348,222 348,176 270,176" class="l2 dash" fill="none"/><rect x="60" y="250" width="44" height="44" class="pf"/><line x1="73.2" y1="291" x2="73.2" y2="259" class="l" fill="none"/><polygon points="73.2,254 76.7,261 69.7,261" class="if"/><line x1="90.8" y1="294" x2="90.8" y2="285" class="l" fill="none"/><line x1="85.8" y1="285" x2="95.8" y2="285" class="l" fill="none"/><rect x="104" y="250" width="44" height="44" class="pf"/><line x1="117.2" y1="253" x2="132.7" y2="285.5" class="l" fill="none"/><polygon points="134.8,290 128.6,285.2 135,282.2" class="if"/><line x1="117.2" y1="294" x2="117.2" y2="285" class="l" fill="none"/><line x1="112.2" y1="285" x2="122.2" y2="285" class="l" fill="none"/><line x1="117.2" y1="250" x2="117.2" y2="242" class="l" fill="none"/><text x="121.2" y="247" class="mali">2</text><line x1="117.2" y1="294" x2="117.2" y2="302" class="l" fill="none"/><text x="121.2" y="305" class="mali">1</text><line x1="134.8" y1="294" x2="134.8" y2="302" class="l" fill="none"/><text x="138.8" y="305" class="mali">3</text><line x1="60" y1="272" x2="48" y2="272" class="l" fill="none"/><line x1="48" y1="264" x2="48" y2="280" class="l" fill="none"/><path d="M48 264 A8 8 0 0 0 48 280" class="l" fill="none"/><polyline points="148,272 152,265 156,279 160,265 164,279 168,265 174,272" class="l" fill="none"/><text x="34" y="277" text-anchor="end">1S1</text><line x1="134.8" y1="302" x2="134.8" y2="306" class="l" fill="none"/><polygon points="128.8,306 140.8,306 134.8,315" class="pf"/><polyline points="117.2,242 117.2,176 134,176" class="l2 dash" fill="none"/><circle cx="20" cy="384" r="11" class="pf"/><polygon points="20,378 15,388 25,388" class="pf"/><text x="20" y="412" class="mali" text-anchor="middle">0Z</text><line x1="31" y1="384" x2="56" y2="384" class="l" fill="none"/><rect x="56" y="368" width="48" height="32" class="pf"/><polygon points="68,374 76,384 68,394 60,384" class="pf"/><line x1="60" y1="384" x2="76" y2="384" class="l2 dash" fill="none"/><rect x="82" y="375" width="16" height="18" class="pf"/><line x1="90" y1="391" x2="90" y2="382" class="l" fill="none"/><polygon points="90,377 93.5,384 86.5,384" class="if"/><text x="80" y="418" class="mali" text-anchor="middle">0Z1</text><line x1="104" y1="384" x2="348" y2="384" class="l" fill="none"/><circle cx="117.2" cy="384" r="3" class="if"/><circle cx="228" cy="384" r="3" class="if"/><line x1="117.2" y1="384" x2="117.2" y2="302" class="l" fill="none"/><line x1="228" y1="384" x2="228" y2="210" class="l" fill="none"/><line x1="348" y1="384" x2="348" y2="278" class="l" fill="none"/></svg><figcaption><b>Slika V10.1</b> &mdash; Tlačno upravljanje: tipkalo 1S1 daje signal 14 bistabilnom razvodniku 1V1 i klipnjača utiskuje ležaj. Kada tlak u komori klipa, doveden mjernim vodom, dosegne 4,5 bar, proslijedni tlačni ventil 1V2 prebaci i daje signal 12 za povrat.</figcaption></figure>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="c1"><h2>C1 &middot; Shema V10.1 u FluidSIM-u</h2><div class="crta"></div><ol class="koraci"><li><b>File → New</b>, 0Z1 (0,6 MPa). Dvoradni cilindar <b>1A1</b>: hod <b>60</b> mm, Ø <b>50</b> / <b>20</b> mm. Otpor utiskivanja: kartica <b>Force profile</b> → <i>Constant force</i> <b>500</b> N (Slika C1.1).</li><li>Bistabilni razvodnik <b>1V1</b>; tipkalo <b>1S1</b> → <b>14</b>.</li><li>Iz <i>Valve Groups</i> povucite <b>Pressure sequence valve</b> (proslijedni tlačni ventil) &mdash; <b>1V2</b>. Dvoklik: <i>Nominal Pressure</i> <b>0,45</b> MPa (Slika C1.2).</li><li>Mjerni vod: s voda klipne komore <b>uz sam cilindar</b> (račvanje) na upravljački ulaz 12 ventila 1V2. Ulaz 1 ventila 1V2 iz 0Z1, izlaz 2 na <b>12</b> razvodnika 1V1.</li><li>Iz <i>Measuring instruments</i> povucite <b>manometar</b> na mjerni vod. State Diagram: 1A1, 1V1 i manometar (<i>Pressure</i>); u dijalogu dijagrama namjestite <i>Fixed interval</i> 0–2 s.</li></ol><div class="dvije"><figure class="snimka"><a href="slike/postupak-v04/08-v10-protusila.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/08-v10-protusila.webp" alt="Slika C1.1 &amp;mdash; Force profile: stalni otpor 500 N." loading="lazy" decoding="async" width="379" height="350"></a><figcaption><b>Slika C1.1</b> &mdash; Force profile: stalni otpor 500 N.</figcaption></figure><figure class="snimka" style="max-width:300px"><a href="slike/postupak-v04/07-v10-prosljedni-dijalog.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/07-v10-prosljedni-dijalog.webp" alt="Slika C1.2 &amp;mdash; Pressure sequence valve: tlak prebacivanja 0,45 MPa." loading="lazy" decoding="async" width="250" height="185"></a><figcaption><b>Slika C1.2</b> &mdash; Pressure sequence valve: tlak prebacivanja 0,45 MPa.</figcaption></figure></div></section>
+<section id="c2"><h2>C2 &middot; Simulacija i pokus s prigušivanjem</h2><div class="crta"></div><ol class="koraci"><li>Start, kratko pritisnite 1S1. Tijekom hoda tlak u komori klipa je oko <b>0,3 MPa</b> (≈ 2,8 bar za 500 N). Kad klipnjača stane (u simulaciji na kraju hoda, umjesto graničnika na 50 mm), tlak raste, pri <b>0,45 MPa</b> 1V2 prebaci i klipnjača se vraća (Slika C2.1).</li><li>Na samom početku hoda vidi se kratki vršak tlaka (ubrzanje klipa); prekratak je da bi prebacio 1V2.</li><li>Pokus s prigušivanjem odvoda: u vod prstenaste komore ugradite prigušno-nepovratni ventil (prigušuje odlazni zrak) i pritvorite ga. Tlak u komori klipa odmah naraste na gotovo 0,6 MPa, 1V2 prebaci <b>prije</b> nego što klipnjača stigne do kraja (Slika C2.2).</li></ol><figure class="snimka"><a href="slike/postupak-v04/09-v10-simulacija.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/09-v10-simulacija.webp" alt="Slika C2.1 &amp;mdash; Tlačno upravljanje: tlak u hodu oko 0,3 MPa, nakon zaustavljanja raste do 0,45 MPa i pokreće povrat." loading="lazy" decoding="async" width="986" height="704"></a><figcaption><b>Slika C2.1</b> &mdash; Tlačno upravljanje: tlak u hodu oko 0,3 MPa, nakon zaustavljanja raste do 0,45 MPa i pokreće povrat.</figcaption></figure><figure class="snimka"><a href="slike/postupak-v04/10-v10-prigusen-odvod.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/10-v10-prigusen-odvod.webp" alt="Slika C2.2 &amp;mdash; S jako prigušenim odvodom tlak u komori klipa odmah dosegne tlak prebacivanja i povrat počne prerano." loading="lazy" decoding="async" width="986" height="704"></a><figcaption><b>Slika C2.2</b> &mdash; S jako prigušenim odvodom tlak u komori klipa odmah dosegne tlak prebacivanja i povrat počne prerano.</figcaption></figure><p class="sitno">Rezultati u tekstu odnose se na našu simulaciju i priložene datoteke; vaša se vremena mogu malo razlikovati ako drukčije namjestite protoke ili otvore prigušnica.</p></section>
+<section id="dio-c-pitanja"><h2>C3 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Od čega se sastoji proslijedni tlačni ventil i kako radi? Po čemu se razlikuje od regulatora tlaka?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Sastoji se od <b>tlačnog pilot-ventila</b> s podesivom oprugom i <b>razvodnika 3/2 NC</b> s pneumatskim upravljanjem. Mjereni tlak djeluje na pilot-ventil protiv opruge; kada ga nadvlada, pilot-ventil prebaci razvodnik 3/2, koji propušta puni tlak iz mreže na izlaz. Rezultat je <b>signal</b> (da/ne) kada tlak prijeđe namještenu vrijednost. Regulator tlaka, naprotiv, ne daje signal, nego održava stalan izlazni tlak i time ograničava silu.</p></div></details></div><div class="pitanje"><p><b>2.</b> Na koliki tlak treba namjestiti proslijedni ventil da se povrat pokrene pri sili utiskivanja 800 N? Kolika je sila pri namještenih 4,5 bar?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A = π · 50² / 4 = 1963,5 mm². Nakon nalijeganja prstenasta komora je odzračena, pa je sila određena samo tlakom u komori klipa: p = F / (A · η) = 800 / (1963,5 · 0,9) = 0,453 N/mm² = <b>4,53 bar</b>.</p><p>Namješta se <b>4,5 bar</b>, uz koji je sila 0,45 · 1963,5 · 0,9 = <b>795 N</b> — malo ispod granice, što je ispravna strana.</p></div></details></div><div class="pitanje"><p><b>3.</b> Koliki je tlak u komori klipa tijekom utiskivanja prije nalijeganja, kad je otpor 500 N? Postoji li opasnost od preranog prebacivanja?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>p = 500 / (1963,5 · 0,9) = 0,283 N/mm² = <b>2,8 bar</b> (uz zanemariv protutlak u prstenastoj komori). To je 1,7 bar ispod tlaka prebacivanja, pa uz neprigušen odvod nema opasnosti. Tlak skoči na 4,5 bar tek kada ležaj sjedne i klipnjača stane.</p></div></details></div><div class="pitanje"><p><b>4.</b> Zašto je mjerni vod spojen izravno na priključak cilindra, a ne na izlaz 4 razvodnika 1V1?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Dok zrak struji, u vodu između razvodnika i cilindra nastaje pad tlaka: na izlazu razvodnika tlak je viši nego u komori klipa. Mjerni vod na razvodniku mogao bi zato prebaciti proslijedni ventil <b>tijekom gibanja</b>, prije nego ležaj sjedne. Nakon zaustavljanja tlakovi se izjednače, ali prerano prebacivanje tada je već nastalo. Mjerenjem na cilindru mjeri se upravo tlak koji stvara silu.</p></div></details></div><div class="pitanje"><p><b>5.</b> U koraku 6 klipnjača se vratila prije nego je dotaknula graničnik. Objasnite zašto i dopunite signalni dio tako da se to ne može dogoditi.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kod prigušivanja odvoda u prstenastoj komori nastaje protutlak, a da bi se klip gibao, tlak u komori klipa mora ga svladati — pa se i tijekom gibanja približava punom tlaku mreže. Proslijedni ventil vidi 4,5 bar već u hodu i prebacuje prerano. Rješenje je funkcija I: tlačni signal vrijedi samo ako je klipnjača u završnom dijelu hoda. Na slici V10.2 granični ventil <b>1S2</b> napaja proslijedni ventil, pa signal 12 nastaje samo kada su ispunjena oba uvjeta. Isto se može izvesti ventilom dvostrukog tlaka.</p>
+<figure class="crtez"><svg viewBox="0 0 640 300" role="img" aria-label="Slika V10.2: signalni dio s graničnim ventilom 1S2 u nizu s proslijednim tlačnim ventilom"><rect x="200" y="30" width="220" height="120" class="l2 dash" fill="none"/><rect x="236" y="44" width="40" height="40" class="pf"/><line x1="248" y1="47" x2="261.8" y2="75.5" class="l" fill="none"/><polygon points="264,80 257.8,75.2 264.1,72.2" class="if"/><line x1="248" y1="84" x2="248" y2="75" class="l" fill="none"/><line x1="243" y1="75" x2="253" y2="75" class="l" fill="none"/><rect x="276" y="44" width="40" height="40" class="pf"/><line x1="288" y1="81" x2="288" y2="53" class="l" fill="none"/><polygon points="288,48 291.5,55 284.5,55" class="if"/><line x1="304" y1="84" x2="304" y2="75" class="l" fill="none"/><line x1="299" y1="75" x2="309" y2="75" class="l" fill="none"/><line x1="248" y1="44" x2="248" y2="36" class="l" fill="none"/><text x="252" y="41" class="mali">2</text><line x1="248" y1="84" x2="248" y2="92" class="l" fill="none"/><text x="252" y="95" class="mali">1</text><line x1="264" y1="84" x2="264" y2="92" class="l" fill="none"/><text x="268" y="95" class="mali">3</text><polyline points="236,64 232,57 228,71 224,57 220,71 216,57 210,64" class="l" fill="none"/><line x1="316" y1="64" x2="322" y2="64" class="l" fill="none"/><polygon points="322,58 322,70 332,64" class="pf"/><line x1="264" y1="92" x2="264" y2="96" class="l" fill="none"/><polygon points="258,96 270,96 264,105" class="pf"/><rect x="350" y="86" width="34" height="34" class="pf"/><line x1="361.9" y1="116" x2="370.3" y2="94.7" class="l" fill="none"/><polygon points="372.1,90 372.8,97.8 366.3,95.2" class="if"/><line x1="361.9" y1="120" x2="361.9" y2="128" class="l" fill="none"/><line x1="372.1" y1="86" x2="372.1" y2="78" class="l" fill="none"/><polyline points="384,103 388,96 392,110 396,96 400,110 404,96 410,103" class="l" fill="none"/><line x1="386" y1="115" x2="404.6" y2="94.7" class="l2" fill="none"/><polygon points="408,91 405.8,98.5 400.7,93.8" class="if"/><polyline points="372.1,78 372.1,64 332,64" class="l2 dash" fill="none"/><polyline points="361.9,140 340,140 340,103 350,103" class="l2 dash" fill="none"/><line x1="361.9" y1="128" x2="361.9" y2="150" class="l2 dash" fill="none"/><circle cx="361.9" cy="140" r="3" class="if"/><text x="194" y="50" text-anchor="end">1V2</text><rect x="196" y="176" width="40" height="40" class="pf"/><line x1="208" y1="213" x2="208" y2="185" class="l" fill="none"/><polygon points="208,180 211.5,187 204.5,187" class="if"/><line x1="224" y1="216" x2="224" y2="207" class="l" fill="none"/><line x1="219" y1="207" x2="229" y2="207" class="l" fill="none"/><rect x="236" y="176" width="40" height="40" class="pf"/><line x1="248" y1="179" x2="261.8" y2="207.5" class="l" fill="none"/><polygon points="264,212 257.8,207.2 264.1,204.2" class="if"/><line x1="248" y1="216" x2="248" y2="207" class="l" fill="none"/><line x1="243" y1="207" x2="253" y2="207" class="l" fill="none"/><line x1="248" y1="176" x2="248" y2="168" class="l" fill="none"/><text x="252" y="173" class="mali">2</text><line x1="248" y1="216" x2="248" y2="224" class="l" fill="none"/><text x="252" y="227" class="mali">1</text><line x1="264" y1="216" x2="264" y2="224" class="l" fill="none"/><text x="268" y="227" class="mali">3</text><line x1="196" y1="196" x2="186" y2="196" class="l" fill="none"/><line x1="186" y1="196" x2="179" y2="189" class="l" fill="none"/><circle cx="176" cy="186" r="5" class="l" fill="none"/><polyline points="276,196 280,189 284,203 288,189 292,203 296,189 302,196" class="l" fill="none"/><text x="308" y="201">1S2</text><line x1="264" y1="224" x2="264" y2="228" class="l" fill="none"/><polygon points="258,228 270,228 264,237" class="pf"/><line x1="248" y1="168" x2="248" y2="92" class="l" fill="none"/><polyline points="248,36 248,16 282,16" class="l2 dash" fill="none"/><polygon points="288,16 281,19.5 281,12.5" class="if"/><text x="296" y="21" class="mali">na priključak 12 razvodnika 1V1</text><polyline points="610,170 361.9,170 361.9,150" class="l2 dash" fill="none"/><text x="610" y="190" class="mali" text-anchor="end">od komore klipa 1A1</text><circle cx="20" cy="262" r="11" class="pf"/><polygon points="20,256 15,266 25,266" class="pf"/><text x="20" y="290" class="mali" text-anchor="middle">0Z</text><line x1="31" y1="262" x2="56" y2="262" class="l" fill="none"/><rect x="56" y="246" width="48" height="32" class="pf"/><polygon points="68,252 76,262 68,272 60,262" class="pf"/><line x1="60" y1="262" x2="76" y2="262" class="l2 dash" fill="none"/><rect x="82" y="253" width="16" height="18" class="pf"/><line x1="90" y1="269" x2="90" y2="260" class="l" fill="none"/><polygon points="90,255 93.5,262 86.5,262" class="if"/><text x="80" y="296" class="mali" text-anchor="middle">0Z1</text><line x1="104" y1="262" x2="248" y2="262" class="l" fill="none"/><line x1="248" y1="262" x2="248" y2="224" class="l" fill="none"/></svg><figcaption><b>Slika V10.2</b> &mdash; Rješenje zadatka 5: granični ventil 1S2 napaja proslijedni tlačni ventil 1V2, pa signal za povrat nastaje samo ako je klipnjača u završnom dijelu hoda i ako je tlak dosegnuo 4,5 bar.</figcaption></figure><h4>U FluidSIM-u</h4><ol class="koraci"><li>Dodajte granični ventil <b>1S2</b> (3/2 NC, valjak); na cilindru oznaka 1S2 na <b>55–60</b> mm. Izlaz 1S2 vodite na ulaz 1 proslijednog ventila 1V2 (umjesto izravnog napajanja iz 0Z1).</li><li>Start s istim prigušenim odvodom: tlak u komori klipa je visok cijelim hodom, ali povrat počinje tek kada klipnjača pritisne 1S2 (Slika C3.1).</li></ol><figure class="snimka"><a href="slike/postupak-v04/11-v10-z5.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v04/11-v10-z5.webp" alt="Slika C3.1 &amp;mdash; Rješenje zadatka 5 u simulaciji: povrat tek kad su ispunjena oba uvjeta, tlak i položaj." loading="lazy" decoding="async" width="986" height="715"></a><figcaption><b>Slika C3.1</b> &mdash; Rješenje zadatka 5 u simulaciji: povrat tek kad su ispunjena oba uvjeta, tlak i položaj.</figcaption></figure></div></details></div><div class="pitanje"><p><b>6.</b> Izračunajte potrošnju zraka po ciklusu. Uzmite u obzir da komora klipa na kraju hoda ima samo 4,5 bar, jer razvodnik tada prebaci.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Komora klipa: 1963,5 · 60 · (4,5 + 1,013) / 1,013 / 10⁶ = 0,1178 l · 5,442 = <b>0,64 Nl</b>.</p><p>Prstenasta komora (puni se na 6 bar pri povratu): A<sub>pr</sub> = 1649,3 mm²; 1649,3 · 60 · 6,923 / 10⁶ = <b>0,69 Nl</b>.</p><p>Ukupno <b>1,33 Nl</b> po ciklusu, oko 12 % manje nego kad bi se komora klipa punila na 6 bar (1,50 Nl). (Hod je ovdje uzet kao puni hod od 60 mm; ako ležaj sjedne ranije, potrošnja je razmjerno manja.)</p></div></details></div><div class="pitanje"><p><b>7.</b> Što se dogodilo u koraku 8, kada je tlak mreže bio 4 bar? Kako se takav kvar prepoznaje u pogonu i kako se sprječava?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Tlak u komori klipa ne može prijeći 4 bar, pa proslijedni ventil namješten na 4,5 bar nikad ne prebacuje. Klipnjača ostaje pritisnuta na ležaj silom 0,4 · 1963,5 · 0,9 = <b>707 N</b> i ne vraća se — stroj „stoji" usred ciklusa. Prepoznaje se po manometru i po tome što klipnjača ostaje izvučena. Sprječava se nadzorom tlaka mreže (npr. tlačnom sklopkom koja zabranjuje start), namještanjem tlaka prebacivanja s rezervom prema najnižem tlaku mreže i vremenskim nadzorom ciklusa.</p><h4>U FluidSIM-u</h4><p>Provjera u simulaciji: pripremnu grupu postavite na 0,4 MPa i pokrenite ciklus; pratite manometar i položaj klipnjače.</p></div></details></div><div class="pitanje"><p><b>8.</b> Zašto se ovdje ne koristi samo granični ventil na kraju hoda, kao u vježbi s automatskim povratom?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Položaj u kojem ležaj sjedne mijenja se zbog tolerancija kućišta i ležaja. Granični ventil namješten prerano vratio bi klipnjaču prije sjedanja, a namješten prekasno nikad ne bi bio dosegnut ili bi zahtijevao utiskivanje punom silom od 1060 N. Tlačni signal ovisi o <b>sili</b>, pa radi neovisno o točnom položaju naslona. Granični ventil ima smisla kao dodatni uvjet (zadatak 5), ne kao zamjena.</p></div></details></div></div></section>
+<section id="zapis"><h2>Zapis simulacije</h2><div class="crta"></div><p>Tablica <b>Zapis: simulacija</b> iz radnog lista, popunjena prema simulaciji u FluidSIM-P 4.2 (rješenje).</p><div class="tablica-omot"><table><thead><tr><th>Veličina</th><th>Očekivano (proračun / zadatak)</th><th>FluidSIM</th><th>Komentar</th></tr></thead><tbody><tr><td>Tablica I (A)</td><td>0 0 → 0; 1 0 → 0; 0 1 → 0; 1 1 → 1</td><td>isto (Slika A1.1); serijski spoj isto (Slika A2.1)</td><td>&mdash;</td></tr><tr><td>Vrijeme držanja (B)</td><td>4,0 ± 0,3 s (procjena 3,95 s)</td><td>oko 4,1 s pri otvoru 9 %</td><td>15 % → 2,2 s; 8 % → 4,6 s</td></tr><tr><td>Tlak (B)</td><td>6 bar; pri 5 bar vrijeme dulje</td><td>pri 0,5 MPa oko 4,9 s</td><td>vrijeme ovisi o tlaku</td></tr><tr><td>Tlak u hodu (C)</td><td>2,8 bar za 500 N</td><td>oko 0,3 MPa</td><td>&mdash;</td></tr><tr><td>Tlak prebacivanja (C)</td><td>4,5 bar</td><td>1V2 = 0,45 MPa, povrat nakon zaustavljanja</td><td>&mdash;</td></tr><tr><td>Prigušen odvod (C)</td><td>prerani povrat</td><td>povrat prije kraja hoda (Slika C2.2)</td><td>ispravak: 1S2 (Slika C3.1)</td></tr></tbody></table></div></section>
+<section id="predaja"><h2>Spremanje i predaja</h2><div class="crta"></div><ol class="koraci"><li><b>File → Save As</b>. U polje <i>Naziv datoteke</i> upišite <code>PIH_2026-2027_Prezime_Ime_V04.ct</code> (bez kvačica) i kliknite <i>Spremi</i>. Kasnije spremanje: <b>File → Save</b> (Ctrl + S).</li><li>Snimka: za vrijeme simulacije (nakon <i>Pause</i>) snimite zaslon sa shemom i dijagramom put–korak (u sustavu Windows: Windows + Shift + S), ili shemu spremite naredbom <b>File → TIFF Export</b>.</li><li>Ispunite radni list (proračuni i zapis simulacije).</li><li>Predajte u sustav za e-učenje: shemu <code>.ct</code>, snimku zaslona simulacije i ispunjen radni list. Sve datoteke imenujte <code>PIH_2026-2027_Prezime_Ime_…</code>.</li></ol><h3>Primjena na vlastiti zadatak P##</h3><p>Projekt SL-3, vaša varijanta P## (ulazni podaci u „Projektni zadaci P01–P21”): koji uvjeti moraju biti ispunjeni da ciklus SL-3 smije krenuti (osnovni položaj, lim, tlak)? Napišite ih kao logičku I-funkciju i nacrtajte taj dio sheme. Opis naprave: <a href="projekt-savijanje-lima.html">Projektni zadatak: naprava SL-3 za savijanje lima</a>.</p><p class="sitno">Kod pitanja: susjed → radni list i ova stranica → nastavnik. AI smijete koristiti uz navođenje što je i kako napravljeno.</p></section>
+<section id="za-nastavnika"><h2>Za nastavnika</h2><div class="crta"></div><h3>Dio A &middot; vježba V7</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Vježba traje <b>2 sata (2 × 45 min)</b> i logično slijedi vježbu s naizmjeničnim ventilom; ako su obje u istom tjednu, zadrži se isti raspored elemenata na ploči. Pripremite manometar s T-spojnicom i zaseban regulator. Pokus iz koraka 4 najjače djeluje ako ga polaznici izvedu sami; naglasite da se izvodi bez ruku ispred klipnjače, a valjak se pritišće komadom lima.</p>
+<h4>Tijek sata</h4><ol>
+<li>Uvod: funkcija I, simbol i rad ventila dvostrukog tlaka, usporedba s ventilom ILI — 10 min.</li>
+<li>Simulacija i tablica stanja — 10 min.</li>
+<li>Spajanje, ispitivanje četiriju stanja i pokus s redoslijedom signala — 20 min.</li>
+<li>Serijski spoj i pokus s različitim ulaznim tlakovima — 20 min.</li>
+<li>Sklop s tri uvjeta — 15 min.</li>
+<li>Računski zadaci, rasprava o dvoručnom uključivanju, pospremanje — 15 min.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>Tlak na 14 postoji samo u stanju 1 1. Redoslijed signala ne utječe na izlaz — klipnjača kreće s drugim signalom. Serijski spoj daje istu tablicu stanja. Na izlazu ventila I je niži ulazni tlak. Računski: 1060 N, najmanje 5,1 bar, 1,50 Nl po ciklusu i 12,0 Nl/min.</p>
+<h4>Česte pogreške</h4><ul>
+<li>Ventil dvostrukog tlaka zamijeni se s naizmjeničnim — izvana su slični, pa treba provjeriti simbol na kućištu.</li>
+<li>Kod serijskog spoja drugi ventil napaja se iz razdjelnog bloka umjesto iz izlaza prvog.</li>
+<li>Zaključak da je ventil I s dva tipkala dovoljna zaštita ruku.</li>
+<li>Pri računanju površine prstena oduzima se promjer umjesto površine klipnjače.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravan spoj i izmjerena tablica stanja</td><td>5</td></tr>
+<tr><td>Serijski spoj i usporedba s ventilom I</td><td>3</td></tr>
+<tr><td>Pokus s različitim tlakovima: zapis i objašnjenje</td><td>3</td></tr>
+<tr><td>Računski zadaci 2 i 3</td><td>3</td></tr>
+<tr><td>Shema i ispitivanje s tri uvjeta</td><td>3</td></tr>
+<tr><td>Obrazloženje sigurnosnih pitanja 6 i 8</td><td>3</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><h3>Dio B &middot; vježba V8</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Vježba traje <b>2 sata (2 × 45 min)</b>. Ako je dostupan vremenski član kao jedan element, dobro je da barem jedna skupina složi i inačicu od pojedinačnih dijelova, pa da se rezultati usporede. Manometar na spremniku omogućuje da polaznici vide porast tlaka i očitaju tlak prebacivanja. Pripremite regulator za pokus pri 5 bar.</p>
+<h4>Tijek sata</h4><ol>
+<li>Uvod: dijelovi vremenskog člana, smjer prigušno-nepovratnog ventila, dijagram put–vrijeme — 10 min.</li>
+<li>Simulacija — 10 min.</li>
+<li>Spajanje sklopa i postavljanje graničnog ventila — 20 min.</li>
+<li>Namještanje i mjerenje vremena, očitanje tlaka prebacivanja — 20 min.</li>
+<li>Pokusi pri 5 bar i s dva brza ciklusa — 15 min.</li>
+<li>Računski zadaci, dijagram, pospremanje — 15 min.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>Vrijeme držanja namješteno na 4,0 ± 0,3 s s rasipanjem ponavljanja manjim od 0,2 s. Pri 5 bar vrijeme je primjetno dulje. Uz ispravan nepovratni ventil dva brza ciklusa daju približno jednaka vremena. Računski: 3,95 s; 61 cm³ za 6 s; oko 4,6 s i više pri 5 bar; 679 N, 0,45 N/mm², 0,64 Nl po ciklusu.</p>
+<h4>Česte pogreške</h4><ul>
+<li>Prigušno-nepovratni ventil okrenut obrnuto: spremnik se puni brzo, a prazni sporo — dobiva se kašnjenje iskapčanja umjesto ukapčanja.</li>
+<li>Razvodnik 3/2 u vremenskom članu napaja se iz signala 1S2 umjesto iz mreže, pa izlazni signal ima nizak tlak.</li>
+<li>Vrijeme se mjeri od pritiska na tipkalo, a ne od dolaska klipnjače na 1S2.</li>
+<li>U dijagramu izlaz vremenskog člana crta se kao trajan signal, a ne kao impuls.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravan spoj i smjer prigušno-nepovratnog ventila u vremenskom članu</td><td>4</td></tr>
+<tr><td>Namješteno i izmjereno vrijeme držanja, zapisan tlak prebacivanja</td><td>4</td></tr>
+<tr><td>Pokusi pri 5 bar i s dva brza ciklusa, tumačenje</td><td>3</td></tr>
+<tr><td>Računski zadaci 2, 3, 4 i 6</td><td>5</td></tr>
+<tr><td>Dijagram put–vrijeme i odgovori 7 i 8</td><td>4</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><h3>Dio C &middot; vježba V10</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Vježba traje <b>2 sata (2 × 45 min)</b>. Najvažnija priprema je čvrst i siguran graničnik ispred klipnjače (blok učvršćen na ploču, ne u ruci). Provjerite da se proslijedni ventil može namjestiti u području 2–6 bar i da manometar na komori klipa ima dovoljno točnu skalu. Za pokus iz koraka 8 pripremite regulator na glavnoj pripremnoj grupi ili zaseban regulator ispred razdjelnog bloka.</p>
+<h4>Tijek sata</h4><ol>
+<li>Uvod: tlačno upravljanje, dijelovi proslijednog ventila, izračun tlaka prebacivanja — 10 min.</li>
+<li>Simulacija s prikazom tlaka u komorama — 10 min.</li>
+<li>Spajanje, postavljanje graničnika i namještanje tlaka prebacivanja — 25 min.</li>
+<li>Deset ciklusa, pokus s prigušivanjem odvoda i dopuna s 1S2 — 25 min.</li>
+<li>Pokus pri 4 bar — 5 min.</li>
+<li>Računski zadaci, rasprava, pospremanje — 15 min.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>Nakon namještanja klipnjača se vraća kada manometar pokaže 4,5 ± 0,2 bar. S pritvorenim prigušivanjem odvoda povrat nastaje prerano, u hodu; s 1S2 u nizu sklop ponovno radi ispravno. Pri 4 bar u mreži klipnjača se ne vraća. Računski: 4,53 bar za 800 N, 795 N pri 4,5 bar; 2,8 bar tijekom utiskivanja; 1,33 Nl po ciklusu; 707 N pri 4 bar.</p>
+<h4>Česte pogreške</h4><ul>
+<li>Mjerni vod spojen je na izlaz razvodnika ili na prstenastu komoru.</li>
+<li>Razvodnik 3/2 u proslijednom ventilu nije napojen iz mreže, pa izlazni signal nema punog tlaka.</li>
+<li>Tlak prebacivanja namješta se dok klipnjača nije naslonjena, pa se namjesti gotovo na nulu.</li>
+<li>Sila se računa s tlakom mreže (6 bar) umjesto s tlakom prebacivanja.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravan spoj, mjerni vod na cilindru, siguran graničnik</td><td>4</td></tr>
+<tr><td>Namješten tlak prebacivanja i zapis deset ciklusa</td><td>4</td></tr>
+<tr><td>Pokus s prigušivanjem odvoda, dopuna s 1S2 i objašnjenje</td><td>4</td></tr>
+<tr><td>Računski zadaci 2, 3 i 6</td><td>5</td></tr>
+<tr><td>Pokus pri 4 bar i odgovori 7 i 8</td><td>3</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><div class="okvir primjer"><h4>Napomena za FluidSIM</h4><p>Gotove sheme za usporedbu su gore na stranici. Vremenski član i proslijedni tlačni ventil u FluidSIM-u su gotove skupine iz <i>Valve Groups</i> (Time delay valve, Pressure sequence valve). Vrijeme od 4 s dobiveno je uz spremnik 0,04 l i otvor 9 %; graničnik na 50 mm u V10 zamijenjen je krajem hoda cilindra.</p></div></section>
+<nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="vjezbe.html">&#8592; Sve vježbe</a><a class="gumb" href="v07-i-ventil.html">V7 Logička funkcija I — ventil dvostrukog tlaka</a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Autorski tim: Krunoslav Kušec, mag. ing. mech. &middot; Alen Britvić, bacc. ing. mech. &middot; dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-pneumatika-i-hidraulika-postupak-v04-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>
