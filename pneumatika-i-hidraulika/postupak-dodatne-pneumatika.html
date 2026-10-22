@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postupak — dodatne vježbe V09, V19, V20, V22, V26 u FluidSIM-P — Pneumatika i hidraulika | FORTRONIQ</title>
+<meta name="description" content="Vježbe V09, V19, V20, V22 i V26 korak po korak u FluidSIM-P: kašnjenje iskapčanja, funkcije ILI i I, vremenski relej i taktna metoda, sa snimkama zaslona i rješenjima.">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-dodatne-pneumatika.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-dodatne-pneumatika.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/pneumatika-i-hidraulika/postupak-dodatne-pneumatika.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-dodatne-pneumatika.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Postupak: dodatne vježbe iz pneumatike u FluidSIM-P">
+<meta property="og:description" content="Vježbe V09, V19, V20, V22 i V26 korak po korak u FluidSIM-P: kašnjenje iskapčanja, funkcije ILI i I, vremenski relej i taktna metoda, sa snimkama zaslona i rješenjima.">
+<meta property="og:url" content="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-dodatne-pneumatika.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- pneumatika i hidraulika */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+
+/* postupak (FluidSIM) */
+.snimka{margin:0 0 1.5rem}
+.snimka img{display:block;width:auto;max-width:100%;height:auto;border:1px solid var(--rule);border-radius:10px;background:#fff}
+.snimka a{display:inline-block;max-width:100%}
+.snimka figcaption{font-size:.88rem;color:var(--body);margin-top:.45rem}
+.dvije{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem 1.4rem;align-items:start}
+.sitno{font-size:.88rem;color:var(--body)}
+.okvir{margin:0 0 1.4rem}
+ul.datoteke{margin:0 0 1rem}
+ul.datoteke a{font-weight:600}
+.pitanje .snimka{margin-top:.8rem}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Pneumatika i hidraulika</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">Postupak: dodatne vježbe P</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">POSTUPAK &middot; DODATNE VJEŽBE (PNEUMATIKA) &middot; FLUIDSIM</p><p class="nadnaslov">Postupak &middot; vježbe V09, V19, V20, V22 i V26 &middot; FluidSIM-P</p><h1>Postupak — dodatne vježbe iz pneumatike i elektropneumatike u FluidSIM-P</h1><p>Pet vježbi koje nisu na radnim listovima, korak po korak u FluidSIM-P: pneumatski vremenski član s kašnjenjem iskapčanja, logičke funkcije ILI i I s relejima, vremenski relej s kašnjenjem ukapčanja i taktna metoda sa šest releja. Uz svaki korak su snimke zaslona, simulirane vrijednosti i potpuna rješenja.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>sastaviti pneumatski vremenski član s kašnjenjem iskapčanja i namjestiti kašnjenje</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izvesti funkcije ILI i I paralelnim i serijskim spojem kontakata</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>spojiti samodržanje s vremenskim relejem s kašnjenjem ukapčanja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>nacrtati taktni lanac sa šest releja za slijed s ponovljenim koracima</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>usporediti rezultate simulacije s proračunom iz vježbe</span></li></ul></div></div></header><div class="omot"><section id="o-postupku"><h2>O postupku</h2><div class="crta"></div><div class="oznake-vj"><span>Dodatne vježbe (pneumatika)</span><span>Dio A: vježba V09 (2 sata)</span><span>Dio B: vježba V19 (2 sata)</span><span>Dio C: vježba V20 (2 sata)</span><span>Dio D: vježba V22 (2 sata)</span><span>Dio E: vježba V26 (2 sata)</span><span>FluidSIM-P 4.2</span></div><p>Ova stranica je <b>postupak</b> za vježbe koje nisu dio radnih listova: sve što se radi na računalu, od nove sheme do provjere u simulaciji. Tekst zadatka, sheme, pitanja i rješenja isti su kao na stranicama vježbi <a href="v09-kasnjenje-iskapcanja.html">V09 Kašnjenje iskapčanja</a> i <a href="v19-ep-logicka-ili.html">V19 Logička funkcija ILI</a> i <a href="v20-ep-logicka-i.html">V20 Logička funkcija I</a> i <a href="v22-relej-kasnjenje-ukapcanja.html">V22 Vremenski relej s kašnjenjem ukapčanja</a> i <a href="v26-ep-taktna-metoda.html">V26 Taktna električna metoda</a>; ovdje su dopunjeni koracima u FluidSIM-u i rezultatima simulacije.</p><p>Rješenja su skrivena ispod svakog pitanja. Najprije riješite sami, a onda otvorite <em>Prikaži rješenje</em> i usporedite.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div><h3>Gotove sheme (rješenja) za FluidSIM</h3><ul class="datoteke"><li><a href="datoteke/PIH_V09_rjesenje_v01.ct" download>PIH_V09_rjesenje_v01.ct</a> &mdash; V09: vremenski član s kašnjenjem iskapčanja (jednosmjerni prigušni 3 %, spremnik 0,04 l), 5/2 s pneumatskim upravljanjem, cilindar Ø25/10</li><li><a href="datoteke/PIH_V19_rjesenje_v01.ct" download>PIH_V19_rjesenje_v01.ct</a> &mdash; V19: S1 ∥ S2 → K1, K1 → Y1, cilindar Ø20/8</li><li><a href="datoteke/PIH_V20_rjesenje_v01.ct" download>PIH_V20_rjesenje_v01.ct</a> &mdash; V20: S1 · S2 · B1 → K1, K1 → Y1, cilindar Ø63/20 (B1 kao sklopka sa zasunom)</li><li><a href="datoteke/PIH_V22_rjesenje_v01.ct" download>PIH_V22_rjesenje_v01.ct</a> &mdash; V22: samodržanje K1, 1B1, 1B2, vremenski relej KT1 3 s, cilindar Ø63/20</li><li><a href="datoteke/PIH_V26_rjesenje_v01.ct" download>PIH_V26_rjesenje_v01.ct</a> &mdash; V26: taktni lanac K1–K6, 1A Ø32/12 i 2A Ø63/20, bistabilni razvodnici 1Y1/1Y2 i 2Y1/2Y2</li></ul><p class="sitno">Datoteke se otvaraju u FluidSIM-P 4 (<i>File → Open</i>). Snimke zaslona napravljene su u FluidSIM-P 4.2 s engleskim sučeljem. Osnove rada u FluidSIM-u (nova shema, knjižnica, crtanje vodova, provjera, simulacija, dijagram put–korak) opisane su u <a href="postupak-v01.html">Postupku V01</a>, odjeljak 0.</p></section>
+<section id="pokretanje"><h2>0 &middot; Prije početka</h2><div class="crta"></div><ol class="koraci"><li><b>File → New</b> (Ctrl + N) otvara novu shemu; <b>Window → Tile Vertically</b> (Shift + F4) postavlja shemu i knjižnicu jednu uz drugu.</li><li>Elemente povucite iz knjižnice na shemu i dvoklikom otvorite njihove dijaloge. Vod crtajte povlačenjem od priključka do priključka; povlačenjem na postojeći vod nastaje račvanje.</li><li>Oznake (1A1, 1V1, 1S1, 0Z1 …) upisuju se elementom <b>Text</b> iz skupine <i>Miscellaneous</i> (uključite <i>Frame Text</i>).</li><li><b>Execute → Check Superficially</b> (F6) provjerava crtež; <b>Start</b> (F9), <b>Pause</b> (F8), <b>Stop</b> (F5).</li><li>Ručno tipkalo aktivirate klikom mišem (dok držite tipku miša); <b>Shift + klik</b> zadrži ga pritisnutim. Ručica sa zasunom prebacuje se jednim klikom i ostaje u položaju.</li><li>Granični ventil veže se uz cilindar oznakom: dvoklik na cilindar → kartica <b>Actuating Labels</b> → oznaka (npr. 1S2) i položaj na hodu (od–do u mm); ista oznaka upiše se dvoklikom na valjak graničnog ventila (<i>Mechanical connection → Label</i>).</li><li>Dijagram put–korak: iz <i>Miscellaneous</i> povucite <b>State Diagram</b> i na njega povucite cilindre i ventile čije stanje želite pratiti.</li></ol><div class="okvir primjer"><h4>FluidSIM-P</h4><p>Sve vježbe na ovoj stranici rade se u pneumatskoj inačici programa; elektropneumatski elementi su u skupini <i>Electrical controls</i>. Tlak se prikazuje u MPa (1 MPa = 10 bar).</p></div></section>
+<section id="dio-a"><h2>Dio A &middot; V09 Kašnjenje iskapčanja</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>U maloj kabini za bojanje raspršivanjem odsisni kanal zatvara <b>zaklopka</b> koju zakreće dvoradni cilindar <b>1A1 Ø25/10 mm s hodom 80 mm</b>. Zaklopka se mora otvoriti <b>čim</b> radnik počne bojati, a zatvoriti tek <b>8 s nakon</b> što prestane, kako bi se iz kabine izvukle zaostale pare. Signal daje ventil 3/2 NC <b>1S1</b> povezan s okidačem pištolja (na didaktičkoj ploči zamijenjen tipkalom).</p>
+<p>Cilindrom upravlja razvodnik <b>5/2 s pneumatskim upravljanjem i povratnom oprugom (1V2)</b>, a signal mu daje <b>vremenski član 1V1 s kašnjenjem iskapčanja</b>. Vremenski član sastavljen je od istih dijelova kao onaj s kašnjenjem ukapčanja, ali je nepovratni ventil okrenut obrnuto: spremnik se <b>puni brzo</b>, a <b>prazni kroz prigušnicu</b>. Uzmimo: obujam spremnika 40 cm³, razvodnik 3/2 u vremenskom članu vraća se kada tlak u spremniku padne na <b>1,5 bar</b>, a na početku pražnjenja kroz prigušnicu izlazi <b>2,0 Nl/min</b>. Mreža daje 6 bar.</p>
+<p>Složite sklop, namjestite kašnjenje na 8 s i odgovorite na pitanja.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Kod kašnjenja iskapčanja cilindar se giba <b>nakon</b> što je radnik otpustio tipkalo — ruka koja „misli da je sve stalo" može se naći na putu. Prije svakog zahvata u sklop pričekajte da istekne vrijeme kašnjenja i provjerite manometrom da je spremnik prazan. Spremnik se prazni samo kroz prigušnicu: ako je prigušnica potpuno zatvorena, tlak u njemu ostaje dugo i nakon zatvaranja uklopnog ventila.</p></div>
+<h3>Shema</h3>
+<p>Na slici V9.1 signal iz 1S1 ulazi u vremenski član s lijeve strane. Nepovratni ventil propušta zrak prema spremniku, pa spremnik i upravljački priključak 12 razvodnika 3/2 odmah dobivaju tlak i izlaz 2 vremenskog člana gotovo trenutačno uključuje razvodnik 1V2. Kada se 1S1 otpusti, zrak iz spremnika vraća se prema ispuhu ventila 1S1 samo kroz prigušnicu, pa izlaz nestaje sa zakašnjenjem.</p>
+<figure class="crtez"><svg viewBox="0 0 640 420" role="img" aria-label="Slika V9.1: shema s vremenskim članom s kašnjenjem iskapčanja: zaklopka odsisa ostaje otvorena nakon otpuštanja tipkala"><rect x="383.6" y="30" width="150" height="34" class="pf"/><rect x="399.6" y="43" width="152" height="8" class="pf"/><rect x="393.6" y="31.2" width="6" height="31.6" class="rf"/><line x1="397.6" y1="64" x2="397.6" y2="72" class="l" fill="none"/><line x1="519.6" y1="64" x2="519.6" y2="72" class="l" fill="none"/><text x="373.6" y="53" text-anchor="end">1A1</text><text x="383.6" y="16" class="mali">Ø25/10, s = 80 mm (zaklopka odsisa)</text><rect x="330" y="114" width="52" height="52" class="pf"/><line x1="356" y1="163" x2="346.7" y2="122.9" class="l" fill="none"/><polygon points="345.6,118 350.6,124 343.8,125.6" class="if"/><line x1="366.4" y1="117" x2="373.3" y2="157.1" class="l" fill="none"/><polygon points="374.2,162 369.6,155.7 376.5,154.5" class="if"/><line x1="337.8" y1="166" x2="337.8" y2="157" class="l" fill="none"/><line x1="332.8" y1="157" x2="342.8" y2="157" class="l" fill="none"/><rect x="382" y="114" width="52" height="52" class="pf"/><line x1="408" y1="163" x2="417.3" y2="122.9" class="l" fill="none"/><polygon points="418.4,118 420.2,125.6 413.4,124" class="if"/><line x1="397.6" y1="117" x2="390.7" y2="157.1" class="l" fill="none"/><polygon points="389.8,162 387.5,154.5 394.4,155.7" class="if"/><line x1="426.2" y1="166" x2="426.2" y2="157" class="l" fill="none"/><line x1="421.2" y1="157" x2="431.2" y2="157" class="l" fill="none"/><line x1="397.6" y1="114" x2="397.6" y2="106" class="l" fill="none"/><text x="401.6" y="111" class="mali">4</text><line x1="418.4" y1="114" x2="418.4" y2="106" class="l" fill="none"/><text x="422.4" y="111" class="mali">2</text><line x1="389.8" y1="166" x2="389.8" y2="174" class="l" fill="none"/><text x="393.8" y="177" class="mali">5</text><line x1="408" y1="166" x2="408" y2="174" class="l" fill="none"/><text x="412" y="177" class="mali">1</text><line x1="426.2" y1="166" x2="426.2" y2="174" class="l" fill="none"/><text x="430.2" y="177" class="mali">3</text><line x1="330" y1="140" x2="324" y2="140" class="l" fill="none"/><polygon points="324,134 324,146 314,140" class="pf"/><text x="318" y="130" class="mali" text-anchor="middle">14</text><polyline points="434,140 438,133 442,147 446,133 450,147 454,133 460,140" class="l" fill="none"/><text x="466" y="145">1V2</text><line x1="397.6" y1="106" x2="397.6" y2="72" class="l" fill="none"/><polyline points="418.4,106 418.4,90 519.6,90 519.6,72" class="l" fill="none"/><line x1="389.8" y1="174" x2="389.8" y2="178" class="l" fill="none"/><polygon points="383.8,178 395.8,178 389.8,187" class="pf"/><line x1="426.2" y1="174" x2="426.2" y2="178" class="l" fill="none"/><polygon points="420.2,178 432.2,178 426.2,187" class="pf"/><rect x="60" y="160" width="210" height="120" class="l2 dash" fill="none"/><rect x="160" y="174" width="40" height="40" class="pf"/><line x1="172" y1="211" x2="172" y2="183" class="l" fill="none"/><polygon points="172,178 175.5,185 168.5,185" class="if"/><line x1="188" y1="214" x2="188" y2="205" class="l" fill="none"/><line x1="183" y1="205" x2="193" y2="205" class="l" fill="none"/><rect x="200" y="174" width="40" height="40" class="pf"/><line x1="212" y1="177" x2="225.8" y2="205.5" class="l" fill="none"/><polygon points="228,210 221.8,205.2 228.1,202.2" class="if"/><line x1="212" y1="214" x2="212" y2="205" class="l" fill="none"/><line x1="207" y1="205" x2="217" y2="205" class="l" fill="none"/><line x1="212" y1="174" x2="212" y2="166" class="l" fill="none"/><text x="216" y="171" class="mali">2</text><line x1="212" y1="214" x2="212" y2="222" class="l" fill="none"/><text x="216" y="225" class="mali">1</text><line x1="228" y1="214" x2="228" y2="222" class="l" fill="none"/><text x="232" y="225" class="mali">3</text><line x1="160" y1="194" x2="154" y2="194" class="l" fill="none"/><polygon points="154,188 154,200 144,194" class="pf"/><text x="148" y="184" class="mali" text-anchor="middle">12</text><polyline points="240,194 244,187 248,201 252,187 256,201 260,187 266,194" class="l" fill="none"/><line x1="228" y1="222" x2="228" y2="226" class="l" fill="none"/><polygon points="222,226 234,226 228,235" class="pf"/><polyline points="144,194 120,194 120,246" class="l2 dash" fill="none"/><rect x="70" y="226" width="44" height="40" class="l2 dash" fill="none"/><line x1="64" y1="246" x2="76" y2="246" class="l2" fill="none"/><line x1="108" y1="246" x2="120" y2="246" class="l2" fill="none"/><line x1="76" y1="237" x2="76" y2="255" class="l2" fill="none"/><line x1="108" y1="237" x2="108" y2="255" class="l2" fill="none"/><line x1="76" y1="237" x2="85" y2="237" class="l2" fill="none"/><line x1="99" y1="237" x2="108" y2="237" class="l2" fill="none"/><path d="M85 232 Q92 237 99 232" class="l2" fill="none"/><path d="M85 242 Q92 237 99 242" class="l2" fill="none"/><line x1="83" y1="245" x2="97.4" y2="231.4" class="l2" fill="none"/><polygon points="101,228 98.3,235.4 93.5,230.3" class="if"/><line x1="76" y1="255" x2="89" y2="255" class="l2" fill="none"/><circle cx="92" cy="255" r="3.5" class="l2" fill="none"/><path d="M92 250 L98 255 L92 260" class="l2" fill="none"/><line x1="98" y1="255" x2="108" y2="255" class="l2" fill="none"/><line x1="60" y1="246" x2="64" y2="246" class="l2 dash" fill="none"/><polyline points="120,246 140,246" class="l2 dash" fill="none"/><rect x="140" y="237" width="34" height="18" rx="9" class="pf"/><circle cx="120" cy="246" r="3" class="if"/><text x="60" y="154">1V1</text><polyline points="212,166 212,140 314,140" class="l2 dash" fill="none"/><rect x="70" y="300" width="44" height="44" class="pf"/><line x1="83.2" y1="341" x2="83.2" y2="309" class="l" fill="none"/><polygon points="83.2,304 86.7,311 79.7,311" class="if"/><line x1="100.8" y1="344" x2="100.8" y2="335" class="l" fill="none"/><line x1="95.8" y1="335" x2="105.8" y2="335" class="l" fill="none"/><rect x="114" y="300" width="44" height="44" class="pf"/><line x1="127.2" y1="303" x2="142.7" y2="335.5" class="l" fill="none"/><polygon points="144.8,340 138.6,335.2 145,332.2" class="if"/><line x1="127.2" y1="344" x2="127.2" y2="335" class="l" fill="none"/><line x1="122.2" y1="335" x2="132.2" y2="335" class="l" fill="none"/><line x1="127.2" y1="300" x2="127.2" y2="292" class="l" fill="none"/><text x="131.2" y="297" class="mali">2</text><line x1="127.2" y1="344" x2="127.2" y2="352" class="l" fill="none"/><text x="131.2" y="355" class="mali">1</text><line x1="144.8" y1="344" x2="144.8" y2="352" class="l" fill="none"/><text x="148.8" y="355" class="mali">3</text><line x1="70" y1="322" x2="58" y2="322" class="l" fill="none"/><line x1="58" y1="314" x2="58" y2="330" class="l" fill="none"/><path d="M58 314 A8 8 0 0 0 58 330" class="l" fill="none"/><polyline points="158,322 162,315 166,329 170,315 174,329 178,315 184,322" class="l" fill="none"/><text x="44" y="327" text-anchor="end">1S1</text><line x1="144.8" y1="352" x2="144.8" y2="356" class="l" fill="none"/><polygon points="138.8,356 150.8,356 144.8,365" class="pf"/><polyline points="127.2,292 127.2,286 40,286 40,246 60,246" class="l2 dash" fill="none"/><circle cx="20" cy="384" r="11" class="pf"/><polygon points="20,378 15,388 25,388" class="pf"/><text x="20" y="412" class="mali" text-anchor="middle">0Z</text><line x1="31" y1="384" x2="56" y2="384" class="l" fill="none"/><rect x="56" y="368" width="48" height="32" class="pf"/><polygon points="68,374 76,384 68,394 60,384" class="pf"/><line x1="60" y1="384" x2="76" y2="384" class="l2 dash" fill="none"/><rect x="82" y="375" width="16" height="18" class="pf"/><line x1="90" y1="391" x2="90" y2="382" class="l" fill="none"/><polygon points="90,377 93.5,384 86.5,384" class="if"/><text x="80" y="418" class="mali" text-anchor="middle">0Z1</text><line x1="104" y1="384" x2="408" y2="384" class="l" fill="none"/><circle cx="127.2" cy="384" r="3" class="if"/><circle cx="212" cy="384" r="3" class="if"/><line x1="127.2" y1="384" x2="127.2" y2="352" class="l" fill="none"/><line x1="212" y1="384" x2="212" y2="222" class="l" fill="none"/><line x1="408" y1="384" x2="408" y2="174" class="l" fill="none"/></svg><figcaption><b>Slika V9.1</b> &mdash; Kašnjenje iskapčanja: signal iz 1S1 kroz nepovratni ventil brzo puni spremnik vremenskog člana 1V1, pa razvodnik 1V2 odmah prebacuje. Nakon otpuštanja 1S1 spremnik se prazni kroz prigušnicu i izlaz nestaje tek kada tlak u spremniku padne ispod tlaka vraćanja.</figcaption></figure>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="a1"><h2>A1 &middot; Vremenski član s kašnjenjem iskapčanja</h2><div class="crta"></div><ol class="koraci"><li>Nova shema u FluidSIM-P. Cilindar 1A1: dvoradni, dvoklik → <i>Parameters</i>: promjer klipa <b>25</b> mm, klipnjače <b>10</b> mm, hod <b>80</b> mm. Glavni razvodnik 1V2: 5/2 s pneumatskim upravljanjem (14) i povratnom oprugom.</li><li>Signal 1S1: razvodnik 3/2 NC s tipkalom i oprugom. Iza njega vremenski član 1V1 sastavljen od tri elementa: <i>One-way flow control valve</i> (otvorenost <b>3</b> %), <i>Air reservoir</i> (obujam <b>0,04</b> l) i razvodnik 3/2 NC s pneumatskim upravljanjem (12) koji iz spremnika dobiva upravljački tlak. Na spremnik spojite manometar.</li><li>Smjer jednosmjernog prigušnog ventila je bit vježbe: nepovratni ventil mora propuštati <b>prema spremniku</b> (brzo punjenje), a prigušnica djeluje pri <b>pražnjenju</b>. Ako je smjer krivi, element zrcalite (<i>Edit → Mirror</i>) <b>prije</b> crtanja vodova &mdash; zrcaljenje nakon spajanja daje poruku <i>Superimposed lines</i> i vodove treba nacrtati iznova.</li><li>Izlaz 2 razvodnika vremenskog člana vodi na upravljački priključak 14 razvodnika 1V2; izlazi 4 i 2 razvodnika 1V2 na cilindar. Izvor zraka <b>0,6</b> MPa. F6 → <i>No superficial errors detected</i>. <i>State Diagram</i>: cilindar (položaj) i manometar spremnika (tlak).</li></ol></section>
+<section id="a2"><h2>A2 &middot; Simulacija: brzo punjenje, sporo pražnjenje</h2><div class="crta"></div><ol class="koraci"><li>Start, zatim <b>Shift + klik</b> na tipkalo 1S1: spremnik se kroz nepovratni ventil napuni gotovo trenutačno, razvodnik vremenskog člana i 1V2 prebace i klipnjača se izvuče &mdash; zaklopka je otvorena (Slika A2.1).</li><li>Ponovni klik otpusti 1S1. Spremnik se sada prazni samo kroz prigušnicu: manometar polagano pada (Slika A2.2, 0,45 MPa nekoliko desetinki nakon otpuštanja), a klipnjača ostaje izvučena.</li><li>Kad tlak u spremniku padne na oko <b>0,15</b> MPa, razvodnik vremenskog člana se vrati, 1V2 se vrati i klipnjača se uvuče (Slika A2.3). Iz dijagrama (Slika A2.4) kašnjenje iskapčanja iznosi oko <b>8,3 s</b>.</li><li>Kašnjenje se namješta otvorenošću prigušnice (dvoklik na jednosmjerni prigušni ventil, može i za vrijeme simulacije): manja otvorenost &mdash; dulje kašnjenje.</li></ol><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/01-v09-izvucen.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/01-v09-izvucen.webp" alt="Slika A2.1 — 1S1 pritisnut: spremnik pun, vremenski član i 1V2 prebačeni, zaklopka otvorena." loading="lazy" decoding="async" width="630" height="621"></a><figcaption><b>Slika A2.1</b> &mdash; 1S1 pritisnut: spremnik pun, vremenski član i 1V2 prebačeni, zaklopka otvorena.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/02-v09-otpusteno.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/02-v09-otpusteno.webp" alt="Slika A2.2 — 1S1 otpušten: spremnik se prazni kroz prigušnicu (0,45 MPa), klipnjača još izvučena." loading="lazy" decoding="async" width="630" height="621"></a><figcaption><b>Slika A2.2</b> &mdash; 1S1 otpušten: spremnik se prazni kroz prigušnicu (0,45 MPa), klipnjača još izvučena.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/03-v09-uvucen.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/03-v09-uvucen.webp" alt="Slika A2.3 — Tlak u spremniku pao je ispod tlaka prebacivanja: klipnjača uvučena." loading="lazy" decoding="async" width="630" height="621"></a><figcaption><b>Slika A2.3</b> &mdash; Tlak u spremniku pao je ispod tlaka prebacivanja: klipnjača uvučena.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/04-v09-dijagram.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/04-v09-dijagram.webp" alt="Slika A2.4 — Dijagram: tlak u spremniku eksponencijalno pada, povratak cilindra oko 8,3 s nakon otpuštanja 1S1." loading="lazy" decoding="async" width="630" height="621"></a><figcaption><b>Slika A2.4</b> &mdash; Dijagram: tlak u spremniku eksponencijalno pada, povratak cilindra oko 8,3 s nakon otpuštanja 1S1.</figcaption></figure><div class="okvir pazi"><h4>Simulacija i stol</h4><p>FluidSIM računa protok kroz prigušnicu iz otvorenosti u postocima, a ne iz protoka u Nl/min iz zadatka. Otvorenost od 3 % odabrana je tako da kašnjenje bude blizu 8 s; na stolu se prigušnica isto tako namješta mjerenjem štopericom.</p></div></section>
+<section id="dio-a-pitanja"><h2>A3 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Po čemu se vremenski član s kašnjenjem iskapčanja razlikuje od onoga s kašnjenjem ukapčanja? Što ste dobili u koraku 6?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Dijelovi su isti; razlikuje se samo <b>smjer nepovratnog ventila</b>. Kod kašnjenja ukapčanja spremnik se puni kroz prigušnicu (sporo), a prazni kroz nepovratni ventil (brzo). Kod kašnjenja iskapčanja obrnuto: puni se brzo, a prazni sporo. Okretanjem ventila u koraku 6 dobiva se kašnjenje ukapčanja: zaklopka se otvara tek nakon nekoliko sekundi držanja tipkala, a zatvara odmah nakon otpuštanja.</p><h4>U FluidSIM-u</h4><p>U shemi se to vidi na jednosmjernom prigušnom ventilu: nepovratni ventil okrenut je prema spremniku (Slika A2.1).</p></div></details></div><div class="pitanje"><p><b>2.</b> Pri pražnjenju kroz prigušnicu tlak u spremniku približno eksponencijalno opada: t = τ · ln(p<sub>0</sub> / p<sub>1</sub>), gdje su p<sub>0</sub> i p<sub>1</sub> apsolutni tlakovi, a τ = V · p<sub>0</sub> / (p<sub>a</sub> · Q<sub>0</sub>). Izračunajte kašnjenje za zadane vrijednosti.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>p<sub>0</sub> = 6 + 1,013 = 7,013 bar; p<sub>1</sub> = 1,5 + 1,013 = 2,513 bar.</p><p>τ = 0,040 l · 7,013 / (1,013 · 2,0 Nl/min) = 0,1385 min = <b>8,31 s</b>.</p><p>t = 8,31 · ln(7,013 / 2,513) = 8,31 · 1,026 = <b>8,5 s</b>.</p><p>Model vrijedi dok je strujanje kroz prigušnicu kritično, tj. dok je apsolutni tlak u spremniku veći od 1,013 / 0,528 = 1,92 bar; tlak vraćanja od 2,51 bar apsolutno je iznad te granice. Prigušnicu treba malo otvoriti da se dobije 8 s.</p><h4>U FluidSIM-u</h4><p>Simulacija daje oko 8,3 s (Slika A2.4) uz otvorenost prigušnice 3 % &mdash; blizu proračunu od 8,5 s.</p></div></details></div><div class="pitanje"><p><b>3.</b> Koliki bi početni protok kroz prigušnicu dao točno 8 s? Koliki bi spremnik trebao uz nepromijenjenu prigušnicu?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Vrijeme je obrnuto razmjerno protoku i razmjerno obujmu. Q<sub>0</sub> = 2,0 · 8,53 / 8 = <b>2,13 Nl/min</b>; ili V = 40 cm³ · 8 / 8,53 = <b>37,5 cm³</b>.</p></div></details></div><div class="pitanje"><p><b>4.</b> Zašto je u koraku 5 kašnjenje pri kratkom pritisku gotovo jednako kao pri dugom? Što se dogodilo pri dvostrukom pritisku?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Spremnik se puni kroz otvoren nepovratni ventil, dakle vrlo brzo — i kratki pritisak od 0,2 s dovoljan je da se napuni do približno punog tlaka. Kašnjenje se zato mjeri od <b>zadnjeg</b> otpuštanja. Kod dvostrukog pritiska s razmakom od 4 s spremnik se drugim pritiskom ponovno napuni, pa zaklopka ostaje otvorena bez prekida i zatvara se 8 s nakon drugog otpuštanja. Tako i treba biti za odsis: svaki novi rad pištolja produljuje rad.</p></div></details></div><div class="pitanje"><p><b>5.</b> Izračunajte silu cilindra pri izvlačenju i potrošnju zraka po jednom otvaranju i zatvaranju zaklopke.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A = π · 25² / 4 = 490,9 mm²; F = 0,6 · 490,9 · 0,9 = <b>265 N</b>.</p><p>A<sub>pr</sub> = 490,9 − 78,5 = 412,3 mm²; V = (490,9 + 412,3) · 80 · 6,923 / 10⁶ = <b>0,50 Nl</b> po ciklusu, uz to približno 0,24 Nl za punjenje spremnika (0,040 l · 6 / 1,013).</p></div></details></div><div class="pitanje"><p><b>6.</b> Nacrtajte dijagram signala 1S1, izlaza vremenskog člana i dijagram put–vrijeme cilindra 1A1, ako se 1S1 pritisne u 0,5 s i otpusti u 2,5 s.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Izlaz vremenskog člana pojavljuje se gotovo istodobno s pritiskom (kašnjenje je samo vrijeme punjenja kroz nepovratni ventil i prebacivanja). Nestaje 8 s nakon otpuštanja, u 10,5 s, i tek tada se klipnjača vraća i zaklopka zatvara.</p>
+<figure class="crtez"><svg viewBox="0 0 640 330" role="img" aria-label="Slika V9.2: dijagram signala tipkala 1S1, izlaza vremenskog člana i put–vrijeme cilindra 1A1"><line x1="130" y1="70" x2="610" y2="70" class="l2" fill="none"/><line x1="130" y1="34" x2="130" y2="70" class="l2" fill="none"/><text x="118" y="60" text-anchor="end">1S1</text><line x1="130" y1="140" x2="610" y2="140" class="l2" fill="none"/><line x1="130" y1="104" x2="130" y2="140" class="l2" fill="none"/><text x="118" y="130" text-anchor="end">1V1: 2</text><line x1="130" y1="240" x2="610" y2="240" class="l2" fill="none"/><line x1="130" y1="174" x2="130" y2="240" class="l2" fill="none"/><text x="118" y="215" text-anchor="end">1A1</text><polyline points="130,70 150,70 150,40 230,40 230,70 610,70" class="l" fill="none"/><polyline points="130,140 154,140 154,110 550,110 550,140 610,140" class="l" fill="none"/><polyline points="130,240 154,240 170,180 550,180 564,240 610,240" class="t" fill="none"/><line x1="230" y1="76" x2="230" y2="150" class="l2 dash" fill="none"/><line x1="550" y1="146" x2="550" y2="150" class="l2" fill="none"/><line x1="230" y1="150" x2="550" y2="150" class="l2" fill="none"/><polygon points="230,150 237,146.5 237,153.5" class="if"/><polygon points="550,150 543,153.5 543,146.5" class="if"/><text x="390" y="170" class="mali" text-anchor="middle">t = 8 s (kašnjenje iskapčanja)</text><text x="124" y="184" class="mali" text-anchor="end">1</text><text x="124" y="244" class="mali" text-anchor="end">0</text><line x1="130" y1="270" x2="130" y2="276" class="l2" fill="none"/><text x="130" y="294" class="mali" text-anchor="middle">0</text><line x1="210" y1="270" x2="210" y2="276" class="l2" fill="none"/><text x="210" y="294" class="mali" text-anchor="middle">2</text><line x1="290" y1="270" x2="290" y2="276" class="l2" fill="none"/><text x="290" y="294" class="mali" text-anchor="middle">4</text><line x1="370" y1="270" x2="370" y2="276" class="l2" fill="none"/><text x="370" y="294" class="mali" text-anchor="middle">6</text><line x1="450" y1="270" x2="450" y2="276" class="l2" fill="none"/><text x="450" y="294" class="mali" text-anchor="middle">8</text><line x1="530" y1="270" x2="530" y2="276" class="l2" fill="none"/><text x="530" y="294" class="mali" text-anchor="middle">10</text><line x1="610" y1="270" x2="610" y2="276" class="l2" fill="none"/><text x="610" y="294" class="mali" text-anchor="middle">12</text><line x1="130" y1="270" x2="610" y2="270" class="l2" fill="none"/><text x="610" y="316" class="mali" text-anchor="end">vrijeme t (s)</text></svg><figcaption><b>Slika V9.2</b> &mdash; Rješenje zadatka 6: izlaz vremenskog člana pojavljuje se gotovo odmah s pritiskom na 1S1, a nestaje 8 s nakon njegova otpuštanja; tek tada se zaklopka zatvara.</figcaption></figure><h4>U FluidSIM-u</h4><p>Dijagram iz simulacije (Slika A2.4) ima isti oblik: izvlačenje odmah, povratak oko 8 s nakon otpuštanja.</p></div></details></div><div class="pitanje"><p><b>7.</b> Serviser je prigušnicu vremenskog člana zatvorio do kraja. Što se događa sa zaklopkom i je li to sigurno stanje za kabinu za bojanje?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Spremnik se nakon prvog pritiska ne može isprazniti (osim kroz propuštanja), pa izlaz vremenskog člana ostaje uključen i zaklopka ostaje otvorena satima. Za odsis je to <b>sigurnija</b> strana kvara (pare se i dalje izvlače), ali sklop više ne štedi energiju odsisa i ne radi kako je zamišljeno. Suprotna greška — potpuno otvorena prigušnica — dala bi gotovo trenutačno zatvaranje, što je za odsis opasnije.</p></div></details></div><div class="pitanje"><p><b>8.</b> Može li se isto vrijeme kašnjenja iskapčanja dobiti bez spremnika, samo s prigušno-nepovratnim ventilom u upravljačkom vodu? Obrazložite.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Djelomično: obujam upravljačkog voda i upravljačke komore razvodnika ponaša se kao vrlo mali spremnik, pa prigušnica u vodu daje kratko kašnjenje, obično ispod sekunde. Za 8 s prigušnica bi morala biti gotovo zatvorena, pa bi vrijeme postalo vrlo osjetljivo na nečistoću i temperaturu. Spremnik omogućuje dulja i ponovljivija vremena uz razumno otvorenu prigušnicu.</p></div></details></div></div></section>
+<section id="dio-b"><h2>Dio B &middot; V19 Logička funkcija ILI</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>Kliznom stazom klize odljevci prema stanici za kontrolu. Na kraju staze je <b>graničnik</b> — zatik koji zadržava dijelove. Kad kontrolor želi propustiti sljedeći dio, zatik se spušta: dvoradni cilindar <b>1A1</b> (Ø20/8 mm, hod 30 mm) izvlači se i povlači zatik preko poluge. Dok je signal prisutan, graničnik je spušten; kad signal nestane, opruga monostabilnog razvodnika vraća cilindar i zatik se diže.</p>
+<p>Stanica je dugačka 12 m. Kontrolor ponekad radi uz pult na početku staze, a ponekad uz mjerni stol na njezinu kraju. Zato graničnik mora moći spustiti tipkalom <b>S1</b> na pultu <b>ili</b> tipkalom <b>S2</b> uz mjerni stol. Oba tipkala spojena su paralelno u stazi releja <b>K1</b>, a radni kontakt K1 uključuje svitak <b>Y1</b> monostabilnog razvodnika 5/2.</p>
+<p>Isti zadatak riješen je u vježbi V06 pneumatski, naizmjeničnim ventilom (ventilom ILI) i pneumatskim tipkalima. Ovdje ga rješavate elektropneumatski i uspoređujete oba rješenja. Podaci: mreža 6 bar, svitak Y1 3 W, relej K1 0,5 W, signalna svjetiljka 0,5 W, napajanje 24 V DC nazivne struje 2,5 A.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Upravljanje s dva mjesta znači da se gibanje može pokrenuti s mjesta s kojeg se ne vidi cilindar. Prije pritiska na bilo koje tipkalo provjerite da nitko nema ruke u zoni graničnika i poluge. Kod ovakvih sklopova u pogonu je obvezna i mogućnost zaustavljanja s oba mjesta (dopunski zadatak). Vodiče spajajte bez napona, cijevi bez tlaka.</p></div>
+<h3>Shema</h3>
+<figure class="crtez"><svg viewBox="0 0 640 380" role="img" aria-label="Slika V19.1: logička funkcija ILI s tipkalima S1 i S2 u paralelnom spoju, relej K1 i ventil Y1">
+<rect class="pf" x="60" y="60" width="120" height="30"/>
+<line class="l" x1="74" y1="62" x2="74" y2="88" fill="none"/>
+<rect class="pf" x="76" y="72" width="120" height="6"/>
+<text x="52" y="81" text-anchor="end">1A1</text>
+<line class="l" x1="70" y1="90" x2="70" y2="96" fill="none"/>
+<line class="l" x1="170" y1="90" x2="170" y2="96" fill="none"/>
+<rect class="pf" x="90" y="190" width="36" height="36"/>
+<rect class="pf" x="126" y="190" width="36" height="36"/>
+<line class="l2" x1="108" y1="224" x2="101.5" y2="201.6" fill="none"/>
+<polygon class="if" points="99,193 105,200.6 98.1,202.6"/>
+<line class="l2" x1="117" y1="192" x2="117" y2="214" fill="none"/>
+<polygon class="if" points="117,223 113.4,214 120.6,214"/>
+<line class="l2" x1="99" y1="226" x2="99" y2="218" fill="none"/>
+<line class="l2" x1="94" y1="218" x2="104" y2="218" fill="none"/>
+<line class="l2" x1="144" y1="224" x2="150.5" y2="201.6" fill="none"/>
+<polygon class="if" points="153,193 153.9,202.6 147,200.6"/>
+<line class="l2" x1="135" y1="192" x2="135" y2="214" fill="none"/>
+<polygon class="if" points="135,223 131.4,214 138.6,214"/>
+<line class="l2" x1="153" y1="226" x2="153" y2="218" fill="none"/>
+<line class="l2" x1="148" y1="218" x2="158" y2="218" fill="none"/>
+<line class="l" x1="135" y1="190" x2="135" y2="180" fill="none"/>
+<line class="l" x1="153" y1="190" x2="153" y2="180" fill="none"/>
+<line class="l" x1="135" y1="226" x2="135" y2="236" fill="none"/>
+<line class="l" x1="144" y1="226" x2="144" y2="248" fill="none"/>
+<line class="l" x1="153" y1="226" x2="153" y2="236" fill="none"/>
+<polygon class="pf" points="130,236 140,236 135,243"/>
+<polygon class="pf" points="148,236 158,236 153,243"/>
+<rect class="pf" x="76" y="199" width="14" height="18"/>
+<line class="l2" x1="76" y1="217" x2="90" y2="199" fill="none"/>
+<text x="72" y="213" text-anchor="end">Y1</text>
+<polyline class="l2" points="162,208 165.2,202 168.4,214 171.6,202 174.8,214 178,202 181,208" fill="none"/>
+<text x="90" y="184" class="mali">1V1</text>
+<polyline class="l" points="135,180 135,130 70,130 70,96" fill="none"/>
+<polyline class="l" points="153,180 153,140 170,140 170,96" fill="none"/>
+<circle class="pf" cx="144" cy="256" r="8"/>
+<polygon class="pf" points="144,251 139.5,259 148.5,259"/>
+<line class="l" x1="290" y1="60" x2="630" y2="60" fill="none"/>
+<line class="l" x1="290" y1="330" x2="630" y2="330" fill="none"/>
+<text x="290" y="52">+24 V</text>
+<text x="290" y="350">0 V</text>
+<text x="370" y="52" text-anchor="middle" class="mali">1</text>
+<line class="l" x1="370" y1="60" x2="370" y2="128" fill="none"/>
+<circle class="if" cx="370" cy="128" r="2.2"/>
+<circle class="if" cx="370" cy="152" r="2.2"/>
+<line class="l" x1="370" y1="152" x2="360" y2="131" fill="none"/>
+<line class="l2 dash" x1="365" y1="141" x2="346" y2="141" fill="none"/>
+<polyline class="l" points="350,136 346,136 346,146 350,146" fill="none"/>
+<text x="384" y="145">S1</text>
+<line class="l" x1="370" y1="152" x2="370" y2="251" fill="none"/>
+<rect class="pf" x="358" y="251" width="24" height="18"/>
+<text x="388" y="265">K1</text>
+<line class="l" x1="370" y1="269" x2="370" y2="330" fill="none"/>
+<circle class="if" cx="370" cy="60" r="2.6"/>
+<circle class="if" cx="370" cy="330" r="2.6"/>
+<text x="450" y="52" text-anchor="middle" class="mali">2</text>
+<circle class="if" cx="450" cy="60" r="2.6"/>
+<line class="l" x1="450" y1="60" x2="450" y2="128" fill="none"/>
+<circle class="if" cx="450" cy="128" r="2.2"/>
+<circle class="if" cx="450" cy="152" r="2.2"/>
+<line class="l" x1="450" y1="152" x2="440" y2="131" fill="none"/>
+<line class="l2 dash" x1="445" y1="141" x2="426" y2="141" fill="none"/>
+<polyline class="l" points="430,136 426,136 426,146 430,146" fill="none"/>
+<text x="464" y="145">S2</text>
+<line class="l" x1="450" y1="152" x2="450" y2="190" fill="none"/>
+<line class="l" x1="370" y1="190" x2="450" y2="190" fill="none"/>
+<circle class="if" cx="370" cy="190" r="2.6"/>
+<text x="555" y="52" text-anchor="middle" class="mali">3</text>
+<line class="l" x1="555" y1="60" x2="555" y2="128" fill="none"/>
+<circle class="if" cx="555" cy="128" r="2.2"/>
+<circle class="if" cx="555" cy="152" r="2.2"/>
+<line class="l" x1="555" y1="152" x2="545" y2="131" fill="none"/>
+<text x="569" y="145">K1</text>
+<line class="l" x1="555" y1="152" x2="555" y2="251" fill="none"/>
+<rect class="pf" x="543" y="251" width="24" height="18"/>
+<line class="l2" x1="543" y1="269" x2="567" y2="251" fill="none"/>
+<text x="573" y="265">Y1</text>
+<line class="l" x1="555" y1="269" x2="555" y2="330" fill="none"/>
+<circle class="if" cx="555" cy="60" r="2.6"/>
+<circle class="if" cx="555" cy="330" r="2.6"/>
+<text x="370" y="352" text-anchor="middle" class="mali">3</text>
+</svg><figcaption><b>Slika V19.1</b> &mdash; Funkcija ILI: tipkala S1 (staza 1) i S2 (staza 2) spojena su paralelno i oba vode na svitak releja K1. Radni kontakt K1 u stazi 3 uključuje svitak Y1 monostabilnog razvodnika 1V1.</figcaption></figure>
+<p>Paralelni spoj crta se kao dvije staze koje se spajaju u točki ispod kontakata; točka označava električni spoj. Svitak K1 dobiva napon ako je zatvoren barem jedan od dvaju kontakata — to je logička funkcija ILI (disjunkcija), zapisana kao K1 = S1 ∨ S2.</p>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="b1"><h2>B1 &middot; Paralelni spoj tipkala</h2><div class="crta"></div><ol class="koraci"><li>Pneumatski dio: cilindar 1A1 Ø20/8 mm, hod 30 mm; razvodnik 1V1 5/2 s elektromagnetom i povratnom oprugom, elektromagnet <b>Y1</b> (dvoklik na oznaku uz kraj razvodnika). Izvor zraka 0,6 MPa.</li><li>Električni dio (<i>Electrical controls</i>): staza 1 &mdash; +24V, tipkalo S1 (<i>Pushbutton, make</i>), svitak releja K1, 0V; staza 2 &mdash; +24V, tipkalo S2, isti svitak K1 (vod S2 spojite na vod ispod S1); staza 3 &mdash; radni kontakt K1 i Y1.</li><li>Oznake: tipkala S1 i S2, relej K1, kontakt K1 (dvoklik → <i>Label</i>). F6 → <i>No superficial errors detected</i>. <i>State Diagram</i>: cilindar, S1, S2 i K1.</li></ol></section>
+<section id="b2"><h2>B2 &middot; Simulacija funkcije ILI</h2><div class="crta"></div><ol class="koraci"><li>Start. Klik na S1: K1 privuče, Y1 dobije napon i klipnjača se izvuče &mdash; graničnik spušten (Slika B2.1). Otpuštanjem se vraća.</li><li>Klik na S2: isto ponašanje (Slika B2.2).</li><li>Shift + klik na S1 i zatim Shift + klik na S2: oba tipkala pritisnuta, K1 i dalje privučen, ništa se ne mijenja (Slika B2.3). Dijagram (Slika B2.4) pokazuje K1 = S1 ∨ S2.</li></ol><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/05-v19-s1.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/05-v19-s1.webp" alt="Slika B2.1 — Pritisnut S1: K1 i Y1 pod naponom, klipnjača izvučena." loading="lazy" decoding="async" width="617" height="563"></a><figcaption><b>Slika B2.1</b> &mdash; Pritisnut S1: K1 i Y1 pod naponom, klipnjača izvučena.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/06-v19-s2.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/06-v19-s2.webp" alt="Slika B2.2 — Pritisnut S2: isti rezultat drugim putem struje." loading="lazy" decoding="async" width="617" height="563"></a><figcaption><b>Slika B2.2</b> &mdash; Pritisnut S2: isti rezultat drugim putem struje.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/07-v19-oba.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/07-v19-oba.webp" alt="Slika B2.3 — Pritisnuta oba tipkala: izlaz ostaje 1." loading="lazy" decoding="async" width="617" height="563"></a><figcaption><b>Slika B2.3</b> &mdash; Pritisnuta oba tipkala: izlaz ostaje 1.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/08-v19-dijagram.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/08-v19-dijagram.webp" alt="Slika B2.4 — Dijagram: S1, S2, K1 i položaj cilindra — tablica istinitosti funkcije ILI u vremenu." loading="lazy" decoding="async" width="616" height="563"></a><figcaption><b>Slika B2.4</b> &mdash; Dijagram: S1, S2, K1 i položaj cilindra &mdash; tablica istinitosti funkcije ILI u vremenu.</figcaption></figure></section>
+<section id="dio-b-pitanja"><h2>B3 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Napišite tablicu istinitosti za S1, S2, K1 i Y1 te logičku jednadžbu sklopa.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<div class="tablica-omot"><table><thead><tr><th>S1</th><th>S2</th><th>K1</th><th>Y1 / graničnik</th></tr></thead><tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0 / gore</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1 / spušten</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>1 / spušten</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1 / spušten</td></tr>
+</tbody></table></div>
+<p class="formula">Y1 = K1 = S1 ∨ S2</p>
+<p>Izlaz je 1 ako je barem jedan ulaz 1. Pritisak obaju tipkala ne mijenja ništa — nema ni „dvostrukog“ signala ni kratkog spoja.</p><h4>U FluidSIM-u</h4><p>Sva četiri retka tablice mogu se provjeriti u simulaciji (Slike B2.1–B2.4).</p></div></details></div><div class="pitanje"><p><b>2.</b> Zašto se tipkala S1 i S2 spajaju paralelno, a ne u niz? Što bi sklop radio da su spojena u niz?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>U paralelnom spoju struja do svitka ima dva neovisna puta; dovoljno je da je jedan zatvoren. U serijskom spoju struja prolazi kroz oba kontakta redom, pa bi K1 privukao samo kad su pritisnuta oba tipkala — to je funkcija I (vježba V20). Za upravljanje s dva mjesta serijski spoj bio bi neupotrebljiv jer kontrolor ne može istodobno biti na oba kraja staze.</p><h4>U FluidSIM-u</h4><p>U FluidSIM-u to se lako isproba: premjestite vod S2 tako da bude u nizu s S1 &mdash; K1 tada privlači samo uz Shift + klik na oba tipkala.</p></div></details></div><div class="pitanje"><p><b>3.</b> U vježbi V06 funkcija ILI izvedena je naizmjeničnim ventilom. Zašto se tamo ne smiju izlazi dvaju pneumatskih tipkala spojiti samo T-spojnicom, a ovdje se kontakti smiju spojiti izravno?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Nepritisnuto pneumatsko tipkalo 3/2 spaja izlaz s odzračnim priključkom 3. Kad bi se dva izlaza spojila T-spojnicom, zrak iz pritisnutog tipkala izlazio bi kroz odzračni priključak drugoga i signal ne bi dosegao potreban tlak. Naizmjenični ventil kuglicom zatvara stranu bez tlaka. Otvoreni električni kontakt, naprotiv, ne vodi struju ni u jednom smjeru i ne „odvodi“ signal, pa se kontakti smiju izravno spojiti paralelno.</p></div></details></div><div class="pitanje"><p><b>4.</b> Pneumatski signal od tipkala na mjernom stolu do razvodnika putuje cijevi Ø4 mm (unutarnji promjer 2,7 mm) duljine 12 m. Razvodnik prebaci pri 3 bar, a tipkalo propušta oko 1 Nl/s. Procijenite kašnjenje zbog punjenja cijevi i usporedite ga s elektropneumatskim sklopom (relej 10 ms, ventil 20 ms).</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Volumen cijevi: V = π · 2,7² / 4 · 12 000 mm ≈ 68 700 mm³ = 68,7 cm³.</p>
+<p>Zrak potreban za porast tlaka na 3 bar: 68,7 · 3 / 1,013 ≈ 203 Ncm³. Pri 1000 Ncm³/s: t ≈ 0,2 s. Uz to tlačni val putuje brzinom zvuka (12 m / 340 m/s ≈ 35 ms).</p>
+<p>Elektropneumatski sklop: oko 10 + 20 = 30 ms. Pneumatsko kašnjenje je oko sedam puta veće, i to samo za uključenje — pri otpuštanju cijev se mora i odzračiti. Na velikim udaljenostima električni signal je bitno brži.</p>
+</div></details></div><div class="pitanje"><p><b>5.</b> U stazu 4 dodaje se signalna svjetiljka H1 (0,5 W) na drugom radnom kontaktu K1. Izračunajte struju koju napajanje daje kad je graničnik spušten. Koliko bi takvih stanica moglo raditi istodobno s napajanjem od 2,5 A?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">I = (0,5 + 3 + 0,5) W / 24 V ≈ 0,021 + 0,125 + 0,021 ≈ 0,167 A</p>
+<p>Broj stanica: 2,5 / 0,167 ≈ 15. U praksi se ostavlja rezerva od barem 20–30 % i uzima u obzir struja senzora i uključne struje, pa bi se na jedno napajanje od 2,5 A spojilo oko 10–12 takvih stanica.</p>
+</div></details></div><div class="pitanje"><p><b>6.</b> Dopuna sheme: graničnik se mora spustiti i automatski kad senzor <b>B1</b> javi da su na mjernom stolu kolica spremna za prihvat dijela. Ucrtajte B1 u shemu i napišite novu logičku jednadžbu i broj redaka tablice istinitosti.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Radni kontakt senzora B1 ucrtava se kao nova staza uz S1 i S2 (paralelno njima), spojena u istu točku iznad svitka K1; staze se zatim ponovno numeriraju slijeva, a kontaktna tablica K1 ispravi. Jednadžba: K1 = S1 ∨ S2 ∨ B1. Tablica istinitosti za tri ulaza ima 2³ = 8 redaka; izlaz je 0 samo u jednom retku (svi ulazi 0), a 1 u ostalih sedam. Kod trožilnog senzora izlaz senzora (crni vodič) spaja se u točku ILI, a napajanje senzora na +24 V i 0 V.</p></div></details></div><div class="pitanje"><p><b>7.</b> Dopuna sheme: dodajte <b>isključivanje s dva mjesta</b> — tipkala s mirnim kontaktom S3 (pult) i S4 (mjerni stol) moraju blokirati spuštanje graničnika, kojim god ulazom da je zadano. Kako se spajaju S3 i S4 i zašto?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>S3 i S4 (mirni kontakti) spajaju se <b>u niz</b>, između zajedničke točke paralelnih ulaza i svitka K1 (ili između +24 V i svih ulaza). Svitak dobiva napon samo ako su oba mirna kontakta zatvorena, tj. ako nijedno tipkalo za zaustavljanje nije pritisnuto: K1 = (S1 ∨ S2 ∨ B1) · ¬S3 · ¬S4. Pravilo: <b>uključivanje s više mjesta — radni kontakti paralelno; isključivanje s više mjesta — mirni kontakti u niz</b>. Mirni kontakt za zaustavljanje ima i sigurnosnu prednost: prekid vodiča djeluje kao pritisak na zaustavljanje.</p></div></details></div><div class="pitanje"><p><b>8.</b> Funkcija ILI mogla bi se izvesti i bez releja, izravnim spajanjem S1 ∥ S2 na svitak Y1. Navedite jednu prednost i dva nedostatka takvog rješenja za ovu stanicu.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Prednost: manje elemenata i spojeva, nema kašnjenja releja. Nedostaci: oba tipkala i dug kabel do mjernog stola nose punu struju svitka (125 mA) i prenapon pri isključenju; nema slobodnih kontakata za signalizaciju ili dodatne uvjete (npr. brojač propuštenih dijelova); svaka izmjena logike zahtijeva preinaku kabliranja do tipkala.</p></div></details></div></div></section>
+<section id="dio-c"><h2>Dio C &middot; V20 Logička funkcija I</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>Na maloj pneumatskoj preši u aluminijske pločice utiskuje se serijski broj. Žig nosi dvoradni cilindar <b>1A1</b> (Ø63/20 mm, hod 50 mm). Za čisto utisnutu oznaku potrebna je sila od 1500 N. Preša mora raditi samo kad su ispunjena <b>sva tri</b> uvjeta:</p>
+<ul>
+<li>rukovatelj drži lijevom rukom tipkalo <b>S1</b>,</li>
+<li>desnom rukom drži tipkalo <b>S2</b>,</li>
+<li>kapacitivni senzor <b>B1</b> javlja da je pločica u prihvatu (trožilni, izlaz PNP).</li>
+</ul>
+<p>Kontakti S1, S2 i B1 spojeni su u niz u stazi releja <b>K1</b>, a radni kontakt K1 uključuje svitak <b>Y1</b> monostabilnog razvodnika 5/2. Kad se otpusti bilo koje tipkalo ili se pločica izvadi, žig se odmah vraća. Logička jednadžba je K1 = S1 · S2 · B1.</p>
+<p>Ovakav serijski spoj pokazuje funkciju I, ali <b>nije</b> propisano dvoručno uključivanje u smislu norme za dvoručne upravljačke naprave (EN ISO 13851). Takva naprava mora, među ostalim, zahtijevati da se oba tipkala pritisnu gotovo istodobno (za najčešću izvedbu unutar 0,5 s) i da se za novi ciklus oba prije otpuste. To se ostvaruje ispitanim sigurnosnim modulom, a ne s dva obična kontakta. U vježbi zato učite logiku i ograničenja, a ne gradite zaštitnu napravu za stvarni stroj.</p>
+<p>Podaci: mreža 6 bar; relej K1 privlači pri najmanje 80 % nazivnog napona; pad napona na izlazu senzora B1 najviše 2,5 V; ukupno vrijeme od otpuštanja tipkala do zaustavljanja žiga, prema mjerenju, 0,12 s.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Žig pri 6 bar pritišće silom od oko 1700 N — dovoljno za tešku ozljedu prsta. Ne pokušavajte „olakšati“ rad tako da jedno tipkalo zaglavite ili kratko spojite: to je upravo zloupotreba koju propisano dvoručno uključivanje mora spriječiti. Za mjerenje napona u stazi 1 sklop je pod naponom; mjernim vrhovima dodirujte samo stezaljke, a zrak prije mjerenja zatvorite, da se žig ne može spustiti. Vodiče spajajte bez napona.</p></div>
+<h3>Shema</h3>
+<figure class="crtez"><svg viewBox="0 0 640 400" role="img" aria-label="Slika V20.1: logička funkcija I s tipkalima S1, S2 i senzorom B1 u serijskom spoju, relej K1 i ventil Y1">
+<rect class="pf" x="60" y="60" width="120" height="30"/>
+<line class="l" x1="74" y1="62" x2="74" y2="88" fill="none"/>
+<rect class="pf" x="76" y="72" width="120" height="6"/>
+<text x="52" y="81" text-anchor="end">1A1</text>
+<line class="l" x1="70" y1="90" x2="70" y2="96" fill="none"/>
+<line class="l" x1="170" y1="90" x2="170" y2="96" fill="none"/>
+<rect class="pf" x="90" y="190" width="36" height="36"/>
+<rect class="pf" x="126" y="190" width="36" height="36"/>
+<line class="l2" x1="108" y1="224" x2="101.5" y2="201.6" fill="none"/>
+<polygon class="if" points="99,193 105,200.6 98.1,202.6"/>
+<line class="l2" x1="117" y1="192" x2="117" y2="214" fill="none"/>
+<polygon class="if" points="117,223 113.4,214 120.6,214"/>
+<line class="l2" x1="99" y1="226" x2="99" y2="218" fill="none"/>
+<line class="l2" x1="94" y1="218" x2="104" y2="218" fill="none"/>
+<line class="l2" x1="144" y1="224" x2="150.5" y2="201.6" fill="none"/>
+<polygon class="if" points="153,193 153.9,202.6 147,200.6"/>
+<line class="l2" x1="135" y1="192" x2="135" y2="214" fill="none"/>
+<polygon class="if" points="135,223 131.4,214 138.6,214"/>
+<line class="l2" x1="153" y1="226" x2="153" y2="218" fill="none"/>
+<line class="l2" x1="148" y1="218" x2="158" y2="218" fill="none"/>
+<line class="l" x1="135" y1="190" x2="135" y2="180" fill="none"/>
+<line class="l" x1="153" y1="190" x2="153" y2="180" fill="none"/>
+<line class="l" x1="135" y1="226" x2="135" y2="236" fill="none"/>
+<line class="l" x1="144" y1="226" x2="144" y2="248" fill="none"/>
+<line class="l" x1="153" y1="226" x2="153" y2="236" fill="none"/>
+<polygon class="pf" points="130,236 140,236 135,243"/>
+<polygon class="pf" points="148,236 158,236 153,243"/>
+<rect class="pf" x="76" y="199" width="14" height="18"/>
+<line class="l2" x1="76" y1="217" x2="90" y2="199" fill="none"/>
+<text x="72" y="213" text-anchor="end">Y1</text>
+<polyline class="l2" points="162,208 165.2,202 168.4,214 171.6,202 174.8,214 178,202 181,208" fill="none"/>
+<text x="90" y="184" class="mali">1V1</text>
+<polyline class="l" points="135,180 135,130 70,130 70,96" fill="none"/>
+<polyline class="l" points="153,180 153,140 170,140 170,96" fill="none"/>
+<circle class="pf" cx="144" cy="256" r="8"/>
+<polygon class="pf" points="144,251 139.5,259 148.5,259"/>
+<line class="l" x1="300" y1="50" x2="620" y2="50" fill="none"/>
+<line class="l" x1="300" y1="350" x2="620" y2="350" fill="none"/>
+<text x="300" y="42">+24 V</text>
+<text x="300" y="370">0 V</text>
+<text x="400" y="42" text-anchor="middle" class="mali">1</text>
+<line class="l" x1="400" y1="50" x2="400" y2="88" fill="none"/>
+<circle class="if" cx="400" cy="88" r="2.2"/>
+<circle class="if" cx="400" cy="112" r="2.2"/>
+<line class="l" x1="400" y1="112" x2="390" y2="91" fill="none"/>
+<line class="l2 dash" x1="395" y1="101" x2="376" y2="101" fill="none"/>
+<polyline class="l" points="380,96 376,96 376,106 380,106" fill="none"/>
+<text x="414" y="105">S1</text>
+<line class="l" x1="400" y1="112" x2="400" y2="153" fill="none"/>
+<circle class="if" cx="400" cy="153" r="2.2"/>
+<circle class="if" cx="400" cy="177" r="2.2"/>
+<line class="l" x1="400" y1="177" x2="390" y2="156" fill="none"/>
+<line class="l2 dash" x1="395" y1="166" x2="376" y2="166" fill="none"/>
+<polyline class="l" points="380,161 376,161 376,171 380,171" fill="none"/>
+<text x="414" y="170">S2</text>
+<line class="l" x1="400" y1="177" x2="400" y2="218" fill="none"/>
+<circle class="if" cx="400" cy="218" r="2.2"/>
+<circle class="if" cx="400" cy="242" r="2.2"/>
+<line class="l" x1="400" y1="242" x2="390" y2="221" fill="none"/>
+<line class="l2 dash" x1="395" y1="231" x2="382" y2="231" fill="none"/>
+<polygon class="pf" points="376,225 382,231 376,237 370,231"/>
+<text x="414" y="235">B1</text>
+<line class="l" x1="400" y1="242" x2="400" y2="291" fill="none"/>
+<rect class="pf" x="388" y="291" width="24" height="18"/>
+<text x="418" y="305">K1</text>
+<line class="l" x1="400" y1="309" x2="400" y2="350" fill="none"/>
+<circle class="if" cx="400" cy="50" r="2.6"/>
+<circle class="if" cx="400" cy="350" r="2.6"/>
+<text x="530" y="42" text-anchor="middle" class="mali">2</text>
+<line class="l" x1="530" y1="50" x2="530" y2="128" fill="none"/>
+<circle class="if" cx="530" cy="128" r="2.2"/>
+<circle class="if" cx="530" cy="152" r="2.2"/>
+<line class="l" x1="530" y1="152" x2="520" y2="131" fill="none"/>
+<text x="544" y="145">K1</text>
+<line class="l" x1="530" y1="152" x2="530" y2="271" fill="none"/>
+<rect class="pf" x="518" y="271" width="24" height="18"/>
+<line class="l2" x1="518" y1="289" x2="542" y2="271" fill="none"/>
+<text x="548" y="285">Y1</text>
+<line class="l" x1="530" y1="289" x2="530" y2="350" fill="none"/>
+<circle class="if" cx="530" cy="50" r="2.6"/>
+<circle class="if" cx="530" cy="350" r="2.6"/>
+<text x="400" y="372" text-anchor="middle" class="mali">2</text>
+</svg><figcaption><b>Slika V20.1</b> &mdash; Funkcija I: u stazi 1 tipkala S1 i S2 i senzor B1 spojeni su u niz prema svitku releja K1. Radni kontakt K1 u stazi 2 uključuje svitak Y1 monostabilnog razvodnika 1V1.</figcaption></figure>
+<p>U serijskom spoju struja prolazi kroz sve kontakte redom, pa svitak dobiva napon samo ako su svi kontakti zatvoreni. Senzor B1 nacrtan je kao kontakt sa simbolom senzora; u stvarnosti je to elektronički sklop s vlastitim napajanjem (smeđi vodič +24 V, plavi 0 V), a u niz se spaja njegov izlaz (crni vodič).</p>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="c1"><h2>C1 &middot; Serijski spoj S1 · S2 · B1</h2><div class="crta"></div><ol class="koraci"><li>Pneumatski dio: cilindar 1A1 Ø63/20 mm, hod 50 mm; razvodnik 5/2 s elektromagnetom Y1 i povratnom oprugom; izvor 0,6 MPa.</li><li>Staza 1: +24V, S1, S2, B1, svitak K1, 0V &mdash; tri kontakta u nizu. Staza 2: radni kontakt K1 i Y1.</li><li>Kapacitivni senzor u FluidSIM-P zahtijeva predmet koji se ne može lako prinijeti, pa je B1 zamijenjen <b>sklopkom sa zasunom</b> (<i>Detent switch, make</i>) s oznakom B1: jedan klik &mdash; „pločica je u prihvatu”, drugi klik &mdash; „pločica izvađena”. Logika sheme ostaje ista.</li></ol></section>
+<section id="c2"><h2>C2 &middot; Simulacija funkcije I</h2><div class="crta"></div><ol class="koraci"><li>Start. Shift + klik na S1 i S2 bez B1: K1 ne privlači, žig miruje (Slika C2.1).</li><li>Klik na B1 (pločica u prihvatu): K1 privuče, Y1 pod naponom, žig se spušta (Slika C2.2).</li><li>Otpustite S1 (klik): staza se prekine i žig se odmah vraća (Slika C2.3). Isto se dogodi ako se otpusti S2 ili isključi B1. Dijagram: Slika C2.4.</li><li>Neistodobni pritisak (korak 6 vježbe): Shift + klik na S1, pričekajte nekoliko sekundi, zatim Shift + klik na S2 &mdash; žig se spusti čim se zatvori zadnji kontakt. Serijski spoj ne mjeri vrijeme.</li></ol><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/09-v20-bez-b1.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/09-v20-bez-b1.webp" alt="Slika C2.1 — S1 i S2 pritisnuti, B1 otvoren: K1 bez napona, žig miruje." loading="lazy" decoding="async" width="620" height="576"></a><figcaption><b>Slika C2.1</b> &mdash; S1 i S2 pritisnuti, B1 otvoren: K1 bez napona, žig miruje.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/10-v20-sva-tri.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/10-v20-sva-tri.webp" alt="Slika C2.2 — Sva tri kontakta zatvorena: K1 i Y1 pod naponom, žig spušten." loading="lazy" decoding="async" width="622" height="576"></a><figcaption><b>Slika C2.2</b> &mdash; Sva tri kontakta zatvorena: K1 i Y1 pod naponom, žig spušten.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/11-v20-s1-otpusten.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/11-v20-s1-otpusten.webp" alt="Slika C2.3 — Otpušten S1: K1 otpusti, žig se vraća." loading="lazy" decoding="async" width="620" height="576"></a><figcaption><b>Slika C2.3</b> &mdash; Otpušten S1: K1 otpusti, žig se vraća.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/12-v20-dijagram.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/12-v20-dijagram.webp" alt="Slika C2.4 — Dijagram: K1 = 1 samo dok su S1, S2 i B1 istodobno zatvoreni." loading="lazy" decoding="async" width="620" height="576"></a><figcaption><b>Slika C2.4</b> &mdash; Dijagram: K1 = 1 samo dok su S1, S2 i B1 istodobno zatvoreni.</figcaption></figure></section>
+<section id="dio-c-pitanja"><h2>C3 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Napišite tablicu istinitosti za S1, S2, B1 i K1. U koliko redaka je K1 = 1?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<div class="tablica-omot"><table><thead><tr><th>S1</th><th>S2</th><th>B1</th><th>K1</th></tr></thead><tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+</tbody></table></div>
+<p>Tablica ima 2³ = 8 redaka, a K1 = 1 samo u jednome — kad su svi ulazi 1. To je obilježje funkcije I; funkcija ILI iz V19 ima izlaz 0 samo u jednom retku.</p><h4>U FluidSIM-u</h4><p>U simulaciji je K1 = 1 samo u stanju sa Slike C2.2; svaka druga kombinacija ostavlja žig gore.</p></div></details></div><div class="pitanje"><p><b>2.</b> Izračunajte stvarnu silu žiga Ø63 mm pri 6 bar (η = 0,9) i najmanji tlak pri kojem se oznaka još čisto utiskuje. Zašto se na preši preporučuje regulator tlaka uz manometar?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">A = π · 63² / 4 = 3117,2 mm² → F = 0,9 · 0,6 · 3117,2 ≈ 1683 N</p>
+<p>Najmanji tlak: p = 1500 / (0,9 · 3117,2) ≈ 0,535 N/mm² ≈ 5,3 bar. Rezerva je mala (oko 12 %), pa pad tlaka u mreži ispod oko 5,3 bar daje nečitke oznake. Regulator namješten npr. na 5,8 bar daje stalnu silu neovisnu o kolebanju mreže, a manometar omogućuje provjeru. Ako se želi i dojava, dodaje se tlačna sklopka.</p>
+</div></details></div><div class="pitanje"><p><b>3.</b> Norma za postavljanje zaštitnih naprava daje za dvoručne upravljačke naprave najmanji razmak tipkala od opasnog mjesta S = K · T + C, gdje je K = 1600 mm/s brzina ruke, T ukupno vrijeme zaustavljanja, a C = 250 mm dodatak (smije biti 0 ako je dosezanje opasnog mjesta rukom spriječeno pokrovom tipkala). Izračunajte S za T = 0,12 s u oba slučaja.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">S = 1600 · 0,12 + 250 = 192 + 250 = 442 mm</p>
+<p>S pokrovima koji sprječavaju dosezanje: S = 192 mm. Tipkala moraju biti najmanje toliko daleko od žiga da ruka, kad se odmakne s tipkala, ne stigne do opasnog mjesta prije nego što se žig zaustavi. Račun pokazuje zašto je važno skratiti vrijeme zaustavljanja: brži ventil i kraći vodovi smanjuju potreban razmak. Prije primjene na stvarnom stroju treba provjeriti važeće izdanje norme.</p>
+</div></details></div><div class="pitanje"><p><b>4.</b> Opišite rezultat pokusa s neistodobnim pritiskom (korak 6) i navedite dva zahtjeva koje propisana dvoručna naprava ispunjava, a ovaj sklop ne.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Žig se spustio čim je pritisnut S2, iako je S1 bio pritisnut 2 s ranije. Serijski spoj ne mjeri vrijeme — važno mu je samo da su oba kontakta zatvorena. Propisana naprava zahtijeva: (1) istodobnost — oba tipkala unutar zadanog vremena, tipično 0,5 s, inače nema gibanja; (2) ponovno uključivanje tek nakon otpuštanja obaju tipkala, pa zaglavljeno tipkalo onemogućuje rad. Uz to mora otkriti vlastiti kvar (npr. zalijepljeni kontakt) i spriječiti novi ciklus.</p><h4>U FluidSIM-u</h4><p>U simulaciji je rezultat isti kao na stolu: žig se spušta pri zatvaranju zadnjeg kontakta, bez obzira na razmak.</p></div></details></div><div class="pitanje"><p><b>5.</b> Relej K1 pouzdano privlači pri najmanje 80 % nazivnog napona. Izračunajte napon na svitku K1 kad je u nizu jedan senzor s padom napona 2,5 V, a zatim kad bi u nizu bila dva takva senzora. Je li drugi slučaj prihvatljiv?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Najmanji napon privlačenja: 0,8 · 24 = 19,2 V.</p>
+<p>Jedan senzor: 24 − 2,5 = 21,5 V > 19,2 V — relej pouzdano privlači.</p>
+<p>Dva senzora: 24 − 2 · 2,5 = 19,0 V < 19,2 V — relej možda neće privući, osobito ako je i napajanje na donjoj granici tolerancije. Zato se senzori ne spajaju u dugačke nizove; svaki senzor uključuje svoj relej (ili ulaz PLC-a), a funkcija I izvodi se kontaktima releja.</p>
+</div></details></div><div class="pitanje"><p><b>6.</b> U koraku 7 jedan je spoj u stazi 1 prekinut. Opišite postupak traženja prekida mjerenjem napona prema 0 V i objasnite kako iz rezultata zaključujete gdje je prekid.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Oba tipkala drže se pritisnuta, pločica je u prihvatu. Crni mjerni vrh stalno je na 0 V, a crvenim se redom mjeri: +24 V sabirnica, ulaz S1, izlaz S1, ulaz S2, izlaz S2, izlaz B1, stezaljka A1 svitka K1. Dok je pokazivanje oko 24 V, put do te točke je ispravan. <b>Prva točka na kojoj napon nestane</b> nalazi se iza prekida: prekid je između nje i prethodne točke (kontakt, vodič ili stezaljka). Ako napon postoji na A1, a relej ne privlači, prekinut je svitak ili spoj A2 prema 0 V. Postupak je sustavan i ne zahtijeva odspajanje vodiča.</p></div></details></div><div class="pitanje"><p><b>7.</b> Dopuna sheme: nacrtajte izvedbu u kojoj S1 uključuje relej K2, S2 relej K3, B1 relej K4, a funkcija I ostvaruje se radnim kontaktima K2, K3 i K4 u nizu prema K1. Numerirajte staze i napišite kontaktne tablice.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Staza 1: +24 V → S1 → K2 → 0 V. Staza 2: +24 V → S2 → K3 → 0 V. Staza 3: +24 V → izlaz senzora B1 → K4 → 0 V. Staza 4: +24 V → radni K2 → radni K3 → radni K4 → K1 → 0 V. Staza 5: +24 V → radni K1 → Y1 → 0 V. Kontaktne tablice: K2, K3 i K4 — radni u stazi 4; K1 — radni u stazi 5. Prednosti: senzor i tipkala nose samo struju vlastitog releja, pad napona senzora ne zbraja se s ostalim elementima, a slobodni kontakti K2–K4 mogu služiti za signalizaciju ili za provjeru istodobnosti. Nedostatak: više elemenata i vrijeme privlačenja dvaju releja u nizu (oko 20 ms).</p></div></details></div><div class="pitanje"><p><b>8.</b> Što se dogodi ako rukovatelj za vrijeme spuštanja žiga izvadi pločicu iz prihvata? Je li to ponašanje poželjno?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Senzor B1 prestane davati signal, staza 1 se prekine, K1 otpusti, Y1 ostaje bez napona i opruga vraća razvodnik — žig se odmah diže. Za kvalitetu je to poželjno (nema udarca žiga u prazan prihvat i oštećenja žiga), a za sigurnost je dodatna zaštita, ali ne i zamjena za propisanu zaštitnu napravu: senzor prisutnosti obratka nije sigurnosni element i ne otkriva ruku u zoni žiga.</p><h4>U FluidSIM-u</h4><p>Isključivanje sklopke B1 za vrijeme spuštanja vraća žig jednako kao otpuštanje S1 na Slici C2.3.</p></div></details></div></div></section>
+<section id="dio-d"><h2>Dio D &middot; V22 Vremenski relej s kašnjenjem ukapčanja</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>Na napravi za montažu u aluminijsko kućište utiskuje se brončana čahura s preklopom. Za pouzdan dosjed potrebna je sila od najmanje 1,5 kN koja mora djelovati <b>3 s</b> nakon što čahura sjedne do kraja, kako bi se materijal smirio i čahura ne bi „odskočila“. Utiskivanje izvodi dvoradni cilindar <b>1A</b> Ø63/20 mm, hoda 60 mm, kojim upravlja monostabilni razvodnik 5/2 s elektromagnetom <b>1Y1</b>. Na cilindru su dva magnetska senzora: <b>1B1</b> javlja uvučen, a <b>1B2</b> izvučen položaj klipa.</p>
+<p>Operater umetne čahuru i pritisne <b>S1</b>. Ciklus smije početi samo ako je cilindar uvučen (1B1). Relej <b>K1</b> se uključi i zadrži, cilindar utiskuje čahuru. Kad klip stigne do kraja hoda, senzor 1B2 uključuje vremenski relej <b>KT1</b> s kašnjenjem ukapčanja namještenim na 3 s. Po isteku vremena mirni kontakt KT1 prekida samodržanje K1 i cilindar se vraća. Tipkalo <b>S2</b> zaustavlja ciklus u svakom trenutku. Tlak u mreži je 6 bar; brzina izvlačenja namještena je prigušnim ventilom na oko 100 mm/s, a uvlačenje traje 0,4 s.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Cilindar Ø63 mm pri 6 bar razvija silu blizu 1,9 kN &mdash; dovoljno da zgnječi prst. Tijekom ispitivanja ništa ne stavljajte pod klipnjaču; za utiskivanje na vježbenoj ploči koristite samo drveni ili plastični odstojnik. Spajanje izvodite bez napona i bez tlaka. Vremenski relej ne mijenjajte dok je sklop pod naponom, a namještanje vremena izvodite prije uključivanja.</p></div>
+<h3>Shema</h3>
+<figure class="crtez"><svg viewBox="0 0 640 390" role="img" aria-label="Slika V22.1: pneumatski dio s dva senzora i strujne staze s vremenskim relejem kašnjenja ukapčanja">
+<text class="mali" x="10" y="20">Pneumatski dio</text>
+<rect class="pf" x="40" y="60" width="150" height="30"/>
+<rect class="rf" x="58" y="62" width="6" height="26"/>
+<rect class="pf" x="64" y="71" width="166" height="8"/>
+<line class="l" fill="none" x1="52" y1="90" x2="52" y2="102"/>
+<line class="l" fill="none" x1="178" y1="90" x2="178" y2="102"/>
+<text x="34" y="81" text-anchor="end">1A</text>
+<rect class="pf" x="70" y="170" width="52" height="52"/>
+<rect class="pf" x="122" y="170" width="52" height="52"/>
+<line class="l2" fill="none" x1="148" y1="222" x2="161" y2="173"/><polygon class="if" points="161,173 162.1,179.5 156.9,178.1"/>
+<line class="l2" fill="none" x1="135" y1="170" x2="132.4" y2="219"/><polygon class="if" points="132.4,219 130,212.9 135.4,213.2"/>
+<line class="l2" fill="none" x1="96" y1="222" x2="83" y2="173"/><polygon class="if" points="83,173 87.1,178.1 81.9,179.5"/>
+<line class="l2" fill="none" x1="109" y1="170" x2="111.6" y2="219"/><polygon class="if" points="111.6,219 108.6,213.2 114,212.9"/>
+<line class="l" fill="none" x1="132.4" y1="222" x2="132.4" y2="228"/>
+<polygon class="pf" points="132.4,228 126.4,237 138.4,237"/>
+<line class="l" fill="none" x1="163.6" y1="222" x2="163.6" y2="228"/>
+<polygon class="pf" points="163.6,228 157.6,237 169.6,237"/>
+<rect class="pf" x="56" y="185" width="14" height="22"/>
+<line class="l2" fill="none" x1="56" y1="207" x2="70" y2="185"/>
+<text class="mali" x="52" y="201" text-anchor="end">1Y1</text>
+<polyline class="l2" fill="none" points="174,196 177,189 183,203 189,189 195,203 198,196"/>
+<text class="mali" x="131" y="166" text-anchor="end">4</text>
+<text class="mali" x="165" y="166">2</text>
+<text class="mali" x="145" y="238" text-anchor="end">1</text>
+<polyline class="l" fill="none" points="135,170 135,140 52,140 52,102"/>
+<polyline class="t" fill="none" points="161,170 161,130 178,130 178,102"/>
+<line class="t" fill="none" x1="148" y1="222" x2="148" y2="259"/>
+<circle class="pf" cx="148" cy="268" r="9"/>
+<polygon class="pf" points="148,261 143,271 153,271"/>
+<text class="mali" x="164" y="273">6 bar</text>
+<rect class="pf" x="51" y="44" width="14" height="10"/>
+<text class="mali" x="58" y="38" text-anchor="middle">1B1</text>
+<rect class="pf" x="162" y="44" width="14" height="10"/>
+<text class="mali" x="169" y="38" text-anchor="middle">1B2</text>
+<line class="l2 dash" fill="none" x1="262" y1="10" x2="262" y2="380"/>
+<text class="mali" x="280" y="20">Električni dio</text>
+<line class="l" fill="none" x1="280" y1="44" x2="630" y2="44"/>
+<line class="l" fill="none" x1="280" y1="356" x2="630" y2="356"/>
+<text class="mali" x="280" y="62">+24 V</text>
+<text class="mali" x="280" y="374">0 V</text>
+<line class="l2" fill="none" x1="340" y1="44" x2="340" y2="60"/>
+<line class="l2" fill="none" x1="340" y1="60" x2="340" y2="72"/>
+<line class="l2" fill="none" x1="340" y1="72" x2="349" y2="72"/>
+<line class="l" fill="none" x1="340" y1="88" x2="351" y2="69"/>
+<line class="l2" fill="none" x1="340" y1="88" x2="340" y2="100"/>
+<line class="l2 dash" fill="none" x1="345" y1="79" x2="331" y2="79"/>
+<line class="l" fill="none" x1="331" y1="72" x2="331" y2="86"/>
+<text class="mali" x="353" y="85">S2</text>
+<line class="l2" fill="none" x1="340" y1="100" x2="340" y2="110"/>
+<circle class="if" cx="340" cy="110" r="2.6"/>
+<line class="l2" fill="none" x1="340" y1="110" x2="386" y2="110"/>
+<line class="l2" fill="none" x1="386" y1="110" x2="386" y2="118"/>
+<line class="l2" fill="none" x1="340" y1="118" x2="340" y2="130"/>
+<line class="l" fill="none" x1="340" y1="142" x2="330" y2="128"/>
+<line class="l2" fill="none" x1="340" y1="142" x2="340" y2="154"/>
+<line class="l2 dash" fill="none" x1="335" y1="135" x2="321" y2="135"/>
+<line class="l" fill="none" x1="321" y1="128" x2="321" y2="142"/>
+<text class="mali" x="302" y="141" text-anchor="end">S1</text>
+<line class="l2" fill="none" x1="340" y1="154" x2="340" y2="166"/>
+<line class="l" fill="none" x1="340" y1="178" x2="330" y2="164"/>
+<line class="l2" fill="none" x1="340" y1="178" x2="340" y2="190"/>
+<line class="l2 dash" fill="none" x1="335" y1="171" x2="323" y2="171"/>
+<polygon class="pf" points="323,171 316,164 309,171 316,178"/>
+<text class="mali" x="302" y="177" text-anchor="end">1B1</text>
+<line class="l2" fill="none" x1="386" y1="118" x2="386" y2="130"/>
+<line class="l" fill="none" x1="386" y1="142" x2="376" y2="128"/>
+<line class="l2" fill="none" x1="386" y1="142" x2="386" y2="154"/>
+<text class="mali" x="399" y="141">K1</text>
+<line class="l2" fill="none" x1="386" y1="154" x2="386" y2="198"/>
+<line class="l2" fill="none" x1="386" y1="198" x2="340" y2="198"/>
+<circle class="if" cx="340" cy="198" r="2.6"/>
+<line class="l2" fill="none" x1="340" y1="190" x2="340" y2="206"/>
+<line class="l2" fill="none" x1="340" y1="206" x2="340" y2="218"/>
+<line class="l2" fill="none" x1="340" y1="218" x2="349" y2="218"/>
+<line class="l" fill="none" x1="340" y1="234" x2="351" y2="215"/>
+<line class="l2" fill="none" x1="340" y1="234" x2="340" y2="246"/>
+<line class="l2 dash" fill="none" x1="345" y1="225" x2="331" y2="225"/>
+<path class="l2" fill="none" d="M331,218 A7,7 0 0 1 331,232"/>
+<text class="mali" x="353" y="231">KT1</text>
+<line class="l2" fill="none" x1="340" y1="246" x2="340" y2="262"/>
+<line class="l2" fill="none" x1="340" y1="262" x2="340" y2="273"/>
+<rect class="pf" x="329" y="273" width="22" height="18"/>
+<line class="l2" fill="none" x1="340" y1="291" x2="340" y2="302"/>
+<text class="mali" x="355" y="287">K1</text>
+<line class="l2" fill="none" x1="340" y1="302" x2="340" y2="356"/>
+<line class="l2" fill="none" x1="480" y1="44" x2="480" y2="206"/>
+<line class="l2" fill="none" x1="480" y1="206" x2="480" y2="218"/>
+<line class="l" fill="none" x1="480" y1="234" x2="470" y2="216"/>
+<line class="l2" fill="none" x1="480" y1="234" x2="480" y2="246"/>
+<text class="mali" x="493" y="231">K1</text>
+<line class="l2" fill="none" x1="480" y1="246" x2="480" y2="262"/>
+<line class="l2" fill="none" x1="480" y1="262" x2="480" y2="273"/>
+<rect class="pf" x="469" y="273" width="22" height="18"/>
+<line class="l2" fill="none" x1="480" y1="291" x2="480" y2="302"/>
+<line class="l2" fill="none" x1="469" y1="291" x2="491" y2="273"/>
+<text class="mali" x="495" y="287">1Y1</text>
+<line class="l2" fill="none" x1="480" y1="302" x2="480" y2="356"/>
+<line class="l2" fill="none" x1="576" y1="44" x2="576" y2="206"/>
+<line class="l2" fill="none" x1="576" y1="206" x2="576" y2="218"/>
+<line class="l" fill="none" x1="576" y1="234" x2="566" y2="216"/>
+<line class="l2" fill="none" x1="576" y1="234" x2="576" y2="246"/>
+<line class="l2 dash" fill="none" x1="571" y1="225" x2="559" y2="225"/>
+<polygon class="pf" points="559,225 552,218 545,225 552,232"/>
+<text class="mali" x="589" y="231">1B2</text>
+<line class="l2" fill="none" x1="576" y1="246" x2="576" y2="262"/>
+<line class="l2" fill="none" x1="576" y1="262" x2="576" y2="273"/>
+<rect class="pf" x="565" y="273" width="22" height="18"/>
+<line class="l2" fill="none" x1="576" y1="291" x2="576" y2="302"/>
+<rect class="cf" x="565" y="273" width="7" height="18"/>
+<text class="mali" x="591" y="287">KT1</text>
+<line class="l2" fill="none" x1="576" y1="302" x2="576" y2="356"/>
+<circle class="if" cx="340" cy="44" r="2.6"/>
+<circle class="if" cx="340" cy="356" r="2.6"/>
+<text class="mali" x="340" y="38" text-anchor="middle">1</text>
+<circle class="if" cx="480" cy="44" r="2.6"/>
+<circle class="if" cx="480" cy="356" r="2.6"/>
+<text class="mali" x="480" y="38" text-anchor="middle">2</text>
+<circle class="if" cx="576" cy="44" r="2.6"/>
+<circle class="if" cx="576" cy="356" r="2.6"/>
+<text class="mali" x="576" y="38" text-anchor="middle">3</text>
+<text class="mali" x="576" y="330" text-anchor="middle">3 s</text>
+</svg><figcaption><b>Slika V22.1</b> &mdash; Pneumatski dio sa senzorima 1B1 i 1B2 te strujne staze: samodržanje releja K1 (staza 1), elektromagnet 1Y1 (staza 2) i vremenski relej KT1 s kašnjenjem ukapčanja (staza 3). Jednosmjerni prigušni ventili u radnim vodovima nisu ucrtani.</figcaption></figure>
+<p>U stazi 1 tipkalo START i senzor 1B1 spojeni su serijski, pa se ciklus ne može pokrenuti dok cilindar nije uvučen. Kontakt samodržanja K1 premošćuje oba. U istoj je stazi mirni kontakt KT1 s oznakom kašnjenja (polukružni luk na poluzi) &mdash; on se <b>otvara tek kad istekne vrijeme</b> od trenutka uključivanja svitka KT1. Kad svitak ostane bez napona, kontakt se vraća odmah, bez kašnjenja.</p>
+<figure class="crtez"><svg viewBox="0 0 640 350" role="img" aria-label="Slika V22.2: vremenski dijagram signala u vježbi s vremenskim relejem">
+<text class="mali" x="118" y="50" text-anchor="end">S1</text>
+<polyline class="t" fill="none" points="130,56 158.8,56 158.8,34 187.6,34 187.6,56 610,56"/>
+<line class="l2 dash" fill="none" x1="130" y1="56" x2="610" y2="56"/>
+<text class="mali" x="118" y="88" text-anchor="end">1B1</text>
+<polyline class="t" fill="none" points="130,72 168.4,72 168.4,94 552.4,94 552.4,72 610,72"/>
+<line class="l2 dash" fill="none" x1="130" y1="94" x2="610" y2="94"/>
+<text class="mali" x="118" y="126" text-anchor="end">1A</text>
+<polyline class="l" fill="none" points="130,132 168.4,132 226,110 514,110 552.4,132 610,132"/>
+<line class="l2 dash" fill="none" x1="130" y1="132" x2="610" y2="132"/>
+<text class="mali" x="118" y="164" text-anchor="end">1B2</text>
+<polyline class="t" fill="none" points="130,170 226,170 226,148 518.8,148 518.8,170 610,170"/>
+<line class="l2 dash" fill="none" x1="130" y1="170" x2="610" y2="170"/>
+<text class="mali" x="118" y="202" text-anchor="end">K1, 1Y1</text>
+<polyline class="t" fill="none" points="130,208 158.8,208 158.8,186 514,186 514,208 610,208"/>
+<line class="l2 dash" fill="none" x1="130" y1="208" x2="610" y2="208"/>
+<text class="mali" x="118" y="240" text-anchor="end">KT1 svitak</text>
+<polyline class="t" fill="none" points="130,246 226,246 226,224 518.8,224 518.8,246 610,246"/>
+<line class="l2 dash" fill="none" x1="130" y1="246" x2="610" y2="246"/>
+<text class="mali" x="118" y="278" text-anchor="end">KT1 kontakt</text>
+<polyline class="t" fill="none" points="130,262 514,262 514,284 518.8,284 518.8,262 610,262"/>
+<line class="l2 dash" fill="none" x1="130" y1="284" x2="610" y2="284"/>
+<line class="l2" fill="none" x1="130" y1="306" x2="624" y2="306"/><polygon class="if" points="624,306 617,309.1 617,302.9"/>
+<line class="l2" fill="none" x1="130" y1="302" x2="130" y2="310"/>
+<text class="mali" x="130" y="326" text-anchor="middle">0</text>
+<line class="l2" fill="none" x1="226" y1="302" x2="226" y2="310"/>
+<text class="mali" x="226" y="326" text-anchor="middle">1</text>
+<line class="l2" fill="none" x1="322" y1="302" x2="322" y2="310"/>
+<text class="mali" x="322" y="326" text-anchor="middle">2</text>
+<line class="l2" fill="none" x1="418" y1="302" x2="418" y2="310"/>
+<text class="mali" x="418" y="326" text-anchor="middle">3</text>
+<line class="l2" fill="none" x1="514" y1="302" x2="514" y2="310"/>
+<text class="mali" x="514" y="326" text-anchor="middle">4</text>
+<line class="l2" fill="none" x1="610" y1="302" x2="610" y2="310"/>
+<text class="mali" x="610" y="326" text-anchor="middle">5</text>
+<text class="mali" x="614" y="298" text-anchor="end">t / s</text>
+<line class="l2 dash" fill="none" x1="226" y1="30" x2="226" y2="306"/>
+<line class="l2 dash" fill="none" x1="514" y1="30" x2="514" y2="306"/>
+<line class="l2" fill="none" x1="370" y1="26" x2="228" y2="26"/><polygon class="if" points="228,26 234,23.3 234,28.7"/>
+<line class="l2" fill="none" x1="370" y1="26" x2="512" y2="26"/><polygon class="if" points="512,26 506,28.7 506,23.3"/>
+<text class="mali" x="370" y="20" text-anchor="middle">kašnjenje 3 s</text>
+</svg><figcaption><b>Slika V22.2</b> &mdash; Vremenski dijagram ciklusa: izvlačenje 0,6 s, držanje 3 s koje mjeri KT1, uvlačenje 0,4 s. Kontakt KT1 otvara se 3 s nakon što 1B2 uključi svitak.</figcaption></figure>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="d1"><h2>D1 &middot; Samodržanje i vremenski relej KT1</h2><div class="crta"></div><ol class="koraci"><li>Pneumatski dio: cilindar 1A Ø63/20 mm, hod <b>60</b> mm; razvodnik 5/2 s elektromagnetom 1Y1 i oprugom. Kartica <i>Actuating Labels</i> cilindra: <b>1B1</b> od 0 do 2 mm (uvučen), <b>1B2</b> od 58 do 60 mm (izvučen).</li><li>Staza 1: +24V, S2 (<i>Pushbutton, break</i>), zatim paralelno [S1 u nizu s kontaktom 1B1] i radni kontakt K1 (samodržanje), mirni kontakt KT1, svitak K1. Staza 2: radni kontakt K1 i 1Y1. Staza 3: kontakt 1B2 i svitak KT1.</li><li>Senzori 1B1 i 1B2 su <i>Make switch</i> s <i>Reed contact</i> i odgovarajućom oznakom &mdash; FluidSIM ih sam veže s oznakama na cilindru. Vremenski relej: <i>Relay with switch-on delay</i>, vrijeme <b>3</b> s, oznaka KT1; njegov mirni kontakt u stazi 1 ima istu oznaku.</li></ol></section>
+<section id="d2"><h2>D2 &middot; Simulacija ciklusa s držanjem</h2><div class="crta"></div><ol class="koraci"><li>Start: cilindar uvučen, 1B1 zatvoren (Slika D2.1). Klik na S1: K1 privuče i drži se, 1Y1 izvlači cilindar.</li><li>Na kraju hoda 1B2 uključi KT1 i relej počne brojati (Slika D2.2, na releju se vidi proteklo vrijeme).</li><li>Nakon 3 s mirni kontakt KT1 otvori stazu 1, K1 otpusti, cilindar se vraća; čim klip krene, 1B2 isključi KT1 i kontakt se odmah zatvori (Slika D2.3).</li><li>Dijagram (Slika D2.4): izvlačenje, držanje oko 3 s, povratak. Klik na S2 za vrijeme izvlačenja ili držanja prekida ciklus u svakom trenutku.</li></ol><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/13-v22-mirovanje.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/13-v22-mirovanje.webp" alt="Slika D2.1 — Mirovanje: cilindar uvučen, 1B1 zatvoren, ciklus spreman." loading="lazy" decoding="async" width="676" height="574"></a><figcaption><b>Slika D2.1</b> &mdash; Mirovanje: cilindar uvučen, 1B1 zatvoren, ciklus spreman.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/14-v22-drzanje.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/14-v22-drzanje.webp" alt="Slika D2.2 — Držanje: 1B2 uključio KT1, relej broji (1,4 s)." loading="lazy" decoding="async" width="677" height="574"></a><figcaption><b>Slika D2.2</b> &mdash; Držanje: 1B2 uključio KT1, relej broji (1,4 s).</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/15-v22-povrat.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/15-v22-povrat.webp" alt="Slika D2.3 — Isteklo vrijeme: KT1 prekinuo samodržanje, cilindar se vraća." loading="lazy" decoding="async" width="676" height="574"></a><figcaption><b>Slika D2.3</b> &mdash; Isteklo vrijeme: KT1 prekinuo samodržanje, cilindar se vraća.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/16-v22-dijagram.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/16-v22-dijagram.webp" alt="Slika D2.4 — Dijagram ciklusa s držanjem od 3 s na kraju hoda." loading="lazy" decoding="async" width="676" height="574"></a><figcaption><b>Slika D2.4</b> &mdash; Dijagram ciklusa s držanjem od 3 s na kraju hoda.</figcaption></figure><div class="okvir pazi"><h4>Simulacija i stol</h4><p>Brzina izvlačenja nije prigušena, pa cilindar u simulaciji stiže na kraj brže od 100 mm/s iz zadatka. Vrijeme držanja ne ovisi o tome &mdash; broji se od uključenja 1B2.</p></div></section>
+<section id="dio-d-pitanja"><h2>D3 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Opišite razliku između kontakta releja s kašnjenjem ukapčanja i kontakta releja s kašnjenjem iskapčanja. Koja se funkcija koristi u ovoj vježbi i zašto?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kod kašnjenja ukapčanja kontakt mijenja stanje tek nakon isteka namještenog vremena od uključivanja svitka, a vraća se odmah kad svitak izgubi napon. Kod kašnjenja iskapčanja kontakt se prebaci odmah pri uključivanju, a vraća se tek nakon isteka vremena od isključivanja svitka. Ovdje se vrijeme mjeri od dolaska klipa u krajnji položaj, dakle od uključivanja svitka &mdash; potrebno je kašnjenje ukapčanja.</p><h4>U FluidSIM-u</h4><p>U simulaciji (Slike D2.2 i D2.3) kontakt KT1 otvori tek nakon 3 s, a zatvori se odmah kad 1B2 isključi svitak.</p></div></details></div><div class="pitanje"><p><b>2.</b> Računski zadatak: je li cilindar Ø63 mm pri 6 bar dovoljan za silu od 1,5 kN uz stupanj djelovanja 0,9? Bi li bio dovoljan cilindar Ø50 mm?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A = π · 63² / 4 = 3117 mm². F = 0,6 N/mm² · 3117 mm² · 0,9 = 1683 N &gt; 1500 N &mdash; dovoljno, uz pričuvu od oko 12 %. Za Ø50: A = 1963 mm², F = 0,6 · 1963 · 0,9 = 1060 N &lt; 1500 N &mdash; nedovoljno. Da bi Ø50 dao 1,5 kN, trebalo bi p = 1500 / (1963 · 0,9) = 0,85 N/mm² = 8,5 bar, što mreža od 6 bar ne može dati.</p></div></details></div><div class="pitanje"><p><b>3.</b> Računski zadatak: izračunajte trajanje jednog ciklusa ako umetanje čahure i vađenje gotovog dijela traje 6 s. Koliko se dijelova može izraditi u jednom satu?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>t = 0,6 s (izvlačenje) + 3,0 s (držanje) + 0,4 s (uvlačenje) + 6,0 s (rukovanje) = 10,0 s. Učinak: 3600 s / 10 s = 360 dijelova na sat. Vrijeme držanja čini 30 % ciklusa; skraćivanje na 2 s dalo bi 400 dijelova na sat, ali samo ako to dopušta kvaliteta dosjeda.</p><h4>U FluidSIM-u</h4><p>Držanje u simulaciji traje 3,0 s (Slika D2.4); vrijeme gibanja ovisi o prigušenju koje u modelu nije zadano.</p></div></details></div><div class="pitanje"><p><b>4.</b> Dopunite vremenski dijagram na slici V22.2 za slučaj kad operater pritisne S2 u trenutku t = 2 s. Kako izgledaju signali K1, KT1 svitak i 1A?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>U t = 2 s S2 prekida stazu 1: K1 i 1Y1 padaju na 0, cilindar se počinje uvlačiti i stiže u uvučeni položaj za oko 0,4 s. 1B2 se isključuje čim klip krene, pa se i svitak KT1 isključuje (oko t = 2,05 s) i vrijeme se poništava. Kontakt KT1 uopće se ne otvara jer 3 s nije isteklo. 1B1 se uključuje oko t = 2,4 s.</p></div></details></div><div class="pitanje"><p><b>5.</b> Zašto je senzor 1B1 spojen u seriju s tipkalom START? Što bi se dogodilo bez njega?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>1B1 je početni uvjet: ciklus smije početi samo iz uvučenog položaja. Bez njega bi pritisak na S1 tijekom povratka ponovno uključio K1 i cilindar bi krenuo naprijed prije nego što operater izvadi dio. Početni uvjet sprječava i ponovni start dok je klip zapeo negdje na pola hoda.</p><h4>U FluidSIM-u</h4><p>U simulaciji se to vidi tako da S1 za vrijeme povratka ne pokreće novi ciklus dok cilindar ne zatvori 1B1.</p></div></details></div><div class="pitanje"><p><b>6.</b> Nakon pomicanja senzora 1B2 izmjereno vrijeme od zaustavljanja klipa do povratka skratilo se na oko 2,95 s. Objasnite zašto.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Pomaknuti senzor uključuje se prije nego što klip stigne do kraja hoda, pa vremenski relej počinje brojati dok se klip još giba. Vrijeme stvarnog držanja kraće je za vrijeme potrebno za prijeđenih 5 mm, što pri 100 mm/s iznosi oko 0,05 s. Senzor koji pokreće mjerenje vremena mora biti namješten tako da se uključuje tek na samom kraju hoda.</p></div></details></div><div class="pitanje"><p><b>7.</b> Vremenski relej ima točnost ponavljanja ±1 % i odstupanje namještanja ±5 % od vrijednosti na ljestvici. U kojim se granicama može naći stvarno vrijeme držanja kad je na ljestvici namješteno 3 s? Kako ćete ga namjestiti točno?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Zbog odstupanja ljestvice stvarno vrijeme može biti 2,85&ndash;3,15 s. Točnost ponavljanja znači da će, jednom namješteno, vrijeme od ciklusa do ciklusa odstupati najviše oko ±0,03 s. Vrijeme se zato namješta mjerenjem: izmjeri se stvarno držanje, korigira se položaj potenciometra i mjerenje se ponovi dok srednja vrijednost ne bude 3,0 s.</p></div></details></div><div class="pitanje"><p><b>8.</b> Kako biste isto kašnjenje ostvarili u čistoj pneumatici? Navedite elemente.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Pneumatskim vremenskim članom: jednosmjerni prigušni ventil puni mali spremnik, a razvodnik 3/2 s pneumatskim upravljanjem prebacuje se kad tlak u spremniku dosegne tlak prebacivanja. Takav je član jednostavan, ali manje točan i ovisan o tlaku mreže i temperaturi; vremenski relej daje ponovljivo i lako podesivo vrijeme.</p></div></details></div></div></section>
+<section id="dio-e"><h2>Dio E &middot; V26 Taktna električna metoda</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>Na napravi za označavanje žigom utiskuje se oznaka u čeličnu pločicu. Za čitljiv otisak žig mora udariti <b>dvaput</b> dok je pločica stegnuta. Cilindar <b>1A</b> (Ø32/12 mm, hod 40 mm) steže pločicu, a cilindar <b>2A</b> (Ø63/20 mm, hod 25 mm) nosi žig. Slijed je <b>1A+ 2A+ 2A− 2A+ 2A− 1A−</b>, dakle šest koraka. Oba cilindra imaju bistabilne razvodnike 5/2 (1Y1/1Y2, 2Y1/2Y2) i magnetske senzore 1B1, 1B2, 2B1, 2B2. Tlak je 6 bar; brzina stezanja oko 0,2 m/s, brzina žiga oko 0,15 m/s.</p>
+<p>Signal 2B2 javlja se dvaput u ciklusu: nakon prvog udarca treba pokrenuti povratak žiga, a nakon drugog također, ali nakon drugog povratka treba otpustiti pločicu, a ne ponovno udariti. Sam senzor ne „zna“ koji je udarac bio. To znanje nosi <b>taktni lanac</b>: za svaki korak postoji relej K1&ndash;K6. Relej koraka n uključuje se kad je aktivan relej koraka n−1 i kad senzor javi kraj koraka n−1; drži se samodržanjem, a isključuje ga relej koraka n+1. U svakom trenutku aktivan je samo jedan korak, pa isti senzor u koracima 3 i 5 djeluje različito.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Cilindar Ø63 mm pri 6 bar gura silom od oko 1,9 kN, a hod od 25 mm prolazi za manje od 0,2 s &mdash; prst se ne stigne izvući. Na vježbenoj ploči ne stavljajte ništa između žiga i podloge osim predviđenog odstojnika. Pri prvom pokretanju smanjite tlak na 3 bar i pritvorite prigušne ventile. Relejni moduli sa šest releja imaju mnogo vodiča: spojene vodiče označavajte na ispisu sheme.</p></div>
+<h3>Shema</h3>
+<figure class="crtez"><svg viewBox="0 0 640 280" role="img" aria-label="Slika V26.1: pneumatski dio naprave za žigosanje sa cilindrom za stezanje 1A i žigom 2A">
+<rect class="pf" x="34" y="50" width="150" height="28"/>
+<rect class="rf" x="49" y="52" width="6" height="24"/>
+<rect class="pf" x="55" y="60" width="165" height="8"/>
+<line class="l" fill="none" x1="46" y1="78" x2="46" y2="90"/>
+<line class="l" fill="none" x1="172" y1="78" x2="172" y2="90"/>
+<text x="28" y="70" text-anchor="end">1A</text>
+<rect class="pf" x="42" y="34" width="14" height="10"/>
+<text class="mali" x="49" y="27" text-anchor="middle">1B1</text>
+<rect class="pf" x="162" y="34" width="14" height="10"/>
+<text class="mali" x="169" y="27" text-anchor="middle">1B2</text>
+<rect class="pf" x="56" y="150" width="44" height="44"/>
+<rect class="pf" x="100" y="150" width="44" height="44"/>
+<line class="l2" fill="none" x1="122" y1="194" x2="133" y2="153"/><polygon class="if" points="133,153 134.1,159.5 128.8,158.1"/>
+<line class="l2" fill="none" x1="111" y1="150" x2="108.8" y2="191"/><polygon class="if" points="108.8,191 106.4,184.9 111.8,185.2"/>
+<line class="l2" fill="none" x1="78" y1="194" x2="67" y2="153"/><polygon class="if" points="67,153 71.2,158.1 65.9,159.5"/>
+<line class="l2" fill="none" x1="89" y1="150" x2="91.2" y2="191"/><polygon class="if" points="91.2,191 88.2,185.2 93.6,184.9"/>
+<line class="l" fill="none" x1="108.8" y1="194" x2="108.8" y2="200"/>
+<polygon class="pf" points="108.8,200 102.8,209 114.8,209"/>
+<line class="l" fill="none" x1="135.2" y1="194" x2="135.2" y2="200"/>
+<polygon class="pf" points="135.2,200 129.2,209 141.2,209"/>
+<rect class="pf" x="42" y="161" width="14" height="22"/>
+<line class="l2" fill="none" x1="42" y1="183" x2="56" y2="161"/>
+<text class="mali" x="38" y="177" text-anchor="end">1Y1</text>
+<rect class="pf" x="144" y="161" width="14" height="22"/>
+<line class="l2" fill="none" x1="144" y1="183" x2="158" y2="161"/>
+<text class="mali" x="162" y="177">1Y2</text>
+<text class="mali" x="107" y="146" text-anchor="end">4</text>
+<text class="mali" x="137" y="146">2</text>
+<text class="mali" x="119" y="210" text-anchor="end">1</text>
+<polyline class="l" fill="none" points="111,150 111,118 46,118 46,90"/>
+<polyline class="t" fill="none" points="133,150 133,106 172,106 172,90"/>
+<line class="t" fill="none" x1="122" y1="194" x2="122" y2="236"/>
+<circle class="if" cx="122" cy="236" r="2.6"/>
+<rect class="pf" x="354" y="50" width="150" height="28"/>
+<rect class="rf" x="369" y="52" width="6" height="24"/>
+<rect class="pf" x="375" y="60" width="165" height="8"/>
+<line class="l" fill="none" x1="366" y1="78" x2="366" y2="90"/>
+<line class="l" fill="none" x1="492" y1="78" x2="492" y2="90"/>
+<text x="348" y="70" text-anchor="end">2A</text>
+<rect class="pf" x="362" y="34" width="14" height="10"/>
+<text class="mali" x="369" y="27" text-anchor="middle">2B1</text>
+<rect class="pf" x="482" y="34" width="14" height="10"/>
+<text class="mali" x="489" y="27" text-anchor="middle">2B2</text>
+<rect class="pf" x="376" y="150" width="44" height="44"/>
+<rect class="pf" x="420" y="150" width="44" height="44"/>
+<line class="l2" fill="none" x1="442" y1="194" x2="453" y2="153"/><polygon class="if" points="453,153 454.1,159.5 448.8,158.1"/>
+<line class="l2" fill="none" x1="431" y1="150" x2="428.8" y2="191"/><polygon class="if" points="428.8,191 426.4,184.9 431.8,185.2"/>
+<line class="l2" fill="none" x1="398" y1="194" x2="387" y2="153"/><polygon class="if" points="387,153 391.2,158.1 385.9,159.5"/>
+<line class="l2" fill="none" x1="409" y1="150" x2="411.2" y2="191"/><polygon class="if" points="411.2,191 408.2,185.2 413.6,184.9"/>
+<line class="l" fill="none" x1="428.8" y1="194" x2="428.8" y2="200"/>
+<polygon class="pf" points="428.8,200 422.8,209 434.8,209"/>
+<line class="l" fill="none" x1="455.2" y1="194" x2="455.2" y2="200"/>
+<polygon class="pf" points="455.2,200 449.2,209 461.2,209"/>
+<rect class="pf" x="362" y="161" width="14" height="22"/>
+<line class="l2" fill="none" x1="362" y1="183" x2="376" y2="161"/>
+<text class="mali" x="358" y="177" text-anchor="end">2Y1</text>
+<rect class="pf" x="464" y="161" width="14" height="22"/>
+<line class="l2" fill="none" x1="464" y1="183" x2="478" y2="161"/>
+<text class="mali" x="482" y="177">2Y2</text>
+<text class="mali" x="427" y="146" text-anchor="end">4</text>
+<text class="mali" x="457" y="146">2</text>
+<text class="mali" x="439" y="210" text-anchor="end">1</text>
+<polyline class="l" fill="none" points="431,150 431,118 366,118 366,90"/>
+<polyline class="t" fill="none" points="453,150 453,106 492,106 492,90"/>
+<line class="t" fill="none" x1="442" y1="194" x2="442" y2="236"/>
+<circle class="if" cx="442" cy="236" r="2.6"/>
+<line class="t" fill="none" x1="102" y1="236" x2="442" y2="236"/>
+<circle class="pf" cx="93" cy="236" r="9"/>
+<polygon class="pf" points="93,229 88,239 98,239"/>
+<text class="mali" x="93" y="264" text-anchor="middle">6 bar</text>
+</svg><figcaption><b>Slika V26.1</b> &mdash; Pneumatski dio: 1A steže pločicu, 2A nosi žig. Razvodnici nacrtani u položaju „uvučeno“, prigušni ventili nisu ucrtani.</figcaption></figure>
+<figure class="crtez"><svg viewBox="0 0 640 340" role="img" aria-label="Slika V26.2: taktni lanac, strujne staze releja koraka K1 do K3">
+<line class="l" fill="none" x1="20" y1="40" x2="630" y2="40"/>
+<line class="l" fill="none" x1="20" y1="310" x2="630" y2="310"/>
+<text class="mali" x="20" y="58">+24 V</text>
+<text class="mali" x="20" y="328">0 V</text>
+<line class="l2" fill="none" x1="100" y1="40" x2="100" y2="54"/>
+<circle class="if" cx="100" cy="40" r="2.6"/>
+<circle class="if" cx="100" cy="54" r="2.6"/>
+<line class="l2" fill="none" x1="100" y1="54" x2="146" y2="54"/>
+<line class="l2" fill="none" x1="100" y1="54" x2="100" y2="62"/>
+<line class="l2" fill="none" x1="146" y1="54" x2="146" y2="62"/>
+<line class="l2" fill="none" x1="100" y1="62" x2="100" y2="74"/>
+<line class="l" fill="none" x1="100" y1="90" x2="90" y2="72"/>
+<line class="l2" fill="none" x1="100" y1="90" x2="100" y2="102"/>
+<line class="l2 dash" fill="none" x1="95" y1="81" x2="81" y2="81"/>
+<line class="l" fill="none" x1="81" y1="74" x2="81" y2="88"/>
+<text class="mali" x="62" y="87" text-anchor="end">S1</text>
+<line class="l2" fill="none" x1="100" y1="102" x2="100" y2="114"/>
+<line class="l" fill="none" x1="100" y1="130" x2="90" y2="112"/>
+<line class="l2" fill="none" x1="100" y1="130" x2="100" y2="142"/>
+<line class="l2 dash" fill="none" x1="95" y1="121" x2="83" y2="121"/>
+<polygon class="pf" points="83,121 76,114 69,121 76,128"/>
+<text class="mali" x="62" y="127" text-anchor="end">1B1</text>
+<line class="l2" fill="none" x1="100" y1="142" x2="100" y2="154"/>
+<line class="l" fill="none" x1="100" y1="170" x2="90" y2="152"/>
+<line class="l2" fill="none" x1="100" y1="170" x2="100" y2="182"/>
+<line class="l2 dash" fill="none" x1="95" y1="161" x2="83" y2="161"/>
+<polygon class="pf" points="83,161 76,154 69,161 76,168"/>
+<text class="mali" x="62" y="167" text-anchor="end">2B1</text>
+<line class="l2" fill="none" x1="146" y1="62" x2="146" y2="74"/>
+<line class="l" fill="none" x1="146" y1="90" x2="136" y2="72"/>
+<line class="l2" fill="none" x1="146" y1="90" x2="146" y2="102"/>
+<text class="mali" x="159" y="87">K1</text>
+<line class="l2" fill="none" x1="100" y1="182" x2="100" y2="190"/>
+<line class="l2" fill="none" x1="146" y1="102" x2="146" y2="190"/>
+<line class="l2" fill="none" x1="100" y1="190" x2="146" y2="190"/>
+<circle class="if" cx="100" cy="190" r="2.6"/>
+<line class="l2" fill="none" x1="100" y1="190" x2="100" y2="202"/>
+<line class="l2" fill="none" x1="100" y1="202" x2="109" y2="202"/>
+<line class="l" fill="none" x1="100" y1="218" x2="111" y2="199"/>
+<line class="l2" fill="none" x1="100" y1="218" x2="100" y2="230"/>
+<text class="mali" x="113" y="215">K2</text>
+<line class="l2" fill="none" x1="100" y1="230" x2="100" y2="238"/>
+<line class="l2" fill="none" x1="100" y1="238" x2="100" y2="249"/>
+<rect class="pf" x="89" y="249" width="22" height="18"/>
+<line class="l2" fill="none" x1="100" y1="267" x2="100" y2="278"/>
+<text class="mali" x="115" y="263">K1</text>
+<line class="l2" fill="none" x1="100" y1="278" x2="100" y2="310"/>
+<circle class="if" cx="100" cy="310" r="2.6"/>
+<text class="mali" x="100" y="32" text-anchor="middle">1</text>
+<text class="mali" x="146" y="263">korak 1</text>
+<line class="l2" fill="none" x1="310" y1="40" x2="310" y2="54"/>
+<circle class="if" cx="310" cy="40" r="2.6"/>
+<circle class="if" cx="310" cy="54" r="2.6"/>
+<line class="l2" fill="none" x1="310" y1="54" x2="356" y2="54"/>
+<line class="l2" fill="none" x1="310" y1="54" x2="310" y2="62"/>
+<line class="l2" fill="none" x1="356" y1="54" x2="356" y2="62"/>
+<line class="l2" fill="none" x1="310" y1="62" x2="310" y2="74"/>
+<line class="l" fill="none" x1="310" y1="90" x2="300" y2="72"/>
+<line class="l2" fill="none" x1="310" y1="90" x2="310" y2="102"/>
+<text class="mali" x="296" y="87" text-anchor="end">K1</text>
+<line class="l2" fill="none" x1="310" y1="102" x2="310" y2="114"/>
+<line class="l" fill="none" x1="310" y1="130" x2="300" y2="112"/>
+<line class="l2" fill="none" x1="310" y1="130" x2="310" y2="142"/>
+<line class="l2 dash" fill="none" x1="305" y1="121" x2="293" y2="121"/>
+<polygon class="pf" points="293,121 286,114 279,121 286,128"/>
+<text class="mali" x="272" y="127" text-anchor="end">1B2</text>
+<line class="l2" fill="none" x1="356" y1="62" x2="356" y2="74"/>
+<line class="l" fill="none" x1="356" y1="90" x2="346" y2="72"/>
+<line class="l2" fill="none" x1="356" y1="90" x2="356" y2="102"/>
+<text class="mali" x="369" y="87">K2</text>
+<line class="l2" fill="none" x1="310" y1="142" x2="310" y2="150"/>
+<line class="l2" fill="none" x1="356" y1="102" x2="356" y2="150"/>
+<line class="l2" fill="none" x1="310" y1="150" x2="356" y2="150"/>
+<circle class="if" cx="310" cy="150" r="2.6"/>
+<line class="l2" fill="none" x1="310" y1="150" x2="310" y2="162"/>
+<line class="l2" fill="none" x1="310" y1="162" x2="319" y2="162"/>
+<line class="l" fill="none" x1="310" y1="178" x2="321" y2="159"/>
+<line class="l2" fill="none" x1="310" y1="178" x2="310" y2="190"/>
+<text class="mali" x="323" y="175">K3</text>
+<line class="l2" fill="none" x1="310" y1="190" x2="310" y2="238"/>
+<line class="l2" fill="none" x1="310" y1="238" x2="310" y2="249"/>
+<rect class="pf" x="299" y="249" width="22" height="18"/>
+<line class="l2" fill="none" x1="310" y1="267" x2="310" y2="278"/>
+<text class="mali" x="325" y="263">K2</text>
+<line class="l2" fill="none" x1="310" y1="278" x2="310" y2="310"/>
+<circle class="if" cx="310" cy="310" r="2.6"/>
+<text class="mali" x="310" y="32" text-anchor="middle">2</text>
+<text class="mali" x="356" y="263">korak 2</text>
+<line class="l2" fill="none" x1="520" y1="40" x2="520" y2="54"/>
+<circle class="if" cx="520" cy="40" r="2.6"/>
+<circle class="if" cx="520" cy="54" r="2.6"/>
+<line class="l2" fill="none" x1="520" y1="54" x2="566" y2="54"/>
+<line class="l2" fill="none" x1="520" y1="54" x2="520" y2="62"/>
+<line class="l2" fill="none" x1="566" y1="54" x2="566" y2="62"/>
+<line class="l2" fill="none" x1="520" y1="62" x2="520" y2="74"/>
+<line class="l" fill="none" x1="520" y1="90" x2="510" y2="72"/>
+<line class="l2" fill="none" x1="520" y1="90" x2="520" y2="102"/>
+<text class="mali" x="506" y="87" text-anchor="end">K2</text>
+<line class="l2" fill="none" x1="520" y1="102" x2="520" y2="114"/>
+<line class="l" fill="none" x1="520" y1="130" x2="510" y2="112"/>
+<line class="l2" fill="none" x1="520" y1="130" x2="520" y2="142"/>
+<line class="l2 dash" fill="none" x1="515" y1="121" x2="503" y2="121"/>
+<polygon class="pf" points="503,121 496,114 489,121 496,128"/>
+<text class="mali" x="482" y="127" text-anchor="end">2B2</text>
+<line class="l2" fill="none" x1="566" y1="62" x2="566" y2="74"/>
+<line class="l" fill="none" x1="566" y1="90" x2="556" y2="72"/>
+<line class="l2" fill="none" x1="566" y1="90" x2="566" y2="102"/>
+<text class="mali" x="579" y="87">K3</text>
+<line class="l2" fill="none" x1="520" y1="142" x2="520" y2="150"/>
+<line class="l2" fill="none" x1="566" y1="102" x2="566" y2="150"/>
+<line class="l2" fill="none" x1="520" y1="150" x2="566" y2="150"/>
+<circle class="if" cx="520" cy="150" r="2.6"/>
+<line class="l2" fill="none" x1="520" y1="150" x2="520" y2="162"/>
+<line class="l2" fill="none" x1="520" y1="162" x2="529" y2="162"/>
+<line class="l" fill="none" x1="520" y1="178" x2="531" y2="159"/>
+<line class="l2" fill="none" x1="520" y1="178" x2="520" y2="190"/>
+<text class="mali" x="533" y="175">K4</text>
+<line class="l2" fill="none" x1="520" y1="190" x2="520" y2="238"/>
+<line class="l2" fill="none" x1="520" y1="238" x2="520" y2="249"/>
+<rect class="pf" x="509" y="249" width="22" height="18"/>
+<line class="l2" fill="none" x1="520" y1="267" x2="520" y2="278"/>
+<text class="mali" x="535" y="263">K3</text>
+<line class="l2" fill="none" x1="520" y1="278" x2="520" y2="310"/>
+<circle class="if" cx="520" cy="310" r="2.6"/>
+<text class="mali" x="520" y="32" text-anchor="middle">3</text>
+<text class="mali" x="566" y="263">korak 3</text>
+</svg><figcaption><b>Slika V26.2</b> &mdash; Taktni lanac, koraci 1&ndash;3. K1 uključuje START uz uvjet da su oba cilindra uvučena; K2 uključuje K1 · 1B2, K3 uključuje K2 · 2B2. Svaki relej isključuje relej sljedećeg koraka.</figcaption></figure>
+<figure class="crtez"><svg viewBox="0 0 640 340" role="img" aria-label="Slika V26.3: taktni lanac, strujne staze releja koraka K4 do K6">
+<line class="l" fill="none" x1="20" y1="40" x2="630" y2="40"/>
+<line class="l" fill="none" x1="20" y1="310" x2="630" y2="310"/>
+<text class="mali" x="20" y="58">+24 V</text>
+<text class="mali" x="20" y="328">0 V</text>
+<line class="l2" fill="none" x1="100" y1="40" x2="100" y2="54"/>
+<circle class="if" cx="100" cy="40" r="2.6"/>
+<circle class="if" cx="100" cy="54" r="2.6"/>
+<line class="l2" fill="none" x1="100" y1="54" x2="146" y2="54"/>
+<line class="l2" fill="none" x1="100" y1="54" x2="100" y2="62"/>
+<line class="l2" fill="none" x1="146" y1="54" x2="146" y2="62"/>
+<line class="l2" fill="none" x1="100" y1="62" x2="100" y2="74"/>
+<line class="l" fill="none" x1="100" y1="90" x2="90" y2="72"/>
+<line class="l2" fill="none" x1="100" y1="90" x2="100" y2="102"/>
+<text class="mali" x="86" y="87" text-anchor="end">K3</text>
+<line class="l2" fill="none" x1="100" y1="102" x2="100" y2="114"/>
+<line class="l" fill="none" x1="100" y1="130" x2="90" y2="112"/>
+<line class="l2" fill="none" x1="100" y1="130" x2="100" y2="142"/>
+<line class="l2 dash" fill="none" x1="95" y1="121" x2="83" y2="121"/>
+<polygon class="pf" points="83,121 76,114 69,121 76,128"/>
+<text class="mali" x="62" y="127" text-anchor="end">2B1</text>
+<line class="l2" fill="none" x1="146" y1="62" x2="146" y2="74"/>
+<line class="l" fill="none" x1="146" y1="90" x2="136" y2="72"/>
+<line class="l2" fill="none" x1="146" y1="90" x2="146" y2="102"/>
+<text class="mali" x="159" y="87">K4</text>
+<line class="l2" fill="none" x1="100" y1="142" x2="100" y2="150"/>
+<line class="l2" fill="none" x1="146" y1="102" x2="146" y2="150"/>
+<line class="l2" fill="none" x1="100" y1="150" x2="146" y2="150"/>
+<circle class="if" cx="100" cy="150" r="2.6"/>
+<line class="l2" fill="none" x1="100" y1="150" x2="100" y2="162"/>
+<line class="l2" fill="none" x1="100" y1="162" x2="109" y2="162"/>
+<line class="l" fill="none" x1="100" y1="178" x2="111" y2="159"/>
+<line class="l2" fill="none" x1="100" y1="178" x2="100" y2="190"/>
+<text class="mali" x="113" y="175">K5</text>
+<line class="l2" fill="none" x1="100" y1="190" x2="100" y2="238"/>
+<line class="l2" fill="none" x1="100" y1="238" x2="100" y2="249"/>
+<rect class="pf" x="89" y="249" width="22" height="18"/>
+<line class="l2" fill="none" x1="100" y1="267" x2="100" y2="278"/>
+<text class="mali" x="115" y="263">K4</text>
+<line class="l2" fill="none" x1="100" y1="278" x2="100" y2="310"/>
+<circle class="if" cx="100" cy="310" r="2.6"/>
+<text class="mali" x="100" y="32" text-anchor="middle">4</text>
+<text class="mali" x="146" y="263">korak 4</text>
+<line class="l2" fill="none" x1="310" y1="40" x2="310" y2="54"/>
+<circle class="if" cx="310" cy="40" r="2.6"/>
+<circle class="if" cx="310" cy="54" r="2.6"/>
+<line class="l2" fill="none" x1="310" y1="54" x2="356" y2="54"/>
+<line class="l2" fill="none" x1="310" y1="54" x2="310" y2="62"/>
+<line class="l2" fill="none" x1="356" y1="54" x2="356" y2="62"/>
+<line class="l2" fill="none" x1="310" y1="62" x2="310" y2="74"/>
+<line class="l" fill="none" x1="310" y1="90" x2="300" y2="72"/>
+<line class="l2" fill="none" x1="310" y1="90" x2="310" y2="102"/>
+<text class="mali" x="296" y="87" text-anchor="end">K4</text>
+<line class="l2" fill="none" x1="310" y1="102" x2="310" y2="114"/>
+<line class="l" fill="none" x1="310" y1="130" x2="300" y2="112"/>
+<line class="l2" fill="none" x1="310" y1="130" x2="310" y2="142"/>
+<line class="l2 dash" fill="none" x1="305" y1="121" x2="293" y2="121"/>
+<polygon class="pf" points="293,121 286,114 279,121 286,128"/>
+<text class="mali" x="272" y="127" text-anchor="end">2B2</text>
+<line class="l2" fill="none" x1="356" y1="62" x2="356" y2="74"/>
+<line class="l" fill="none" x1="356" y1="90" x2="346" y2="72"/>
+<line class="l2" fill="none" x1="356" y1="90" x2="356" y2="102"/>
+<text class="mali" x="369" y="87">K5</text>
+<line class="l2" fill="none" x1="310" y1="142" x2="310" y2="150"/>
+<line class="l2" fill="none" x1="356" y1="102" x2="356" y2="150"/>
+<line class="l2" fill="none" x1="310" y1="150" x2="356" y2="150"/>
+<circle class="if" cx="310" cy="150" r="2.6"/>
+<line class="l2" fill="none" x1="310" y1="150" x2="310" y2="162"/>
+<line class="l2" fill="none" x1="310" y1="162" x2="319" y2="162"/>
+<line class="l" fill="none" x1="310" y1="178" x2="321" y2="159"/>
+<line class="l2" fill="none" x1="310" y1="178" x2="310" y2="190"/>
+<text class="mali" x="323" y="175">K6</text>
+<line class="l2" fill="none" x1="310" y1="190" x2="310" y2="238"/>
+<line class="l2" fill="none" x1="310" y1="238" x2="310" y2="249"/>
+<rect class="pf" x="299" y="249" width="22" height="18"/>
+<line class="l2" fill="none" x1="310" y1="267" x2="310" y2="278"/>
+<text class="mali" x="325" y="263">K5</text>
+<line class="l2" fill="none" x1="310" y1="278" x2="310" y2="310"/>
+<circle class="if" cx="310" cy="310" r="2.6"/>
+<text class="mali" x="310" y="32" text-anchor="middle">5</text>
+<text class="mali" x="356" y="263">korak 5</text>
+<line class="l2" fill="none" x1="520" y1="40" x2="520" y2="54"/>
+<circle class="if" cx="520" cy="40" r="2.6"/>
+<circle class="if" cx="520" cy="54" r="2.6"/>
+<line class="l2" fill="none" x1="520" y1="54" x2="566" y2="54"/>
+<line class="l2" fill="none" x1="520" y1="54" x2="520" y2="62"/>
+<line class="l2" fill="none" x1="566" y1="54" x2="566" y2="62"/>
+<line class="l2" fill="none" x1="520" y1="62" x2="520" y2="74"/>
+<line class="l" fill="none" x1="520" y1="90" x2="510" y2="72"/>
+<line class="l2" fill="none" x1="520" y1="90" x2="520" y2="102"/>
+<text class="mali" x="506" y="87" text-anchor="end">K5</text>
+<line class="l2" fill="none" x1="520" y1="102" x2="520" y2="114"/>
+<line class="l" fill="none" x1="520" y1="130" x2="510" y2="112"/>
+<line class="l2" fill="none" x1="520" y1="130" x2="520" y2="142"/>
+<line class="l2 dash" fill="none" x1="515" y1="121" x2="503" y2="121"/>
+<polygon class="pf" points="503,121 496,114 489,121 496,128"/>
+<text class="mali" x="482" y="127" text-anchor="end">2B1</text>
+<line class="l2" fill="none" x1="566" y1="62" x2="566" y2="74"/>
+<line class="l" fill="none" x1="566" y1="90" x2="556" y2="72"/>
+<line class="l2" fill="none" x1="566" y1="90" x2="566" y2="102"/>
+<text class="mali" x="579" y="87">K6</text>
+<line class="l2" fill="none" x1="520" y1="142" x2="520" y2="150"/>
+<line class="l2" fill="none" x1="566" y1="102" x2="566" y2="150"/>
+<line class="l2" fill="none" x1="520" y1="150" x2="566" y2="150"/>
+<circle class="if" cx="520" cy="150" r="2.6"/>
+<line class="l2" fill="none" x1="520" y1="150" x2="520" y2="162"/>
+<line class="l2" fill="none" x1="520" y1="162" x2="529" y2="162"/>
+<line class="l" fill="none" x1="520" y1="178" x2="531" y2="159"/>
+<line class="l2" fill="none" x1="520" y1="178" x2="520" y2="190"/>
+<line class="l2 dash" fill="none" x1="525" y1="169" x2="513" y2="169"/>
+<polygon class="pf" points="513,169 506,162 499,169 506,176"/>
+<text class="mali" x="533" y="175">1B1</text>
+<line class="l2" fill="none" x1="520" y1="190" x2="520" y2="238"/>
+<line class="l2" fill="none" x1="520" y1="238" x2="520" y2="249"/>
+<rect class="pf" x="509" y="249" width="22" height="18"/>
+<line class="l2" fill="none" x1="520" y1="267" x2="520" y2="278"/>
+<text class="mali" x="535" y="263">K6</text>
+<line class="l2" fill="none" x1="520" y1="278" x2="520" y2="310"/>
+<circle class="if" cx="520" cy="310" r="2.6"/>
+<text class="mali" x="520" y="32" text-anchor="middle">6</text>
+<text class="mali" x="566" y="263">korak 6</text>
+</svg><figcaption><b>Slika V26.3</b> &mdash; Taktni lanac, koraci 4&ndash;6. Zadnji korak K6 isključuje mirni kontakt 1B1 kad se 1A vrati.</figcaption></figure>
+<figure class="crtez"><svg viewBox="0 0 640 290" role="img" aria-label="Slika V26.4: strujne staze elektromagneta u taktnoj metodi">
+<line class="l" fill="none" x1="20" y1="40" x2="630" y2="40"/>
+<line class="l" fill="none" x1="20" y1="262" x2="630" y2="262"/>
+<text class="mali" x="20" y="58">+24 V</text>
+<text class="mali" x="20" y="280">0 V</text>
+<line class="l2" fill="none" x1="90" y1="40" x2="90" y2="54"/>
+<circle class="if" cx="90" cy="40" r="2.6"/>
+<line class="l2" fill="none" x1="90" y1="54" x2="90" y2="66"/>
+<line class="l" fill="none" x1="90" y1="82" x2="80" y2="64"/>
+<line class="l2" fill="none" x1="90" y1="82" x2="90" y2="94"/>
+<text class="mali" x="103" y="79">K1</text>
+<line class="l2" fill="none" x1="90" y1="94" x2="90" y2="186"/>
+<line class="l2" fill="none" x1="90" y1="186" x2="90" y2="197"/>
+<rect class="pf" x="79" y="197" width="22" height="18"/>
+<line class="l2" fill="none" x1="90" y1="215" x2="90" y2="226"/>
+<line class="l2" fill="none" x1="79" y1="215" x2="101" y2="197"/>
+<text class="mali" x="105" y="211">1Y1</text>
+<line class="l2" fill="none" x1="90" y1="226" x2="90" y2="262"/>
+<circle class="if" cx="90" cy="262" r="2.6"/>
+<line class="l2" fill="none" x1="250" y1="40" x2="250" y2="54"/>
+<circle class="if" cx="250" cy="40" r="2.6"/>
+<circle class="if" cx="250" cy="54" r="2.6"/>
+<line class="l2" fill="none" x1="250" y1="54" x2="296" y2="54"/>
+<line class="l2" fill="none" x1="250" y1="54" x2="250" y2="62"/>
+<line class="l2" fill="none" x1="296" y1="54" x2="296" y2="62"/>
+<line class="l2" fill="none" x1="250" y1="62" x2="250" y2="74"/>
+<line class="l" fill="none" x1="250" y1="90" x2="240" y2="72"/>
+<line class="l2" fill="none" x1="250" y1="90" x2="250" y2="102"/>
+<text class="mali" x="236" y="87" text-anchor="end">K2</text>
+<line class="l2" fill="none" x1="296" y1="62" x2="296" y2="74"/>
+<line class="l" fill="none" x1="296" y1="90" x2="286" y2="72"/>
+<line class="l2" fill="none" x1="296" y1="90" x2="296" y2="102"/>
+<text class="mali" x="309" y="87">K4</text>
+<line class="l2" fill="none" x1="250" y1="102" x2="250" y2="110"/>
+<line class="l2" fill="none" x1="296" y1="102" x2="296" y2="110"/>
+<line class="l2" fill="none" x1="250" y1="110" x2="296" y2="110"/>
+<circle class="if" cx="250" cy="110" r="2.6"/>
+<line class="l2" fill="none" x1="250" y1="110" x2="250" y2="186"/>
+<line class="l2" fill="none" x1="250" y1="186" x2="250" y2="197"/>
+<rect class="pf" x="239" y="197" width="22" height="18"/>
+<line class="l2" fill="none" x1="250" y1="215" x2="250" y2="226"/>
+<line class="l2" fill="none" x1="239" y1="215" x2="261" y2="197"/>
+<text class="mali" x="265" y="211">2Y1</text>
+<line class="l2" fill="none" x1="250" y1="226" x2="250" y2="262"/>
+<circle class="if" cx="250" cy="262" r="2.6"/>
+<line class="l2" fill="none" x1="410" y1="40" x2="410" y2="54"/>
+<circle class="if" cx="410" cy="40" r="2.6"/>
+<circle class="if" cx="410" cy="54" r="2.6"/>
+<line class="l2" fill="none" x1="410" y1="54" x2="456" y2="54"/>
+<line class="l2" fill="none" x1="410" y1="54" x2="410" y2="62"/>
+<line class="l2" fill="none" x1="456" y1="54" x2="456" y2="62"/>
+<line class="l2" fill="none" x1="410" y1="62" x2="410" y2="74"/>
+<line class="l" fill="none" x1="410" y1="90" x2="400" y2="72"/>
+<line class="l2" fill="none" x1="410" y1="90" x2="410" y2="102"/>
+<text class="mali" x="396" y="87" text-anchor="end">K3</text>
+<line class="l2" fill="none" x1="456" y1="62" x2="456" y2="74"/>
+<line class="l" fill="none" x1="456" y1="90" x2="446" y2="72"/>
+<line class="l2" fill="none" x1="456" y1="90" x2="456" y2="102"/>
+<text class="mali" x="469" y="87">K5</text>
+<line class="l2" fill="none" x1="410" y1="102" x2="410" y2="110"/>
+<line class="l2" fill="none" x1="456" y1="102" x2="456" y2="110"/>
+<line class="l2" fill="none" x1="410" y1="110" x2="456" y2="110"/>
+<circle class="if" cx="410" cy="110" r="2.6"/>
+<line class="l2" fill="none" x1="410" y1="110" x2="410" y2="186"/>
+<line class="l2" fill="none" x1="410" y1="186" x2="410" y2="197"/>
+<rect class="pf" x="399" y="197" width="22" height="18"/>
+<line class="l2" fill="none" x1="410" y1="215" x2="410" y2="226"/>
+<line class="l2" fill="none" x1="399" y1="215" x2="421" y2="197"/>
+<text class="mali" x="425" y="211">2Y2</text>
+<line class="l2" fill="none" x1="410" y1="226" x2="410" y2="262"/>
+<circle class="if" cx="410" cy="262" r="2.6"/>
+<line class="l2" fill="none" x1="570" y1="40" x2="570" y2="54"/>
+<circle class="if" cx="570" cy="40" r="2.6"/>
+<line class="l2" fill="none" x1="570" y1="54" x2="570" y2="66"/>
+<line class="l" fill="none" x1="570" y1="82" x2="560" y2="64"/>
+<line class="l2" fill="none" x1="570" y1="82" x2="570" y2="94"/>
+<text class="mali" x="583" y="79">K6</text>
+<line class="l2" fill="none" x1="570" y1="94" x2="570" y2="186"/>
+<line class="l2" fill="none" x1="570" y1="186" x2="570" y2="197"/>
+<rect class="pf" x="559" y="197" width="22" height="18"/>
+<line class="l2" fill="none" x1="570" y1="215" x2="570" y2="226"/>
+<line class="l2" fill="none" x1="559" y1="215" x2="581" y2="197"/>
+<text class="mali" x="585" y="211">1Y2</text>
+<line class="l2" fill="none" x1="570" y1="226" x2="570" y2="262"/>
+<circle class="if" cx="570" cy="262" r="2.6"/>
+<text class="mali" x="90" y="32" text-anchor="middle">7</text>
+<text class="mali" x="250" y="32" text-anchor="middle">8</text>
+<text class="mali" x="410" y="32" text-anchor="middle">9</text>
+<text class="mali" x="570" y="32" text-anchor="middle">10</text>
+</svg><figcaption><b>Slika V26.4</b> &mdash; Elektromagneti: 2Y1 dobiva napon u koracima 2 i 4 (K2 ili K4), 2Y2 u koracima 3 i 5 (K3 ili K5).</figcaption></figure>
+<div class="tablica-omot"><table><thead><tr><th>Korak</th><th>Gibanje</th><th>Relej</th><th>Uključuje ga</th><th>Isključuje ga</th><th>Elektromagnet</th></tr></thead><tbody>
+<tr><td>1</td><td>1A+ stezanje</td><td>K1</td><td>S1 · 1B1 · 2B1</td><td>K2</td><td>1Y1</td></tr>
+<tr><td>2</td><td>2A+ prvi udarac</td><td>K2</td><td>K1 · 1B2</td><td>K3</td><td>2Y1</td></tr>
+<tr><td>3</td><td>2A− povratak</td><td>K3</td><td>K2 · 2B2</td><td>K4</td><td>2Y2</td></tr>
+<tr><td>4</td><td>2A+ drugi udarac</td><td>K4</td><td>K3 · 2B1</td><td>K5</td><td>2Y1</td></tr>
+<tr><td>5</td><td>2A− povratak</td><td>K5</td><td>K4 · 2B2</td><td>K6</td><td>2Y2</td></tr>
+<tr><td>6</td><td>1A− otpuštanje</td><td>K6</td><td>K5 · 2B1</td><td>1B1 (mirni)</td><td>1Y2</td></tr>
+</tbody></table></div>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="e1"><h2>E1 &middot; Pneumatski dio: stezanje i žig</h2><div class="crta"></div><ol class="koraci"><li>Pneumatski dio: cilindar 1A Ø32/12 mm, hod 40 mm, oznake <b>1B1</b> 0–2 mm i <b>1B2</b> 38–40 mm; cilindar 2A Ø63/20 mm, hod 25 mm, oznake <b>2B1</b> 0–2 mm i <b>2B2</b> 23–25 mm. Dva razvodnika 5/2 s dva elektromagneta (bistabilna): 1Y1/1Y2 i 2Y1/2Y2. Svaki razvodnik ima svoj izvor zraka 0,6 MPa.</li><li>Prigušni ventili nisu ucrtani, kao ni na slici V26.1, pa su gibanja u simulaciji vrlo brza; to ne mijenja logiku lanca.</li></ol></section>
+<section id="e2"><h2>E2 &middot; Taktni lanac K1–K6 i elektromagneti</h2><div class="crta"></div><ol class="koraci"><li>Taktni lanac crta se u šest staza, jedna po koraku. Staza n: radni kontakt releja prethodnog koraka u nizu s kontaktom senzora koji javlja kraj prethodnog koraka, paralelno samodržanje (radni kontakt vlastitog releja), zatim mirni kontakt releja sljedećeg koraka i svitak.</li><li>Staza 1: +24V → S1 · 1B1 · 2B1, paralelno K1 → mirni K2 → K1. Staza 2: K1 · 1B2 ∥ K2 → mirni K3 → K2. Staza 3: K2 · 2B2 ∥ K3 → mirni K4 → K3. Staza 4: K3 · 2B1 ∥ K4 → mirni K5 → K4. Staza 5: K4 · 2B2 ∥ K5 → mirni K6 → K5. Staza 6: K5 · 2B1 ∥ K6 → mirni 1B1 → K6.</li><li>Staze 7–10 (Slika V26.4): K1 → 1Y1; K2 ∥ K4 → 2Y1; K3 ∥ K5 → 2Y2; K6 → 1Y2. Senzori su <i>Make switch</i> / <i>Break switch</i> s <i>Reed contact</i>; mirni kontakt 1B1 u stazi 6 je <i>Break switch</i>.</li><li>Pazite pri crtanju: priključak +24V i 0V je desni kružić simbola; vod se u postojeći vod spaja ispuštanjem točno na njegov okomiti dio. F6 → <i>No superficial errors detected</i>. <i>State Diagram</i>: oba cilindra, <i>Fixed interval</i> 0–1 s.</li></ol></section>
+<section id="e3"><h2>E3 &middot; Simulacija šest koraka</h2><div class="crta"></div><ol class="koraci"><li>Za snimanje uključite usporenje: <i>Options → Simulation</i> → <i>Slow-motion Factor</i> 1:10 (poslije vratite <i>Maintain Real Time</i>). Start: oba cilindra uvučena, nijedan relej ne privlači (Slika E3.1).</li><li>Klik na S1: K1 → 1A+; 1B2 uključi K2 → 2A+ (prvi udarac, Slika E3.2); 2B2 uključi K3 → 2A− (Slika E3.3); 2B1 uključi K4 → drugi udarac; 2B2 uključi K5 → 2A− (Slika E3.4); 2B1 uključi K6 → 1A− (Slika E3.5). Kad se 1A vrati, mirni kontakt 1B1 otpusti K6.</li><li>U svakom trenutku privučen je samo jedan relej. Dijagram (Slika E3.6): bez prigušnih ventila cijeli ciklus traje oko <b>0,3 s</b> (od oko 0,21 do 0,50 s simulacije).</li></ol><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/17-v26-mirovanje.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/17-v26-mirovanje.webp" alt="Slika E3.1 — Početni položaj: oba cilindra uvučena, lanac miruje." loading="lazy" decoding="async" width="783" height="666"></a><figcaption><b>Slika E3.1</b> &mdash; Početni položaj: oba cilindra uvučena, lanac miruje.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/18-v26-k2-udarac.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/18-v26-k2-udarac.webp" alt="Slika E3.2 — Korak 2 (K2): prvi udarac žiga, 2Y1 pod naponom." loading="lazy" decoding="async" width="783" height="666"></a><figcaption><b>Slika E3.2</b> &mdash; Korak 2 (K2): prvi udarac žiga, 2Y1 pod naponom.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/19-v26-k3-povratak.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/19-v26-k3-povratak.webp" alt="Slika E3.3 — Korak 3 (K3): 2B2 je uključio K3, žig se vraća." loading="lazy" decoding="async" width="783" height="666"></a><figcaption><b>Slika E3.3</b> &mdash; Korak 3 (K3): 2B2 je uključio K3, žig se vraća.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/20-v26-k5-povratak.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/20-v26-k5-povratak.webp" alt="Slika E3.4 — Korak 5 (K5): isti senzor 2B2 sada je uključio K5, a ne K3." loading="lazy" decoding="async" width="783" height="666"></a><figcaption><b>Slika E3.4</b> &mdash; Korak 5 (K5): isti senzor 2B2 sada je uključio K5, a ne K3.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/21-v26-k6-otpustanje.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/21-v26-k6-otpustanje.webp" alt="Slika E3.5 — Korak 6 (K6): otpuštanje pločice, 1Y2 pod naponom." loading="lazy" decoding="async" width="783" height="666"></a><figcaption><b>Slika E3.5</b> &mdash; Korak 6 (K6): otpuštanje pločice, 1Y2 pod naponom.</figcaption></figure><figure class="snimka"><a href="slike/postupak-dodatne-pneumatika/22-v26-dijagram.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-dodatne-pneumatika/22-v26-dijagram.webp" alt="Slika E3.6 — Dijagram put–vrijeme: 1A+ 2A+ 2A− 2A+ 2A− 1A−." loading="lazy" decoding="async" width="783" height="666"></a><figcaption><b>Slika E3.6</b> &mdash; Dijagram put–vrijeme: 1A+ 2A+ 2A− 2A+ 2A− 1A−.</figcaption></figure></section>
+<section id="dio-e-pitanja"><h2>E4 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Senzor 2B2 aktivan je na kraju koraka 2 i na kraju koraka 4. Kako lanac zna da nakon prvog aktiviranja treba uključiti K3, a nakon drugog K5?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>K3 se uključuje preko serije K2 · 2B2, a K5 preko serije K4 · 2B2. Na kraju koraka 2 aktivan je samo K2, pa 2B2 može uključiti samo K3; na kraju koraka 4 aktivan je samo K4, pa 2B2 uključuje K5. Relej aktivnog koraka „otvara vrata“ samo jednom sljedećem koraku.</p><h4>U FluidSIM-u</h4><p>U simulaciji se to vidi na Slikama E3.3 i E3.4: isti signal 2B2 jednom uključuje K3, drugi put K5.</p></div></details></div><div class="pitanje"><p><b>2.</b> Računski zadatak: izračunajte teorijsku i stvarnu silu žiga Ø63 mm pri 6 bar (η = 0,9). Koliki bi tlak bio potreban za silu od 2 kN?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>A = π · 63² / 4 = 3117 mm². F<sub>t</sub> = 0,6 · 3117 = 1870 N; F = 1870 · 0,9 = 1683 N. Za 2000 N: p = 2000 / (3117 · 0,9) = 0,713 N/mm² = 7,1 bar &mdash; više od tlaka mreže. Treba veći cilindar (Ø80 mm daje oko 2,7 kN) ili pojačivač tlaka.</p></div></details></div><div class="pitanje"><p><b>3.</b> Računski zadatak: izračunajte trajanje gibanja u ciklusu (preklapanje oko 30 ms po koraku) i potrošnju slobodnog zraka po ciklusu.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>1A: 2 · 40 / 200 = 0,40 s. 2A: 4 · 25 / 150 = 0,67 s. Gibanja 1,07 s, preklapanja 6 · 0,03 = 0,18 s, ukupno ≈ 1,25 s.</p><p>Zrak, omjer 6,923: 1A (804,2 + 691,2) · 40 = 59 816 mm³ → 0,414 Nl. 2A, dva dvostruka hoda: (3117,2 + 2803,1) · 25 · 2 = 296 016 mm³ → 2,049 Nl. Ukupno ≈ 2,46 Nl po ciklusu.</p><h4>U FluidSIM-u</h4><p>Bez prigušnih ventila simulirani ciklus traje oko 0,3 s (Slika E3.6); s brzinama iz zadatka trajao bi oko 1,25 s kao u proračunu.</p></div></details></div><div class="pitanje"><p><b>4.</b> Dopunite shemu: nacrtajte staze koje treba dodati da žig udara triput. Koliko releja tada ima lanac i kako se mijenjaju staze 8, 9 i 10?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Slijed postaje 1A+ 2A+ 2A− 2A+ 2A− 2A+ 2A− 1A− &mdash; osam koraka, releji K1&ndash;K8. Dodaju se K6 (2A+, uključuje K5 · 2B1) i K7 (2A−, uključuje K6 · 2B2); dosadašnji zadnji korak postaje K8 (1A−, uključuje K7 · 2B1, isključuje 1B1). K5 sad isključuje K6, K6 isključuje K7, K7 isključuje K8. Staza 8 dobiva paralelni kontakt K6 (2Y1 = K2 + K4 + K6), staza 9 kontakt K7 (2Y2 = K3 + K5 + K7), a staza 10 napaja se preko K8.</p></div></details></div><div class="pitanje"><p><b>5.</b> Koliko bi releja trebala kaskadna metoda za isti slijed? Napišite podjelu u grupe i usporedite metode.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Grupe: I = 1A+ 2A+; II = 2A−; III = 2A+; IV = 2A− 1A−. Četiri grupe, četiri releja &mdash; dva manje nego u taktnoj metodi. Taktna metoda ima više releja, ali je potpuno pravilna: svaki korak izgleda jednako, pa se lako crta, proširuje i dijagnosticira (svjetleći relej pokazuje korak u kojem je sklop stao). Kod dugih slijedova s ponavljanjem istog cilindra ta prednost prevladava.</p></div></details></div><div class="pitanje"><p><b>6.</b> Sklop je stao usred ciklusa. Svijetli relej K4, žig je uvučen, pločica stegnuta. Gdje tražite kvar?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>K4 je korak 4, drugi udarac: 2Y1 bi trebao biti pod naponom i 2A izvučen. Redom se provjerava: svijetli li utikač 2Y1 (staza 8, kontakt K4); ako svijetli, kvar je pneumatski (razvodnik zapeo, prigušni ventil zatvoren, nema zraka); ako ne svijetli, kvar je u stazi 8 &mdash; kontakt K4 ili vodič. Kad bi 2A bio izvučen, a K5 se ne uključuje, provjerava se senzor 2B2 i serija K4 · 2B2 u stazi 5.</p></div></details></div><div class="pitanje"><p><b>7.</b> Zašto je u stazi 1 uz tipkalo START uvjet 1B1 · 2B1? Što bi se dogodilo da ga nema, a netko pritisne START usred ciklusa?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Uvjet osigurava da ciklus počinje samo iz početnog položaja. Bez njega bi pritisak na START usred ciklusa uključio K1 uz relej aktivnog koraka; K1 bi ponovno uključio 1Y1, a lanac bi imao dva aktivna koraka i izvodio neodređen slijed. Pravilo taktne metode je da u lancu smije biti aktivan samo jedan korak.</p></div></details></div></div></section>
+<section id="zapis"><h2>Zapis simulacije</h2><div class="crta"></div><p>Rezultati simulacije u FluidSIM-P 4.2 za sve vježbe na ovoj stranici, uz vrijednosti iz proračuna (rješenje).</p><div class="tablica-omot"><table><thead><tr><th>Veličina</th><th>Očekivano (proračun / zadatak)</th><th>FluidSIM</th><th>Komentar</th></tr></thead><tbody><tr><td>Kašnjenje iskapčanja (V09)</td><td>8,5 s (proračun)</td><td>oko 8,3 s uz prigušnicu 3 % (Slika A2.4)</td><td>povratak pri oko 0,15 MPa u spremniku</td></tr><tr><td>Funkcija ILI (V19)</td><td>K1 = S1 ∨ S2</td><td>K1 privlači sa S1, sa S2 i s oba (Slike B2.1–B2.3)</td><td></td></tr><tr><td>Funkcija I (V20)</td><td>K1 = S1 · S2 · B1</td><td>K1 samo uz sva tri kontakta (Slika C2.2)</td><td>B1 kao sklopka sa zasunom</td></tr><tr><td>Neistodobni pritisak (V20)</td><td>žig se spušta</td><td>žig se spušta pri zadnjem kontaktu</td><td>nema nadzora vremena</td></tr><tr><td>Držanje na kraju hoda (V22)</td><td>3 s</td><td>3,0 s (Slika D2.4)</td><td>KT1 s kašnjenjem ukapčanja</td></tr><tr><td>Slijed V26</td><td>1A+ 2A+ 2A− 2A+ 2A− 1A−</td><td>isti, jedan relej po koraku (Slike E3.2–E3.5)</td><td></td></tr><tr><td>Trajanje ciklusa V26</td><td>1,25 s (s prigušenjem)</td><td>oko 0,3 s bez prigušnih ventila (Slika E3.6)</td><td>logika ista</td></tr></tbody></table></div></section>
+<section id="predaja"><h2>Spremanje i predaja</h2><div class="crta"></div><ol class="koraci"><li><b>File → Save As</b>. U polje <i>Naziv datoteke</i> upišite <code>PIH_2026-2027_Prezime_Ime_V##.ct</code> (## je broj vježbe, bez kvačica) i kliknite <i>Spremi</i>. Kasnije spremanje: <b>File → Save</b> (Ctrl + S).</li><li>Snimka: za vrijeme simulacije (nakon <i>Pause</i>) snimite zaslon sa shemom i dijagramom (u sustavu Windows: Windows + Shift + S), ili shemu spremite naredbom <b>File → TIFF Export</b>.</li><li>Odgovorite na pitanja vježbe; rezultate simulacije usporedite s proračunom.</li><li>Ako nastavnik traži predaju: shema <code>.ct</code>, snimka simulacije i odgovori. Sve datoteke imenujte <code>PIH_2026-2027_Prezime_Ime_…</code>.</li></ol><h3>Primjena na vlastiti zadatak P##</h3><p>Projekt SL-3, vaša varijanta P## (ulazni podaci u „Projektni zadaci P01–P21”): odredite treba li vašem slijedu vremensko držanje (kao V22) ili ponovljeni korak istog cilindra (kao V26) i koju biste metodu upravljanja tada izabrali.</p><p class="sitno">Kod pitanja: susjed → radni list i ova stranica → nastavnik. AI smijete koristiti uz navođenje što je i kako napravljeno.</p></section>
+<section id="za-nastavnika"><h2>Za nastavnika</h2><div class="crta"></div><h3>Dio A &middot; vježba V09</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Vježba traje <b>2 sata (2 × 45 min)</b> i najbolje ju je izvesti neposredno nakon vježbe s kašnjenjem ukapčanja, s istim elementima. Provjerite da vremenski član omogućuje okretanje nepovratnog ventila ili pripremite pojedinačne dijelove. Manometar na spremniku je važan da polaznici vide eksponencijalni pad tlaka — dobro je da jedna skupina zapiše tlak svake sekunde i nacrta krivulju.</p>
+<h4>Tijek sata</h4><ol>
+<li>Uvod: kašnjenje iskapčanja, usporedba s kašnjenjem ukapčanja, primjeri iz pogona — 10 min.</li>
+<li>Simulacija i usporedba dijagrama — 10 min.</li>
+<li>Spajanje i puštanje u rad — 15 min.</li>
+<li>Namještanje i mjerenje kašnjenja, očitanje tlaka vraćanja — 20 min.</li>
+<li>Pokusi s kratkim i dvostrukim pritiskom te s okrenutim ventilom — 20 min.</li>
+<li>Računski zadaci, dijagram, pospremanje — 15 min.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>Zaklopka se otvara odmah, a zatvara 8,0 ± 0,5 s nakon otpuštanja. Kratki pritisak daje gotovo isto kašnjenje; dvostruki pritisak produljuje otvorenost. Okretanjem ventila dobiva se kašnjenje ukapčanja. Računski: τ = 8,31 s, t = 8,5 s; 2,13 Nl/min ili 37,5 cm³ za 8 s; 265 N; 0,50 Nl po ciklusu.</p>
+<h4>Česte pogreške</h4><ul>
+<li>Nepovratni ventil ostavljen je u položaju iz prethodne vježbe, pa se dobiva kašnjenje ukapčanja.</li>
+<li>Vrijeme se mjeri od pritiska umjesto od otpuštanja tipkala.</li>
+<li>U formulu se uvrštavaju pretlakovi umjesto apsolutnih tlakova.</li>
+<li>Signalni ventil 1S1 nema ispuh (npr. 2/2), pa se spremnik ne može isprazniti ni kroz prigušnicu.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravan spoj i smjer nepovratnog ventila</td><td>4</td></tr>
+<tr><td>Namješteno i izmjereno kašnjenje, zapisan tlak vraćanja</td><td>4</td></tr>
+<tr><td>Pokusi iz koraka 5 i 6 s tumačenjem</td><td>3</td></tr>
+<tr><td>Računski zadaci 2, 3 i 5</td><td>5</td></tr>
+<tr><td>Dijagram i odgovori 7 i 8</td><td>4</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><h3>Dio B &middot; vježba V19</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Vježba je kratka u spajanju, pa je naglasak na logici i usporedbi s pneumatikom. Pripremite kolut cijevi od oko 12 m za pokazni pokus kašnjenja; mobitel sa snimanjem usporenim zapisom omogućuje procjenu kašnjenja na oko 10 ms. Ako polaznici nisu radili V06, ukratko pokažite naizmjenični ventil.</p>
+<h4>Tijek sata</h4><ol>
+<li>0–10 min: logičke funkcije u kontaktnoj tehnici, paralelni spoj, tablica istinitosti.</li>
+<li>10–30 min: spajanje staza 1–3, ispitivanje četiriju kombinacija.</li>
+<li>30–45 min: pokazni pokus s dugim pneumatskim vodom, pitanja 3 i 4.</li>
+<li>45–70 min: dopuna s B1 i isključivanjem s dva mjesta (pitanja 6 i 7), izvedba na ploči.</li>
+<li>70–85 min: računski zadatak 5, pitanja 2 i 8.</li>
+<li>85–90 min: rastavljanje, osvrt.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>Tablica istinitosti ispravna za sve kombinacije; nakon dopune sklop reagira na tri ulaza i blokira se s oba mjesta. Polaznik formulira pravilo „uključivanje paralelno, isključivanje u niz“. Računski: kašnjenje punjenja oko 0,2 s prema oko 30 ms, struja oko 0,17 A, oko 15 stanica teorijski.</p>
+<h4>Česte pogreške</h4><ul>
+<li>paralelni spoj izveden tako da je jedno tipkalo spojeno na 0 V, pa pritisak na njega izaziva kratki spoj;</li>
+<li>mirni kontakti za zaustavljanje spojeni paralelno, pa zaustavljanje radi tek kad su pritisnuta oba;</li>
+<li>tablica istinitosti za tri ulaza s manje od 8 redaka;</li>
+<li>u računu kašnjenja zanemareno odzračivanje voda pri otpuštanju.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravno spojen sklop ILI, tablica istinitosti i jednadžba</td><td>6</td></tr>
+<tr><td>Usporedba s pneumatskom izvedbom (pitanja 3 i 4)</td><td>4</td></tr>
+<tr><td>Dopuna trećim ulazom i isključivanjem s dva mjesta</td><td>5</td></tr>
+<tr><td>Računski zadatak 5 i pitanje 8</td><td>4</td></tr>
+<tr><td>Sigurnost i urednost</td><td>1</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><h3>Dio C &middot; vježba V20</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Provjerite vrstu senzora (trožilni PNP) i njegov raspored vodiča. Za korak 7 pripremite način skrivenog prekida (npr. odspojen vodič ispod kućišta stezaljke ili neispravan laboratorijski vodič). Razgovor o dvoručnom uključivanju vodite kao razgovor o granicama: polaznici moraju izaći s jasnom porukom da serijski spoj dvaju tipkala nije zaštitna naprava.</p>
+<h4>Tijek sata</h4><ol>
+<li>0–10 min: funkcija I, serijski spoj, razlika prema V19.</li>
+<li>10–35 min: spajanje staza 1 i 2 (obje varijante senzora), ispitivanje osam kombinacija.</li>
+<li>35–45 min: pokus s neistodobnim pritiskom, rasprava o dvoručnom uključivanju (pitanja 3 i 4).</li>
+<li>45–60 min: traženje prekida mjerenjem napona (pitanje 6).</li>
+<li>60–80 min: računski zadaci 2, 3 i 5, dopuna s relejima K2–K4 (pitanje 7).</li>
+<li>80–90 min: rastavljanje, osvrt.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>Tablica istinitosti ispravna u svih osam redaka; polaznik samostalno pronalazi prekid u najviše pet mjerenja. Računski: 1683 N i najmanji tlak oko 5,3 bar, sigurnosni razmak 442 mm (192 mm s pokrovom), napon na svitku 21,5 V odnosno 19,0 V.</p>
+<h4>Česte pogreške</h4><ul>
+<li>izlaz senzora spojen na +24 V, a napajanje senzora na svitak — senzor ne radi;</li>
+<li>pri mjerenju napona crni vrh premješta se s točke na točku, pa se mjeri napon na kontaktu, a ne prema 0 V, i rezultati se krivo tumače;</li>
+<li>tablica istinitosti ispisana s nepotpunim kombinacijama;</li>
+<li>zaključak da je serijski spoj S1 · S2 „dvoručna zaštita“.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravno spojen sklop I sa senzorom, tablica istinitosti</td><td>5</td></tr>
+<tr><td>Traženje prekida mjerenjem napona</td><td>4</td></tr>
+<tr><td>Računski zadaci 2, 3 i 5</td><td>5</td></tr>
+<tr><td>Obrazloženje ograničenja serijskog spoja u odnosu na dvoručnu napravu</td><td>3</td></tr>
+<tr><td>Dopuna s relejima K2–K4</td><td>2</td></tr>
+<tr><td>Sigurnost i urednost</td><td>1</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><h3>Dio D &middot; vježba V22</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4>
+<p>Provjerite da vremenski releji imaju odabranu funkciju kašnjenja ukapčanja (kod višefunkcijskih releja birač funkcije često je na prednjoj strani). Senzore postavite unaprijed približno u krajnje položaje, ali ih ne učvrstite &mdash; namještanje je dio zadatka. Umjesto čahure koristite drveni odstojnik. Pripremite tablicu za pet mjerenja vremena. Vježba se nastavlja na V21, pa studenti trebaju znati spojiti krug samodržanja.</p>
+<h4>Tijek sata</h4>
+<ol>
+<li>Kratko ponavljanje V21 i uvod u vremenski relej: funkcije, oznake kontakata (10 min).</li>
+<li>Pneumatski dio, postavljanje i spajanje senzora (20 min).</li>
+<li>Strujne staze i prvo pokretanje (20 min).</li>
+<li>Mjerenje vremena, pomicanje senzora, ispitivanje tipkala STOP (20 min).</li>
+<li>Crtanje vremenskog dijagrama, računski zadaci 2 i 3 (15 min).</li>
+<li>Rastavljanje i pregled zapisnika (5 min).</li>
+</ol>
+<h4>Očekivani rezultati</h4>
+<p>Sklop radi pouzdano, srednje izmjereno vrijeme držanja je 3,0 ± 0,15 s. Studenti znaju objasniti zašto pomicanje senzora skraćuje stvarno vrijeme držanja i crtaju vremenski dijagram s ispravnim trenucima uključivanja. Računski: sila 1683 N, ciklus 10 s, 360 dijelova na sat.</p>
+<h4>Česte pogreške</h4>
+<ul>
+<li>Na višefunkcijskom releju odabrana funkcija kašnjenja iskapčanja ili impulsna funkcija.</li>
+<li>Upotrijebljen radni umjesto mirnog kontakta KT1 &mdash; cilindar se ne vraća ili se vraća odmah.</li>
+<li>Izlaz senzora (crni vodič) spojen izravno na 0 V ili senzor bez napajanja pa LED ne svijetli.</li>
+<li>Senzor 1B1 izostavljen, pa se cilindar može ponovno pokrenuti tijekom povratka.</li>
+<li>Vrijeme mjereno od pritiska na S1 umjesto od zaustavljanja klipa.</li>
+</ul>
+<h4>Vrednovanje</h4>
+<div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravno spojen i namješten pneumatski dio i senzori</td><td>4</td></tr>
+<tr><td>Ispravne strujne staze, sklop radi prema zadatku</td><td>5</td></tr>
+<tr><td>Mjerenje vremena i obrazložena usporedba s namještenim</td><td>3</td></tr>
+<tr><td>Točan vremenski dijagram i dopuna za pritisak na STOP</td><td>3</td></tr>
+<tr><td>Točni računski zadaci</td><td>3</td></tr>
+<tr><td>Sigurnost i red na radnom mjestu</td><td>2</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><h3>Dio E &middot; vježba V26</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4>
+<p>Vježba traži šest releja; ako ih nema dovoljno, studenti rade u paru skupina na dvije spojene ploče. Svaki relej treba četiri kontakta: samodržanje, uvjet sljedećeg koraka, mirni kontakt u prethodnom koraku i kontakt elektromagneta (K1 i K6 trebaju tri). Pripremite ispis staza s označenim brojevima staza i releja. Ispitivanje lanca bez zraka (korak 3 postupka) nemojte preskakati &mdash; ono pokazuje glavnu ideju metode. Prethodno znanje: V21, V24, V25 i jedinica 4.10.</p>
+<h4>Tijek sata</h4>
+<ol>
+<li>Uvod: problem ponavljanja istog cilindra, načelo taktnog lanca (10 min).</li>
+<li>Dijagram put–korak i tablica koraka (10 min).</li>
+<li>Pneumatski dio i senzori (10 min).</li>
+<li>Taktni lanac i ispitivanje bez zraka (25 min).</li>
+<li>Staze elektromagneta, puštanje u rad, mjerenje vremena (20 min).</li>
+<li>Proširenje na tri udarca ili rasprava o dijagnostici, računski zadaci, rastavljanje (15 min).</li>
+</ol>
+<h4>Očekivani rezultati</h4>
+<p>Studenti objašnjavaju zašto isti senzor u različitim koracima uključuje različite releje i pokazuju da je u svakom trenutku aktivan samo jedan korak. Ciklus radi s dva udarca; izmjereno trajanje gibanja je 1,2&ndash;1,6 s. Računski: 1683 N, 7,1 bar za 2 kN, ≈ 1,25 s, ≈ 2,46 Nl po ciklusu. Uspješnije skupine proširuju lanac na tri udarca.</p>
+<h4>Česte pogreške</h4>
+<ul>
+<li>Relej koraka uključuje se samo senzorom, bez kontakta prethodnog koraka &mdash; lanac „preskače“ korake.</li>
+<li>Mirni kontakt sljedećeg releja izostavljen, pa ostaje više aktivnih koraka i razvodnik dobiva suprotne naredbe istodobno.</li>
+<li>U stazama 8 i 9 releji koraka spojeni serijski umjesto paralelno.</li>
+<li>K6 se isključuje relejem K1 umjesto senzorom 1B1 pa ostaje uključen u mirovanju.</li>
+<li>Pri proširenju na tri udarca zaboravi se preusmjeriti isključivanje K5 na novi relej.</li>
+</ul>
+<h4>Vrednovanje</h4>
+<div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Dijagram put–korak i tablica koraka s relejima</td><td>3</td></tr>
+<tr><td>Taktni lanac ispravno spojen i ispitan bez zraka</td><td>6</td></tr>
+<tr><td>Staze elektromagneta, ciklus s dva udarca radi</td><td>4</td></tr>
+<tr><td>Točni računski zadaci</td><td>3</td></tr>
+<tr><td>Proširenje ili obrazložena usporedba s kaskadnom metodom</td><td>2</td></tr>
+<tr><td>Sigurnost i red na radnom mjestu</td><td>2</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><div class="okvir primjer"><h4>Napomena za FluidSIM</h4><p>Gotove sheme su gore na stranici. V09: kašnjenje se namješta otvorenošću jednosmjernog prigušnog ventila (3 % daje oko 8,3 s); nepovratni ventil propušta prema spremniku. V20: kapacitivni senzor zamijenjen je sklopkom sa zasunom B1. V22 i V26: senzori su reed-kontakti vezani oznakama uz cilindar. V26 je nacrtan bez prigušnih ventila, pa je ciklus oko 0,3 s; snimke su napravljene uz usporenje 1:10, a u spremljenoj shemi vraćen je <i>Maintain Real Time</i>.</p></div></section>
+<nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="vjezbe.html">&#8592; Sve vježbe</a><a class="gumb" href="v09-kasnjenje-iskapcanja.html">V09 Kašnjenje iskapčanja</a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Autorski tim: Krunoslav Kušec, mag. ing. mech. &middot; Alen Britvić, bacc. ing. mech. &middot; dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-pneumatika-i-hidraulika-postupak-dodatne-pneumatika-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>
