@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postupak V08 — V18, V21 i V23 u FluidSIM-u — Pneumatika i hidraulika | FORTRONIQ</title>
+<meta name="description" content="Radni list V08 korak po korak u FluidSIM-u: granična sklopka i automatski povrat, prednost povrata, krug samodržanja s dominantnim isključivanjem i uključivanjem te signal magnetskog senzora, sa snimkama zaslona i rješenjima.">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-v08.html">
+<link rel="alternate" hreflang="hr" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-v08.html">
+<link rel="alternate" hreflang="en" href="https://dos.fortroniq.hr/en/pneumatika-i-hidraulika/postupak-v08.html">
+<link rel="alternate" hreflang="x-default" href="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-v08.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Postupak V08: V18, V21 i V23 u FluidSIM-u">
+<meta property="og:description" content="Radni list V08 korak po korak u FluidSIM-u: granična sklopka i automatski povrat, prednost povrata, krug samodržanja s dominantnim isključivanjem i uključivanjem te signal magnetskog senzora, sa snimkama zaslona i rješenjima.">
+<meta property="og:url" content="https://dos.fortroniq.hr/pneumatika-i-hidraulika/postupak-v08.html">
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+
+
+
+/* ---------------------------------------------- pneumatika i hidraulika */
+.formula{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.65rem 1rem;color:var(--ink);font-weight:500;overflow-x:auto;font-variant-numeric:tabular-nums}
+.mjesto-slike{border:2px dashed var(--rule);border-radius:12px;padding:1rem 1.2rem;margin:0 0 1.5rem;background:var(--tanko)}
+.mjesto-slike b{color:var(--teal);display:block;margin-bottom:.3rem}
+.mjesto-slike p{margin:0}
+ol.koraci{padding-left:1.4rem;margin:0 0 1.2rem}
+ol.koraci li{margin:.4rem 0}
+.pitanja{margin:0 0 1rem}
+.pitanje{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(14px,2.6vw,20px);margin:0 0 1rem}
+.pitanje > p:first-child{margin-top:0}
+.pitanje > p:first-child b{color:var(--teal)}
+details.rjesenje > summary,details.nastavnik > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.45rem;
+  border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:.38rem .95rem;font-weight:600;font-size:.9rem;user-select:none}
+details.rjesenje > summary::-webkit-details-marker,details.nastavnik > summary::-webkit-details-marker{display:none}
+details.rjesenje > summary::before,details.nastavnik > summary::before{content:"+";font-weight:700}
+details.rjesenje[open] > summary::before,details.nastavnik[open] > summary::before{content:"\2212"}
+details.rjesenje[open] > summary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) details.rjesenje[open] > summary{color:#06262B}}
+:root[data-theme="dark"] details.rjesenje[open] > summary{color:#06262B}
+details.rjesenje > div{border-top:1px solid var(--rule);margin-top:.8rem;padding-top:.8rem}
+details.rjesenje > div > :last-child{margin-bottom:0}
+details.nastavnik{border:1px solid var(--rule);border-left:4px solid var(--teal);background:var(--tanko);border-radius:12px;padding:1rem 1.2rem}
+details.nastavnik > div{margin-top:1rem}
+details.nastavnik h4{margin:1.2rem 0 .4rem}
+.rjesenja-alat{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.2rem}
+.oznake-vj{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem}
+.oznake-vj span{background:var(--tanko);border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;font-size:.86rem;color:var(--ink)}
+@media print{.alati,#ploca,.traka,.dalje,.rjesenja-alat{display:none!important}details{display:block}details > div{display:block}}
+
+/* postupak (FluidSIM) */
+.snimka{margin:0 0 1.5rem}
+.snimka img{display:block;width:auto;max-width:100%;height:auto;border:1px solid var(--rule);border-radius:10px;background:#fff}
+.snimka a{display:inline-block;max-width:100%}
+.snimka figcaption{font-size:.88rem;color:var(--body);margin-top:.45rem}
+.dvije{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem 1.4rem;align-items:start}
+.sitno{font-size:.88rem;color:var(--body)}
+.okvir{margin:0 0 1.4rem}
+ul.datoteke{margin:0 0 1rem}
+ul.datoteke a{font-weight:600}
+.pitanje .snimka{margin-top:.8rem}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Pneumatika i hidraulika</a><i aria-hidden="true">/</i><a href="vjezbe.html">Vježbe</a><i aria-hidden="true">/</i><span aria-current="page">Postupak V08</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">POSTUPAK &middot; RADNI LIST V08 &middot; FLUIDSIM</p><p class="nadnaslov">Postupak V08 &middot; vježbe V18, V21 i V23 &middot; 6 sati</p><h1>Postupak V08 — granična sklopka, samodržanje i senzori u FluidSIM-u</h1><p>Cijeli radni list V08 korak po korak: automatski povrat cilindra graničnom sklopkom i prednost povrata, krug samodržanja s dominantnim isključivanjem i uključivanjem, te trajanje signala magnetskog senzora. Uz svaki korak su snimke zaslona i potpuna rješenja.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>upravljati povratom cilindra graničnom sklopkom i pokazati blokirajući signal</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>osigurati prednost povrata mirnim kontaktom releja</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>spojiti krug samodržanja i razlikovati dominantno isključivanje i uključivanje</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>nacrtati paralelnu granu s račvanjem u električnoj shemi</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>pokazati kako brzina klipa određuje trajanje signala senzora</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>spremiti sheme, popuniti zapis simulacije i predati rad</span></li></ul></div></div></header><div class="omot"><section id="o-postupku"><h2>O postupku</h2><div class="crta"></div><div class="oznake-vj"><span>Radni list V08</span><span>Dio A: vježba V18 (2 sata)</span><span>Dio B: vježba V21 (2 sata)</span><span>Dio C: vježba V23 (2 sata)</span><span>FluidSIM-P 4.2</span></div><p>Ova stranica je <b>postupak</b> za radni list V08: sve što se radi na računalu, od nove sheme do predaje, redom kojim je zadano. Tekst zadatka, sheme, pitanja i rješenja isti su kao na stranicama vježbi <a href="v18-ep-granicna-sklopka.html">V18 Granična sklopka — automatski povrat</a> i <a href="v21-krug-samodrzanja.html">V21 Krug samodržanja</a> i <a href="v23-beskontaktni-senzori.html">V23 Beskontaktni senzori</a>; ovdje su dopunjeni koracima u FluidSIM-u i rezultatima simulacije.</p><p>Rješenja su skrivena ispod svakog pitanja. Najprije riješite sami, a onda otvorite <em>Prikaži rješenje</em> i usporedite.</p><div class="rjesenja-alat"><button type="button" class="gumb tanki" data-rjesenja="otvori">Prikaži sva rješenja</button><button type="button" class="gumb tanki" data-rjesenja="zatvori">Sakrij sva rješenja</button></div><h3>Gotove sheme (rješenja) za FluidSIM</h3><ul class="datoteke"><li><a href="datoteke/PIH_V18_rjesenje_v01.ct" download>PIH_V18_rjesenje_v01.ct</a> &mdash; dio A: shema V18.1 (granična sklopka B1, automatski povrat), dijagram položaja</li><li><a href="datoteke/PIH_V18_prednost_povrata_v01.ct" download>PIH_V18_prednost_povrata_v01.ct</a> &mdash; dio A: dopuna iz pitanja 6, mirni kontakt K2 u stazi 1</li><li><a href="datoteke/PIH_V21_rjesenje_v01.ct" download>PIH_V21_rjesenje_v01.ct</a> &mdash; dio B: krug samodržanja s dominantnim isključivanjem (shema V21.1)</li><li><a href="datoteke/PIH_V21_dominantno_ukljucivanje_v01.ct" download>PIH_V21_dominantno_ukljucivanje_v01.ct</a> &mdash; dio B: inačica s dominantnim uključivanjem</li><li><a href="datoteke/PIH_V23_magnetski_senzor_v01.ct" download>PIH_V23_magnetski_senzor_v01.ct</a> &mdash; dio C: magnetski senzor B1 na 42–53,5 mm, prigušno uvlačenje, dijagram s brzinom i signalom</li></ul><p class="sitno">Datoteke se otvaraju u FluidSIM-P 4 (<i>File → Open</i>). Snimke zaslona napravljene su u FluidSIM-P 4.2 s engleskim sučeljem. Osnove rada u FluidSIM-u (nova shema, knjižnica, crtanje vodova, provjera, simulacija, dijagram put–korak) opisane su u <a href="postupak-v01.html">Postupku V01</a>, odjeljak 0.</p></section>
+<section id="pokretanje"><h2>0 &middot; Prije početka</h2><div class="crta"></div><ol class="koraci"><li><b>File → New</b> (Ctrl + N) otvara novu shemu; <b>Window → Tile Vertically</b> (Shift + F4) postavlja shemu i knjižnicu jednu uz drugu.</li><li>Elemente povucite iz knjižnice na shemu i dvoklikom otvorite njihove dijaloge. Vod crtajte povlačenjem od priključka do priključka; povlačenjem na postojeći vod nastaje račvanje.</li><li>Oznake (1A1, 1V1, 1S1, 0Z1 …) upisuju se elementom <b>Text</b> iz skupine <i>Miscellaneous</i> (uključite <i>Frame Text</i>).</li><li><b>Execute → Check Superficially</b> (F6) provjerava crtež; <b>Start</b> (F9), <b>Pause</b> (F8), <b>Stop</b> (F5).</li><li>Ručno tipkalo aktivirate klikom mišem (dok držite tipku miša); <b>Shift + klik</b> zadrži ga pritisnutim. Ručica sa zasunom prebacuje se jednim klikom i ostaje u položaju.</li><li>Granični ventil veže se uz cilindar oznakom: dvoklik na cilindar → kartica <b>Actuating Labels</b> → oznaka (npr. 1S2) i položaj na hodu (od–do u mm); ista oznaka upiše se dvoklikom na valjak graničnog ventila (<i>Mechanical connection → Label</i>).</li><li>Dijagram put–korak: iz <i>Miscellaneous</i> povucite <b>State Diagram</b> i na njega povucite cilindre i ventile čije stanje želite pratiti.</li></ol><div class="okvir primjer"><h4>Električni dio u FluidSIM-u</h4><p>Električni dio crta se u istoj shemi kao pneumatski. Elementi su u knjižnici u skupini <i>Electrical controls</i>: <i>Power Supply</i> (+24V i 0V), <i>Relays</i> (relej, svitak ventila <i>Valve solenoid</i>), <i>Switches → Manually Operated</i> (tipkala), <i>General Switches</i> (radni <i>Make switch</i> i mirni <i>Break switch</i> kontakt), <i>Proximity Switches</i> (senzori) i <i>Measuring instruments</i> (signalna svjetiljka <i>Indicator light</i>). Svaka staza u našim shemama ima svoj simbol +24V i 0V &mdash; FluidSIM ih smatra istom sabirnicom, a vodovi se ne križaju.</p><p>Veza električnog i pneumatskog dijela ostvaruje se <b>oznakom</b>: dvoklik na svitak u stazi → <i>Label</i> Y1, i dvoklik na lijevi kraj razvodnika (elektromagnetski aktuator) → <i>Label</i> Y1. Isto vrijedi za relej i njegove kontakte (K1) te za senzor i oznaku na cilindru (B1). Brojeve uz staze i vodove (1, 2, … kraj +24V i na vodovima) FluidSIM dodjeljuje sam, redom kojim su elementi stavljani u shemu; oni nisu nužno jednaki brojevima staza iz zadatka.</p><p><b>Shift + klik</b> zadrži tipkalo pritisnutim (ponovni Shift + klik ga otpušta) &mdash; tako se u simulaciji mogu istodobno „držati” dva tipkala.</p></div></section>
+<section id="dio-a"><h2>Dio A &middot; V18 Granična sklopka — automatski povrat</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>Na valjkastoj stazi skladišta paketi putuju prema otpremi. Pakete za drugu rampu rukovatelj skreće na bočnu stazu: kad paket stigne pred skretnicu, kratko pritisne <b>S1</b>. Dvoradni cilindar <b>1A1</b> (Ø32/12 mm, hod 250 mm) gurne paket na bočnu stazu i sam se vrati, bez drugog tipkala. Povratni signal daje mehanička <b>granična sklopka B1</b> s valjkom, koju na kraju hoda pritisne kvačica na klipnjači.</p>
+<p>Razvodnik <b>1V1</b> je bistabilni elektromagnetski 5/2 (<b>Y1</b> izvlačenje, <b>Y2</b> uvlačenje). S1 uključuje relej <b>K1</b> (Y1), a B1 relej <b>K2</b> (Y2). Oznaka B1 slijedi uobičajeno označavanje, u kojem su granične sklopke i senzori u skupini B; u starijim shemama granična sklopka često nosi oznaku S.</p>
+<p>Podaci: paket do 8 kg; faktor trenja paketa po bočnoj vodilici i graničniku procjenjuje se na 0,4; klipnjača treba postići brzinu 0,5 m/s na prvih 20 mm hoda. Relej privuče za oko 10 ms, ventil prebaci za oko 20 ms. Mreža ima 6 bar, a na ovom cilindru može se ugraditi i zaseban regulator tlaka.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Klipnjača s hodom od 250 mm i brzinom 0,5 m/s udara snažno. Nosač granične sklopke pomičite i namještajte <b>samo bez tlaka</b>, jer ručni pritisak na valjak B1 pokreće povrat, a pritisak na S1 izvlačenje. Granična sklopka ne smije služiti kao mehanički graničnik: kvačica je smije pritisnuti samo do propisanog nadhoda, inače se sklopka lomi. Vodiče spajajte bez napona.</p></div>
+<h3>Shema</h3>
+<figure class="crtez"><svg viewBox="0 0 640 380" role="img" aria-label="Slika V18.1: automatski povrat klipnjače graničnom sklopkom B1, pneumatska i električna shema">
+<rect class="pf" x="60" y="60" width="120" height="30"/>
+<line class="l" x1="74" y1="62" x2="74" y2="88" fill="none"/>
+<rect class="pf" x="76" y="72" width="120" height="6"/>
+<text x="52" y="81" text-anchor="end">1A1</text>
+<line class="l2" x1="246" y1="58" x2="246" y2="46" fill="none"/>
+<text x="246" y="42" text-anchor="middle" class="mali">B1</text>
+<line class="l" x1="70" y1="90" x2="70" y2="96" fill="none"/>
+<line class="l" x1="170" y1="90" x2="170" y2="96" fill="none"/>
+<rect class="pf" x="90" y="190" width="36" height="36"/>
+<rect class="pf" x="126" y="190" width="36" height="36"/>
+<line class="l2" x1="108" y1="224" x2="101.5" y2="201.6" fill="none"/>
+<polygon class="if" points="99,193 105,200.6 98.1,202.6"/>
+<line class="l2" x1="117" y1="192" x2="117" y2="214" fill="none"/>
+<polygon class="if" points="117,223 113.4,214 120.6,214"/>
+<line class="l2" x1="99" y1="226" x2="99" y2="218" fill="none"/>
+<line class="l2" x1="94" y1="218" x2="104" y2="218" fill="none"/>
+<line class="l2" x1="144" y1="224" x2="150.5" y2="201.6" fill="none"/>
+<polygon class="if" points="153,193 153.9,202.6 147,200.6"/>
+<line class="l2" x1="135" y1="192" x2="135" y2="214" fill="none"/>
+<polygon class="if" points="135,223 131.4,214 138.6,214"/>
+<line class="l2" x1="153" y1="226" x2="153" y2="218" fill="none"/>
+<line class="l2" x1="148" y1="218" x2="158" y2="218" fill="none"/>
+<line class="l" x1="135" y1="190" x2="135" y2="180" fill="none"/>
+<line class="l" x1="153" y1="190" x2="153" y2="180" fill="none"/>
+<line class="l" x1="135" y1="226" x2="135" y2="236" fill="none"/>
+<line class="l" x1="144" y1="226" x2="144" y2="248" fill="none"/>
+<line class="l" x1="153" y1="226" x2="153" y2="236" fill="none"/>
+<polygon class="pf" points="130,236 140,236 135,243"/>
+<polygon class="pf" points="148,236 158,236 153,243"/>
+<rect class="pf" x="76" y="199" width="14" height="18"/>
+<line class="l2" x1="76" y1="217" x2="90" y2="199" fill="none"/>
+<text x="72" y="213" text-anchor="end">Y1</text>
+<rect class="pf" x="162" y="199" width="14" height="18"/>
+<line class="l2" x1="162" y1="217" x2="176" y2="199" fill="none"/>
+<text x="180" y="213" text-anchor="start">Y2</text>
+<text x="90" y="184" class="mali">1V1</text>
+<polyline class="l" points="135,180 135,130 70,130 70,96" fill="none"/>
+<polyline class="l" points="153,180 153,140 170,140 170,96" fill="none"/>
+<circle class="pf" cx="144" cy="256" r="8"/>
+<polygon class="pf" points="144,251 139.5,259 148.5,259"/>
+<line class="l" x1="290" y1="60" x2="630" y2="60" fill="none"/>
+<line class="l" x1="290" y1="330" x2="630" y2="330" fill="none"/>
+<text x="290" y="52">+24 V</text>
+<text x="290" y="350">0 V</text>
+<text x="370" y="52" text-anchor="middle" class="mali">1</text>
+<line class="l" x1="370" y1="60" x2="370" y2="128" fill="none"/>
+<circle class="if" cx="370" cy="128" r="2.2"/>
+<circle class="if" cx="370" cy="152" r="2.2"/>
+<line class="l" x1="370" y1="152" x2="360" y2="131" fill="none"/>
+<line class="l2 dash" x1="365" y1="141" x2="346" y2="141" fill="none"/>
+<polyline class="l" points="350,136 346,136 346,146 350,146" fill="none"/>
+<text x="384" y="145">S1</text>
+<line class="l" x1="370" y1="152" x2="370" y2="251" fill="none"/>
+<rect class="pf" x="358" y="251" width="24" height="18"/>
+<text x="388" y="265">K1</text>
+<line class="l" x1="370" y1="269" x2="370" y2="330" fill="none"/>
+<circle class="if" cx="370" cy="60" r="2.6"/>
+<circle class="if" cx="370" cy="330" r="2.6"/>
+<text x="440" y="52" text-anchor="middle" class="mali">2</text>
+<line class="l" x1="440" y1="60" x2="440" y2="128" fill="none"/>
+<circle class="if" cx="440" cy="128" r="2.2"/>
+<circle class="if" cx="440" cy="152" r="2.2"/>
+<line class="l" x1="440" y1="152" x2="430" y2="131" fill="none"/>
+<line class="l2 dash" x1="435" y1="141" x2="421" y2="141" fill="none"/>
+<circle class="pf" cx="417" cy="141" r="4"/>
+<text x="454" y="145">B1</text>
+<line class="l" x1="440" y1="152" x2="440" y2="251" fill="none"/>
+<rect class="pf" x="428" y="251" width="24" height="18"/>
+<text x="458" y="265">K2</text>
+<line class="l" x1="440" y1="269" x2="440" y2="330" fill="none"/>
+<circle class="if" cx="440" cy="60" r="2.6"/>
+<circle class="if" cx="440" cy="330" r="2.6"/>
+<text x="515" y="52" text-anchor="middle" class="mali">3</text>
+<line class="l" x1="515" y1="60" x2="515" y2="128" fill="none"/>
+<circle class="if" cx="515" cy="128" r="2.2"/>
+<circle class="if" cx="515" cy="152" r="2.2"/>
+<line class="l" x1="515" y1="152" x2="505" y2="131" fill="none"/>
+<text x="529" y="145">K1</text>
+<line class="l" x1="515" y1="152" x2="515" y2="251" fill="none"/>
+<rect class="pf" x="503" y="251" width="24" height="18"/>
+<line class="l2" x1="503" y1="269" x2="527" y2="251" fill="none"/>
+<text x="533" y="265">Y1</text>
+<line class="l" x1="515" y1="269" x2="515" y2="330" fill="none"/>
+<circle class="if" cx="515" cy="60" r="2.6"/>
+<circle class="if" cx="515" cy="330" r="2.6"/>
+<text x="588" y="52" text-anchor="middle" class="mali">4</text>
+<line class="l" x1="588" y1="60" x2="588" y2="128" fill="none"/>
+<circle class="if" cx="588" cy="128" r="2.2"/>
+<circle class="if" cx="588" cy="152" r="2.2"/>
+<line class="l" x1="588" y1="152" x2="578" y2="131" fill="none"/>
+<text x="602" y="145">K2</text>
+<line class="l" x1="588" y1="152" x2="588" y2="251" fill="none"/>
+<rect class="pf" x="576" y="251" width="24" height="18"/>
+<line class="l2" x1="576" y1="269" x2="600" y2="251" fill="none"/>
+<text x="606" y="265">Y2</text>
+<line class="l" x1="588" y1="269" x2="588" y2="330" fill="none"/>
+<circle class="if" cx="588" cy="60" r="2.6"/>
+<circle class="if" cx="588" cy="330" r="2.6"/>
+<text x="370" y="352" text-anchor="middle" class="mali">3</text>
+<text x="440" y="352" text-anchor="middle" class="mali">4</text>
+</svg><figcaption><b>Slika V18.1</b> &mdash; Automatski povrat klipnjače: B1 je granična sklopka u položaju izvučene klipnjače (oznaka iznad cilindra i kontakt u stazi 2). Staza 1: S1 i K1; staza 2: B1 i K2; staze 3 i 4: kontakti K1 i K2 na svicima Y1 i Y2.</figcaption></figure>
+<p>Simbol granične sklopke u električnoj shemi razlikuje se od tipkala samo aktuatorom: umjesto tipke nacrtan je valjak. Kontakt se crta u neaktiviranom stanju; ako je sklopka u osnovnom položaju stroja pritisnuta, to se na shemi posebno označava.</p>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="a1"><h2>A1 &middot; Shema V18.1 u FluidSIM-u</h2><div class="crta"></div><ol class="koraci"><li>Za polazište uzmite shemu V17 (bistabilni razvodnik, releji K1 i K2) i kopirajte je u novu shemu. Tipkalo S2 obrišite i umjesto njega u stazu 2 stavite radni kontakt iz <i>General Switches → Make switch</i>; dvoklikom mu upišite oznaku <b>B1</b> (<i>Triggered by: Limit Switch</i>) &mdash; to je granična sklopka s valjkom.</li><li>Cilindar: <b>najprije</b> <i>Parameters</i> (hod 250 mm, klip 32 mm, klipnjača 12 mm) i <i>U redu</i>, pa ponovno dvoklik i tek onda <i>Actuating Labels</i>: <b>B1</b> na 248–250 mm. Kad se hod povećava, oznaka na 248 mm ne prolazi dok je stari hod 100 mm &mdash; zato se ovdje hod mijenja prvi.</li><li>Staze: 1 S1 → K1; 2 B1 → K2; 3 radni kontakt K1 → Y1; 4 radni kontakt K2 → Y2. F6 → <i>No superficial errors detected</i>.</li><li>Iz <i>Miscellaneous</i> povucite <b>State Diagram</b>, na njega povucite cilindar (<i>Position</i>) i u svojstvima dijagrama postavite <i>Fixed interval</i> 0–3 s.</li></ol><div class="okvir pazi"><h4>Pazi: redoslijed hod / oznaka</h4><p>Pravilo glasi: oznake se mijenjaju tako da su <b>uvijek unutar hoda</b>. Kad se hod smanjuje, najprije se oznake spuste ili obrišu; kad se povećava, najprije se poveća hod. U suprotnom FluidSIM vrti poruku „Position End… minimal / maximal” i prozor se ne može zatvoriti (vidi Postupak V07, odjeljak B1).</p></div></section>
+<section id="a2"><h2>A2 &middot; Simulacija: automatski povrat i držanje S1</h2><div class="crta"></div><ol class="koraci"><li>Start (F9) i kratko pritisnite S1: K1 i Y1 izvuku klipnjaču, kvačica na kraju hoda pritisne B1, K2 i Y2 je vrate (Slika A2.1). Bez opterećenja i prigušenja ciklus traje oko 0,4 s.</li><li>Pokus iz koraka 5: <b>Shift + klik</b> na S1 (tipkalo ostaje pritisnuto). Klipnjača ostaje izvučena iako je B1 pritisnut &mdash; pod naponom su i Y1 i Y2 (Slika A2.2). Shift + klikom otpustite S1: klipnjača se vraća.</li></ol><figure class="snimka"><a href="slike/postupak-v08/01-v18-ciklus.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v08/01-v18-ciklus.webp" alt="Slika A2.1 &amp;mdash; Automatski povrat: dijagram položaja pokazuje izvlačenje i povrat bez drugog tipkala; povrat počinje čim klip dođe do B1 na 248–250 mm." loading="lazy" decoding="async" width="1230" height="712"></a><figcaption><b>Slika A2.1</b> &mdash; Automatski povrat: dijagram položaja pokazuje izvlačenje i povrat bez drugog tipkala; povrat počinje čim klip dođe do B1 na 248–250 mm.</figcaption></figure><figure class="snimka"><a href="slike/postupak-v08/02-v18-s1-drzan.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v08/02-v18-s1-drzan.webp" alt="Slika A2.2 &amp;mdash; S1 zadržan: K1 i K2 su privučeni, Y1 i Y2 pod naponom, a bistabilni razvodnik ostaje u položaju izvlačenja." loading="lazy" decoding="async" width="1187" height="712"></a><figcaption><b>Slika A2.2</b> &mdash; S1 zadržan: K1 i K2 su privučeni, Y1 i Y2 pod naponom, a bistabilni razvodnik ostaje u položaju izvlačenja.</figcaption></figure></section>
+<section id="a3"><h2>A3 &middot; Dopuna: prednost povrata</h2><div class="crta"></div><ol class="koraci"><li>Shemu spremite kao zasebnu datoteku. U stazu 1, između S1 i svitka K1, umetnite <b>mirni kontakt K2</b> (<i>Break switch</i>, oznaka K2) &mdash; rješenje 1 iz pitanja 6.</li><li>Start, Shift + klik na S1: klipnjača se vraća čim dođe do B1, iako se S1 drži (Slika A3.1). Dok se S1 drži, klip „treperi” uz kraj hoda: B1 se pri povratu otpusti na 248 mm, mirni kontakt K2 se zatvori i K1 ponovno privuče &mdash; upravo kako je opisano u rješenju pitanja 6.</li></ol><figure class="snimka"><a href="slike/postupak-v08/03-v18-prednost-povrata.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v08/03-v18-prednost-povrata.webp" alt="Slika A3.1 &amp;mdash; Prednost povrata: B1 je uključio K2, mirni kontakt K2 u stazi 1 otvorio je put do K1, pa je pod naponom samo Y2, iako je S1 i dalje pritisnut." loading="lazy" decoding="async" width="759" height="712"></a><figcaption><b>Slika A3.1</b> &mdash; Prednost povrata: B1 je uključio K2, mirni kontakt K2 u stazi 1 otvorio je put do K1, pa je pod naponom samo Y2, iako je S1 i dalje pritisnut.</figcaption></figure></section>
+<section id="dio-a-pitanja"><h2>A4 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Opišite redom signale i gibanja od kratkog pritiska na S1 do povratka klipnjače u osnovni položaj.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>S1 → K1 privuče → kontakt K1 u stazi 3 uključi Y1 → razvodnik 1→4 → klipnjača se izvlači (S1 je već otpušten, razvodnik pamti položaj) → kvačica pritisne B1 → K2 privuče → kontakt K2 u stazi 4 uključi Y2 → razvodnik 1→2 → klipnjača se vraća → B1 se otpusti → K2 otpusti, razvodnik pamti položaj uvlačenja. Sklop čeka novi pritisak na S1.</p><h4>U FluidSIM-u</h4><p>U simulaciji se cijeli slijed vidi u dijagramu položaja (Slika A2.1): izvlačenje do 250 mm i povrat odmah nakon dodira B1.</p></div></details></div><div class="pitanje"><p><b>2.</b> Opišite rezultat pokusa iz koraka 5 (S1 držan dulje od hoda) i objasnite ga.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Klipnjača se izvuče i <b>ostane izvučena</b> dok se drži S1, iako je B1 pritisnut. Pod naponom su i Y1 i Y2, a bistabilni razvodnik tada ostaje u zatečenom položaju (izvlačenje). Tek kad se S1 otpusti, djeluje samo Y2 i klipnjača se vraća. To je isti problem kao blokirajući signal u pneumatici: dva suprotna signala na istom razvodniku. Na skretnici bi to značilo da cilindar zaprečuje stazu i sljedeći paket udari u klipnjaču.</p><h4>U FluidSIM-u</h4><p>U simulaciji (Slika A2.2, S1 zadržan Shift + klikom) pod naponom su i Y1 i Y2, a klipnjača ostaje izvučena dok se S1 ne otpusti.</p></div></details></div><div class="pitanje"><p><b>3.</b> Izračunajte silu potrebnu za guranje paketa (trenje i ubrzanje) i usporedite je sa silom cilindra Ø32 mm pri 6 bar i pri 2 bar (η = 0,9).</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Trenje: F<sub>tr</sub> = μ · m · g = 0,4 · 8 · 9,81 ≈ 31,4 N.</p>
+<p>Ubrzanje na 0,5 m/s na putu 20 mm: a = v² / (2s) = 0,25 / 0,04 = 6,25 m/s² → F<sub>a</sub> = 8 · 6,25 = 50 N.</p>
+<p>Potrebno ukupno ≈ 81 N. Cilindar daje pri 6 bar 0,9 · 0,6 · 804,2 ≈ 434 N, a pri 2 bar 0,9 · 0,2 · 804,2 ≈ 145 N. I pri 2 bar sila je dovoljna s rezervom od oko 1,8. Cilindar je pri punom tlaku predimenzioniran.</p>
+</div></details></div><div class="pitanje"><p><b>4.</b> Od trenutka kad kvačica pritisne B1 do početka povratnog gibanja prođe vrijeme privlačenja releja K2 i prebacivanja ventila. Koliki put klipnjača pritom prijeđe pri 0,5 m/s? Gdje zato treba postaviti B1 i što se događa ako je postavljena točno na kraju hoda?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p class="formula">t = 10 ms + 20 ms = 30 ms; s = v · t = 500 mm/s · 0,03 s = 15 mm</p>
+<p>Ako je B1 postavljena točno na kraju hoda, klip udari u poklopac cilindra punom brzinom, a povrat počinje s kašnjenjem nakon udara. Ako se B1 postavi oko 15 mm prije kraja hoda, razvodnik prebaci približno u trenutku kad klip stigne na kraj, pa je udar manji, a ciklus kraći. Točan položaj namješta se pokusom, jer vremena ovise o tlaku, duljini vodova i prigušenju. Za mehanički zahtjevnije primjene koristi se cilindar s namjestivim prigušenjem krajnjeg položaja.</p>
+</div></details></div><div class="pitanje"><p><b>5.</b> Izračunajte potrošnju zraka po ciklusu pri 6 bar i pri 2 bar. Koliko se posto zraka uštedi smanjenjem tlaka?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div>
+<p>Volumen: (804,2 + 691,2) mm² · 250 mm ≈ 373 850 mm³ = 373,8 cm³.</p>
+<p>6 bar: 373,8 · (6 + 1,013) / 1,013 ≈ 2,59 Nl. 2 bar: 373,8 · (2 + 1,013) / 1,013 ≈ 1,11 Nl.</p>
+<p>Ušteda: (2,59 − 1,11) / 2,59 ≈ 0,57, tj. oko 57 %. Namještanje tlaka prema stvarno potrebnoj sili jedan je od najjednostavnijih načina štednje stlačenog zraka. Pri nižem tlaku treba provjeriti i brzinu, jer se smanjuje i sila ubrzanja.</p>
+</div></details></div><div class="pitanje"><p><b>6.</b> Dopuna sheme: povrat mora imati <b>prednost</b> — klipnjača se mora vratiti čim dođe do B1, bez obzira na to drži li se S1. Nacrtajte izmjenu u električnoj shemi i navedite dva moguća rješenja.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p><b>Rješenje 1:</b> u stazu 1, u niz sa S1 ispred svitka K1, ugradi se <b>mirni kontakt K2</b>. Kad B1 uključi K2, mirni kontakt otvori stazu 1, K1 otpusti, Y1 ostaje bez napona i Y2 prebaci razvodnik. Kontaktna tablica K2: radni u stazi 4, mirni u stazi 1.</p>
+<p><b>Rješenje 2:</b> u stazu 1 ugradi se <b>mirni kontakt granične sklopke B1</b> (sklopka s radnim i mirnim kontaktom). Djeluje jednako, ali bez dodatnog kontakta releja.</p>
+<p>U oba slučaja klipnjača se vraća čim dođe do B1, i kad se S1 drži. Ako se S1 drži i dalje, pri povratu se B1 otpusti, mirni kontakt se ponovno zatvori i K1 opet privuče — cilindar se giba naprijed-natrag dok se S1 ne otpusti. Zato se u pogonu start ograničava na kratak impuls ili se dodaje uvjet da jedan ciklus smije krenuti samo jednom po pritisku.</p><h4>U FluidSIM-u</h4><p>Rješenje 1 je u datoteci <b>PIH_V18_prednost_povrata_v01.ct</b> (Slika A3.1); u simulaciji se vidi i „treperenje” klipa uz kraj hoda dok se S1 drži.</p></div></details></div><div class="pitanje"><p><b>7.</b> Skretnicu treba moći prebaciti na <b>trajni rad</b> (klipnjača stalno gura naprijed-natrag dok je uključen prekidač S2 s zadržavanjem). Koji dodatni element treba i kako se spaja?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Potrebna je druga granična sklopka ili senzor <b>B0</b> u položaju uvučene klipnjače. U stazu 1 dodaje se paralelno sa S1 grana: prekidač S2 u nizu s radnim kontaktom B0. Kad je S2 uključen i klipnjača stigne u osnovni položaj, B0 uključi K1 i ciklus se ponavlja. Isključenjem S2 cilindar završi započeti ciklus i stane u osnovnom položaju. Uvjet s B0 osigurava da trajni rad uvijek počinje iz osnovnog položaja.</p></div></details></div><div class="pitanje"><p><b>8.</b> Klipnjača se izvuče i ostane izvučena i kad se S1 otpusti. Navedite mogući uzrok u svakom od dijelova: mehanika, granična sklopka, relej, ventil.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><ul>
+<li>mehanika: kvačica ne dohvaća valjak B1 (nosač pomaknut, paket zaustavio klipnjaču prije kraja);</li>
+<li>granična sklopka: spojen mirni kontakt umjesto radnog ili je kontakt istrošen;</li>
+<li>relej: K2 ne privlači (prekid u stazi 2, zamijenjene stezaljke svitka i kontakta) ili kontakt u stazi 4 ne zatvara;</li>
+<li>ventil: prekinut svitak Y2, loš utikač ili zakočena ručna pomoćna tipka.</li>
+</ul><p>Brza provjera: ručno pritisnuti valjak B1 i promatrati diodu na releju K2 i na utikaču Y2 — tako se kvar odmah smješta u električni ili pneumatski dio.</p></div></details></div></div></section>
+<section id="dio-b"><h2>Dio B &middot; V21 Krug samodržanja</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>Na liniji za doziranje plastičnog granulata ispod malog silosa nalazi se kosa zaklopka. Otvara je dvoradni cilindar <b>1A</b> promjera Ø40/16 mm i hoda 160 mm, a upravlja njime monostabilni elektromagnetski razvodnik 5/2 s oprugom (<b>1Y1</b>). Operater kratko pritisne zeleno tipkalo <b>S1</b> (START) i zaklopka se otvori te ostane otvorena, iako je prst već maknut s tipkala. Kad se u posudi skupi dovoljno granulata, operater pritisne crveno tipkalo <b>S2</b> (STOP) i zaklopka se zatvori. Signalna žaruljica <b>H1</b> svijetli dok je zaklopka otvorena.</p>
+<p>Tipkalo daje signal samo dok je pritisnuto, a monostabilni razvodnik drži položaj samo dok je svitak pod naponom. Između njih zato mora postojati element koji <b>pamti</b> kratki signal. Tu zadaću ima relej <b>K1</b> čiji radni kontakt premošćuje tipkalo START &mdash; to je <b>krug samodržanja</b>. Mreža stlačenog zraka je na 6 bar pretlaka, upravljački napon je 24 V DC. Svitak releja troši 1,2 W, elektromagnet razvodnika 2,5 W, a žaruljica 0,5 W.</p>
+<p>U vježbi se spajaju dvije inačice kruga: <b>dominantno isključivanje</b> (kad su oba tipkala pritisnuta, prevladava STOP) i <b>dominantno uključivanje</b> (prevladava START). Za obje se popunjava tablica stanja, a na kraju se odabire inačica prikladna za zaklopku i to se obrazlaže.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Električni i pneumatski dio spajajte samo kad je napajanje isključeno, a ventil na pripremnoj grupi zatvoren. Tlak uključujte tek kad su sve cijevi utaknute do kraja i kad je klipnjača slobodna &mdash; u njezinom se hodu ne smiju nalaziti ruke, alat ni vodiči. Cijev koja iskoči pod tlakom udara poput biča: prije uključivanja povucite svaku cijev da provjerite drži li. Ne spajajte vodiče dok je sklop pod naponom, čak ni pri 24 V, jer kratki spoj oštećuje izvor i kontakte releja.</p></div>
+<p>STOP tipkalo u ovoj vježbi nije zamjena za sklopku za isključivanje u nuždi. Uređaj za isključivanje u nuždi na modulu napajanja mora biti dostupan cijelo vrijeme i prije početka rada provjerite da stvarno prekida napajanje.</p>
+<h3>Shema</h3>
+<figure class="crtez"><svg viewBox="0 0 640 360" role="img" aria-label="Slika V21.1: pneumatski dio i strujne staze kruga samodržanja s dominantnim isključivanjem">
+<text class="mali" x="10" y="20">Pneumatski dio</text>
+<rect class="pf" x="40" y="50" width="150" height="30"/>
+<rect class="rf" x="58" y="52" width="6" height="26"/>
+<rect class="pf" x="64" y="61" width="166" height="8"/>
+<line class="l" fill="none" x1="52" y1="80" x2="52" y2="92"/>
+<line class="l" fill="none" x1="178" y1="80" x2="178" y2="92"/>
+<text x="34" y="71" text-anchor="end">1A</text>
+<rect class="pf" x="70" y="160" width="52" height="52"/>
+<rect class="pf" x="122" y="160" width="52" height="52"/>
+<line class="l2" fill="none" x1="148" y1="212" x2="161" y2="163"/><polygon class="if" points="161,163 162.1,169.5 156.9,168.1"/>
+<line class="l2" fill="none" x1="135" y1="160" x2="132.4" y2="209"/><polygon class="if" points="132.4,209 130,202.9 135.4,203.2"/>
+<line class="l2" fill="none" x1="96" y1="212" x2="83" y2="163"/><polygon class="if" points="83,163 87.1,168.1 81.9,169.5"/>
+<line class="l2" fill="none" x1="109" y1="160" x2="111.6" y2="209"/><polygon class="if" points="111.6,209 108.6,203.2 114,202.9"/>
+<line class="l" fill="none" x1="132.4" y1="212" x2="132.4" y2="218"/>
+<polygon class="pf" points="132.4,218 126.4,227 138.4,227"/>
+<line class="l" fill="none" x1="163.6" y1="212" x2="163.6" y2="218"/>
+<polygon class="pf" points="163.6,218 157.6,227 169.6,227"/>
+<rect class="pf" x="56" y="175" width="14" height="22"/>
+<line class="l2" fill="none" x1="56" y1="197" x2="70" y2="175"/>
+<text class="mali" x="52" y="191" text-anchor="end">1Y1</text>
+<polyline class="l2" fill="none" points="174,186 177,179 183,193 189,179 195,193 198,186"/>
+<text class="mali" x="131" y="156" text-anchor="end">4</text>
+<text class="mali" x="165" y="156">2</text>
+<text class="mali" x="145" y="228" text-anchor="end">1</text>
+<polyline class="l" fill="none" points="135,160 135,130 52,130 52,92"/>
+<polyline class="t" fill="none" points="161,160 161,120 178,120 178,92"/>
+<line class="t" fill="none" x1="148" y1="212" x2="148" y2="249"/>
+<circle class="pf" cx="148" cy="258" r="9"/>
+<polygon class="pf" points="148,251 143,261 153,261"/>
+<text class="mali" x="164" y="263">6 bar</text>
+<line class="l2 dash" fill="none" x1="262" y1="10" x2="262" y2="350"/>
+<text class="mali" x="280" y="20">Električni dio</text>
+<line class="l" fill="none" x1="280" y1="44" x2="630" y2="44"/>
+<line class="l" fill="none" x1="280" y1="318" x2="630" y2="318"/>
+<text class="mali" x="280" y="62">+24 V</text>
+<text class="mali" x="280" y="336">0 V</text>
+<line class="l2" fill="none" x1="330" y1="44" x2="330" y2="64"/>
+<line class="l2" fill="none" x1="330" y1="64" x2="330" y2="76"/>
+<line class="l2" fill="none" x1="330" y1="76" x2="339" y2="76"/>
+<line class="l" fill="none" x1="330" y1="92" x2="341" y2="73"/>
+<line class="l2" fill="none" x1="330" y1="92" x2="330" y2="104"/>
+<line class="l2 dash" fill="none" x1="335" y1="83" x2="321" y2="83"/>
+<line class="l" fill="none" x1="321" y1="76" x2="321" y2="90"/>
+<text class="mali" x="343" y="89">S2</text>
+<line class="l2" fill="none" x1="330" y1="104" x2="330" y2="124"/>
+<circle class="if" cx="330" cy="114" r="2.6"/>
+<line class="l2" fill="none" x1="330" y1="114" x2="374" y2="114"/>
+<line class="l2" fill="none" x1="374" y1="114" x2="374" y2="124"/>
+<line class="l2" fill="none" x1="330" y1="124" x2="330" y2="136"/>
+<line class="l" fill="none" x1="330" y1="152" x2="320" y2="134"/>
+<line class="l2" fill="none" x1="330" y1="152" x2="330" y2="164"/>
+<line class="l2 dash" fill="none" x1="325" y1="143" x2="311" y2="143"/>
+<line class="l" fill="none" x1="311" y1="136" x2="311" y2="150"/>
+<text class="mali" x="292" y="149" text-anchor="end">S1</text>
+<line class="l2" fill="none" x1="374" y1="124" x2="374" y2="136"/>
+<line class="l" fill="none" x1="374" y1="152" x2="364" y2="134"/>
+<line class="l2" fill="none" x1="374" y1="152" x2="374" y2="164"/>
+<text class="mali" x="387" y="149">K1</text>
+<line class="l2" fill="none" x1="374" y1="164" x2="374" y2="174"/>
+<line class="l2" fill="none" x1="374" y1="174" x2="330" y2="174"/>
+<circle class="if" cx="330" cy="174" r="2.6"/>
+<line class="l2" fill="none" x1="330" y1="164" x2="330" y2="200"/>
+<line class="l2" fill="none" x1="330" y1="200" x2="330" y2="211"/>
+<rect class="pf" x="319" y="211" width="22" height="18"/>
+<line class="l2" fill="none" x1="330" y1="229" x2="330" y2="240"/>
+<text class="mali" x="345" y="225">K1</text>
+<line class="l2" fill="none" x1="330" y1="240" x2="330" y2="318"/>
+<line class="l2" fill="none" x1="460" y1="44" x2="460" y2="124"/>
+<line class="l2" fill="none" x1="460" y1="124" x2="460" y2="136"/>
+<line class="l" fill="none" x1="460" y1="152" x2="450" y2="134"/>
+<line class="l2" fill="none" x1="460" y1="152" x2="460" y2="164"/>
+<text class="mali" x="473" y="149">K1</text>
+<line class="l2" fill="none" x1="460" y1="164" x2="460" y2="200"/>
+<line class="l2" fill="none" x1="460" y1="200" x2="460" y2="211"/>
+<rect class="pf" x="449" y="211" width="22" height="18"/>
+<line class="l2" fill="none" x1="460" y1="229" x2="460" y2="240"/>
+<line class="l2" fill="none" x1="449" y1="229" x2="471" y2="211"/>
+<text class="mali" x="475" y="225">1Y1</text>
+<line class="l2" fill="none" x1="460" y1="240" x2="460" y2="318"/>
+<line class="l2" fill="none" x1="570" y1="44" x2="570" y2="124"/>
+<line class="l2" fill="none" x1="570" y1="124" x2="570" y2="136"/>
+<line class="l" fill="none" x1="570" y1="152" x2="560" y2="134"/>
+<line class="l2" fill="none" x1="570" y1="152" x2="570" y2="164"/>
+<text class="mali" x="583" y="149">K1</text>
+<line class="l2" fill="none" x1="570" y1="164" x2="570" y2="200"/>
+<line class="l2" fill="none" x1="570" y1="200" x2="570" y2="211"/>
+<circle class="pf" cx="570" cy="220" r="9"/>
+<line class="l2" fill="none" x1="564" y1="214" x2="576" y2="226"/>
+<line class="l2" fill="none" x1="564" y1="226" x2="576" y2="214"/>
+<line class="l2" fill="none" x1="570" y1="229" x2="570" y2="240"/>
+<text class="mali" x="584" y="225">H1</text>
+<line class="l2" fill="none" x1="570" y1="240" x2="570" y2="318"/>
+<circle class="if" cx="330" cy="44" r="2.6"/>
+<circle class="if" cx="330" cy="318" r="2.6"/>
+<text class="mali" x="330" y="38" text-anchor="middle">1</text>
+<circle class="if" cx="460" cy="44" r="2.6"/>
+<circle class="if" cx="460" cy="318" r="2.6"/>
+<text class="mali" x="460" y="38" text-anchor="middle">2</text>
+<circle class="if" cx="570" cy="44" r="2.6"/>
+<circle class="if" cx="570" cy="318" r="2.6"/>
+<text class="mali" x="570" y="38" text-anchor="middle">3</text>
+</svg><figcaption><b>Slika V21.1</b> &mdash; Pneumatski dio (lijevo) i strujne staze (desno) kruga samodržanja s dominantnim isključivanjem. Razvodnik je nacrtan u osnovnom položaju: priključak 1 spojen je s 2, cilindar je uvučen.</figcaption></figure>
+<p>U <b>stazi 1</b> nalazi se mirni kontakt tipkala S2 u seriji s paralelnim spojem radnog kontakta tipkala S1 i radnog kontakta releja K1. Pritisak na S1 uključuje svitak K1; njegov kontakt u paraleli odmah zatvara drugi put struji pa relej ostaje uključen i nakon otpuštanja S1. <b>Staza 2</b> preko drugog kontakta K1 uključuje elektromagnet 1Y1, a <b>staza 3</b> preko trećeg kontakta žaruljicu H1. Budući da S2 prekida cijelu stazu prije točke grananja, pritisak na STOP uvijek isključuje relej &mdash; i onda kad je START istodobno pritisnut.</p>
+<p>Kod <b>dominantnog uključivanja</b> mijenja se samo staza 1: S2 se stavlja u seriju s kontaktom samodržanja K1, a tipkalo S1 spaja se paralelno toj seriji, izravno od +24 V do svitka. Kad su oba tipkala pritisnuta, struja prolazi kroz S1 mimo tipkala S2 i relej ostaje uključen.</p>
+<div class="tablica-omot"><table><thead><tr><th>S1 (START)</th><th>S2 (STOP)</th><th>K1 prije</th><th>K1 poslije &mdash; dominantno isključivanje</th><th>K1 poslije &mdash; dominantno uključivanje</th></tr></thead><tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1 (pamti)</td><td>1 (pamti)</td></tr>
+<tr><td>1</td><td>0</td><td>0 ili 1</td><td>1</td><td>1</td></tr>
+<tr><td>0</td><td>1</td><td>0 ili 1</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>0 ili 1</td><td>0</td><td>1</td></tr>
+</tbody></table></div>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="b1"><h2>B1 &middot; Shema V21.1 (dominantno isključivanje)</h2><div class="crta"></div><ol class="koraci"><li>Za polazište uzmite shemu V16 (monostabilni razvodnik, relej K1, svjetiljka H1) i kopirajte je u novu shemu; stazu sa svjetiljkom H2 obrišite. Svitak i razvodnik označite s <b>1Y1</b>. Cilindar: hod 160 mm, klip 40 mm, klipnjača 16 mm (hod se povećava, pa najprije <i>Parameters</i>).</li><li>Staza 1: obrišite vod +24V → S1 i iznad S1 stavite <i>Pushbutton (break)</i> &mdash; mirni kontakt tipkala <b>S2</b> (STOP). Spojite +24V → S2 → S1.</li><li>Paralelno sa S1 stavite radni kontakt <b>K1</b> (kopija kontakta iz staze 2). Njegov gornji priključak povucite na vod S2 → S1, a donji na vod S1 → A1: kad se vod ispusti na drugi vod, nastane račvanje (crna točka).</li><li>Staza 2: K1 → 1Y1; staza 3: K1 → H1. F6 → <i>No superficial errors detected</i>.</li></ol><div class="okvir primjer"><h4>Račvanje u električnoj shemi</h4><p>Priključak elementa u FluidSIM-u prima samo jedan vod. Paralelna grana zato se ne spaja na priključak koji je već zauzet, nego se vod ispusti <b>na postojeći vod</b> &mdash; FluidSIM sam nacrta točku račvanja.</p></div></section>
+<section id="b2"><h2>B2 &middot; Simulacija: samodržanje i STOP</h2><div class="crta"></div><ol class="koraci"><li>Start (F9), kratko pritisnite S1: K1 privuče, njegov kontakt premosti S1 i K1 ostaje privučen i nakon otpuštanja; 1Y1 izvlači cilindar, H1 svijetli (Slika B2.1).</li><li>Istodobni pritisak: Shift + klik na S1 (ostaje pritisnut), zatim pritisnite i držite S2. Relej otpusti i cilindar se uvlači &mdash; prevladava STOP (Slika B2.2). Otpustite S2 i Shift + klikom S1.</li><li>Kratko pritisnite S2: samodržanje se prekida, cilindar se uvlači, H1 se gasi.</li></ol><figure class="snimka"><a href="slike/postupak-v08/04-v21-samodrzanje.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v08/04-v21-samodrzanje.webp" alt="Slika B2.1 &amp;mdash; Samodržanje: S1 je otpušten, a struja do svitka K1 teče kroz njegov vlastiti radni kontakt; 1Y1 i H1 su pod naponom." loading="lazy" decoding="async" width="715" height="709"></a><figcaption><b>Slika B2.1</b> &mdash; Samodržanje: S1 je otpušten, a struja do svitka K1 teče kroz njegov vlastiti radni kontakt; 1Y1 i H1 su pod naponom.</figcaption></figure><figure class="snimka"><a href="slike/postupak-v08/05-v21-dominantno-iskljucivanje.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v08/05-v21-dominantno-iskljucivanje.webp" alt="Slika B2.2 &amp;mdash; Dominantno isključivanje: S1 i S2 su oba pritisnuti, mirni kontakt S2 prekida cijelu stazu 1 i K1 je otpao." loading="lazy" decoding="async" width="760" height="709"></a><figcaption><b>Slika B2.2</b> &mdash; Dominantno isključivanje: S1 i S2 su oba pritisnuti, mirni kontakt S2 prekida cijelu stazu 1 i K1 je otpao.</figcaption></figure></section>
+<section id="b3"><h2>B3 &middot; Inačica s dominantnim uključivanjem</h2><div class="crta"></div><ol class="koraci"><li>Shemu spremite kao zasebnu datoteku. U stazi 1 obrišite vod S2 → S1 i vod od račvanja do kontakta K1. Spojite S2 izravno na gornji priključak kontakta K1 (grana S2 – K1), a gornji priključak S1 povucite na vod +24V → S2 (račvanje odmah iza +24V).</li><li>Start, kratko S1, zatim Shift + klik na S1 i držite S2: K1 ostaje privučen jer struja teče kroz S1 mimo tipkala STOP &mdash; prevladava uključivanje (Slika B3.1).</li></ol><figure class="snimka"><a href="slike/postupak-v08/06-v21-dominantno-ukljucivanje.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v08/06-v21-dominantno-ukljucivanje.webp" alt="Slika B3.1 &amp;mdash; Dominantno uključivanje: S2 je pritisnut i grana S2 – K1 je prekinuta, ali struja do K1 teče kroz zadržani S1." loading="lazy" decoding="async" width="715" height="707"></a><figcaption><b>Slika B3.1</b> &mdash; Dominantno uključivanje: S2 je pritisnut i grana S2 – K1 je prekinuta, ali struja do K1 teče kroz zadržani S1.</figcaption></figure></section>
+<section id="dio-b-pitanja"><h2>B4 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Objasnite zašto relej K1 ostaje uključen nakon što otpustite tipkalo S1. Koji element sklopa „pamti“ signal?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kad K1 privuče, zatvara se njegov radni kontakt spojen paralelno tipkalu S1. Struja do svitka tada teče kroz taj kontakt, pa otpuštanje S1 ne prekida krug. Signal pamti relej zajedno sa svojim kontaktom samodržanja; krug se prekida tek otvaranjem S2 ili nestankom napona.</p><h4>U FluidSIM-u</h4><p>U simulaciji (Slika B2.1) vidi se put struje kroz kontakt samodržanja K1 dok je S1 otpušten.</p></div></details></div><div class="pitanje"><p><b>2.</b> Što se u sklopu sa slike V21.1 događa kad su S1 i S2 istodobno pritisnuti? Zašto se ta inačica zove „dominantno isključivanje“?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Mirni kontakt S2 nalazi se u seriji ispred točke grananja pa njegovo otvaranje prekida i put kroz S1 i put kroz K1. Relej je isključen, cilindar se uvlači. Kad su oba signala prisutna, prevladava (dominira) naredba za isključivanje.</p><h4>U FluidSIM-u</h4><p>U simulaciji (Slika B2.2) S1 je zadržan Shift + klikom, a pritisak na S2 ipak isključuje K1.</p></div></details></div><div class="pitanje"><p><b>3.</b> Dopunite shemu: nacrtajte stazu 1 za inačicu s dominantnim uključivanjem, koristeći iste elemente S1, S2 i K1. Opišite put struje kad su pritisnuta oba tipkala.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Od +24 V vodi grana s mirnim kontaktom S2 u seriji s radnim kontaktom K1; paralelno cijeloj toj grani spojen je radni kontakt S1. Obje grane spajaju se ispred svitka K1, a svitak je na 0 V. Kad su pritisnuta oba tipkala, grana S2–K1 je prekinuta, ali struja teče kroz S1 izravno do svitka pa K1 ostaje uključen &mdash; prevladava uključivanje.</p><h4>U FluidSIM-u</h4><p>Gotova inačica je u datoteci <b>PIH_V21_dominantno_ukljucivanje_v01.ct</b> (Slika B3.1).</p></div></details></div><div class="pitanje"><p><b>4.</b> Koju biste inačicu odabrali za zaklopku silosa, a koju za dizalicu koja drži teret? Obrazložite.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Za zaklopku je prikladno dominantno isključivanje: kad operater u zabuni pritisne oba tipkala, zaklopka se zatvara, a zatvorena zaklopka je sigurno stanje. Dominantno uključivanje primjenjuje se tamo gdje je isključivanje opasnije od uključivanja, npr. kad bi prekid signala spustio podignuti teret ili prekinuo hlađenje. U strojogradnji se za naredbe gibanja u pravilu bira dominantno isključivanje.</p></div></details></div><div class="pitanje"><p><b>5.</b> Zašto se tipkalo STOP spaja kao mirni (NC) kontakt? Što bi se dogodilo s radnim kontaktom kad bi se vodič do tipkala prekinuo?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Mirni kontakt drži krug zatvorenim dok se ne pritisne. Prekid vodiča djeluje isto kao pritisak na STOP: relej otpusti i stroj se zaustavi, pa se kvar odmah vidi. Kad bi STOP bio radni kontakt koji bi uključivao neki relej za isključivanje, prekinut vodič ostao bi neprimijećen sve do trenutka kad STOP zatreba &mdash; a tada ne bi djelovao. To je načelo „sigurnog kvara“.</p></div></details></div><div class="pitanje"><p><b>6.</b> Računski zadatak: kolika je struja u stazama 1, 2 i 3 dok je zaklopka otvorena i kolika je ukupna struja iz izvora 24 V? Je li izvor od 1 A dovoljan?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p class="formula">I = P / U</p><p>Staza 1: I = 1,2 W / 24 V = 0,050 A. Staza 2: I = 2,5 W / 24 V = 0,104 A. Staza 3: I = 0,5 W / 24 V = 0,021 A. Ukupno ≈ 0,175 A. Izvor od 1 A je dovoljan s velikom pričuvom; pri uključivanju svitka struja kratkotrajno raste, ali kod istosmjernih svitaka to nije presudno za odabir izvora.</p></div></details></div><div class="pitanje"><p><b>7.</b> Računski zadatak: izračunajte teorijsku silu izvlačenja i uvlačenja cilindra Ø40/16 mm pri 6 bar, zatim stvarnu silu uz stupanj djelovanja 0,9. Kolika je potrošnja slobodnog zraka po jednom otvaranju i zatvaranju zaklopke (hod 160 mm)?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Površina klipa A = π · 40² / 4 = 1256,6 mm²; prstenasta površina A<sub>r</sub> = π · (40² − 16²) / 4 = 1055,6 mm². Pri 6 bar = 0,6 N/mm²: F<sub>izv</sub> = 0,6 · 1256,6 = 754 N, F<sub>uvl</sub> = 0,6 · 1055,6 = 633 N. Uz η = 0,9: 679 N i 570 N.</p><p>Volumen stlačenog zraka za oba hoda: V = (1256,6 + 1055,6) · 160 = 369 952 mm³ = 0,370 l. Omjer tlakova (6 + 1,013) / 1,013 = 6,923, pa je potrošnja ≈ 0,370 · 6,923 = 2,56 Nl po ciklusu (bez volumena cijevi).</p></div></details></div><div class="pitanje"><p><b>8.</b> Zaklopka je otvorena i nestane napona napajanja. Što se dogodi s cilindrom i što nakon povratka napona? Zašto je to ponašanje poželjno?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Relej i elektromagnet ostanu bez napona, opruga vrati razvodnik u osnovni položaj i cilindar se uvuče &mdash; zaklopka se zatvori. Nakon povratka napona relej ostaje isključen jer je samodržanje prekinuto; za ponovno otvaranje potrebno je pritisnuti S1. Sklop se tako štiti od samopokretanja nakon prekida napajanja, što je temeljni sigurnosni zahtjev za strojeve.</p></div></details></div><div class="pitanje"><p><b>9.</b> Kad bi se monostabilni razvodnik zamijenio bistabilnim (s dva elektromagneta), bi li krug samodržanja bio potreban? Što bi se promijenilo pri nestanku napona?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Bistabilni razvodnik sam pamti posljednji položaj, pa bi S1 mogao izravno uključivati elektromagnet za izvlačenje, a S2 elektromagnet za uvlačenje. Pri nestanku napona zaklopka bi, međutim, ostala otvorena, a istodobni pritisak obaju tipkala dao bi neodređen rezultat. Za sklop koji pri nestanku energije mora prijeći u sigurno stanje bolje je rješenje monostabilni razvodnik s relejnim samodržanjem.</p></div></details></div></div></section>
+<section id="dio-c"><h2>Dio C &middot; V23 Beskontaktni senzori</h2><div class="crta"></div><h3>Zadatak</h3>
+<p>Na liniji za sortiranje kutija s dijelovima treba prepoznati što prolazi ispred senzora: čelične i aluminijske poklopce, plastične posude napunjene tekućinom i kartonske kutije. Prije izbora senzora za liniju na mjernom stolu se ispituju četiri vrste beskontaktnih senzora s napajanjem 24 V DC i PNP izlazom:</p>
+<ul>
+<li><b>induktivni</b> senzor M18, ugradbeni (u ravnini s nosačem), nazivne sklopne udaljenosti S<sub>n</sub> = 5 mm;</li>
+<li><b>kapacitivni</b> senzor M18, neugradbeni, s potenciometrom osjetljivosti, S<sub>n</sub> = 8 mm;</li>
+<li><b>optički difuzni</b> (refleksijski na predmet) senzor dometa 200 mm na bijelom papiru;</li>
+<li><b>magnetski</b> senzor na utoru cilindra Ø32 mm s magnetskim prstenom na klipu.</li>
+</ul>
+<p>Za svaki senzor treba izmjeriti udaljenost uključivanja pri primicanju mjerne pločice i udaljenost isključivanja pri odmicanju, zatim izračunati redukcijski faktor u odnosu na referentni materijal i histerezu. Na kraju se za liniju predlaže senzor i sigurna udaljenost ugradnje. Brojevi u primjerima mjernog zapisa niže su primjer; vaši će se razlikovati ovisno o senzoru i pločicama.</p>
+<h3>Sigurnost pri radu</h3>
+<div class="okvir pazi"><h4>Pažnja</h4><p>Senzore spajajte samo bez napona. Zamjena smeđeg i plavog vodiča ili spoj crnog (izlaznog) vodiča izravno na +24 V bez trošila može trajno oštetiti izlazni tranzistor, iako mnogi senzori imaju zaštitu od kratkog spoja. Optički senzori s laserskim izvorom ne smiju se usmjeravati u oči. Cilindar za mjerenje magnetskog senzora ne priključujte na zrak &mdash; klip se pomiče rukom.</p></div>
+<h3>Shema</h3>
+<figure class="crtez"><svg viewBox="0 0 640 300" role="img" aria-label="Slika V23.1: spoj trožičnog PNP senzora i mjerni stol za ispitivanje sklopne udaljenosti">
+<text class="mali" x="20" y="20">Spoj PNP senzora</text>
+<line class="l" fill="none" x1="20" y1="50" x2="260" y2="50"/>
+<text class="mali" x="20" y="42">+24 V</text>
+<line class="l" fill="none" x1="20" y1="262" x2="260" y2="262"/>
+<text class="mali" x="20" y="284">0 V</text>
+<rect class="pf" x="50" y="110" width="110" height="90"/>
+<text class="mali" x="132" y="222" text-anchor="middle">senzor B1</text>
+<line class="l2" fill="none" x1="80" y1="50" x2="80" y2="110"/>
+<circle class="if" cx="80" cy="50" r="2.6"/>
+<text class="mali" x="86" y="102">BN</text>
+<line class="l2" fill="none" x1="80" y1="110" x2="80" y2="128"/>
+<line class="l2" fill="none" x1="80" y1="128" x2="120" y2="128"/>
+<line class="l2" fill="none" x1="120" y1="128" x2="120" y2="138"/>
+<line class="l" fill="none" x1="120" y1="168" x2="110" y2="140"/>
+<line class="l2" fill="none" x1="120" y1="168" x2="120" y2="180"/>
+<line class="l2" fill="none" x1="120" y1="180" x2="160" y2="180"/>
+<line class="l2 dash" fill="none" x1="115" y1="154" x2="100" y2="154"/>
+<polygon class="pf" points="100,154 93,147 86,154 93,161"/>
+<line class="l2" fill="none" x1="160" y1="180" x2="210" y2="180"/>
+<text class="mali" x="166" y="174">BK</text>
+<line class="l2" fill="none" x1="80" y1="200" x2="80" y2="262"/>
+<circle class="if" cx="80" cy="262" r="2.6"/>
+<text class="mali" x="86" y="240">BU</text>
+<line class="l2" fill="none" x1="210" y1="180" x2="210" y2="196"/>
+<line class="l2" fill="none" x1="210" y1="196" x2="210" y2="207"/>
+<circle class="pf" cx="210" cy="216" r="9"/>
+<line class="l2" fill="none" x1="204" y1="210" x2="216" y2="222"/>
+<line class="l2" fill="none" x1="204" y1="222" x2="216" y2="210"/>
+<line class="l2" fill="none" x1="210" y1="225" x2="210" y2="236"/>
+<text class="mali" x="224" y="221">H1</text>
+<line class="l2" fill="none" x1="210" y1="236" x2="210" y2="262"/>
+<circle class="if" cx="210" cy="262" r="2.6"/>
+<line class="l2 dash" fill="none" x1="282" y1="10" x2="282" y2="290"/>
+<text class="mali" x="300" y="20">Mjerni stol</text>
+<rect class="pf" x="310" y="120" width="110" height="36"/>
+<line class="l2" fill="none" x1="318" y1="120" x2="322" y2="156"/>
+<line class="l2" fill="none" x1="326" y1="120" x2="330" y2="156"/>
+<line class="l2" fill="none" x1="334" y1="120" x2="338" y2="156"/>
+<line class="l2" fill="none" x1="342" y1="120" x2="346" y2="156"/>
+<line class="l2" fill="none" x1="350" y1="120" x2="354" y2="156"/>
+<line class="l2" fill="none" x1="358" y1="120" x2="362" y2="156"/>
+<line class="l2" fill="none" x1="366" y1="120" x2="370" y2="156"/>
+<line class="l2" fill="none" x1="374" y1="120" x2="378" y2="156"/>
+<line class="l2" fill="none" x1="382" y1="120" x2="386" y2="156"/>
+<line class="l2" fill="none" x1="390" y1="120" x2="394" y2="156"/>
+<line class="l2" fill="none" x1="398" y1="120" x2="402" y2="156"/>
+<line class="l2" fill="none" x1="406" y1="120" x2="410" y2="156"/>
+<line class="l2" fill="none" x1="414" y1="120" x2="418" y2="156"/>
+<rect class="cf" x="420" y="124" width="8" height="28"/>
+<rect class="pf" x="292" y="130" width="18" height="16"/>
+<text class="mali" x="365" y="108" text-anchor="middle">senzor M18</text>
+<rect class="rf" x="470" y="104" width="6" height="68"/>
+<text class="mali" x="482" y="116">pločica</text>
+<rect class="pf" x="456" y="172" width="34" height="20"/>
+<line class="l" fill="none" x1="300" y1="200" x2="630" y2="200"/>
+<line class="l2" fill="none" x1="300" y1="206" x2="630" y2="206"/>
+<line class="l" fill="none" x1="490" y1="182" x2="560" y2="182"/>
+<circle class="pf" cx="578" cy="182" r="18"/>
+<line class="l2" fill="none" x1="578" y1="182" x2="578" y2="168"/>
+<text class="mali" x="578" y="226" text-anchor="middle">mjerna ura</text>
+<line class="l2" fill="none" x1="428" y1="60" x2="428" y2="118"/>
+<line class="l2" fill="none" x1="470" y1="60" x2="470" y2="100"/>
+<line class="l2" fill="none" x1="449" y1="66" x2="430" y2="66"/><polygon class="if" points="430,66 436,63.3 436,68.7"/>
+<line class="l2" fill="none" x1="449" y1="66" x2="468" y2="66"/><polygon class="if" points="468,66 462,68.7 462,63.3"/>
+<text x="449" y="56" text-anchor="middle">s</text>
+<line class="l2" fill="none" x1="510" y1="140" x2="550" y2="140"/><polygon class="if" points="550,140 543,143.2 543,136.8"/>
+<line class="l2" fill="none" x1="510" y1="140" x2="482" y2="140"/><polygon class="if" points="482,140 489,136.8 489,143.2"/>
+<text class="mali" x="516" y="162">pomak</text>
+<text class="mali" x="300" y="262">aktivna ploha senzora i mjerna pločica</text>
+<text class="mali" x="300" y="282">moraju biti usporedne</text>
+</svg><figcaption><b>Slika V23.1</b> &mdash; Lijevo: spoj trožičnog PNP senzora &mdash; smeđi (BN) na +24 V, plavi (BU) na 0 V, crni (BK) izlaz koji pri uključenju spaja +24 V na trošilo H1. Desno: mjerni stol za ispitivanje sklopne udaljenosti s.</figcaption></figure>
+<p>Kod <b>PNP</b> senzora izlaz „dovodi plus“: trošilo je spojeno između izlaza i 0 V. Kod <b>NPN</b> senzora izlaz „dovodi minus“, pa se trošilo spaja između +24 V i izlaza. Upravljački moduli u Europi uglavnom imaju ulaze za PNP senzore. Oznaka dometa na senzoru, <b>nazivna sklopna udaljenost S<sub>n</sub></b>, određuje se s normiranom pločicom od konstrukcijskog čelika debljine 1 mm i stranice jednake promjeru aktivne plohe (ili 3 · S<sub>n</sub>, ako je to veće). <b>Sigurna sklopna udaljenost</b> S<sub>a</sub> ≤ 0,81 · S<sub>n</sub> je udaljenost na kojoj senzor sigurno uključuje uz sva odstupanja izrade, napona i temperature.</p>
+<div class="okvir primjer"><h4>Vježba se radi u FluidSIM-u</h4><p>Koraci postupka vježbe koji se odnose na spajanje na didaktičkoj ploči i mjerenje štopericom ili manometrom izvode se u simulaciji. Gdje simulacija ne može pokazati pojavu iz pokusa, to je napisano uz korak.</p></div></section>
+<section id="c1"><h2>C1 &middot; Što se od V23 može pokazati u FluidSIM-u</h2><div class="crta"></div><ol class="koraci"><li>Mjerenja sklopnih udaljenosti, redukcijskih faktora i dometa izvode se samo na mjernom stolu &mdash; FluidSIM ne poznaje materijal predmeta. U FluidSIM-u se može pokazati samo ono što ovisi o gibanju: koliko dugo traje signal magnetskog senzora dok klip prolazi pored njega (pitanje 5).</li><li>Za polazište uzmite shemu V15 i kopirajte je u novu shemu. Cilindar: hod 100 mm, klip 32 mm, klipnjača 12 mm (najprije <i>Parameters</i>), zatim <i>Actuating Labels</i>: <b>B1</b> na 42–53,5 mm, kao u primjeru mjernog zapisa.</li><li>U vod strane klipnjače stavite jednosmjerni prigušni ventil (<i>Shutoff Valves and Flow Control Valves → One-way flow control valve</i>), otvorenost 20 % (<i>Display Opening Level</i> uključen).</li><li>State Diagram: cilindar (<i>Position</i> i <i>Velocity</i>) i senzor B1 (<i>State</i>); <i>Fixed interval</i> 0–4 s.</li></ol><div class="okvir pazi"><h4>Smjer prigušnog ventila</h4><p>U našoj shemi prigušni ventil prigušuje zrak koji ulazi u stranu klipnjače, pa je usporeno <b>uvlačenje</b>, a izvlačenje je slobodno. Za prigušenje izvlačenja ventil treba okrenuti (<i>Edit → Mirror → Horizontally</i>) <b>prije</b> spajanja vodova &mdash; ako se okrene sa spojenim vodovima, vodovi prolaze kroz element (F6: <i>Superimposed lines</i>).</p></div></section>
+<section id="c2"><h2>C2 &middot; Simulacija: trajanje signala magnetskog senzora</h2><div class="crta"></div><ol class="koraci"><li>Start, držite S1 oko 1 s pa ga otpustite.</li><li>U dijagramu (Slika C2.1): izvlačenje bez prigušenja je vrlo brzo (vršna brzina oko 3 m/s), pa je signal B1 samo crta od nekoliko milisekunda &mdash; ulaz s vremenom odziva 10 ms ga ne bi prepoznao. Pri prigušenom uvlačenju (oko 0,3–0,4 m/s) isti senzor daje vidljiv impuls od nekoliko desetaka milisekunda.</li></ol><figure class="snimka"><a href="slike/postupak-v08/07-v23-magnetski-senzor.webp" target="_blank" rel="noopener" title="Otvori sliku u punoj veličini"><img src="slike/postupak-v08/07-v23-magnetski-senzor.webp" alt="Slika C2.1 &amp;mdash; Magnetski senzor B1 na 42–53,5 mm: pri brzom izvlačenju signal je kratka crta, pri prigušenom uvlačenju širi impuls." loading="lazy" decoding="async" width="1161" height="610"></a><figcaption><b>Slika C2.1</b> &mdash; Magnetski senzor B1 na 42–53,5 mm: pri brzom izvlačenju signal je kratka crta, pri prigušenom uvlačenju širi impuls.</figcaption></figure></section>
+<section id="dio-c-pitanja"><h2>C3 &middot; Pitanja i zadaci</h2><div class="crta"></div><div class="pitanja"><div class="pitanje"><p><b>1.</b> Računski zadatak: iz primjera mjernog zapisa izračunajte redukcijski faktor za aluminij i histerezu za čelik S235.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Redukcijski faktor k = s<sub>uk</sub>(Al) / s<sub>uk</sub>(čelik) = 2,20 / 5,10 = 0,43. Histereza H = (s<sub>isk</sub> − s<sub>uk</sub>) / s<sub>uk</sub> = (5,50 − 5,10) / 5,10 = 0,078 = 7,8 %. Histereza sprječava „treperenje“ izlaza kad predmet stoji točno na granici sklapanja.</p></div></details></div><div class="pitanje"><p><b>2.</b> Računski zadatak: na kojoj najvećoj udaljenosti smijete ugraditi induktivni senzor S<sub>n</sub> = 5 mm za pouzdano prepoznavanje aluminijskog poklopca?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Sigurna udaljenost za čelik: S<sub>a</sub> = 0,81 · 5 = 4,05 mm. Za aluminij: S<sub>a,Al</sub> = 4,05 · 0,43 ≈ 1,74 mm. Senzor treba ugraditi na najviše oko 1,7 mm od poklopca, što je na liniji s tolerancijama vođenja kutija teško održivo. Bolje je izabrati senzor većeg S<sub>n</sub> ili senzor s faktorom 1 za sve metale.</p></div></details></div><div class="pitanje"><p><b>3.</b> Zašto kapacitivni senzor prepoznaje vodu u plastičnoj bočici gotovo jednako dobro kao čelik, a karton loše?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Kapacitivni senzor reagira na promjenu kapaciteta, dakle na relativnu dielektričnost materijala i na vodljive predmete. Voda ima relativnu dielektričnost oko 80, pa jako mijenja polje; stijenka bočice je tanka i gotovo ne smeta. Suhi karton ima dielektričnost oko 2, bliskom zraku, pa ga senzor osjeti tek izbliza. Vlažan karton prepoznao bi se dalje &mdash; kapacitivni je senzor zato osjetljiv i na vlagu i prljavštinu.</p></div></details></div><div class="pitanje"><p><b>4.</b> Objasnite zašto je domet optičkog difuznog senzora za sjajni lim pod kutom od 15° pao na 40 mm, iako je okomito bio veći nego za bijeli papir.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Difuzni senzor prima svjetlo koje predmet rasprši natrag. Bijeli papir raspršuje svjetlo na sve strane. Sjajni lim reflektira zrcalno: okomito vraća gotovo sve svjetlo u prijamnik, a već pod malim kutom svjetlo odlazi mimo prijamnika. Za sjajne predmete bolji su senzori s reflektorom i polarizacijskim filtrom ili senzori s potiskivanjem pozadine.</p></div></details></div><div class="pitanje"><p><b>5.</b> Računski zadatak: iz primjera za magnetski senzor izračunajte širinu područja uključivanja i histerezu. Cilindar se giba brzinom 0,5 m/s &mdash; koliko traje signal senzora kad klip prolazi pored njega? Je li to dovoljno za ulaz s vremenom odziva 10 ms?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Širina područja pri gibanju naprijed: 53,5 − 42,0 = 11,5 mm. Histereza: 42,0 − 40,5 = 1,5 mm (i 53,5 − 52,0 = 1,5 mm). Trajanje signala: t = 11,5 mm / 500 mm/s = 0,023 s = 23 ms. To je više od 10 ms, pa ga ulaz može prepoznati, ali s malom pričuvom; pri 1 m/s signal bi trajao samo 11,5 ms. Za brze prolaze senzor se postavlja u krajnji položaj, gdje klip stoji.</p><h4>U FluidSIM-u</h4><p>U simulaciji (Slika C2.1) vidi se isto načelo: trajanje signala je širina područja podijeljena brzinom; pri brzom, neprigušenom izvlačenju impuls traje samo nekoliko milisekunda, a pri prigušenom uvlačenju nekoliko desetaka.</p></div></details></div><div class="pitanje"><p><b>6.</b> Dopunite shemu sa slike V23.1: nacrtajte spoj istog trošila H1 na NPN senzor. Između kojih je točaka trošilo spojeno?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Smeđi vodič ostaje na +24 V, plavi na 0 V. Unutarnja sklopka NPN senzora spaja izlaz BK s plavim vodičem (0 V). Trošilo H1 spaja se između +24 V i izlaza BK: kad senzor uključi, struja teče od +24 V kroz H1 i kroz senzor na 0 V.</p></div></details></div><div class="pitanje"><p><b>7.</b> Računski zadatak: izlaz senzora podnosi najviše 200 mA. Smijete li na njega izravno spojiti žaruljicu 24 V / 2 W, a smijete li svitak razvodnika 24 V / 4,5 W?</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Žaruljica: I = 2 / 24 = 0,083 A = 83 mA &lt; 200 mA &mdash; smije. Svitak: I = 4,5 / 24 = 0,19 A = 188 mA, tik ispod granice i bez pričuve; svitak je i induktivno trošilo koje pri isključivanju daje prenapon. Ispravno je signal senzora voditi na relej ili ulaz upravljačkog modula, a svitak uključivati preko releja.</p></div></details></div><div class="pitanje"><p><b>8.</b> Koji biste senzor predložili za prepoznavanje čeličnih i aluminijskih poklopaca, a koji za plastične posude s tekućinom? Obrazložite.</p>
+<details class="rjesenje"><summary>Prikaži rješenje</summary><div><p>Za metalne poklopce induktivni senzor, jer ne reagira na karton i plastiku; zbog aluminija treba senzor većeg dometa (npr. M30, S<sub>n</sub> 10&ndash;15 mm) ili senzor s jednakim faktorom za sve metale. Za posude s tekućinom kapacitivni senzor, koji tekućinu „vidi“ i kroz stijenku. Optički senzor prepoznaje sve predmete, ali ne razlikuje materijal i ovisi o boji i sjaju površine.</p></div></details></div></div></section>
+<section id="zapis"><h2>Zapis simulacije</h2><div class="crta"></div><p>Tablica <b>Zapis: simulacija</b> iz radnog lista, popunjena prema simulaciji u FluidSIM-P 4.2 (rješenje).</p><div class="tablica-omot"><table><thead><tr><th>Veličina</th><th>Očekivano (proračun / zadatak)</th><th>FluidSIM</th><th>Komentar</th></tr></thead><tbody><tr><td>Kratki S1 (A)</td><td>izvlačenje i automatski povrat</td><td>isto, ciklus oko 0,4 s (Slika A2.1)</td><td>bez opterećenja i prigušenja</td></tr><tr><td>S1 držan (A)</td><td>klipnjača ostaje izvučena</td><td>isto (Slika A2.2)</td><td>Y1 i Y2 istodobno</td></tr><tr><td>Prednost povrata (A)</td><td>povrat i kad se S1 drži</td><td>isto (Slika A3.1)</td><td>klip „treperi” uz kraj hoda</td></tr><tr><td>Samodržanje (B)</td><td>K1 ostaje privučen nakon S1</td><td>isto (Slika B2.1)</td><td>&mdash;</td></tr><tr><td>S1 i S2 istodobno (B)</td><td>isključeno / uključeno</td><td>isto (Slike B2.2, B3.1)</td><td>dvije inačice staze 1</td></tr><tr><td>Signal B1 (C)</td><td>oko 23 ms pri 0,5 m/s</td><td>kratka crta pri izvlačenju, širi impuls pri uvlačenju</td><td>Slika C2.1</td></tr></tbody></table></div></section>
+<section id="predaja"><h2>Spremanje i predaja</h2><div class="crta"></div><ol class="koraci"><li><b>File → Save As</b>. U polje <i>Naziv datoteke</i> upišite <code>PIH_2026-2027_Prezime_Ime_V08.ct</code> (bez kvačica) i kliknite <i>Spremi</i>. Kasnije spremanje: <b>File → Save</b> (Ctrl + S).</li><li>Snimka: za vrijeme simulacije (nakon <i>Pause</i>) snimite zaslon sa shemom i dijagramom put–korak (u sustavu Windows: Windows + Shift + S), ili shemu spremite naredbom <b>File → TIFF Export</b>.</li><li>Ispunite radni list (proračuni i zapis simulacije).</li><li>Predajte u sustav za e-učenje: shemu <code>.ct</code>, snimku zaslona simulacije i ispunjen radni list. Sve datoteke imenujte <code>PIH_2026-2027_Prezime_Ime_…</code>.</li></ol><h3>Primjena na vlastiti zadatak P##</h3><p>Projekt SL-3, vaša varijanta P## (ulazni podaci u „Projektni zadaci P01–P21”): u električnu shemu SL-3 dodajte krug samodržanja „ciklus u tijeku” s tipkalima START i STOP (dominantno isključivanje) i obrazložite izbor. Opis naprave: <a href="projekt-savijanje-lima.html">Projektni zadatak: naprava SL-3 za savijanje lima</a>.</p><p class="sitno">Kod pitanja: susjed → radni list i ova stranica → nastavnik. AI smijete koristiti uz navođenje što je i kako napravljeno.</p></section>
+<section id="za-nastavnika"><h2>Za nastavnika</h2><div class="crta"></div><h3>Dio A &middot; vježba V18</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4><p>Provjerite da granične sklopke imaju ispravan nosač i da ih kvačica ne preopterećuje (najveći dopušteni nadhod prema podacima sklopke). Za pokus s tlakom od 2 bar pripremite teret od oko 8 kg koji se može gurati po stolu. Polaznici trebaju znati spojiti relej (V16) i poznavati bistabilni ventil (V17).</p>
+<h4>Tijek sata</h4><ol>
+<li>0–10 min: granična sklopka — građa, simbol, oznaka, nadhod.</li>
+<li>10–35 min: montaža, spajanje staza 1–4, prvo puštanje.</li>
+<li>35–50 min: pokus s držanjem S1, pomicanje B1 (koraci 5 i 6).</li>
+<li>50–65 min: prednost povrata (pitanje 6), izvedba i provjera.</li>
+<li>65–80 min: računski zadaci 3–5, pokus s tlakom od 2 bar.</li>
+<li>80–90 min: trajni rad (pitanje 7) kao rasprava ili izvedba, rastavljanje.</li>
+</ol>
+<h4>Očekivani rezultati</h4><p>Klipnjača se nakon kratkog pritiska na S1 sama vraća. Polaznik pokazuje problem držanja S1 i rješava ga mirnim kontaktom. Računski: oko 81 N potrebno, 434 N i 145 N raspoloživo, put od 15 mm u vremenu kašnjenja, ušteda zraka oko 57 %.</p>
+<h4>Česte pogreške</h4><ul>
+<li>granična sklopka postavljena kao graničnik pa se lomi ili pomiče nosač;</li>
+<li>za prednost povrata u stazu 1 ugrađen radni umjesto mirnog kontakta K2, pa K1 uopće ne može privući;</li>
+<li>spojen mirni kontakt B1 umjesto radnog u stazi 2, pa se cilindar odmah pri uključenju vraća i ne može se izvući;</li>
+<li>u proračunu sile zaboravljena sila ubrzanja.</li>
+</ul>
+<h4>Vrednovanje</h4><div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Spojen sklop s automatskim povratom, ispravno namještena B1</td><td>5</td></tr>
+<tr><td>Objašnjenje pokusa s držanjem S1</td><td>3</td></tr>
+<tr><td>Prednost povrata izvedena i provjerena</td><td>4</td></tr>
+<tr><td>Računski zadaci 3–5</td><td>5</td></tr>
+<tr><td>Trajni rad i dijagnostika (pitanja 7 i 8)</td><td>2</td></tr>
+<tr><td>Sigurnost i urednost</td><td>1</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><h3>Dio B &middot; vježba V21</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4>
+<p>Prije sata provjerite relejne module: kontakti moraju biti označeni (radni i mirni), a svjetleći utikač svitka razvodnika ispravan. Na svaku radnu ploču postavite cilindar i razvodnik unaprijed kako bi se vrijeme potrošilo na električni dio. Regulator tlaka namjestite na 6 bar; za manje cilindre dovoljno je i 4 bar. Pripremite ispis prazne tablice stanja s pet redaka i stupcima za obje inačice. Prethodno znanje: rad releja, radni i mirni kontakti, spajanje monostabilnog razvodnika (jedinice 4.3 i 4.6).</p>
+<h4>Tijek sata</h4>
+<ol>
+<li>Uvod (10 min): problem kratkog signala tipkala i monostabilnog razvodnika; pitanje „kako zapamtiti pritisak na tipkalo“.</li>
+<li>Pneumatski dio i staza 1 s dominantnim isključivanjem (20 min).</li>
+<li>Ispitivanje i tablica stanja, nestanak napona (15 min).</li>
+<li>Preuređenje u dominantno uključivanje i ponovno ispitivanje (20 min).</li>
+<li>Računski zadaci 6 i 7, rasprava o izboru inačice (15 min).</li>
+<li>Pregled zapisnika, rastavljanje i pospremanje (10 min).</li>
+</ol>
+<h4>Očekivani rezultati</h4>
+<p>Studenti samostalno spajaju obje inačice, tablica stanja razlikuje se samo u retku s istodobnim pritiskom obaju tipkala. Izmjereni napon na svicima je 23&ndash;24 V. Računski rezultati: ukupna struja ≈ 0,175 A, sile 754 N i 633 N (679 N i 570 N uz η = 0,9), potrošnja ≈ 2,56 Nl po ciklusu. Student zna obrazložiti izbor dominantnog isključivanja za zaklopku i ponašanje pri nestanku napona.</p>
+<h4>Česte pogreške</h4>
+<ul>
+<li>Za S2 se uzme radni umjesto mirnog kontakta pa sklop „ne reagira“ ili se isključuje samo dok se S2 drži.</li>
+<li>Kontakt samodržanja spoji se paralelno svitku umjesto tipkalu S1 &mdash; nastaje kratki spoj izvora.</li>
+<li>Kod dominantnog uključivanja S1 se spoji samo paralelno kontaktu K1, a ne cijeloj seriji S2–K1, pa inačica ostaje dominantno isključivanje.</li>
+<li>Zamijenjeni priključci 2 i 4: cilindar je izvučen u mirovanju i uvlači se na START.</li>
+<li>Vodiči 0 V ne spoje se na zajedničku sabirnicu pa svitak ne dobije napon.</li>
+</ul>
+<h4>Vrednovanje</h4>
+<div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravno spojen pneumatski dio, cijevi pregledne i sigurne</td><td>2</td></tr>
+<tr><td>Ispravno spojena staza 1 s dominantnim isključivanjem, rad provjeren</td><td>4</td></tr>
+<tr><td>Ispravno preuređena staza za dominantno uključivanje</td><td>3</td></tr>
+<tr><td>Potpuna i točna tablica stanja, uključivo nestanak napona</td><td>3</td></tr>
+<tr><td>Točni računski zadaci (struja, sila, potrošnja)</td><td>4</td></tr>
+<tr><td>Obrazloženje izbora inačice i uloge mirnog kontakta STOP</td><td>2</td></tr>
+<tr><td>Rad u skladu s pravilima sigurnosti, pospremljeno radno mjesto</td><td>2</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><h3>Dio C &middot; vježba V23</h3>
+<details class="nastavnik"><summary>Otvori upute za nastavnika</summary><div>
+<h4>Priprema</h4>
+<p>Pripremite pločice istih dimenzija i debljine (1 mm); kod tanjih folija od aluminija ili bakra redukcijski faktor raste, što je zanimljivo, ali zbunjuje usporedbu. Provjerite da su držači senzora nemagnetični ili da je ugradbeni senzor ugrađen u ravnini s metalnim nosačem kako je propisano. Ako mjernog stola nema, dovoljno je pomično mjerilo učvršćeno na ploču i držač senzora. Vježbu organizirajte kao rad na četiri stanice (po jedan senzor) s rotacijom skupina svakih 15&ndash;20 minuta.</p>
+<h4>Tijek sata</h4>
+<ol>
+<li>Uvod: načela rada, PNP i NPN, boje vodiča, pojmovi S<sub>n</sub> i S<sub>a</sub> (15 min).</li>
+<li>Rad na stanicama: induktivni, kapacitivni, optički, magnetski senzor, po 15 min (60 min).</li>
+<li>Računanje faktora i histereze, rasprava o izboru senzora za liniju (15 min).</li>
+</ol>
+<h4>Očekivani rezultati</h4>
+<p>Studenti dobivaju redukcijske faktore u redoslijedu čelik &gt; nehrđajući čelik &gt; mjed &gt; aluminij &gt; bakar i histereze reda 3&ndash;15 %. Kapacitivni senzor najdalje vidi vodu i metal, optički pokazuje jaku ovisnost o boji i kutu. Širina područja magnetskog senzora reda je 8&ndash;15 mm, histereza 1&ndash;2 mm. Za liniju se predlaže induktivni senzor većeg dometa za poklopce i kapacitivni za posude.</p>
+<h4>Česte pogreške</h4>
+<ul>
+<li>Pločica se primiče brzo pa se udaljenost očitava s kašnjenjem; mjerenje treba izvoditi polako i ponavljati.</li>
+<li>Nula mjerne ure ne postavlja se na dodir s aktivnom plohom senzora.</li>
+<li>Kapacitivnom senzoru mijenja se osjetljivost između mjerenja pa rezultati nisu usporedivi.</li>
+<li>Trošilo kod PNP senzora spojeno između izlaza i +24 V &mdash; žaruljica nikad ne svijetli.</li>
+<li>Histereza se računa kao razlika u milimetrima bez svođenja na s<sub>uk</sub>.</li>
+</ul>
+<h4>Vrednovanje</h4>
+<div class="tablica-omot"><table><thead><tr><th>Kriterij</th><th>Bodovi</th></tr></thead><tbody>
+<tr><td>Ispravan spoj senzora i prepoznavanje vodiča</td><td>3</td></tr>
+<tr><td>Potpun mjerni zapis za sva četiri senzora</td><td>6</td></tr>
+<tr><td>Točni redukcijski faktori, histereze i sigurna udaljenost</td><td>5</td></tr>
+<tr><td>Obrazložen izbor senzora za liniju</td><td>4</td></tr>
+<tr><td>Sigurnost i red na radnom mjestu</td><td>2</td></tr>
+<tr><td><b>Ukupno</b></td><td><b>20</b></td></tr>
+</tbody></table></div>
+</div></details><div class="okvir primjer"><h4>Napomena za FluidSIM</h4><p>Gotove sheme za usporedbu su gore na stranici. Istodobni pritisak na dva tipkala izvodi se Shift + klikom (zadržano tipkalo). U V18 povrat bez prigušenja traje djelić sekunde, pa je ciklus najbolje pratiti u dijagramu. V23 je pretežno mjerna vježba: redukcijski faktori, kapacitivni i optički senzori mjere se samo na stolu; u FluidSIM-u se pokazuje samo trajanje signala magnetskog senzora. Prigušni ventil u našoj datoteci prigušuje uvlačenje; za prigušenje izvlačenja studenti ga trebaju okrenuti prije spajanja vodova.</p></div></section>
+<nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="vjezbe.html">&#8592; Sve vježbe</a><a class="gumb" href="v18-ep-granicna-sklopka.html">V18 Granična sklopka — automatski povrat</a></nav></div></main>
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Autorski tim: Krunoslav Kušec, mag. ing. mech. &middot; Alen Britvić, bacc. ing. mech. &middot; dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-pneumatika-i-hidraulika-postupak-v08-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+
+document.querySelectorAll('.kviz').forEach(function(k){
+  var tocan = parseInt(k.dataset.tocno, 10);
+  var obraz = k.querySelector('.obraz');
+  k.querySelectorAll('.odg button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      k.querySelectorAll('.odg button').forEach(function(o){ o.disabled = true; });
+      b.classList.add(i === tocan ? 'tocno' : 'netocno');
+      if (i !== tocan) k.querySelectorAll('.odg button')[tocan].classList.add('tocno');
+      if (obraz) obraz.classList.add('vidi');
+      var r = k.closest('[data-rezultat]');
+      if (r){
+        r.dataset.tocnih = String((parseInt(r.dataset.tocnih || '0', 10)) + (i === tocan ? 1 : 0));
+        r.dataset.odgovoreno = String((parseInt(r.dataset.odgovoreno || '0', 10)) + 1);
+        var p = r.querySelector('.rezultat');
+        if (p) p.textContent = 'Odgovoreno ' + r.dataset.odgovoreno + ' od ' + r.dataset.ukupno +
+          ' · točnih ' + r.dataset.tocnih + '.';
+      }
+    });
+  });
+});
+
+
+document.querySelectorAll('[data-rjesenja]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var otvori = b.dataset.rjesenja === 'otvori';
+    document.querySelectorAll('details.rjesenje').forEach(function(d){ d.open = otvori; });
+  });
+});
+
+</script>
+</body>
+</html>
