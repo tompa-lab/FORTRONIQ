@@ -1204,3 +1204,24 @@ window.__ur3e = {
   fdCilj(c) { st.fdCilj = c; }
 };
 requestAnimationFrame(petlja);
+
+/* v02 — poravnanje radnog prikaza: nakon klika na niz ili gumb privjesak i robot stanu točno na zaslon */
+(function () {
+  const SIROKO = window.matchMedia('(min-width:1101px) and (min-height:600px)');
+  const sred = document.querySelector('.ur-sredina'), mreza = document.querySelector('.ur-mreza');
+  if (!sred || !mreza) return;
+  function poravnaj() {
+    if (!SIROKO.matches) return;
+    const y = sred.getBoundingClientRect().top;
+    if (Math.abs(y - 62) > 6 && y < window.innerHeight - 120) window.scrollTo({ top: window.scrollY + y - 62, behavior: 'smooth' });
+  }
+  /* na računalu tablica DH ide u srednji stupac ispod upute, a robot dobiva cijeli desni stupac */
+  const desno = document.querySelector('.ur-desno'), dh = desno ? [...desno.children].filter((k) => !k.classList.contains('ur-scena-k')) : [];
+  function rasporedi() {
+    for (const k of dh) { if (SIROKO.matches) { if (k.parentNode !== sred) sred.appendChild(k); } else if (k.parentNode !== desno) desno.appendChild(k); }
+  }
+  rasporedi(); SIROKO.addEventListener('change', rasporedi);
+  document.querySelector('.ur-izbornik').addEventListener('click', (e) => { if (e.target.closest('button')) poravnaj(); });
+  document.querySelector('.ur-uputa').addEventListener('click', (e) => { if (e.target.closest('button')) poravnaj(); });
+})();
+

@@ -381,6 +381,7 @@ function odaberi(n, bezLeta = false) {
   $('k-naziv').textContent = m.naziv;
   $('k-engl').textContent = '(' + m.engl + ')';
   $('k-tekst').innerHTML = m.tekst;
+  { const ki = document.querySelector('.uz-kartica .karta-in'); if (ki) ki.scrollTop = 0; }
   st.temaKljuc = m.tema || null; $('k-tema-g').hidden = !m.tema;
   const dj = djeca(m.n);
   $('k-djeca').innerHTML = dj.length && m.n !== 1 ? '<p class="uz-dj-n">Dijelovi u ovoj skupini:</p><ul class="uz-dj">' + dj.map((x) => '<li><button type="button" class="cip" data-skok="' + x.n + '">' + esc(x.naziv) + '</button></li>').join('') + '</ul>' : '';
@@ -404,7 +405,41 @@ $('k-djeca').addEventListener('click', (e) => { const b = e.target.closest('[dat
 
 /* „Kako radi” — animacija iz modula teme_ur.js (radi se zasebno) */
 let tema = null;
-function zatvoriTemu() { if (tema && tema.unisti) { try { tema.unisti(); } catch (e) { /* ništa */ } } tema = null; $('k-tema-el').hidden = true; $('k-tema-el').innerHTML = ''; $('k-tema').setAttribute('aria-expanded', 'false'); $('k-tema').textContent = 'Kako radi'; }
+/* v02 — na računalu se crtež animacije prikazuje na pozornici (mjesto 3D prikaza), a tekst i gumbi ostaju u desnom stupcu */
+const SIROKO = window.matchMedia('(min-width:1101px) and (min-height:560px)');
+function pozornica() {
+  let p = $('pozornica'); if (p) return p;
+  p = document.createElement('div'); p.id = 'pozornica'; p.className = 'uz-pozornica tur'; p.hidden = true;
+  $('k-scena').appendChild(p); return p;
+}
+function naPozornicu(sek) {
+  if (!SIROKO.matches || !sek) return;
+  const sc = sek.querySelector('.tur-scena'); if (!sc) return;
+  const p = pozornica(), kar = $('k-scena');
+  p.style.top = kar.querySelector('.karta-h').offsetHeight + 'px';
+  for (const v of sc.querySelectorAll('.tur-svg')) { const vb = (v.getAttribute('viewBox') || '0 0 600 400').split(/\s+/); v.style.flexGrow = String(+vb[3] || 1); }
+  const nav = document.createElement('div'); nav.className = 'uz-pozornica-nav';
+  nav.innerHTML = '<p class="pom">Gumbi i očitanja animacije su u desnom stupcu, odmah ispod naslova.</p><button type="button" class="gumb tanki" id="poz-zatvori">Natrag na 3D prikaz</button>';
+  p.replaceChildren(sc, nav); p.hidden = false;
+  /* desni stupac: gumb, naslov animacije i upravljanje na vrh, objašnjenja ispod */
+  const ki = document.querySelector('.uz-kartica .karta-in');
+  ki.insertBefore($('k-tema-el'), $('k-tekst')); ki.insertBefore($('k-tema-g'), $('k-tema-el'));
+  const nas = sek.querySelector('.tur-naslov'), uvod = sek.querySelector('.tur-uvod');
+  for (const q of ['.tur-ocit', '.tur-stanje', '.tur-upr']) { const x = sek.querySelector('.tur-desno ' + q); if (x && nas) nas.after(x); }
+  if (uvod) sek.querySelector('.tur-desno').prepend(uvod);
+  ki.scrollTop = 0;
+  $('poz-zatvori').addEventListener('click', zatvoriTemu);
+}
+function sPozornice() { const p = $('pozornica'); if (p) { p.hidden = true; p.replaceChildren(); } const ki = document.querySelector('.uz-kartica .karta-in'); if (ki && $('k-djeca')) { ki.insertBefore($('k-tema-g'), $('k-djeca')); ki.insertBefore($('k-tema-el'), $('k-djeca')); } }
+SIROKO.addEventListener('change', () => { if (tema || !$('k-tema-el').hidden) zatvoriTemu(); });
+/* poravnanje: nakon klika na izbornik ili gumb radni prikaz stane točno na zaslon */
+function poravnaj() {
+  if (!SIROKO.matches) return;
+  const m = document.querySelector('.uz-mreza'), y = m.getBoundingClientRect().top;
+  if (Math.abs(y - 62) > 6 && y < window.innerHeight - 120) window.scrollTo({ top: window.scrollY + y - 62, behavior: 'smooth' });
+}
+document.querySelector('.uz-mreza').addEventListener('click', (e) => { if (e.target.closest('button,select,a')) poravnaj(); });
+function zatvoriTemu() { if (tema && tema.unisti) { try { tema.unisti(); } catch (e) { /* ništa */ } } tema = null; $('k-tema-el').hidden = true; $('k-tema-el').innerHTML = ''; $('k-tema').setAttribute('aria-expanded', 'false'); $('k-tema').textContent = 'Kako radi'; sPozornice(); }
 async function otvoriTemu() {
   const kljuc = st.temaKljuc; if (!kljuc) return;
   const el = $('k-tema-el'); el.hidden = false; el.innerHTML = '<p class="pom">Animacija se učitava…</p>';
@@ -415,6 +450,7 @@ async function otvoriTemu() {
   el.innerHTML = '';
   const kut = document.createElement('div'); kut.className = 'uz-tema-kut'; el.appendChild(kut);
   try { tema = T.prikazi(kut, kljuc) || null; } catch (e) { el.innerHTML = '<p class="pom">Animacija „Kako radi” trenutačno nije dostupna.</p>'; tema = null; }
+  if (tema) naPozornicu(kut.querySelector('.tur'));
 }
 $('k-tema').addEventListener('click', () => { if (tema || !$('k-tema-el').hidden) zatvoriTemu(); else otvoriTemu(); });
 
