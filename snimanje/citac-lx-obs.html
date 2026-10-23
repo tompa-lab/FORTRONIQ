@@ -182,7 +182,7 @@ async function nakonSpajanja(){
  const v=await R('GetVideoSettings');CW=v.baseWidth;CH=v.baseHeight;
  const ver=await R('GetVersion');
  const ul=(await R('GetInputList')).inputs||[];
- const izv=ul.filter(i=>/capture|screen|window|xshm|pipewire|display/i.test(i.inputKind));
+ const izv=ul.filter(i=>/capture|screen|window|xshm|pipewire|display/i.test(i.inputKind)&&!/audio|wasapi|pulse|coreaudio|alsa|jack/i.test(i.inputKind));
  const kam=ul.filter(i=>/dshow|av_capture|v4l2|video_capture/i.test(i.inputKind));
  const zadIzv=ucitaj('izvor',''),zadKam=ucitaj('kamera','');
  puniPopis($('s-izvor'),izv.map(i=>i.inputName),zadIzv,izv.length?'':'nema izvora — klikni + izvor');
@@ -239,15 +239,15 @@ async function pripremi(){
     await R('SetSceneItemTransform',{sceneName:sc,sceneItemId:kid.sceneItemId,sceneItemTransform:{boundsType:'OBS_BOUNDS_SCALE_OUTER',boundsWidth:Math.round(CW*.2),boundsHeight:Math.round(CW*.2*9/16),boundsAlignment:0,positionX:Math.round(CW*.78),positionY:Math.round(CH*.03),alignment:5,rotation:0}})}
    ids[sc].traka=await stavi(sc,PREF+'traka natpisa',bojaVrsta,bojaPostavke(BOJE.tamna,CW*.6,CH*.075),ulazi);await polozaj(sc,ids[sc].traka,CW*.03,CH*.87);
    ids[sc].crta=await stavi(sc,PREF+'crta natpisa',bojaVrsta,bojaPostavke(BOJE.cyan,CW*.006,CH*.075),ulazi);await polozaj(sc,ids[sc].crta,CW*.03,CH*.87);
-   ids[sc].natpis=await stavi(sc,PREF+'natpis',tekstVrsta,tekstPostavke('',34*u,BOJE.bijela,{sirina:CW*.56,visina:CH*.06}),ulazi);await polozaj(sc,ids[sc].natpis,CW*.045,CH*.882)}
+   ids[sc].natpis=await stavi(sc,PREF+'natpis',tekstVrsta,tekstPostavke('',40*u,BOJE.bijela,{sirina:CW*.56,visina:CH*.06}),ulazi);await polozaj(sc,ids[sc].natpis,CW*.045,CH*.882)}
   const sn=scena('naslov');ids[sn]={};
   ids[sn].poz=await stavi(sn,PREF+'podloga kartice',bojaVrsta,bojaPostavke(BOJE.tamna,CW,CH),ulazi);await polozaj(sn,ids[sn].poz,0,0);
-  ids[sn].znak=await stavi(sn,PREF+'znak',tekstVrsta,tekstPostavke('F O R T R O N I ',30*u,BOJE.bijela),ulazi);await polozaj(sn,ids[sn].znak,CW*.07,CH*.08);
-  ids[sn].znakq=await stavi(sn,PREF+'znak Q',tekstVrsta,tekstPostavke('Q',30*u,BOJE.cyan),ulazi);
-  const[zw]=await velicinaIzvora(sn,ids[sn].znak);await polozaj(sn,ids[sn].znakq,CW*.07+(zw&&zw<CW?zw:30*u*8*.75),CH*.08);
+  ids[sn].znak=await stavi(sn,PREF+'znak',tekstVrsta,tekstPostavke('F O R T R O N I ',36*u,BOJE.bijela),ulazi);await polozaj(sn,ids[sn].znak,CW*.07,CH*.08);
+  ids[sn].znakq=await stavi(sn,PREF+'znak Q',tekstVrsta,tekstPostavke('Q',36*u,BOJE.cyan),ulazi);
+  const[zw]=await velicinaIzvora(sn,ids[sn].znak);await polozaj(sn,ids[sn].znakq,CW*.07+(zw&&zw<CW?zw:36*u*8*.75),CH*.08);
   ids[sn].veliki=await stavi(sn,PREF+'naslov kartice',tekstVrsta,tekstPostavke('',84*u,BOJE.bijela,{sirina:CW*.84,visina:CH*.28}),ulazi);await polozaj(sn,ids[sn].veliki,CW*.07,CH*.36);
   ids[sn].crta=await stavi(sn,PREF+'crta kartice',bojaVrsta,bojaPostavke(BOJE.cyan,CW*.16,Math.max(4,5*u)),ulazi);await polozaj(sn,ids[sn].crta,CW*.07,CH*.33);
-  ids[sn].mali=await stavi(sn,PREF+'podnaslov kartice',tekstVrsta,tekstPostavke('',40*u,BOJE.svijetla,{sirina:CW*.84,visina:CH*.2,tanko:true}),ulazi);await polozaj(sn,ids[sn].mali,CW*.07,CH*.66);
+  ids[sn].mali=await stavi(sn,PREF+'podnaslov kartice',tekstVrsta,tekstPostavke('',54*u,BOJE.svijetla,{sirina:CW*.84,visina:CH*.2,tanko:true}),ulazi);await polozaj(sn,ids[sn].mali,CW*.07,CH*.66);
   const[sw,sh]=await velicinaIzvora(scena('cijeli'),ids[scena('cijeli')].izvor);
   for(const k of ZOOM)await postaviZoom(k,sw,sh);
   await prijelaz();sp('ids',ids);spremno=true;lamp('ok','OBS spojen · platno '+CW+'×'+CH+' · scene FTQ pripremljene');setTimeout(()=>{$('obs-ploca').open=false},2500);
@@ -309,6 +309,8 @@ function okvirKadraU(k){const s=reg;reg=regU;const o=okvirKadra(k,sw0,sh0);reg=s
 async function urSnimka(){if(!obs.ok){poruka('Spoji OBS za snimku izvora.');return}
  try{const izv=$('s-izvor').value;const sc=scena('cijeli');if(ids[sc]&&ids[sc].izvor!=null){[sw0,sh0]=await velicinaIzvora(sc,ids[sc].izvor)}
   pl.width=1280;pl.height=Math.round(1280*sh0/sw0);
+  /* OBS iscrtava snimanje zaslona samo dok je izvor aktivan: prije snimke prebaci na scenu Cijeli zaslon */
+  if(spremno&&trenScena!==scena('cijeli')){await R('SetCurrentProgramScene',{sceneName:scena('cijeli')});trenScena=scena('cijeli');zadKadar='cijeli';oznaciKadar();await new Promise(r=>setTimeout(r,600))}
   const r=await R('GetSourceScreenshot',{sourceName:izv,imageFormat:'jpg',imageWidth:1280,imageCompressionQuality:75});
   const im=new Image();im.onload=()=>{slika=im;urCrtaj()};im.src=r.imageData}catch(e){poruka('Snimka nije uspjela: '+e.message)}}
 $('b-uredi').onclick=()=>{regU=JSON.parse(JSON.stringify(reg));$('urednik').classList.add('otv');urOznaci();urCrtaj();urSnimka()};
