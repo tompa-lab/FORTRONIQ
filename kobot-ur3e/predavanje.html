@@ -139,15 +139,17 @@ document.body.insertAdjacentHTML('beforeend',
   '<div id="start"><div class="karta"><div class="znak">FORTRONI<b>Q</b></div><h1>Predavanje: Kobot UR3e (90 min)</h1>' +
   '<p>Ova stranica sama vodi predavanje po scenariju: otvara stranice područja, klika, pokreće animacije i nizove, a pokazivač pokazuje gdje se klika. Tekst za čitanje usklađen je s istim satom.</p>' +
   '<ol><li>Otvori <b>čitač</b> i premjesti ga na drugi zaslon.</li><li>Ovaj prozor stavi na zaslon koji se snima i pritisni <kbd>F11</kbd> (cijeli zaslon, 1920 × 1080, zoom 100 %).</li>' +
-  '<li>Pokreni snimanje (npr. OBS), pa <b>Pokreni predavanje</b>.</li></ol>' +
+  '<li>Pokreni snimanje (npr. OBS), pa <b>Pokreni predavanje</b>. S <b>čitačem s OBS-om</b> sve to radi gumb <b>● Kreni sve</b> u čitaču: snimanje, natpisi koraka, naslovne kartice i poglavlja.</li></ol>' +
   '<p>Tipke: <kbd>razmaknica</kbd> pauza, <kbd>→</kbd> sljedeći korak, <kbd>←</kbd> ponovi korak, <kbd>H</kbd> traka. Iste naredbe imaš i u čitaču. Traka dolje lijevo nestaje kad miruje miš.</p>' +
-  '<div class="gumbi"><button class="gumb" id="s-kreni">Pokreni predavanje</button><button class="gumb tanki" id="s-citac">Otvori čitač</button></div></div></div>');
+  '<div class="gumbi"><button class="gumb" id="s-kreni">Pokreni predavanje</button><button class="gumb tanki" id="s-obs">Otvori čitač s OBS-om</button><button class="gumb tanki" id="s-citac">Otvori čitač</button></div></div></div>');
 
 const okvir = document.getElementById('okvir'), kursor = document.getElementById('kursor'), traka = document.getElementById('traka');
-let sat = 0, igra = false, tZadnji = 0, trenutni = -1, token = 0, kx = 960, ky = 540;
+let sat = 0, igra = false, tZadnji = 0, trenutni = -1, token = 0, kx = 960, ky = 540, cekajKraj = false, ceka = false;
 const W = () => okvir.contentWindow, D = () => okvir.contentDocument;
+function otvoriObs() { window.open('citac-obs.html', 'ftq-citac-obs', 'width=1200,height=950'); }
 function otvoriCitac() { window.open('predavanje.html?citac' + (BRZ !== 1 ? '&brzina=' + BRZ : ''), 'ftq-citac', 'width=1100,height=900'); }
 document.getElementById('s-citac').onclick = otvoriCitac;
+document.getElementById('s-obs').onclick = otvoriObs;
 document.getElementById('b-citac').onclick = otvoriCitac;
 
 /* --- sat --- */
@@ -155,31 +157,37 @@ function tik() {
   const n = performance.now();
   if (igra) sat = Math.min(KRAJ, sat + (n - tZadnji) / 1000 * BRZ);
   tZadnji = n;
-  if (igra) { const i = korakU(sat); if (i !== trenutni && sat >= S[i].t) pokreniKorak(i); if (sat >= KRAJ) igra = false; }
+  if (igra) { let i = korakU(sat);
+    /* „čekaj ⏭ na kraju koraka” (uključuje se u čitaču s OBS-om): sat stane prije sljedećeg koraka */
+    if (cekajKraj && trenutni >= 0 && i > trenutni) { sat = S[i].t - 0.05; igra = false; ceka = true; i = trenutni; }
+    if (igra && i !== trenutni && sat >= S[i].t) pokreniKorak(i); if (sat >= KRAJ) igra = false; }
   document.getElementById('b-vr').textContent = mmss(sat) + ' / ' + mmss(KRAJ);
   document.getElementById('b-nas').textContent = trenutni >= 0 ? S[trenutni].naslov : '';
   document.getElementById('b-igraj').textContent = igra ? '⏸' : '▶';
   requestAnimationFrame(tik);
 }
-setInterval(() => { if (bc) bc.postMessage({ sat, igra, i: trenutni }); }, 250);
-function igrajPauza() { igra = !igra; tZadnji = performance.now(); }
-function skok(i) { i = Math.max(0, Math.min(S.length - 1, i)); sat = S[i].t; trenutni = -1; if (!igra) pokreniKorak(i); }
+setInterval(() => { if (bc) bc.postMessage({ sat, igra, i: trenutni, ceka }); }, 250);
+function igrajPauza() { if (ceka) { dalje(); return; } igra = !igra; tZadnji = performance.now(); }
+function dalje() { const bio = ceka; ceka = false; skok(korakU(sat) + 1); if (bio) { igra = true; tZadnji = performance.now(); } }
+function kreni() { document.getElementById('start').hidden = true; ceka = false; sat = 0; trenutni = -1; igra = true; tZadnji = performance.now(); }
+function skok(i) { ceka = false; i = Math.max(0, Math.min(S.length - 1, i)); sat = S[i].t; trenutni = -1; if (!igra) pokreniKorak(i); }
+function postavi(t) { ceka = false; sat = Math.max(0, Math.min(KRAJ, t)); trenutni = -1; if (!igra) pokreniKorak(korakU(sat)); }
 document.getElementById('b-igraj').onclick = igrajPauza;
-document.getElementById('b-dalje').onclick = () => skok(korakU(sat) + 1);
+document.getElementById('b-dalje').onclick = dalje;
 document.getElementById('b-prije').onclick = () => { const i = korakU(sat); skok(sat - S[i].t > 3 ? i : i - 1); };
 function tipka(e) {
   if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) && e.key !== 'Escape') return;
   if (e.key === ' ') { e.preventDefault(); igrajPauza(); }
-  else if (e.key === 'ArrowRight') { e.preventDefault(); skok(korakU(sat) + 1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); dalje(); }
   else if (e.key === 'ArrowLeft') { e.preventDefault(); const i = korakU(sat); skok(sat - S[i].t > 3 ? i : i - 1); }
   else if (e.key === 'h' || e.key === 'H') traka.classList.toggle('skrij');
 }
 addEventListener('keydown', tipka);
-if (bc) bc.onmessage = (e) => { const d = e.data || {}; if (d.cmd === 'igraj') igrajPauza(); else if (d.cmd === 'dalje') skok(korakU(sat) + 1); else if (d.cmd === 'prije') { const i = korakU(sat); skok(sat - S[i].t > 3 ? i : i - 1); } else if (d.cmd === 'pomak') { sat = Math.max(0, sat + d.a); } };
+if (bc) bc.onmessage = (e) => { const d = e.data || {}; if (d.cmd === 'igraj') igrajPauza(); else if (d.cmd === 'dalje') dalje(); else if (d.cmd === 'kreni') kreni(); else if (d.cmd === 'post') postavi(d.a); else if (d.cmd === 'cekaj') cekajKraj = !!d.a; else if (d.cmd === 'prije') { const i = korakU(sat); skok(sat - S[i].t > 3 ? i : i - 1); } else if (d.cmd === 'pomak') { sat = Math.max(0, sat + d.a); } };
 let mirTimer = 0;
 function pokaziTraku() { traka.classList.remove('skrij'); clearTimeout(mirTimer); mirTimer = setTimeout(() => traka.classList.add('skrij'), 2500); }
 addEventListener('mousemove', pokaziTraku);
-document.getElementById('s-kreni').onclick = () => { document.getElementById('start').hidden = true; igra = true; tZadnji = performance.now(); };
+document.getElementById('s-kreni').onclick = kreni;
 
 /* --- pomoćne radnje --- */
 class Prekid extends Error {}
@@ -306,7 +314,7 @@ async function pokreniKorak(i) {
 }
 okvir.addEventListener('load', () => { try { D().addEventListener('keydown', tipka); D().addEventListener('mousemove', pokaziTraku); } catch (e) { /* ništa */ } });
 requestAnimationFrame(tik);
-window.__predavanje = { get sat() { return sat; }, set sat(v) { sat = v; }, get trenutni() { return trenutni; }, igrajPauza, skok, kreni() { document.getElementById('s-kreni').click(); } };
+window.__predavanje = { get sat() { return sat; }, set sat(v) { sat = v; }, get trenutni() { return trenutni; }, get ceka() { return ceka; }, get cekajKraj() { return cekajKraj; }, igrajPauza, skok, dalje, kreni };
 })();
 </script>
 </body>
