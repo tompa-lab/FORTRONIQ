@@ -147,7 +147,7 @@ const obsAuth=(loz,salt,izazov)=>b64(sha256(utf8(b64(sha256(utf8(loz+salt)))+iza
 
 /* ---------- OBS WebSocket v5 ---------- */
 const obs={ws:null,ok:false,n:0,cek:new Map()};
-let spremno=false,snima=false,rec0=0,trenScena='',CW=1920,CH=1080,tekstVrsta='',bojaVrsta='',ids={};
+let spremno=false,snima=false,rec0=0,pauzaOd=0,pauzaUk=0,trenScena='',CW=1920,CH=1080,tekstVrsta='',bojaVrsta='',ids={};
 function lamp(st,t){$('lamp').className='lamp '+st;$('obs-st').textContent=t}
 function R(tip,pod){return new Promise((res,rej)=>{if(!obs.ok&&tip!=='__'){rej(new Error('OBS nije spojen'));return}
  const id='r'+(++obs.n);obs.cek.set(id,{res,rej,tip});obs.ws.send(JSON.stringify({op:6,d:{requestType:tip,requestId:id,requestData:pod||{}}}));
@@ -168,7 +168,9 @@ function spoji(){
    if(d.requestStatus&&d.requestStatus.result)c.res(d.responseData||{});else{const er=new Error(c.tip+': '+((d.requestStatus&&d.requestStatus.comment)||'pogreška '+(d.requestStatus&&d.requestStatus.code)));er.code=d.requestStatus&&d.requestStatus.code;c.rej(er)}}
   else if(m.op===5){const e=d.eventData||{};
    if(d.eventType==='CurrentProgramSceneChanged'){trenScena=e.sceneName;oznaciKadar()}
-   else if(d.eventType==='RecordStateChanged'){if(e.outputState==='OBS_WEBSOCKET_OUTPUT_STARTED'){snima=true;rec0=performance.now();zapisPoglavlja=[];zabiljezi(ki(sad()))}
+   else if(d.eventType==='RecordStateChanged'){if(e.outputState==='OBS_WEBSOCKET_OUTPUT_STARTED'){snima=true;rec0=performance.now();pauzaOd=0;pauzaUk=0;zapisPoglavlja=[];zabiljezi(ki(sad()))}
+    else if(e.outputState==='OBS_WEBSOCKET_OUTPUT_PAUSED'){if(!pauzaOd)pauzaOd=performance.now()}
+    else if(e.outputState==='OBS_WEBSOCKET_OUTPUT_RESUMED'){if(pauzaOd){pauzaUk+=performance.now()-pauzaOd;pauzaOd=0}}
     else if(e.outputState==='OBS_WEBSOCKET_OUTPUT_STOPPED'){snima=false;poruka('Snimanje zaustavljeno'+(e.outputPath?': '+e.outputPath:'')+'. Poglavlja su spremna za preuzimanje.')}
     $('b-rec').classList.toggle('akt',snima);$('b-rec').textContent=snima?'■ Zaustavi':'● Snimaj'}}};
  ws.onclose=ev=>{obs.ok=false;spremno=false;obs.cek.forEach(c=>c.rej(new Error('veza prekinuta')));obs.cek.clear();
@@ -284,17 +286,26 @@ function tekstovi(i){if(!obs.ok||!spremno)return;const k=S[i];const kt=k.kartica
 
 /* ---------- snimanje i poglavlja ---------- */
 let zapisPoglavlja=ucitaj('poglavlja',[]);
-function zabiljezi(i){if(!snima)return;const t=(performance.now()-rec0)/1000;if(zapisPoglavlja.length&&zapisPoglavlja[zapisPoglavlja.length-1].i===i)return;zapisPoglavlja.push({i,t});sp('poglavlja',zapisPoglavlja)}
+/* vrijeme snimke: bez trajanja pauza (OBS javlja PAUSED/RESUMED) */
+function recT(){const n=performance.now();return (n-rec0-pauzaUk-(pauzaOd?n-pauzaOd:0))/1000}
+function zabiljezi(i){if(!snima)return;const t=recT();if(zapisPoglavlja.length&&zapisPoglavlja[zapisPoglavlja.length-1].i===i)return;zapisPoglavlja.push({i,t});sp('poglavlja',zapisPoglavlja)}
 $('b-rec').onclick=()=>{R(snima?'StopRecord':'StartRecord').catch(e=>poruka('Greška: '+e.message))};
 $('b-sve').onclick=async()=>{post(0);igraj(false);zad=-1;try{if(!snima)await R('StartRecord');igraj(true)}catch(e){poruka('Greška: '+e.message)}};
 function preuzmi(ime,tekst){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([tekst],{type:'text/plain;charset=utf-8'}));a.download=ime;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
 const hms=s=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return(h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(x).padStart(2,'0')};
-function poglavlja(){const z=zapisPoglavlja.length?zapisPoglavlja:S.map((k,i)=>({i,t:k.t}));const red=[];let zadDio='';
+/* čišćenje: kratki skokovi (< 20 s) se zanemaruju, poglavlja idu redom koraka */
+function ocisti(z){if(!z.length)return z;const kraj=Math.max(z[z.length-1].t+30,snima?recT():0);
+ const seg=z.map((p,n)=>({i:p.i,t0:p.t,t1:n+1<z.length?z[n+1].t:kraj})),dug=seg.filter(s=>s.t1-s.t0>=20);
+ const koraci=[...new Set(dug.map(s=>s.i))].sort((a,b)=>a-b),out=[];
+ for(const i of koraci){const prije=Math.max(0,...dug.filter(s=>s.i<i).map(s=>s.t1));const c=dug.find(s=>s.i===i&&s.t0>=prije-0.01)||dug.filter(s=>s.i===i).pop();
+  if(!out.length||c.t0>out[out.length-1].t)out.push({i,t:c.t0})}
+ if(out.length)out[0].t=0;return out}
+function poglavlja(){const z=zapisPoglavlja.length?ocisti(zapisPoglavlja):S.map((k,i)=>({i,t:k.t}));const red=[];let zadDio='';
  z.forEach((p,n)=>{const k=S[p.i];const t=n===0?0:p.t;if(red.length&&t-red[red.length-1].t<10)return;red.push({t,n:(k.dio!==zadDio?k.dio+' — ':'')+k.naslov});zadDio=k.dio});
  return red.map(r=>hms(r.t)+' '+r.n).join('\n')+'\n'}
 $('b-pogl').onclick=()=>{preuzmi('poglavlja-youtube.txt',poglavlja());if(!zapisPoglavlja.length)poruka('Nema zapisa snimanja — poglavlja su iz vremena scenarija.')};
 const srtT=s=>{const ms=Math.round(s*1000);const h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000),x=Math.floor(ms%60000/1000),r=ms%1000;return[h,m,x].map(v=>String(v).padStart(2,'0')).join(':')+','+String(r).padStart(3,'0')};
-$('b-srt').onclick=()=>{const z=zapisPoglavlja.length?zapisPoglavlja:S.map((k,i)=>({i,t:k.t}));
+$('b-srt').onclick=()=>{const z=zapisPoglavlja.length?ocisti(zapisPoglavlja):S.map((k,i)=>({i,t:k.t}));
  preuzmi('naslovi-koraka.srt',z.map((p,n)=>(n+1)+'\n'+srtT(p.t)+' --> '+srtT(p.t+5)+'\n'+S[p.i].naslov+'\n').join('\n'))};
 
 /* ---------- uređivač kadrova ---------- */
@@ -336,7 +347,7 @@ function crtaj(){let s=sad();const i0=ki(s);
  const i=ki(s),sl=i+1<S.length?S[i+1].t:KRAJ;if(!ceka)zadUCekanju=i;
  if(igra&&s>=KRAJ){sat=KRAJ;igra=false}
  $('vr').textContent=mm(s)+' / '+mm(KRAJ);
- $('st').textContent=(ceka?'čeka ⏭ (sljedeći korak)':igra?'sat teče':'pauza')+' · sljedeće za '+mm(sl-s)+(snima?' · ● snima '+hms((performance.now()-rec0)/1000):'')+' · dvoklik na korak = skok';
+ $('st').textContent=(ceka?'čeka ⏭ (sljedeći korak)':igra?'sat teče':'pauza')+' · sljedeće za '+mm(sl-s)+(snima?(pauzaOd?' · ❚❚ snimanje pauzirano ':' · ● snima ')+hms(recT()):'')+' · dvoklik na korak = skok';
  $('b-igraj').textContent=igra?'⏸ Pauza':'▶ Pokreni';
  if(i!==zad){document.querySelectorAll('.k').forEach((el,j)=>{el.classList.toggle('sada',j===i);el.classList.toggle('gotov',j<i)});
   const el=$('k'+i);if(el&&zad>=0)el.scrollIntoView({behavior:'smooth',block:'start'});zad=i;zabiljezi(i)}
@@ -351,7 +362,7 @@ function crtaj(){let s=sad();const i0=ki(s);
 const vrhV=()=>document.documentElement.style.setProperty('--vrh',document.querySelector('.vrh').offsetHeight+'px');vrhV();
 new ResizeObserver(vrhV).observe(document.querySelector('.vrh'));
 requestAnimationFrame(crtaj);
-window.__citac={get sat(){return sad()},post,igraj,dalje,obs,get ids(){return ids},get reg(){return reg},R,pripremi,obsAuth,sha256,b64,utf8,poglavlja};
+window.__citac={get sat(){return sad()},post,igraj,dalje,obs,get ids(){return ids},get reg(){return reg},R,pripremi,obsAuth,sha256,b64,utf8,poglavlja,ocisti,recT};
 })();
 </script>
 </body>
