@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postavljanje stroja i programiranje — Haas Desktop Mill — upravljanje NGC | FORTRONIQ</title>
+<meta name="description" content="Simulator Haas Desktop Milla s upravljanjem NGC: uključivanje i POWER UP, HANDLE JOG, ručna izmjena alata i TOOL OFFSET MEASURE, PART ZERO SET, MDI, pisanje programa u EDIT-u i izvođenje u MEM-u sa SINGLE BLOCK — vježbe O01001 … O01003 i predmeti P01 … P21.">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/cnc-haas-desktop-mill/postavljanje-stroja.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Postavljanje stroja i programiranje">
+<meta property="og:description" content="Simulator Haas Desktop Milla s upravljanjem NGC: uključivanje i POWER UP, HANDLE JOG, ručna izmjena alata i TOOL OFFSET MEASURE, PART ZERO SET, MDI, pisanje programa u EDIT-u i izvođenje u MEM-u sa SINGLE BLOCK — vježbe O01001 … O01003 i predmeti P01 … P21.">
+<meta property="og:url" content="https://dos.fortroniq.hr/cnc-haas-desktop-mill/postavljanje-stroja.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+.podnaslov{font-size:.95rem;margin:14px 0 6px}.hero .stanice{margin-top:10px;font-size:.95rem}.hero .stanice a{font-weight:600}
+
+.lcd{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;background:#B9D84A;color:#1D2A0E;border:6px solid #2F3A3E;border-radius:8px;padding:8px 12px;display:grid;grid-template-columns:auto 1fr;gap:0 14px;font-size:.92rem;line-height:1.45;max-width:300px;box-shadow:inset 0 0 12px rgba(0,0,0,.25)}
+.lcd b{font-weight:600;letter-spacing:.04em}
+.pad{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.koraci-popis{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.koraci-popis button{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:6px 10px;border-radius:8px;font-size:.88rem;color:var(--body);border:1px solid transparent}
+.koraci-popis button:hover,.koraci-popis button:focus-visible{border-color:var(--rule);outline:none}
+.koraci-popis li.aktivan button{background:var(--tanko,rgba(46,202,212,.14));color:var(--ink);border-color:var(--teal)}
+.korak-tekst{min-height:3.2em;font-size:.92rem;color:var(--body);margin:6px 0 0}
+.korak-tekst b{color:var(--ink)}
+.stablo{list-style:none;margin:0;padding:0;font-size:.88rem}
+.stablo li{margin:0}
+.stablo button{all:unset;cursor:pointer;display:flex;gap:8px;align-items:center;width:100%;box-sizing:border-box;padding:4px 8px;border-radius:6px;color:var(--ink)}
+.stablo button[aria-pressed="true"]{background:var(--tanko,rgba(46,202,212,.14))}
+.stablo button:focus-visible{outline:2px solid var(--teal)}
+.stablo .uv{padding-left:22px}
+.stablo i{display:inline-block;width:14px;height:14px;border-radius:3px;border:1.5px solid var(--teal);flex:none}
+.stablo small{color:var(--body)}
+.tbl{width:100%;border-collapse:collapse;font-size:.86rem}
+.tbl th,.tbl td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--rule);vertical-align:top}
+.tbl th{font-weight:500;color:var(--ink)}
+.tbl td:last-child{color:var(--body);font-size:.8rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.polja label{display:flex;flex-direction:column;gap:3px;font-size:.82rem;color:var(--body)}
+.polja input[type=number],.polja select{font:inherit;font-size:.9rem;padding:4px 6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);text-align:right;width:100%;box-sizing:border-box}
+.polja select{text-align:left}
+#mreza{display:block;width:100%;height:clamp(380px,70vh,720px);background:var(--paper)}
+.slojevi-popis{list-style:none;margin:6px 0 0;padding:0;font-size:.84rem;color:var(--body);display:grid;gap:3px}
+.tekst-sim{max-width:860px}
+.tekst-sim h2{margin-top:34px}
+.tekst-sim p,.tekst-sim li{color:var(--body);line-height:1.62}
+.galerija{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin:12px 0 0}
+.galerija a{display:block;border:1px solid var(--rule);border-radius:12px;padding:14px;text-decoration:none;color:var(--ink);background:var(--paper)}
+.galerija a:hover{border-color:var(--teal)}
+.galerija b{display:block;margin-bottom:4px}
+.galerija span{font-size:.84rem;color:var(--body)}
+.modul-zn{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--rule);color:var(--body);margin-left:6px;vertical-align:2px}
+</style>
+<style>
+.cr-tijelo{padding:30px 0 56px}
+.cr-mreza{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;align-items:start}
+.karta{background:var(--paper);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+.karta-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.karta-h h2{margin:0;font-size:1.05rem;color:var(--ink);font-weight:600}
+.karta-in{padding:14px 18px}
+#scena{position:relative;height:clamp(360px,66vh,640px);touch-action:none;cursor:grab;background:radial-gradient(ellipse at 50% 85%,rgba(46,202,212,.10),transparent 62%)}
+#scena canvas{display:block;width:100%;height:100%}
+.ucitavanje{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--body)}
+.gumbi{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.gumb.tanki{cursor:pointer}.gumb.tanki[aria-pressed="true"]{background:var(--tanko)}.gumb.tanki:disabled{opacity:.45;cursor:default}
+.traka-napretka{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 18px;border-top:1px solid var(--rule);font-size:.88rem;color:var(--body)}
+.traka-napretka progress{flex:1 1 160px;height:8px;accent-color:var(--teal)}
+.traka-napretka select{font:inherit;font-size:.85rem}
+.stup{display:flex;flex-direction:column;gap:20px}
+.polje{padding:8px 0;border-bottom:1px solid var(--rule)}
+.polje label{display:block;font-size:.88rem;color:var(--ink);font-weight:600;margin-bottom:4px}
+.ulaz{display:grid;grid-template-columns:1fr 84px 24px;gap:8px;align-items:center}
+.ulaz input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+.ulaz input[type=number]{width:100%;font:inherit;font-size:.9rem;padding:4px 6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);text-align:right}
+.ulaz span{font-size:.85rem;color:var(--body)}
+.pom,.info,.napomena{font-size:.82rem;color:var(--body);line-height:1.5;margin:4px 0 0;text-align:left;hyphens:manual}
+.info{margin-top:10px}
+.upoz{color:#B23B2A;font-weight:600}
+fieldset{border:0;margin:0;padding:8px 0;border-bottom:1px solid var(--rule)}
+legend{font-size:.88rem;color:var(--ink);font-weight:600;padding:0;margin-bottom:4px}
+fieldset label{margin-right:14px;font-size:.9rem;color:var(--body);cursor:pointer}
+.izvori{display:flex;flex-wrap:wrap;gap:6px 14px}
+.kv{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--body);padding:6px 0;cursor:pointer}
+.kv input{accent-color:var(--teal)}
+textarea,select,input[type=file]{font:inherit;font-size:.9rem;max-width:100%}
+textarea{width:100%;min-height:64px;border:1px solid var(--rule);border-radius:8px;padding:6px 8px;background:var(--paper);color:var(--ink)}
+select{border:1px solid var(--rule);border-radius:6px;padding:4px 6px;background:var(--paper);color:var(--ink)}
+.t-traka{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:6px;border:1px solid var(--rule);border-bottom:0;border-radius:8px 8px 0 0;background:var(--tanko)}
+.t-traka select,.t-traka input{font:inherit;font-size:.85rem;height:30px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);padding:0 4px}
+.t-traka select{width:auto;max-width:13rem}.t-traka #tekst-h{width:58px}.t-jed,.t-lab{font-size:.8rem;color:var(--body)}
+.t-skup{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.t-sep{width:1px;height:22px;background:var(--rule);margin:0 2px}
+.t-g{width:30px;height:30px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--ink);cursor:pointer;font:inherit;font-size:.95rem;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.t-g:hover{border-color:var(--rule)}.t-g[aria-pressed="true"]{background:var(--paper);border-color:var(--teal);color:var(--teal)}
+.t-g svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;fill:none}
+[data-izvor="tekst"] textarea{border-radius:0 0 8px 8px;min-height:96px;resize:vertical;line-height:1.45}
+.t-pregled{display:block;width:100%;height:120px;margin-top:8px;border:1px dashed var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+.t-polja{display:flex;flex-wrap:wrap;gap:6px 14px}.t-polja label{white-space:nowrap}.t-polja input{width:64px}
+.t-raz{display:flex;align-items:center;gap:6px}.t-raz input{flex:1;min-width:80px}
+.red2{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;padding:6px 0;font-size:.88rem;color:var(--body)}
+#slika-pregled{max-width:100%;max-height:150px;border:1px solid var(--rule);border-radius:6px;margin-top:8px;background:#fff;image-rendering:pixelated}
+.legenda{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--body);margin-top:6px}
+.legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+.os{display:grid;grid-template-columns:52px 1fr 52px;gap:8px;align-items:center;padding:5px 0}
+.os label{font-size:.85rem;color:var(--ink)}
+.os input{width:100%;accent-color:var(--teal);margin:0}
+.os output{text-align:right;font-size:.85rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.test-traka{background:#FFF4D6;color:#5C4400;border-bottom:1px solid #E8D18A;font-size:.85rem;padding:7px 0;text-align:center}
+.gkod{height:260px;overflow:auto;background:#0E1B21;color:#D8E6EA;border-radius:8px;padding:6px 0;font:12.5px/1.45 'IBM Plex Mono',ui-monospace,Consolas,monospace;margin-top:8px}
+.gkod div{white-space:pre;padding:0 10px}
+.gkod i{display:inline-block;width:46px;color:#6E8790;font-style:normal;text-align:right;margin-right:12px;user-select:none}
+.gkod .kom{color:#8FB8A0}
+.gkod .akt{background:#17656E;color:#fff}
+.gkod .akt i{color:#CFE9EC}
+[hidden]{display:none!important}
+.qr{display:flex;gap:16px;align-items:center}
+.qr-slika{flex:0 0 auto;background:#fff;padding:9px;border-radius:10px;border:1px solid var(--rule);line-height:0}
+.qr-slika svg{width:132px;height:132px}
+.qr p,.mob p{margin:0 0 8px;color:var(--body);font-size:.9rem;line-height:1.5;text-align:left}
+.qr p b,.mob p b{color:var(--ink)}
+.adresa{font-size:.78rem;word-break:break-all;color:var(--teal)!important}
+.mob{display:none}.je-mob .mob{display:block}.je-mob .qr{display:none}
+.ar-gumb{width:100%;justify-content:center;font-size:1.02rem;padding:13px 16px;font-weight:600;margin-bottom:6px}
+#xr-sloj{position:fixed;inset:0;z-index:100;pointer-events:none;color:#fff}
+.xr-vrh,.xr-dno{pointer-events:auto;background:rgba(6,30,36,.8);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.xr-vrh{position:absolute;left:10px;right:10px;top:10px;border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:.92rem;line-height:1.35}
+.xr-dno{position:absolute;left:10px;right:10px;bottom:10px;border-radius:14px;padding:10px 12px 8px}
+.xr-gumbi{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+#xr-sloj button{font:inherit;font-size:.9rem;font-weight:600;color:#fff;background:#17656E;border:0;border-radius:9px;padding:9px 12px;flex:1}
+#xr-sloj button[aria-pressed="true"]{background:#2ECAD4;color:#06262B}
+#xr-izlaz{flex:0 0 auto!important;background:#B23B2A!important}
+.xr-os{display:grid;grid-template-columns:58px 1fr 46px;gap:8px;align-items:center;padding:4px 0}
+.xr-os b{font-size:.84rem}.xr-os input{width:100%;accent-color:#2ECAD4;margin:0;height:26px}.xr-os output{text-align:right;font-size:.84rem}
+.xr-napredak{margin:4px 0 0;font-size:.82rem;color:#CFE9EC}
+.slojevi-omot{overflow-x:auto;margin-top:8px}
+table.slojevi{width:100%;border-collapse:collapse;font-size:.85rem}
+.slojevi th{text-align:left;color:var(--ink);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--rule)}
+.slojevi td{padding:4px 6px;border-bottom:1px solid var(--rule);color:var(--body);white-space:nowrap}
+.slojevi select{font-size:.82rem;padding:2px 4px}
+.slojevi input[type=color],#pr-ploca{width:38px;height:26px;padding:0 2px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);cursor:pointer;vertical-align:middle}
+.kvadrat{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+@media (max-width:980px){.cr-mreza{grid-template-columns:minmax(0,1fr);gap:20px}.stup{display:contents}.cr-mreza>.stup>.karta{order:5}#k-scena{order:1!important}#k-ar{order:2!important}#k-crtez{order:3!important}#k-ploca{order:4!important}}
+
+.gkod span.kom,.gkod div.kom{color:#F0A58F}
+.gkod span.kom{color:#8FB8A0}
+#p-tekst{min-height:230px;font:13px/1.5 'IBM Plex Mono',ui-monospace,Consolas,monospace;resize:vertical}
+.graf-omot{position:relative;margin-top:6px}
+.graf-omot canvas{display:block;width:100%;height:170px}
+.graf-crta{position:absolute;top:10px;bottom:26px;width:0;border-left:1.5px solid var(--ink);opacity:.55;pointer-events:none}
+table.rez{width:100%;border-collapse:collapse;font-size:.82rem;margin:6px 0 0}
+.rez th,.rez td{padding:5px 4px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap}
+.rez th:first-child{text-align:left;color:var(--ink);font-weight:600}
+.rez thead th{color:var(--ink);font-weight:600;font-size:.8rem}
+table.rez8{width:100%;border-collapse:collapse;font-size:.84rem;margin:8px 0 0}
+.rez8 th,.rez8 td{padding:5px 6px;border-bottom:1px solid var(--rule);vertical-align:top;text-align:left;color:var(--body)}
+.rez8 th{color:var(--ink);font-weight:600}
+.lista{margin:6px 0 0;padding-left:1.1rem;font-size:.86rem;color:var(--body);line-height:1.5}
+#prog-info code,.pom code,.napomena code{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;font-size:.85em;background:var(--tanko);padding:0 4px;border-radius:4px}
+.samo-tello{}
+@media (max-width:980px){#k-scena{order:1!important}#k-program{order:2!important}#k-graf{order:3!important}#k-model{order:4!important}#k-ar{order:5!important}}
+@media (max-width:680px){.cr-tijelo{padding:16px 0 40px}#scena{height:clamp(300px,58vh,460px)}.karta-h,.karta-in{padding-left:14px;padding-right:14px}}
+</style>
+<style>
+.m3-siroko{max-width:1720px;margin:0 auto;padding:0 20px}
+@media (min-width:681px){.m3-siroko{padding-right:66px}}
+.m3-mreza{display:grid;grid-template-columns:190px minmax(640px,1.12fr) minmax(0,1fr);gap:18px;align-items:start}
+.m3-sredina,.m3-desno{display:flex;flex-direction:column;gap:14px;min-width:0}
+.nizovi{list-style:none;margin:0;padding:8px 10px 12px}
+.nizovi .grupa{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--body);margin:10px 0 4px;font-weight:600}
+.nizovi .niz{display:flex;gap:6px;align-items:center;width:100%;text-align:left;background:none;border:0;border-radius:6px;padding:6px;font:inherit;font-size:.92rem;color:var(--ink);cursor:pointer}
+.nizovi .niz:hover{background:var(--tanko)}.nizovi .niz.akt{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nizovi .niz.akt{color:#06262B}}
+:root[data-theme="dark"] .nizovi .niz.akt{color:#06262B}
+.nizovi .kv{display:inline-block;width:18px;color:#1d9e4b;font-weight:700;font-size:.85rem}.nizovi .niz.akt .kv{color:inherit}
+#upravljanje{outline:none;overflow:visible}#upravljanje:focus-visible{box-shadow:0 0 0 3px var(--cyan)}
+
+/* ---------------------------------------------------------------- zaslon Mach3 (vlastiti izgled) */
+.m3{background:#3d4b59;color:#e8eef1;border-radius:12px 12px 0 0;padding:8px;font:12px/1.3 'IBM Plex Sans',system-ui,sans-serif}
+.m3-naslov{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;background:#1d2731;border-radius:6px;padding:4px 8px;font-size:11.5px;color:#cfd8dc}
+.m3-naslov span:first-child{font-weight:700;color:#fff}.m3-dat{overflow-wrap:anywhere}
+.m3-tab{display:flex;gap:3px;flex-wrap:wrap;margin:6px 0}
+.m3-tab span{background:#53636f;color:#b8c4cb;border-radius:5px 5px 0 0;padding:3px 8px;font-size:10.5px}
+.m3-tab span.akt{background:#7b8d99;color:#fff;font-weight:700}
+.m3-tijelo{position:relative;background:#4c5c6a;border-radius:0 6px 6px 6px;padding:8px}
+.m3-off{position:absolute;inset:0;z-index:6;background:#0b1218;border-radius:6px;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;text-align:center;padding:20px}
+.m3-off p{color:#9fb3bb;margin:0;text-align:center}
+.m3-gore{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:8px}
+.m3-kod-l{background:#f5f7f8;color:#0d1a20;border:2px inset #2b3640;font:11.5px/17px 'IBM Plex Mono',ui-monospace,Consolas,monospace;height:242px;overflow:hidden;padding:2px 0}
+.m3-kod-l div{white-space:pre;padding:0 6px;overflow:hidden;text-overflow:ellipsis}
+.m3-kod-l i{display:inline-block;width:38px;color:#7b8a92;font-style:normal;text-align:right;margin-right:8px;user-select:none}
+.m3-kod-l .akt{background:#ffd24a;color:#000}
+.m3-red{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#dfe7eb;margin-top:3px;flex-wrap:wrap}
+.m3-dro{display:flex;flex-direction:column;gap:5px}
+.m3-os{display:grid;grid-template-columns:64px 18px minmax(0,1fr) 12px;gap:5px;align-items:center}
+.m3-slovo{font-size:19px;color:#fff;text-align:center}
+.m3-v{background:#060908;color:#3bff6e;font:700 20px/1 'IBM Plex Mono',ui-monospace,Consolas,monospace;text-align:right;border:2px inset #20282e;border-radius:3px;padding:6px 8px;cursor:text;min-width:0;width:100%}
+.m3-v:hover{background:#0d1512}.m3-v:focus-visible{outline:2px solid #ffd24a}
+.m3-unos{width:100%;min-width:0;background:#fffbe0;color:#000;font:700 18px/1 'IBM Plex Mono',ui-monospace,Consolas,monospace;border:2px solid #ffd24a;border-radius:3px;padding:5px 6px;text-align:right}
+.m3-led{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2a3036;border:1px solid #11161a;flex:0 0 auto}
+.m3-led.upaljen,[aria-pressed="true"]>.m3-led{background:#3bff6e;box-shadow:0 0 6px #3bff6e}
+.m3-dro-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin-top:4px}
+.m3-b{display:inline-flex;align-items:center;justify-content:center;gap:5px;flex-direction:row;background:linear-gradient(#eef1f3,#c3ccd2);color:#10202a;border:1px solid #67747e;border-radius:4px;font:600 11px/1.15 'IBM Plex Sans',system-ui,sans-serif;min-height:30px;padding:3px 6px;cursor:pointer;min-width:0;text-align:center}
+.m3-b:hover{background:linear-gradient(#fff,#d6dde2)}.m3-b:focus-visible{outline:2px solid #ffd24a;outline-offset:1px}
+.m3-b small{font-size:9px;opacity:.65;font-weight:500}
+.m3-b[aria-pressed="true"]{background:linear-gradient(#d9f7e2,#a9dcb8)}
+.m3-dolje{display:grid;grid-template-columns:minmax(0,1.25fr) 92px minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:8px;align-items:stretch}
+.m3-prog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.m3-start{background:linear-gradient(#7fe39a,#2f9e44)!important;color:#03230d!important;font-size:12px!important}
+.m3-start.radi{box-shadow:0 0 0 2px #3bff6e,0 0 10px #3bff6e}
+.m3-hold{background:linear-gradient(#ffe9a3,#e0b400)!important}
+.m3-stop{background:linear-gradient(#ffb3aa,#d23a2c)!important;color:#2b0300!important}
+.m3-rst-o{display:flex;align-items:center;justify-content:center}
+.m3-rst{width:84px;height:84px;border-radius:8px;border:3px solid #1d2731;background:linear-gradient(#bdf0c9,#3aa55a);color:#052512;font:700 14px 'IBM Plex Sans',sans-serif;cursor:pointer}
+.m3-rst:focus-visible{outline:3px solid #ffd24a}
+.m3-rst.trepce{animation:m3trep 1s steps(1) infinite;color:#fff}
+@keyframes m3trep{0%{background:#e3261a;border-color:#ffb3aa}50%{background:#5a0d08;border-color:#e3261a}}
+@media (prefers-reduced-motion:reduce){.m3-rst.trepce{animation:none;background:#e3261a}}
+.m3-ploca{background:#33414e;border-radius:6px;padding:6px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.m3-ph{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8fe6ec;font-weight:700}
+.m3-ov{display:grid;grid-template-columns:62px minmax(0,1fr);gap:4px;align-items:center;font-size:11px}
+.m3-ovg{display:grid;grid-template-columns:repeat(auto-fit,minmax(34px,1fr));gap:4px}
+.m3-ol{color:#dfe7eb;white-space:nowrap}
+.m3-dv{background:#060908;color:#3bff6e;font:700 13px/1.2 'IBM Plex Mono',ui-monospace,Consolas,monospace;min-width:0;text-align:right;padding:3px 6px;border-radius:3px}
+.m3-m{min-width:0}
+.m3-jog{background:#33414e;border-radius:6px;padding:8px;margin-top:8px}
+.m3-jog-r{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:4px 0}
+.m3-jl{margin-left:8px;color:#cfd8dc}
+.m3-jog-k{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.m3-jk{font-size:13px!important;min-height:34px!important;touch-action:none}
+#m3-joga{grid-column:1/-1}
+.m3-jp{font-size:10.5px;color:#cfd8dc;margin:6px 0 0;text-align:left;line-height:1.4}
+.m3-status{display:flex;gap:6px;background:#1d2731;border-radius:5px;padding:4px 8px;margin-top:8px;font-size:11.5px;min-height:24px}
+.m3-status span:first-child{color:#8fe6ec;font-weight:700}
+.m3-dlg{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:8;width:min(420px,calc(100% - 16px));background:#e9edf0;color:#0d1a20;border:2px solid #1d2731;border-radius:8px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.m3-dlg .m3-ph{color:#17656E;margin-bottom:6px}
+.m3-dlg-l{max-height:260px;overflow:auto;display:grid;gap:2px;background:#fff;border:1px solid #9aa7ad}
+.m3-dat-i{all:unset;display:flex;justify-content:space-between;gap:8px;padding:3px 8px;font-size:12px;cursor:pointer}
+.m3-dat-i span{color:#5d7c90}.m3-dat-i:hover{background:#e3f4f6}.m3-dat-i:focus-visible{outline:2px solid #17656E}
+.m3-dat-i[aria-pressed="true"]{background:#17656E;color:#fff}.m3-dat-i[aria-pressed="true"] span{color:#d4eef0}
+.m3-dlg-g{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+
+/* ---------------------------------------------------------------- upravljačka kutija i pretvarač */
+.fiz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,.9fr);gap:10px;background:#2a3036;color:#e8eef1;padding:10px;border-radius:0 0 12px 12px}
+.fiz-k{background:#1f2428;border-radius:8px;padding:8px}
+.fiz-k h3{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:#8fe6ec;margin:0 0 6px}
+.fiz-g{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.fiz-b{display:inline-flex;align-items:center;gap:6px;background:#e9edef;color:#18252b;border:1px solid #9aa7ad;border-radius:5px;font:600 11px 'IBM Plex Sans',sans-serif;min-height:32px;padding:4px 9px;cursor:pointer}
+.fiz-b:hover{background:#fff}.fiz-b:focus-visible,.gljiva:focus-visible,.fiz-seg button:focus-visible{outline:2px solid var(--cyan);outline-offset:1px}
+.fiz-led{display:inline-block;width:9px;height:9px;border-radius:50%;background:#59636a}
+.fiz-b[aria-pressed="true"] .fiz-led{background:#2ecc71;box-shadow:0 0 6px #2ecc71}
+.fiz-run{background:#bfe8c9}.fiz-stp{background:#f3c4bd}
+.gljiva{width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ff6b5a,#b3160a);color:#fff;border:6px solid #f2c21a;font:700 9px 'IBM Plex Sans',sans-serif;cursor:pointer;padding:0}
+.gljiva[aria-pressed="false"]{box-shadow:0 0 0 3px #1d9e4b}
+.vfd-lcd{display:inline-block;min-width:78px;background:#0e2a18;color:#4dff8a;font:700 14px/1 'IBM Plex Mono',ui-monospace,Consolas,monospace;padding:7px 8px;border-radius:4px;text-align:right;border:2px solid #3c4247}
+.fiz-seg{display:inline-flex;border:1px solid #9aa7ad;border-radius:5px;overflow:hidden}
+.fiz-seg button{font:600 11px 'IBM Plex Sans',sans-serif;background:#e9edef;color:#18252b;border:0;padding:6px 10px;cursor:pointer;min-height:32px}
+.fiz-seg button[aria-pressed="true"]{background:#2ecad4;color:#06262B}
+.fiz-pot{display:flex;align-items:center;gap:6px;font-size:11px;color:#cfd8dc;flex:1 1 180px}
+.fiz-pot input{flex:1;min-width:60px;accent-color:#2ecad4}.fiz-pot output{font-family:'IBM Plex Mono',monospace;min-width:44px;text-align:right}
+.fiz-papir p{margin:0;font-size:.84rem;color:#dfe7eb;text-align:left;line-height:1.45}
+.fiz-papir .zap{color:#3bff6e}
+
+/* ---------------------------------------------------------------- uputa, scena, predmet */
+.m3-uputa #uputa{margin:0 0 8px;color:var(--ink);line-height:1.5;text-align:left}
+.m3-uputa details{margin:4px 0}.m3-uputa summary{cursor:pointer;color:var(--teal);font-weight:600}
+.m3-uputa #pomoc{text-align:left}
+.blok-obj{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);border-radius:0 8px 8px 0;padding:8px 10px;margin:8px 0;font-size:.88rem;color:var(--ink)}
+.blok-obj .bo{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);gap:4px 10px;padding:4px 0;border-top:1px solid var(--rule);margin-top:4px}
+.blok-obj code{font-size:.8rem;overflow-wrap:anywhere;align-self:start}
+.blok-obj span{color:var(--body);line-height:1.45}
+.m3-stroj #scena{height:clamp(380px,60vh,640px)}
+.ops{margin:6px 0 0;padding-left:1.2rem;font-size:.88rem;color:var(--body)}.ops li{padding:4px 6px;border-radius:6px;margin-bottom:2px;line-height:1.45}.ops li.akt{background:var(--tanko);color:var(--ink);outline:1px solid var(--teal)}
+#predmet p{text-align:left;margin:0 0 .5rem}
+.tekst-sim .okvir p,.tekst-sim .okvir li{overflow-wrap:anywhere}
+@media (max-width:1400px){.m3-mreza{grid-template-columns:minmax(600px,1.1fr) minmax(0,1fr)}.m3-izbornik{grid-column:1/-1}.m3-izbornik .nizovi{display:flex;flex-wrap:wrap;gap:4px}.nizovi .grupa{width:100%}.nizovi li{flex:0 0 auto}}
+@media (max-width:1150px){.m3-mreza{grid-template-columns:minmax(0,1fr)}.m3-desno{display:contents}.m3-izbornik{order:1}#k-scena{order:2}.m3-sredina{order:3}#k-predmet{order:4}}
+@media (max-width:760px){.m3-gore{grid-template-columns:minmax(0,1fr)}.m3-dolje{grid-template-columns:minmax(0,1fr) 92px}.m3-ploca{grid-column:1/-1}.fiz{grid-template-columns:minmax(0,1fr)}.m3-kod-l{height:176px}}
+@media (max-width:680px){.m3-siroko{padding:0 12px}.m3{padding:6px}.m3-tijelo{padding:6px}.m3-v{font-size:17px;padding:5px 6px}.m3-os{grid-template-columns:56px 14px minmax(0,1fr) 10px}.m3-dolje{grid-template-columns:minmax(0,1fr) 78px}.m3-rst{width:74px;height:74px}.m3-tab span:not(.akt){display:none}.blok-obj .bo{grid-template-columns:minmax(0,1fr)}}
+</style>
+<style>
+/* ---------------------------------------------------------------- zaslon NGC (vlastiti izgled) */
+.ngc{background:#0d1b26;color:#e8eef1;border-radius:12px 12px 0 0;padding:8px;font:12px/1.3 'IBM Plex Sans',system-ui,sans-serif}
+.ngc-vrh{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#1f3b52;border-radius:6px;padding:4px 10px;font-size:12px}
+.ngc-nac{font-weight:700;color:#fff;letter-spacing:.06em}.ngc-pn{color:#8fe6ec;font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;overflow-wrap:anywhere}.ngc-sat{color:#9fb3bb;font-family:'IBM Plex Mono',monospace;font-size:11px}
+.ngc-tijelo{position:relative;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:8px;margin-top:6px;min-height:300px}
+.ngc-off{position:absolute;inset:0;z-index:6;background:#05080b;border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px}
+.ngc-off p{color:#9fb3bb;margin:0;text-align:center;white-space:pre-line}
+.ngc-lijevo,.ngc-desno{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ngc-ph{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8fe6ec;font-weight:700;background:#142a3a;padding:3px 8px;border-radius:5px 5px 0 0}
+.ngc-pane{background:#0a1420;border:1px solid #243b4e;border-radius:0 0 6px 6px;min-height:260px;max-height:330px;overflow:auto;padding:4px 0;font:11.5px/17px 'IBM Plex Mono',ui-monospace,Consolas,monospace;color:#dfe7eb}
+.ngc-pane .r{white-space:pre;padding:0 8px;overflow:hidden;text-overflow:ellipsis}
+.ngc-pane .r i{display:inline-block;width:34px;color:#60788a;font-style:normal;text-align:right;margin-right:8px;user-select:none}
+.ngc-pane .r.akt{background:#ffd24a;color:#000}.ngc-pane .r.kur{outline:1px solid #8fe6ec;outline-offset:-1px}
+.ngc-pane .r.izv{color:#8fe6ec}
+.ngc-pane table{border-collapse:collapse;width:100%;font-size:11.5px}.ngc-pane td,.ngc-pane th{padding:2px 8px;text-align:right;border-bottom:1px solid #16283a;white-space:nowrap;background:transparent;color:#dfe7eb}.ngc-pane th{color:#8fe6ec;font-weight:600;text-align:right;background:#142a3a}
+.ngc-pane td:first-child,.ngc-pane th:first-child{text-align:left}
+.ngc-pane td.sel{background:#1f3b52;outline:1px solid #ffd24a;color:#fff}
+.ngc-pane .tab{display:flex;gap:4px;padding:2px 6px 4px;font:600 10.5px 'IBM Plex Sans',sans-serif}.ngc-pane .tab span{padding:2px 8px;border-radius:4px;background:#142a3a;color:#9fb3bb}.ngc-pane .tab span.akt{background:#2ecad4;color:#06262B}
+.ngc-pane .nap{padding:4px 8px;color:#9fb3bb;font:11px/1.4 'IBM Plex Sans',sans-serif;white-space:normal}
+.ngc-pane .al{padding:2px 8px;color:#ff8a80;white-space:normal;font:600 11.5px/1.4 'IBM Plex Mono',monospace}
+.ngc-pane .dlg{margin:8px;background:#1f3b52;border:1px solid #8fe6ec;border-radius:6px;padding:8px;font:11.5px/1.5 'IBM Plex Sans',sans-serif;white-space:normal}
+.ngc-pane .dlg b{color:#fff}.ngc-pane .dlg .polje{display:inline-block;min-width:90px;background:#0a1420;border:1px solid #60788a;padding:1px 6px;margin-left:6px;font-family:'IBM Plex Mono',monospace}
+.ngc-pane .dlg .polje.sel{border-color:#ffd24a}
+.ngc-pt{width:100%;border-collapse:collapse;background:#0a1420;border:1px solid #243b4e;border-radius:0 0 6px 6px;font:700 13px/1.2 'IBM Plex Mono',ui-monospace,Consolas,monospace}
+.ngc-pt td,.ngc-pt th{padding:3px 8px;text-align:right;background:transparent;border:0}.ngc-pt th{color:#8fe6ec;font-size:10px;font-weight:600;letter-spacing:.06em;background:#142a3a}.ngc-pt td:first-child{color:#cfd8dc;text-align:left;font-weight:600}
+.ngc-pt td.v{color:#3bff6e;min-width:84px}.ngc-pt tr.g td{color:#9fb3bb;font-weight:500;font-size:11px}.ngc-pt tr.g td.v{color:#9fe6b4}
+.ngc-stanje{background:#0a1420;border:1px solid #243b4e;border-radius:6px;padding:6px 8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 10px;font-size:11px}
+.ngc-stanje span{color:#9fb3bb}.ngc-stanje b{color:#dfe7eb;font-family:'IBM Plex Mono',monospace;font-weight:600}.ngc-stanje b.on{color:#3bff6e}.ngc-stanje b.up{color:#ffd24a}
+.ngc-unos{display:flex;align-items:center;gap:6px;margin-top:6px;background:#0a1420;border:1px solid #243b4e;border-radius:5px;padding:4px 8px;font:12.5px/1.2 'IBM Plex Mono',ui-monospace,Consolas,monospace;min-height:26px}
+.ngc-ul{color:#8fe6ec;font-size:10px;font-weight:700}.ngc-ut{color:#fff;overflow-wrap:anywhere}.ngc-kur{display:inline-block;width:8px;height:14px;background:#ffd24a;animation:ngckur 1s steps(1) infinite}
+@keyframes ngckur{50%{opacity:0}}
+.ngc-por{margin-top:6px;background:#1d2731;border-radius:5px;padding:4px 8px;font-size:11.5px;min-height:24px;color:#dfe7eb}
+.ngc-por.alarm{background:#5a0d08;color:#ffb3aa;font-weight:600}
+.ngc-por.poruka{color:#ffd24a}
+/* ---------------------------------------------------------------- privjesak (prednja ploča prema stvarnoj jedinici: lijevo gumbi i kotač, desno tipkovnica) */
+.pan{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px;background:#c9cbc7;padding:10px;color:#1c2024;border-top:4px solid #a9aca8}
+.pan-lijevo{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+.pan-p{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;justify-items:center;align-items:center}
+.pan-l{font:700 8.5px 'IBM Plex Sans',sans-serif;letter-spacing:.04em;color:#1c2024;text-align:center}.pan-l2{grid-column:1/-1}
+.pan-p .gljiva,.pan-p .kotac,.pan-p .kot-p{grid-column:1/-1}
+.pk{width:30px;height:30px;border-radius:50%;border:3px solid #6f7570;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.pk-z{background:radial-gradient(circle at 40% 35%,#6fe08f,#1d8a3e)}.pk-c{background:radial-gradient(circle at 40% 35%,#ff7a5c,#c0281b)}
+.pk:focus-visible{outline:2px solid #0f4a52;outline-offset:2px}.pk[aria-pressed="true"]{box-shadow:0 0 0 3px #3bff6e}
+.pan .gljiva{width:52px;height:52px;border:6px solid #f2c21a;background:radial-gradient(circle at 40% 35%,#ff6b5a,#b3160a)}
+.pan .gljiva[aria-pressed="false"]{box-shadow:0 0 0 3px #1d9e4b}
+.pan .kotac{grid-template-columns:22px 1fr 22px;gap:2px}
+.pan .kot-k{width:70px;height:70px;border:4px solid #8b9094;background:radial-gradient(circle at 50% 50%,#d9dcd9 0 28%,#9a9fa3 29% 100%)}
+.pan .kot-k i{background:#1c2024}
+.pan .kot-b{width:22px;height:22px;font-size:12px}
+.pan .kot-p{font-size:9.5px;color:#1c2024}.pan .kot-p b{color:#0f4a52}
+.pan-desno{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pan-red1{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr) minmax(0,1.5fr);gap:8px}
+.pan-red2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr) minmax(0,1.5fr);gap:8px}
+.pan-red3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.1fr);gap:8px}
+.tip-g{background:transparent;border-radius:6px;padding:0;min-width:0;display:flex;flex-direction:column;gap:3px}
+.tip-h{font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:#1c2024;font-weight:700;margin:2px 0 0;border-bottom:2px solid #1c2024;line-height:1.4}
+.tip-h2{border:0;align-self:center;margin:0}
+.tip-r{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+.tip-3{grid-template-columns:repeat(3,minmax(0,1fr))}.tip-4{grid-template-columns:repeat(4,minmax(0,1fr))}.tip-kur{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tip-alfa-r{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:3px;align-content:start}
+.tk-n{background:linear-gradient(#f4f6f7,#d4d9dc)}.tk-f{font-size:8.5px}
+.tk{display:inline-flex;align-items:center;justify-content:center;text-align:center;background:linear-gradient(#b4b8b4,#8e938f);color:#111;border:1px solid #5d625f;border-radius:4px;font:600 8.5px/1.05 'IBM Plex Sans',system-ui,sans-serif;min-height:28px;padding:2px 1px;cursor:pointer;min-width:0;overflow:hidden;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+.tk:hover{background:linear-gradient(#c8ccc8,#a0a5a1)}.tk:focus-visible{outline:2px solid #0f4a52;outline-offset:1px}
+.tk[aria-pressed="true"]{background:linear-gradient(#d9f7e2,#8fd6a4);box-shadow:inset 0 0 0 1px #2f9e44}
+.tk-m{background:linear-gradient(#cfe3ef,#9bbdd0)}.tk-m[aria-pressed="true"]{background:linear-gradient(#8fe6ec,#2ecad4)}
+.tk-p{background:linear-gradient(#8fc9ea,#4aa3d8);color:#06262B}.tk-o{background:linear-gradient(#f0a060,#e07a2a)}.tk-z{background:linear-gradient(#bfe8c9,#6fc28a)}.tk-c{background:linear-gradient(#f3c4bd,#e38a7c)}
+.tk-ok{background:linear-gradient(#f3e4a0,#e8d57a)}
+.tk-j{font-size:11px;min-height:30px;touch-action:none}
+.tip-jog-k{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
+.pk-v{width:34px;height:34px}
+.kotac{display:grid;align-items:center;justify-items:center;padding:2px 0;outline:none}
+.kotac:focus-visible{box-shadow:0 0 0 2px #0f4a52;border-radius:8px}
+.kot-b{background:#e9edef;color:#18252b;border:1px solid #9aa7ad;border-radius:50%;font:700 14px 'IBM Plex Sans',sans-serif;cursor:pointer;padding:0}
+.kot-k{border-radius:50%;position:relative;cursor:grab;transition:transform .08s}
+.kot-k i{position:absolute;left:50%;top:5px;width:6px;height:6px;margin-left:-3px;border-radius:50%}
+.kot-p{margin:0;text-align:center}.kot-p b{font-family:'IBM Plex Mono',monospace}
+.fiz-alat{font:600 11px 'IBM Plex Mono',monospace;color:#8fe6ec}
+@media (max-width:1560px){.pan-red1{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.tip-mod{grid-column:1/-1}}
+@media (max-width:760px){.ngc-tijelo{grid-template-columns:minmax(0,1fr)}.ngc-pane{min-height:180px;max-height:240px}.pan{grid-template-columns:minmax(0,1fr)}.pan-lijevo{flex-direction:row;flex-wrap:wrap;justify-content:space-around}.pan-red2,.pan-red3{grid-template-columns:minmax(0,1fr)}.tip-alfa-r{grid-template-columns:repeat(9,minmax(0,1fr))}}
+@media (max-width:680px){.ngc{padding:6px}.tk{font-size:8px;min-height:26px}.tip-alfa-r{grid-template-columns:repeat(9,minmax(0,1fr))}.tk-f{font-size:7px}.pan-red1{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Haas Desktop Mill</a><i aria-hidden="true">/</i><span aria-current="page">Postavljanje stroja</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">HAAS DESKTOP MILL &middot; UPRAVLJANJE NGC &middot; TRI OSI</p><p class="nadnaslov">Postavljanje stroja</p><h1>Postavljanje stroja i programiranje — korak po korak</h1><p>Sedam nizova kao na stroju: uključivanje i referenciranje (POWER UP), ručno gibanje ručnim kotačem (HANDLE JOG), ručna izmjena alata i korekcija duljine (TOOL OFFSET MEASURE), nultočka obratka (PART ZERO SET), MDI, pisanje programa (EDIT) i izvođenje programa blok po blok (MEM, SINGLE BLOCK). Uputa je ispod upravljanja, pomoć se otvara klikom na „Pomoć”. Nizovi se mogu raditi bilo kojim redom.</p><p class="stanice">Zaslon i tipke su naš crtež privjeska prema stvarnoj upravljačkoj jedinici (zasebna kutija s ručkom uz stroj) — nazivi tipki engleski kao na stroju, objašnjenja hrvatska &middot; u načinu HANDLE JOG tipke X Y Z biraju os, ← → okreću ručni kotač, PgUp PgDn mijenjaju korak &middot; za izvođenje se nude vježbe O01001 … O01003 i naši predmeti P01 … P21 (prevedeni u Haas zapis).</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>uključiti stroj, otpustiti EMERGENCY STOP, pritisnuti RESET i referencirati osi s POWER UP</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ručno gibati osi ručnim kotačem i tipkama u načinu HANDLE JOG</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izmjeriti duljine alata T1 i T2 tipkom TOOL OFFSET MEASURE uz ručnu izmjenu alata (M06)</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odrediti nultočku obratka G54 tipkom PART ZERO SET i dodati polumjer alata</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>upisati i izvesti blokove u MDI, napisati program u EDIT-u, izvesti program u MEM-u blok po blok (SINGLE BLOCK)</span></li></ul></div></div></header>
+<section class="cr-tijelo"><div class="m3-siroko"><div class="m3-mreza">
+<aside class="karta m3-izbornik"><div class="karta-h"><h2>Nizovi</h2><button type="button" class="gumb tanki" id="izbornik">Izbornik</button></div><ul class="nizovi" id="nizovi"></ul></aside>
+<div class="m3-sredina">
+<div class="karta" id="upravljanje" tabindex="0" aria-label="Upravljanje: zaslon i tipkovnica NGC na upravljačkoj jedinici, zaštitna vrata i ručna izmjena alata. U načinu HANDLE JOG tipke X Y Z biraju os, strelice lijevo i desno okreću ručni kotač.">
+<div class="ngc" id="ngc">
+<div class="ngc-vrh"><span id="ngc-nacin" class="ngc-nac">—</span><span id="ngc-prog" class="ngc-pn">&nbsp;</span><span id="ngc-sat" class="ngc-sat">&nbsp;</span></div>
+<div class="ngc-tijelo">
+<div class="ngc-off" id="ngc-off"><p id="ngc-off-t">Upravljanje je isključeno.</p></div>
+<div class="ngc-lijevo"><div class="ngc-ph" id="ngc-ph">PROGRAM</div><div class="ngc-pane" id="ngc-pane" aria-live="off"></div></div>
+<div class="ngc-desno">
+<div class="ngc-poz"><div class="ngc-ph">POSITION</div><table class="ngc-pt" id="ngc-poz"></table></div>
+<div class="ngc-stanje" id="ngc-stanje"></div>
+</div>
+</div>
+<div class="ngc-unos"><span class="ngc-ul">INPUT:</span><span id="ngc-unos" class="ngc-ut"></span><span class="ngc-kur" aria-hidden="true"></span></div>
+<div class="ngc-por" id="ngc-por" aria-live="polite">&nbsp;</div>
+</div>
+<div class="pan" id="tipke">
+<div class="pan-lijevo">
+<div class="pan-p"><span class="pan-l">POWER ON</span><span class="pan-l">POWER OFF</span><button type="button" class="pk pk-z" id="k-on" aria-label="POWER ON"></button><button type="button" class="pk pk-c" id="k-off" aria-label="POWER OFF"></button></div>
+<div class="pan-p"><span class="pan-l pan-l2">EMERGENCY STOP</span><button type="button" class="gljiva" id="k-estop" aria-pressed="true" aria-label="EMERGENCY STOP"><span></span></button></div>
+<div class="pan-p"><span class="pan-l pan-l2">HANDLE JOG</span><div class="kotac" id="kotac" tabindex="0" role="slider" aria-label="Ručni kotač: strelice lijevo i desno ili kotačić miša" aria-valuenow="0"><button type="button" class="kot-b" data-kotac="-1" aria-label="Kotač ulijevo (negativno)">−</button><div class="kot-k" id="kot-k"><i></i></div><button type="button" class="kot-b" data-kotac="1" aria-label="Kotač udesno (pozitivno)">+</button></div><p class="kot-p">os <b id="kot-os">—</b> · korak <b id="kot-inc">—</b> mm</p></div>
+<div class="pan-p"><span class="pan-l">CYCLE START</span><span class="pan-l">FEED HOLD</span><button type="button" class="pk pk-z pk-v" data-tipka="CYCLE START" aria-label="CYCLE START"></button><button type="button" class="pk pk-c pk-v" data-tipka="FEED HOLD" aria-label="FEED HOLD"></button></div>
+</div>
+<div class="pan-desno">
+<div class="pan-red1">
+<div class="tip-g"><div class="tip-r tip-3"><button type="button" class="tk tk-o" data-tipka="RESET">RESET</button><button type="button" class="tk tk-p" data-tipka="POWER UP">POWER<br>UP</button><button type="button" class="tk tk-p" data-tipka="RECOVER">RECOVER</button></div>
+<div class="tip-r tip-4"><button type="button" class="tk" data-tipka="F1">F1</button><button type="button" class="tk" data-tipka="F2">F2</button><button type="button" class="tk" data-tipka="F3">F3</button><button type="button" class="tk" data-tipka="F4">F4</button></div>
+<div class="tip-r tip-4"><button type="button" class="tk" data-tipka="TOOL OFFSET MEASURE">TOOL<br>OFSET<br>MESUR</button><button type="button" class="tk" data-tipka="NEXT TOOL">NEXT<br>TOOL</button><button type="button" class="tk" data-tipka="TOOL RELEASE">TOOL<br>RELEASE</button><button type="button" class="tk" data-tipka="PART ZERO SET">PART<br>ZERO<br>SET</button></div></div>
+<div class="tip-g"><div class="tip-h">DISPLAY</div><div class="tip-r tip-4"><button type="button" class="tk" data-tipka="PROGRAM">PRGRM</button><button type="button" class="tk" data-tipka="POSITION">POSIT</button><button type="button" class="tk" data-tipka="OFFSET">OFFSET</button><button type="button" class="tk" data-tipka="CURRENT COMMANDS">CURNT<br>COMDS</button></div>
+<div class="tip-r tip-4"><button type="button" class="tk" data-tipka="ALARMS">ALARMS</button><button type="button" class="tk" data-tipka="DIAGNOSTIC">DIAG</button><button type="button" class="tk" data-tipka="SETTING">SETTING</button><button type="button" class="tk" data-tipka="GRAPHICS">GRAPH</button></div></div>
+<div class="tip-g tip-mod"><div class="tip-h">MODE</div>
+<div class="tip-r"><button type="button" class="tk tk-m" data-tipka="EDIT">EDIT</button><button type="button" class="tk" data-tipka="INSERT">INSERT</button><button type="button" class="tk" data-tipka="ALTER">ALTER</button><button type="button" class="tk" data-tipka="DELETE">DELETE</button><button type="button" class="tk" data-tipka="UNDO">UNDO</button></div>
+<div class="tip-r"><button type="button" class="tk tk-m" data-tipka="MEM">MEM</button><button type="button" class="tk" data-tipka="SINGLE BLOCK">SINGLE<br>BLOCK</button><button type="button" class="tk" data-tipka="DRY RUN">DRY<br>RUN</button><button type="button" class="tk" data-tipka="OPT STOP">OPT<br>STOP</button><button type="button" class="tk" data-tipka="BLOCK DELETE">BLOCK<br>DELETE</button></div>
+<div class="tip-r"><button type="button" class="tk tk-m" data-tipka="MDI">MDI</button><button type="button" class="tk" data-tipka="COOLNT">COOLNT</button><button type="button" class="tk" data-tipka="HANDLE SCROLL">HANDLE<br>SCROLL</button><button type="button" class="tk" data-tipka="ATC FWD">ATC<br>FWD</button><button type="button" class="tk" data-tipka="ATC REV">ATC<br>REV</button></div>
+<div class="tip-r"><button type="button" class="tk tk-m" data-tipka="HANDLE JOG">HANDLE<br>JOG</button><button type="button" class="tk" data-tipka=".0001">.0001<br>.1</button><button type="button" class="tk" data-tipka=".001">.001<br>1.</button><button type="button" class="tk" data-tipka=".01">.01<br>10.</button><button type="button" class="tk" data-tipka=".1">.1<br>100.</button></div>
+<div class="tip-r"><button type="button" class="tk tk-m" data-tipka="ZERO RET">ZERO<br>RET</button><button type="button" class="tk" data-tipka="ALL">ALL</button><button type="button" class="tk" data-tipka="ORIGIN">ORIGIN</button><button type="button" class="tk" data-tipka="SINGLE">SINGLE</button><button type="button" class="tk" data-tipka="HOME G28">HOME<br>G28</button></div>
+<div class="tip-r"><button type="button" class="tk tk-m" data-tipka="LIST PROG">LIST<br>PROG</button><button type="button" class="tk" data-tipka="SELECT PROG">SELECT<br>PROG</button><button type="button" class="tk" data-tipka="SEND">SEND</button><button type="button" class="tk" data-tipka="RECV">RECV</button><button type="button" class="tk" data-tipka="ERASE PROG">ERASE<br>PROG</button></div></div>
+</div>
+<div class="pan-red2">
+<div class="tip-g"><div class="tip-h">JOG</div><div class="tip-jog-k"><button type="button" class="tk tk-j tk-p" data-jog="A-1">−A</button><button type="button" class="tk tk-j" data-jog="Y1">+Y</button><button type="button" class="tk tk-j tk-p" data-jog="A1">+A</button><button type="button" class="tk tk-j tk-p" data-jog="Z1">+Z</button><button type="button" class="tk tk-j" data-jog="X-1">−X</button><button type="button" class="tk tk-j" data-tipka="RAPID" id="tk-rapid">RAPID</button><button type="button" class="tk tk-j" data-jog="X1">+X</button><button type="button" class="tk tk-j tk-p" data-jog="Z-1">−Z</button><button type="button" class="tk tk-j tk-p" data-tipka="JOG LOCK">JOG<br>LOCK</button><button type="button" class="tk tk-j" data-jog="Y-1">−Y</button><button type="button" class="tk tk-j tk-p" data-tipka="CHIP">CHIP<br>FWD</button><button type="button" class="tk tk-j tk-p" data-tipka="CHIP STOP">CHIP<br>STOP</button></div></div>
+<div class="tip-g"><div class="tip-h">CURSOR</div><div class="tip-r tip-kur"><button type="button" class="tk tk-p" data-tipka="PAGE UP">PAGE<br>UP</button><button type="button" class="tk" data-tipka="UP">▲</button><button type="button" class="tk tk-p" data-tipka="PAGE DOWN">PAGE<br>DOWN</button><button type="button" class="tk" data-tipka="LEFT">◀</button><button type="button" class="tk" data-tipka="HOME">HOME</button><button type="button" class="tk" data-tipka="RIGHT">▶</button><button type="button" class="tk tk-p" data-tipka="END">END</button><button type="button" class="tk" data-tipka="DOWN">▼</button><button type="button" class="tk tk-p" data-tipka="FORWARD">FWD</button></div></div>
+</div>
+<div class="pan-red3">
+<div class="tip-g"><div class="tip-h">OVERRIDES</div>
+<div class="tip-r tip-4"><button type="button" class="tk" data-tipka="FEED -10">−10%<br>FEED</button><button type="button" class="tk" data-tipka="FEED 100">100%<br>FEED</button><button type="button" class="tk" data-tipka="FEED +10">+10%<br>FEED</button><button type="button" class="tk" data-tipka="HANDLE FEED">HANDL<br>FEED</button></div>
+<div class="tip-r tip-4"><button type="button" class="tk" data-tipka="SPINDLE -10">−10%<br>SPINDL</button><button type="button" class="tk" data-tipka="SPINDLE 100">100%<br>SPINDL</button><button type="button" class="tk" data-tipka="SPINDLE +10">+10%<br>SPINDL</button><button type="button" class="tk" data-tipka="HANDLE SPINDLE">HANDL<br>SPINDL</button></div>
+<div class="tip-r tip-4"><button type="button" class="tk" data-tipka="RAPID 5">5%<br>RAPID</button><button type="button" class="tk" data-tipka="RAPID 25">25%<br>RAPID</button><button type="button" class="tk" data-tipka="RAPID 50">50%<br>RAPID</button><button type="button" class="tk" data-tipka="RAPID 100">100%<br>RAPID</button></div>
+<div class="tip-r tip-4"><button type="button" class="tk tk-z" data-tipka="SPINDLE FWD">FWD</button><button type="button" class="tk tk-c" data-tipka="SPINDLE STOP">STOP</button><button type="button" class="tk tk-z" data-tipka="SPINDLE REV">REV</button><span class="tip-h tip-h2">SPINDLE</span></div></div>
+<div class="tip-g tip-alfa"><div class="tip-alfa-r" id="alfa"></div></div>
+</div>
+</div>
+</div>
+<div class="fiz">
+<div class="fiz-k"><h3>Stroj</h3><div class="fiz-g"><button type="button" class="fiz-b" id="k-vrata" aria-pressed="false"><i class="fiz-led"></i>Zaštitna vrata (gore)</button><button type="button" class="fiz-b" id="k-alat">Ručna izmjena alata</button><span class="fiz-alat" id="fiz-alat">u vretenu: T1</span></div></div>
+<div class="fiz-k fiz-papir"><h3>Papir između alata i pripremka</h3><p id="papir">—</p></div>
+</div>
+</div>
+<div class="karta m3-uputa"><div class="karta-in"><p id="uputa"></p><details><summary>Pomoć</summary><p id="pomoc"></p></details><div id="blok-obj" class="blok-obj" hidden></div><p class="info" id="poruka" aria-live="polite"></p><div class="gumbi"><button type="button" class="gumb tanki" id="dalje" hidden>Dalje</button><button type="button" class="gumb tanki" id="ponovi" hidden>Ponovno pokreni niz</button></div></div></div>
+</div>
+<div class="m3-desno"><div class="karta m3-stroj" id="k-scena"><div class="karta-h"><h2>Stroj</h2><div class="gumbi"><button type="button" class="gumb tanki" data-pogled="stroj">Stroj</button><button type="button" class="gumb tanki" data-pogled="radni">Radni prostor</button><button type="button" class="gumb tanki" data-pogled="obradak">Obradak</button><button type="button" class="gumb tanki" data-pogled="privjesak">Upravljačka jedinica</button></div></div>
+<div id="scena" aria-label="Trodimenzionalni prikaz glodalice Haas Desktop Mill: povuci za okretanje, kotačić ili dva prsta za zum"><div class="ucitavanje" id="ucitavanje">Učitavam…</div></div>
+<div class="traka-napretka"><label>Ubrzanje simulacije <select id="brzina"><option value="1" selected>×1</option><option value="5">×5</option><option value="20">×20</option><option value="100">×100</option></select></label><span class="pom">ubrzava program i referenciranje, ne ručno gibanje</span></div>
+<div class="karta-in"><p class="pom" id="pribor-opis">Pripremak se postavlja kad odabereš program ili pokreneš niz.</p></div></div>
+<div class="karta" id="k-predmet"><div class="karta-h"><h2>Program i operacije</h2></div><div class="karta-in" id="predmet"></div></div></div>
+</div></div></section>
+<section class="tekst-sim omot"><h2>Nizovi u ovom poglavlju</h2><div class="crta"></div>
+<ol><li><b>Uključivanje</b> — POWER ON na privjesku (stroj i privjesak imaju svaki svoj kabel napajanja, spojeni su kabelima CONTROL CBL 1 i 2), otpuštanje EMERGENCY STOP, RESET (briše alarme 102 SERVOS OFF i 107 EMERGENCY OFF) i POWER UP: referenciranje svih osi, Z prva.</li>
+<li><b>Ručno gibanje</b> — HANDLE JOG, izbor osi, korak kotača .0001 … .1 (u metričkom načinu 0,001 … 1 mm), tipke za gibanje i RAPID, dovođenje alata u zadani položaj u koordinatama stroja.</li>
+<li><b>Alat i korekcija duljine</b> — alat T1 dodiruje gornju plohu pripremka metodom papira, TOOL OFFSET MEASURE upiše H01; ručna izmjena na T2 (MDI T2 M06) i mjerenje H02.</li>
+<li><b>Nultočka obratka</b> — dodir lijevog i prednjeg ruba, PART ZERO SET u G54 pa dodavanje polumjera alata tipkom ENTER (ENTER dodaje, F1 upisuje).</li>
+<li><b>MDI</b> — pokretanje vretena S3000 M03, pozicioniranje G54 G00 X… Y…, M05; svaki blok se upisuje tipkom ENTER i izvodi s CYCLE START.</li>
+<li><b>Pisanje programa</b> — LIST PROG, INSERT (novi program O01004), EDIT: pisanje blokova s decimalnom točkom i EOB.</li>
+<li><b>Izvođenje programa</b> — SELECT PROG, MEM, FEED 10 %, CYCLE START, FEED HOLD, SINGLE BLOCK s objašnjenjem svakog bloka, M30.</li></ol>
+<div class="okvir"><h4>Programi u memoriji</h4><p><b>O01001 KRUZNI DZEP</b> — vježba VMDEMO s upravljanja SINUMERIK 840D prevedena na Haas: utor uz rub i kružni džep ciklusom G13 umjesto POCKET4. <b>O01002 PROVRTI</b> — G81 i G83 s G98/G99. <b>O01003 UTORI M97</b> — lokalni potprogram. <b>O02001 … O02021</b> — naši predmeti P01 … P21 iz FreeCAD CAM-a, prevedeni u Haas zapis (zaglavlje %, O-broj, sigurnosni blok, T M06, G43 H, G28 na kraju); predmeti širi od hoda X (152 mm) prijavljuju se kao „ne stane”.</p></div>
+<div class="okvir pazi"><h4>Što je pretpostavka ili pojednostavljenje</h4><ul class="tekst">
+<li>Podaci stroja su proizvođačevi: hod X 152 × Y 254 × Z 76 mm, čelo vretena–stol najviše 80 mm, 15 000 o/min (ispod 1 500 o/min vreteno se pregrijava), brzi hod i posmak 3,6 m/min, ER11, bez izmjenjivača alata. Mjere kabine, privjeska, duljine alata i škripca su naša procjena.</li>
+<li>Haas-ova pravila koja simulator provodi: broj bez decimalne točke čita se kao tisućinke (X1 = 0,001 mm); G01 bez F daje alarm 320 NO FEED RATE; nepoznata G ili M riječ daje alarm 310 / 311; izlazak iz hoda u programu daje alarm 316–318 OVER TRAVEL RANGE; RESET zaustavlja program i vreteno i briše alarme. Brojevi alarma su prema Haas Mill Operator's Manualu, tekst je skraćen.</li>
+<li>Ručna izmjena alata: na M06 program stane s porukom; alat se mijenja pri zaustavljenom vretenu i podignutim vratima, a program nastavlja s CYCLE START. Zaštitna vrata se otvaraju prema gore (šarke na gornjem rubu): dok su otvorena, CYCLE START i vreteno ne rade (door hold).</li>
+<li>Sudar se provjerava za vrh i rezni dio alata s materijalom, stolom i čeljustima škripca, ne s pandžama ni tijelom vretena. Korekcija polumjera G41/G42 se ne simulira (putanja = kontura). Metoda papira: „zapinje” znači razmak manji od 0,05 mm.</li>
+<li>Zasloni su nacrtani iznova, pojednostavljeni; nisu snimke Haas upravljanja. Raspored tipki na privjesku crtan je prema fotografiji stvarne jedinice (20. 10. 2026.); tipke koje Desktop Mill nema (ATC, COOLNT, CHIP, HANDLE SCROLL …) postoje na privjesku, ali u simulatoru nemaju učinka.</li>
+</ul></div>
+<p>Dalje: <a href="programiranje.html">Programiranje — Haas dijalekt</a> &middot; <a href="upoznavanje-stroja.html">Upoznavanje stroja</a> &middot; <a href="index.html">naslovnica područja</a>.</p></section></main>
+
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Autori: dr.sc. Tomislav Pavlic, mag.ing.mech., Krunoslav Kušec, mag.ing.mech., Alen Britvić, bacc.ing.mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-cnc-haas-desktop-mill-postavljanje-stroja-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+</script>
+<script type="importmap">{"imports":{"three":"../ar/lib/three.module.min.js","three/addons/":"../ar/lib/addons/"}}</script>
+<script type="module" src="ngc.js?v=03"></script>
+</body>
+</html>
