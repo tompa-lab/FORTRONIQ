@@ -594,3 +594,23 @@ crtajStanice(); crtajFormu(); crtajRobotino(); crtajTekst(); crtajIzbornik(); cr
 const uc = $('ucitavanje'); if (uc) uc.remove();
 iscrtaj();
 rafId = requestAnimationFrame(petlja);
+
+/* v03 — poravnanje radnog prikaza (isto kao Kobot UR3e v02 i Robotino v03): na računalu kartica Stanice ide u desni stupac (ispod Robotina, iznad dnevnika),
+   a laboratorij dobiva ostatak srednjeg stupca; nakon klika na niz ili gumb uputa i laboratorij stanu točno na zaslon */
+(function () {
+  const SIROKO = window.matchMedia('(min-width:1121px) and (min-height:600px)');
+  const sred = document.querySelector('.sl-sredina'), desno = document.querySelector('.sl-desno'), stn = document.getElementById('k-stanice');
+  if (!sred || !desno) return;
+  function poravnaj() {
+    if (!SIROKO.matches) return;
+    const y = sred.getBoundingClientRect().top;
+    if (Math.abs(y - 62) > 6 && y < window.innerHeight - 120) window.scrollTo({ top: window.scrollY + y - 62, behavior: 'smooth' });
+  }
+  function rasporedi() {
+    if (stn) { if (SIROKO.matches) { if (stn.parentNode !== desno) { const log = document.getElementById('k-log'); if (log && log.parentNode === desno) desno.insertBefore(stn, log); else desno.appendChild(stn); } } else if (stn.parentNode !== sred) sred.appendChild(stn); }
+    window.dispatchEvent(new Event('resize'));
+  }
+  rasporedi(); SIROKO.addEventListener('change', rasporedi);
+  for (const s of ['.sl-izbornik', '.sl-uputa', '#pogledi']) { const el = document.querySelector(s); if (el) el.addEventListener('click', (e) => { if (e.target.closest('button')) poravnaj(); }); }
+  window.__poravnaj = poravnaj;
+})();
