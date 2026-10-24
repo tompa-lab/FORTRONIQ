@@ -141,12 +141,12 @@ export function napraviStrojTL1(THREE, scene) {
 
   /* ---------------------------------------------------------------- konjić (ručni) */
   const konjic = new THREE.Group(); korijen.add(konjic);
-  add(konjic, box(260, 240, 260, M.lijev), 1330, POD + 800, -10);
+  add(konjic, box(260, 300, 260, M.lijev), 1330, POD + 890, -10);                             /* tijelo konjića: od klizača do 40 mm iznad osi (obuhvaća pinolu) */
   add(konjic, box(260, 60, 300, M.klizac), 1330, POD + 710, -10);
   cylX(konjic, 30, 200, M.celik, 1150, 0, 0, 24);                                                  /* pinola */
   const sil = add(konjic, cyl(30, 60, M.celikT, 24, 4), 1020, 0, 0); sil.rotation.z = Math.PI / 2;   /* rotirajući šiljak */
   cylX(konjic, 8, 60, M.celik, 1490, 0, 0, 10); const kol = cylX(konjic, 70, 14, M.crna2, 1528, 0, 0, 32); void kol;   /* ručno kolo */
-  cylX(konjic, 10, 120, M.celik, 1330, 150, 0, 10);                                               /* ručica stezanja */
+  cylX(konjic, 10, 120, M.celik, 1330, 60, 0, 10);                                                /* ručica stezanja (na vrhu tijela) */
   reg('konjic', 'Konjić (ručni) s rotirajućim šiljkom', konjic);
 
   /* ---------------------------------------------------------------- kabina (bijela) */
