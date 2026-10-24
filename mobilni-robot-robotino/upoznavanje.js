@@ -221,6 +221,7 @@ function cipovi(naslov, ids) {
   return ids.length ? '<p class="uz-dj-n">' + esc(naslov) + '</p><ul class="uz-dj">' + ids.map((id) => '<li><button type="button" class="cip" data-skok="' + id + '">' + esc(naziv(id)) + '</button></li>').join('') + '</ul>' : '';
 }
 function karticaUvod() {
+  if (typeof novaKartica === 'function') novaKartica();
   $('k-naziv').textContent = 'Upoznavanje robota';
   $('k-skupina').textContent = DIJELOVI.length + ' dijelova u ' + SKUPINE.length + ' skupina';
   $('k-tekst').innerHTML = P('U izborniku odaberi skupinu pa dio — ili klikni dio na modelu. Model se okrene prema odabranom dijelu i istakne ga, a ovdje dobiješ opis, podatke i izvor.',
@@ -232,6 +233,7 @@ function karticaUvod() {
   $('naslov-3d').textContent = 'Robotino';
 }
 function karticaDio(d) {
+  if (typeof novaKartica === 'function') novaKartica();
   $('k-naziv').textContent = d.naziv;
   const rod = RODITELJ.get(d.id);
   $('k-skupina').textContent = d.skupina + (rod ? ' · ' + naziv(rod) : '');
@@ -248,6 +250,7 @@ function karticaDio(d) {
   $('naslov-3d').textContent = d.naziv;
 }
 function karticaSkupina(sk) {
+  if (typeof novaKartica === 'function') novaKartica();
   const dio = dijeloviSkupine(sk);
   $('k-naziv').textContent = sk;
   $('k-skupina').textContent = 'Skupina · ' + dio.length + ' dijelova';
@@ -297,7 +300,7 @@ $('kartica').addEventListener('click', (e) => {
 });
 
 /* ================================================================== */
-/* 7. „Kako radi” — animacije iz teme_robotino.js u dijalogu           */
+/* 7. „Kako radi” — animacije iz teme_robotino.js (pozornica / dijalog) */
 /* ================================================================== */
 function podaciZaTeme() {
   const m = POGON.motor, rd = POGON.reduktor, ir = SENZORI.ir, L = SENZORI.laser || {};
@@ -321,11 +324,50 @@ function podaciZaTeme() {
   return o;
 }
 postaviPodatke(podaciZaTeme());
-let tema = null, povratak = null;
-function unistiTemu() { if (tema && tema.unisti) { try { tema.unisti(); } catch (e) { /* ništa */ } } tema = null; $('tema-el').innerHTML = ''; }
+let tema = null, povratak = null, temaKljuc = null;
+/* v03 — na računalu (≥ 1101 px) animacija se crta na pozornici, na mjestu 3D prikaza, a naslov, gumbi, očitanja i objašnjenja
+   idu u desni stupac (isto kao Kobot UR3e v02); na mobitelu i uskom zaslonu ostaje dijalog */
+const SIROKO = window.matchMedia('(min-width:1101px) and (min-height:560px)');
+function pozornica() {
+  let p = $('pozornica'); if (p) return p;
+  p = document.createElement('div'); p.id = 'pozornica'; p.className = 'uz-pozornica tro'; p.hidden = true;
+  $('k-scena').appendChild(p); return p;
+}
+function unistiTemu() {
+  if (tema && tema.unisti) { try { tema.unisti(); } catch (e) { /* ništa */ } }
+  tema = null; $('tema-el').innerHTML = '';
+  const p = $('pozornica'); if (p) { p.hidden = true; p.replaceChildren(); }
+  for (const id of ['k-tema-kut', 'k-tema-zat']) { const x = $(id); if (x) x.remove(); }
+}
+function otvoriNaPozornici(kljuc) {
+  const ki = document.querySelector('.uz-kartica .karta-in');
+  const zat = document.createElement('div'); zat.id = 'k-tema-zat'; zat.className = 'gumbi uz-tema-zatvori';
+  zat.innerHTML = '<button type="button" class="gumb tanki" id="k-tema-natrag">&#8592; Natrag na 3D prikaz</button>';
+  const kut = document.createElement('div'); kut.id = 'k-tema-kut'; kut.className = 'uz-tema-kut';
+  ki.prepend(zat, kut);
+  try { tema = prikazi(kut, kljuc) || null; } catch (e) { console.warn('Tema', kljuc, e); kut.innerHTML = '<p class="pom">Animacija „Kako radi” trenutačno nije dostupna.</p>'; tema = null; }
+  $('k-tema-natrag').addEventListener('click', zatvoriTemu);
+  const sek = kut.querySelector('.tro'); if (!sek) return;
+  const sc = sek.querySelector('.tro-scena');
+  if (sc) {
+    const p = pozornica(), kar = $('k-scena');
+    p.style.top = kar.querySelector('.karta-h').offsetHeight + 'px';
+    for (const v of sc.querySelectorAll('.tro-svg')) { const vb = (v.getAttribute('viewBox') || '0 0 600 400').split(/\s+/); v.style.flexGrow = String(+vb[3] || 1); }
+    const nav = document.createElement('div'); nav.className = 'uz-pozornica-nav';
+    nav.innerHTML = '<p class="pom">Gumbi i očitanja animacije su u desnom stupcu, odmah ispod naslova.</p><button type="button" class="gumb tanki" id="poz-zatvori">Natrag na 3D prikaz</button>';
+    p.replaceChildren(sc, nav); p.hidden = false;
+    $('poz-zatvori').addEventListener('click', zatvoriTemu);
+  }
+  /* desni stupac: naslov animacije i upravljanje na vrh, objašnjenja ispod */
+  const nas = sek.querySelector('.tro-naslov'), uvod = sek.querySelector('.tro-uvod'), desno = sek.querySelector('.tro-desno');
+  for (const q of ['.tro-ocit', '.tro-stanje', '.tro-upr']) { const x = sek.querySelector('.tro-desno ' + q); if (x && nas) nas.after(x); }
+  if (uvod && desno) desno.prepend(uvod);
+  ki.scrollTop = 0;
+}
 function otvoriTemu(kljuc, izvor) {
   if (!TEME[kljuc]) return;
-  unistiTemu(); povratak = izvor || null;
+  unistiTemu(); povratak = izvor || null; temaKljuc = kljuc;
+  if (SIROKO.matches) { if (dlg.open) { delete dlg.dataset.tema; dlg.close(); } otvoriNaPozornici(kljuc); poravnaj(); trazi(); return; }
   if (!dlg.open) { if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', ''); }
   $('tema-naslov').textContent = 'Kako radi: ' + TEME[kljuc].naslov;
   dlg.dataset.tema = kljuc;
@@ -335,12 +377,24 @@ function otvoriTemu(kljuc, izvor) {
 }
 function zatvoriTemu() { if (dlg.open) { if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open'); } naZatvaranje(); }
 function naZatvaranje() {
-  if (!dlg.dataset.tema && !tema) return;
-  unistiTemu(); delete dlg.dataset.tema; if (povratak && document.contains(povratak)) povratak.focus(); povratak = null; trazi();
+  if (!temaKljuc && !dlg.dataset.tema && !tema) return;
+  unistiTemu(); temaKljuc = null; delete dlg.dataset.tema; if (povratak && document.contains(povratak)) povratak.focus(); povratak = null; trazi();
 }
-dlg.addEventListener('close', naZatvaranje);
+const naPozornici = () => !!(temaKljuc && $('pozornica') && !$('pozornica').hidden);
+dlg.addEventListener('close', () => { if (!SIROKO.matches || !naPozornici()) naZatvaranje(); });
 $('tema-zatvori').addEventListener('click', zatvoriTemu);
 dlg.addEventListener('click', (e) => { if (e.target === dlg) zatvoriTemu(); });
+SIROKO.addEventListener('change', () => { if (temaKljuc) zatvoriTemu(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && naPozornici()) zatvoriTemu(); });
+/* poravnanje: nakon klika na izbornik ili gumb radni prikaz stane točno na zaslon */
+function poravnaj() {
+  if (!SIROKO.matches) return;
+  const m = document.querySelector('.uz-mreza'), y = m.getBoundingClientRect().top;
+  if (Math.abs(y - 62) > 6 && y < window.innerHeight - 120) window.scrollTo({ top: window.scrollY + y - 62, behavior: 'smooth' });
+}
+document.querySelector('.uz-mreza').addEventListener('click', (e) => { if (e.target.closest('button,select,a,input')) poravnaj(); });
+/* odabir dijela ili skupine zatvara animaciju na pozornici i vraća tekst kartice na vrh */
+function novaKartica() { if (naPozornici()) zatvoriTemu(); const ki = document.querySelector('.uz-kartica .karta-in'); if (ki) ki.scrollTop = 0; }
 /* popis svih animacija */
 {
   const kljucevi = Object.keys(TEME);
@@ -678,7 +732,7 @@ function planirajTreptanje() {
 }
 function okvir(t) {
   rafId = 0;
-  if (dlg.open && !st.voz && !st.trake) { if (crtati) { renderer.render(scene, camera); brojCrtanja++; crtati = false; } return; }
+  if ((dlg.open || naPozornici()) && !st.voz && !st.trake) { if (crtati) { renderer.render(scene, camera); brojCrtanja++; crtati = false; } return; }
   const dt = Math.min(0.1, Math.max(0, (t - zadnje) / 1000)); zadnje = t;
   let ide = false;
   if (let_) { const u = Math.min(1, (t - let_.t0) / let_.d), k = ease(u); camera.position.lerpVectors(let_.p0, let_.p1, k); controls.target.lerpVectors(let_.c0, let_.c1, k); if (u >= 1) let_ = null; ide = true; }

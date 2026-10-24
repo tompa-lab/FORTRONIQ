@@ -1271,7 +1271,7 @@ function provjeriUnos() {
 }
 /* tipkala na robotu */
 const bt = $('b-tipkalo');
-bt.addEventListener('pointerdown', (e) => { e.preventDefault(); bt.setPointerCapture && bt.setPointerCapture(e.pointerId); tipkaloDolje(); });
+bt.addEventListener('pointerdown', (e) => { e.preventDefault(); try { bt.setPointerCapture(e.pointerId); } catch (x) { /* sintetički pokazivač (voditelj predavanja) */ } tipkaloDolje(); });
 bt.addEventListener('pointerup', () => tipkaloGore()); bt.addEventListener('pointercancel', () => tipkaloGore()); bt.addEventListener('lostpointercapture', () => { if (st.drzi) tipkaloGore(); });
 bt.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); tipkaloDolje(); } });
 bt.addEventListener('keyup', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tipkaloGore(); } });
@@ -1430,3 +1430,24 @@ window.__sim = {
   naredba(vx, vy, w) { if (!rucniUnos()) return false; Object.assign(st.rucno, { vx, vy, w, cekaj: false }); postaviKlizace(); return true; },
   drziTipkalo(sek) { tipkaloDolje(true); const n = Math.round(sek / SIM.dt); for (let i = 0; i < n; i++) korak(SIM.dt); tipkaloGore(); osvjeziZivo(); }
 };
+
+/* v03 — poravnanje radnog prikaza (isto kao Kobot UR3e v02): nakon klika na niz ili gumb web sučelje i laboratorij stanu točno na zaslon;
+   na računalu kinematika uživo i karta idu u srednji stupac ispod web sučelja, a laboratorij dobiva cijeli desni stupac */
+(function () {
+  const SIROKO = window.matchMedia('(min-width:1121px) and (min-height:600px)');
+  const sred = document.querySelector('.rb-sredina'), mreza = document.querySelector('.rb-mreza');
+  if (!sred || !mreza) return;
+  function poravnaj() {
+    if (!SIROKO.matches) return;
+    const y = sred.getBoundingClientRect().top;
+    if (Math.abs(y - 62) > 6 && y < window.innerHeight - 120) window.scrollTo({ top: window.scrollY + y - 62, behavior: 'smooth' });
+  }
+  const desno = document.querySelector('.rb-desno'), dod = desno ? [...desno.children].filter((k) => !k.classList.contains('rb-scena-k')) : [];
+  function rasporedi() {
+    for (const k of dod) { if (SIROKO.matches) { if (k.parentNode !== sred) sred.appendChild(k); } else if (k.parentNode !== desno) desno.appendChild(k); }
+    window.dispatchEvent(new Event('resize'));
+  }
+  rasporedi(); SIROKO.addEventListener('change', rasporedi);
+  document.querySelector('.rb-izbornik').addEventListener('click', (e) => { if (e.target.closest('button')) { poravnaj(); if (SIROKO.matches) sred.scrollTo({ top: 0, behavior: 'smooth' }); } });
+  document.querySelector('.rb-uputa').addEventListener('click', (e) => { if (e.target.closest('button')) poravnaj(); });
+})();
