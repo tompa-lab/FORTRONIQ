@@ -408,7 +408,7 @@ main section a{overflow-wrap:anywhere}
 .igra-stupci div{flex:1;position:relative;height:100%;background:var(--tanko);border-radius:4px 4px 0 0}
 .igra-stupci .v{position:absolute;left:2px;right:2px;bottom:0;background:#9DB5C0;border-radius:3px 3px 0 0}
 .igra-stupci .mn,.igra-stupci .mx,.igra-stupci .pg{position:absolute;left:0;right:0;height:2px}
-.igra-stupci .mn{background:#2e9e6a}.igra-stupci .mx{background:#10394A}.igra-stupci .pg{background:#2ECAD4;height:3px}
+.igra-stupci .mn{background:#10394A}.igra-stupci .mx{background:#2e9e6a}.igra-stupci .pg{background:#2ECAD4;height:3px}
 .igra-stupci-br{display:flex;gap:5px;font-size:.7rem;color:var(--body);padding:0 2px;margin-bottom:.5rem}
 .igra-stupci-br span{flex:1;text-align:center}
 .igra-paleta{display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;margin:.3rem 0 .5rem}
@@ -467,12 +467,13 @@ main section a{overflow-wrap:anywhere}
 <li><strong>Moja staza.</strong> Složi svoju stazu slovima — ista slova upisuješ u <code>KARTA</code> u graditelju za CoppeliaSim.</li></ol>
 </section>
 <section id="mentor"><h2>Za mentora</h2><div class="crta"></div>
+<p>Igra je razina 1 od 5 na stranici <a href="rescue-line.html">Rescue Line: od igre do inženjera</a> — tamo su upute za mlade (PDF), BubbleRob vježbe s videom, simulator, pravi robot i sklopovlje za inženjere.</p>
 <p>Robot u igri vozi <strong>isti program</strong> kao robot u sceni za CoppeliaSim (<a href="rescue-line-coppeliasim.html">Rescue Line u CoppeliaSimu</a>): stanja kalibracija, crta, rupa, traženje i prepreka, PD regulator i iste postavke. Brojevi koje dijete nađe u igri upisuju se u <strong>POSTAVKE</strong> programa u CoppeliaSimu, a zatim u program pravog robota.</p>
 <p>Gibanje je pojednostavljeno: kotači i senzori su modelirani, ali bez potpune fizike (trenje, proklizavanje, udarci). Na velikoj stazi krug s početnim postavkama traje oko 17,5 s — isto kao u CoppeliaSimu. Mjere robota (razmak kotača, položaj letve i lidara, okretaji motora) su pretpostavke dok se ne izmjeri stvarni robot; izgled je pojednostavljen.</p>
 <div class="okvir"><h4>Zvjezdice</h4><p>★ za odvoženi krug, ★★ za krug brži od zadanog vremena, ★★★ za <strong>čist</strong> krug (bez traženja crte i bez udarca u kutiju) ispod drugog vremena. Za tri zvjezdice nije dovoljno samo povećati brzinu — treba podesiti i KP, pa dijete samo otkrije čemu služi regulator.</p></div>
 <div class="igra-gumbi"><button type="button" class="gumb tanki" id="igra-brisi">Obriši napredak u ovom pregledniku</button></div>
 </section>
-<nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="../simulatori/index.html">&#8592; Svi simulatori</a><a class="gumb tanki" href="rescue-line-coppeliasim.html">Rescue Line u CoppeliaSimu</a></nav></div></main>
+<nav class="dalje" aria-label="Kretanje po području"><a class="gumb tanki" href="rescue-line.html">&#8592; Rescue Line: sve razine</a><a class="gumb tanki" href="rescue-line-coppeliasim.html">Rescue Line u CoppeliaSimu</a></nav></div></main>
 <footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Autorski tim: Krunoslav Kušec, mag. ing. mech. &middot; Alen Britvić, bacc. ing. mech. &middot; dr. sc. Tomislav Pavlic, mag. ing. mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a> &middot; <a href="vjezbe.html">Vježbe</a></p></div></footer>
 <canvas id="ploca" aria-hidden="true"></canvas>
 <aside class="alati" aria-label="Alatna traka za rad po stranici">
@@ -1887,20 +1888,20 @@ document.querySelectorAll('[data-rjesenja]').forEach(function(b){
     this.motori = [l, d]; this.st.cl = l / 127 * ROBOT.w_max; this.st.cr = d / 127 * ROBOT.w_max;
   };
   RP.brightness = function (i) {
-    var v = this.odmak[i] + this.pojacanje[i] * (1 - this.svj[i]) + (this.slucaj() - 0.5) * 2 * ROBOT.sum;
+    var v = this.odmak[i] + this.pojacanje[i] * this.svj[i] + (this.slucaj() - 0.5) * 2 * ROBOT.sum;   // kao mrm-ref-can: crno = malo
     v = Math.max(0, Math.min(1023, Math.floor(v)));
     if (this.kalibracijaUTijeku) { this.minV[i] = Math.min(this.minV[i], v); this.maxV[i] = Math.max(this.maxV[i], v); }
     return v;
   };
   RP.prag = function (i) { return (this.kalibriran && this.maxV[i] - this.minV[i] > 200) ? (this.minV[i] + this.maxV[i]) / 2 : 500; };
-  RP.line = function (i) { return this.brightness(i) > this.prag(i); };
+  RP.line = function (i) { return this.brightness(i) < this.prag(i); };   // ispod praga = crno
   RP.lineAny = function () { for (var i = 0; i <= 8; i++) if (this.line(i)) return true; return false; };
   RP.lineCenter = function () {
     var s = 0, sw = 0;
     for (var i = 0; i <= 8; i++) {
       var v = this.brightness(i), lo = 150, hi = 900;
       if (this.kalibriran && this.maxV[i] - this.minV[i] > 200) { lo = this.minV[i]; hi = this.maxV[i]; }
-      var n = Math.max(0, Math.min(1, (v - lo) / Math.max(1, hi - lo)));
+      var n = Math.max(0, Math.min(1, (hi - v) / Math.max(1, hi - lo)));
       if (n > 0.3) { s += n * (i + 1) * 1000; sw += n; }
     }
     var center = sw > 0 ? s / sw : 0;
@@ -2444,7 +2445,7 @@ document.querySelectorAll('[data-rjesenja]').forEach(function(b){
       '<div class="igra-klizac"><label for="kal-y">Pomakni robota <output id="kal-out">0</output></label><input type="range" id="kal-y" min="-100" max="100" step="1" value="80"><small>Na pravom robotu to je naredba <code>cal</code>: robota rukom prevučeš preko crte.</small></div>' +
       '<div class="igra-stupci" id="kal-stupci">' + new Array(9).fill(0).map(function () { return '<div><span class="v"></span><span class="mn"></span><span class="mx"></span><span class="pg"></span></div>'; }).join('') + '</div>' +
       '<div class="igra-stupci-br">' + [8, 7, 6, 5, 4, 3, 2, 1, 0].map(function (i) { return '<span>' + i + '</span>'; }).join('') + '</div>' +
-      '<p class="igra-mali">Siva = što senzor vidi sada · zelena crta = najbjelje · tamna = najcrnje · cijan = <b>prag</b> (sredina). Iznad praga senzor kaže „crno”.</p>' +
+      '<p class="igra-mali">Stupac = koliko svjetla senzor vidi sada (bijelo vraća puno, crno malo) · tamna crta = najcrnje · zelena = najbjelje · cijan = <b>prag</b> (sredina). Ispod praga senzor kaže „crno”.</p>' +
       '<div class="igra-provjera" id="kal-st"></div>' +
       '<div class="igra-gumbi"><button type="button" class="gumb tanki mali" data-akcija="kal-auto">Kao robot: okret lijevo-desno</button><button type="button" class="gumb tanki mali" data-akcija="kal-iznova">Iznova</button></div>' +
       '<div id="kal-dalje"></div>';
