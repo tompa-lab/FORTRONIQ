@@ -2,7 +2,7 @@
    © ForTroniQ d.o.o. */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { napraviStroj3020, postaviOkolinu, GEO } from './stroj3020.js?v=05';
+import { napraviStroj3020, postaviOkolinu, postaviRender, GEO } from './stroj3020.js?v=06';
 
 const $ = (id) => document.getElementById(id);
 
@@ -99,11 +99,9 @@ scenaEl.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(36, 1, 5, 9000);
 const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
-scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 1.25));
-const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(700, 1300, 1000); scene.add(sun);
-const sun2 = new THREE.DirectionalLight(0xffffff, 0.5); sun2.position.set(-800, 600, -500); scene.add(sun2);
 postaviOkolinu(THREE, renderer, scene);
 const S = napraviStroj3020(THREE, scene);
+postaviRender(THREE, renderer, scene, S.korijen);
 
 /* pribor za prikaz: valjak u 4. osi, škripac s pripremkom, pandže s pločom */
 const mBlank = new THREE.MeshStandardMaterial({ color: 0xcfd4d8, roughness: 0.45, metalness: 0.35 });

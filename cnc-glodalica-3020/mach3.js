@@ -3,9 +3,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { PREDMETI } from './programi_p.js?v=02';
-import { PRIMJERI_A } from './programi_a.js?v=05';
+import { PRIMJERI_A } from './programi_a.js?v=06';
 import { prevedi, objasni, opisiOperacije, razlozi } from './gkod.js?v=02';
-import { napraviStroj3020, postaviOkolinu, GEO } from './stroj3020.js?v=05';
+import { napraviStroj3020, postaviOkolinu, postaviRender, GEO } from './stroj3020.js?v=06';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -119,11 +119,9 @@ scenaEl.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(36, 1, 2, 9000);
 const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
-scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 1.25));
-const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(700, 1300, 1000); scene.add(sun);
-const sun2 = new THREE.DirectionalLight(0xffffff, 0.5); sun2.position.set(-800, 600, -500); scene.add(sun2);
 postaviOkolinu(THREE, renderer, scene);
 const S = napraviStroj3020(THREE, scene);
+postaviRender(THREE, renderer, scene, S.korijen);
 const BOJA_G = new THREE.Color(0xd7dbde), BOJA_R = new THREE.Color(0x6f8792), BOJA_MDF = new THREE.Color(0xc49a66), BOJA_MDFR = new THREE.Color(0x8a6237);
 
 function pogled(p) {
@@ -280,23 +278,70 @@ function provjeriHod(ob) {
 /* ================================================================== */
 /* 6. Program                                                          */
 /* ================================================================== */
-function ucitaj(ime) {
+/* mjerilo predmeta: X, Y, I, J i dubine Z (Z ≤ 0) množe se s k; sigurnosne visine (Z > 0), posmak i brzina vrtnje ostaju */
+const MJERILA = [1, 0.75, 0.5, 0.25];
+const staneUSkr = (L, W, H) => L <= 100 && W <= 60 && H <= 18;
+/* škripac: čeljusti sežu do z = 39 mm iznad stola; pripremak leži na paralelama (gornji rub 27–37 mm, stisnut barem 2 mm) */
+const VRH_CELJ = 39, BOT_MIN = 27, BOT_MAX = 37;
+const _rub = new Map();
+function rubZ(ime, pr) {                                   /* najniži Z na kojem alat izlazi preko ruba koji drže čeljusti (Y < 0 ili Y > W) */
+  const kl = ime + '@' + pr.mj; if (_rub.has(kl)) return _rub.get(kl);
+  const r = prevedi(pr.G, { start: { X: 0, Y: 0, Z: 50, A: 0 }, G54: { X: 0, Y: 0, Z: 0, A: 0 }, T0: 1, duljina: () => 0, alatPostoji: () => true, korak: 0.5 });
+  let z = 99; for (const q of r.P) if ((q[1] - R < 0 || q[1] + R > pr.W) && q[2] < z) z = q[2];
+  _rub.set(kl, z); return z;
+}
+function stezanje(ime, pr) {
+  if (!staneUSkr(pr.L, pr.W, pr.H)) return { skr: false, razlog: 'vel' };
+  const bot = Math.max(BOT_MIN, Math.ceil(VRH_CELJ - Math.min(0, rubZ(ime, pr)) - pr.H + 0.5));
+  return bot > BOT_MAX ? { skr: false, razlog: 'rub' } : { skr: true, bot };
+}
+function predmetUMjerilu(p0, k) {
+  if (k === 1) return Object.assign({}, p0, { mj: 1 });
+  const d = (v) => Math.round(v * k * 10) / 10;
+  return Object.assign({}, p0, { L: d(p0.L), W: d(p0.W), H: d(p0.H), G: skalirajG(p0.G, k), mj: k, izvorno: { L: p0.L, W: p0.W, H: p0.H } });
+}
+const zaok = (v) => Math.round(v * 1000) / 1000;
+function skalirajG(G, k) {
+  if (k === 1) return G;
+  return G.split('\n').map((l) => {
+    const i = l.indexOf(';'); const kod = i < 0 ? l : l.slice(0, i), kom = i < 0 ? '' : l.slice(i);
+    return kod.replace(/([XYZIJ])(\s*)(-?\d*\.?\d+)/g, (m, a, sp, n) => {
+      const v = +n; if (a === 'Z' && v > 0) return m;
+      return a + sp + zaok(v * k).toFixed(3);
+    }) + kom;
+  }).join('\n');
+}
+const _skal = new Map();
+function skaliraniPredmet(ime, izbor) {                    /* auto: najveće mjerilo u kojem predmet stane u škripac i ne reže uz čeljusti; inače 100 % */
+  const p0 = PREDMETI[ime]; if (!p0) return null;
+  const kl = ime + '#' + izbor; if (_skal.has(kl)) return _skal.get(kl);
+  let pr = null;
+  if (izbor === 'auto') { for (const k of MJERILA) { const p = predmetUMjerilu(p0, k); if (stezanje(ime, p).skr) { pr = p; break; } } if (!pr) pr = predmetUMjerilu(p0, 1); }
+  else pr = predmetUMjerilu(p0, +izbor || 1);
+  pr.stez = stezanje(ime, pr); _skal.set(kl, pr); return pr;
+}
+const postoMj = (k) => Math.round(k * 100) + ' %';
+
+function ucitaj(ime, izbor) {
   if (st.prog && st.prog.ide) { info('Program radi — najprije ga zaustavi (Stop).'); return; }
-  const jeA = !!PRIMJERI_A[ime], pr = jeA ? PRIMJERI_A[ime] : PREDMETI[ime]; if (!pr) return;
+  if (izbor === undefined) izbor = $('m3-mj') ? $('m3-mj').value : '1';
+  const jeA = !!PRIMJERI_A[ime], pr = jeA ? PRIMJERI_A[ime] : skaliraniPredmet(ime, izbor); if (!pr) return;
+  const mjT = !jeA && pr.mj !== 1 ? ' (mjerilo ' + postoMj(pr.mj) + ')' : '';
   let napomena = '';
   if (jeA) {
     if (st.pribor !== 'osA') { postaviValjak(); st.G54 = { X: LICE - XT0 - st.refOff.X, Y: GEO.A.y - YT0 - st.refOff.Y, Z: HA - st.Ztop - st.refOff.Z, A: mach('A') }; napomena = 'Valjak je stegnut u 4. os, a nultočka postavljena (X0 čelo čeljusti, Y0 i Z0 na osi).'; }
   } else {
-    const uSkr = pr.L <= 100 && pr.W <= 60;
+    const uSkr = pr.stez.skr;
     ukloniValjak(); S.konjicNa(GEO.KONJIC_PARK);
-    const p = uSkr ? S.skripacZa(pr.L, pr.W, pr.H, VJEZBA.xc, VJEZBA.yc) : S.pandzeZa(pr.L, pr.W, pr.H);
+    const p = uSkr ? S.skripacZa(pr.L, pr.W, pr.H, VJEZBA.xc, VJEZBA.yc, pr.stez.bot) : S.pandzeZa(pr.L, pr.W, pr.H);
     napraviPlocu(pr.L, pr.W, pr.H, p.x0, p.y0, p.bot, true);
     st.pribor = uSkr ? 'skripac' : 'pandze';
     const ob = obseg(pr.G), raspon = ob.Z[1] - ob.Z[0];
     st.Ztop = PL.top + ob.Z[1] + Math.max(2, Math.min(20, 55 - raspon - 3)); S.postaviZtop(st.Ztop);
     st.G54 = { X: p.x0 - XT0 - st.refOff.X, Y: p.y0 - YT0 - st.refOff.Y, Z: PL.top - st.Ztop - st.refOff.Z, A: mach('A') };
-    napomena = (uSkr ? 'Pripremak je u škripcu.' : 'Pripremak ' + pr.L + ' × ' + pr.W + ' mm veći je od škripca (do 100 × 60 mm), pa je stegnut pandžama na podložnoj MDF ploči na sredini stola (4. os i škripac su skinuti).') + ' Nultočka G54 postavljena je na stražnji lijevi gornji kut, a vreteno namješteno u obujmici prema visini pripremka.';
-    opisPribora('Pripremak ' + pr.L + ' × ' + pr.W + ' × ' + pr.H + ' mm (MDF) ' + (uSkr ? 'u škripcu' : 'na podložnoj ploči sa steznim pandžama') + '; nultočka G54 u stražnjem lijevom gornjem kutu.');
+    napomena = (mjT ? 'Predmet je umanjen na ' + postoMj(pr.mj) + ' (izvorno ' + pr.izvorno.L + ' × ' + pr.izvorno.W + ' × ' + pr.izvorno.H + ' mm); X, Y i dubine Z u programu su preračunati, sigurnosne visine i glodalo Ø3 ostali su isti. ' : '') + (uSkr ? 'Pripremak je u škripcu na paralelama (' + (VRH_CELJ - pr.stez.bot) + ' mm u čeljustima), tako da alat ni uz rub ne dira čeljusti.' : (pr.stez.razlog === 'rub' ? 'Pripremak ' + pr.L + ' × ' + pr.W + ' × ' + pr.H + ' mm stane u škripac, ali program uz rub koji drže čeljusti reže preduboko (obris kroz cijelu debljinu), pa je stegnut pandžama' : 'Pripremak ' + pr.L + ' × ' + pr.W + ' × ' + pr.H + ' mm veći je od škripca (do 100 × 60 mm, visina 18 mm), pa je stegnut pandžama') + ' na podložnoj MDF ploči na sredini stola (4. os i škripac su skinuti).') + ' Nultočka G54 postavljena je na stražnji lijevi gornji kut, a vreteno namješteno u obujmici prema visini pripremka.';
+    if (uSkr && S.imaA) { st.fiz = { X: p.x0 + pr.L / 2 - XT0, Y: p.y0 + pr.W / 2 - YT0, Z: 0, A: st.fiz.A }; napomena += ' Alat je iznad pripremka (kao nakon postavljanja nultočke), daleko od stezne glave 4. osi.'; }
+    opisPribora('Pripremak ' + pr.L + ' × ' + pr.W + ' × ' + pr.H + ' mm (MDF)' + mjT + ' ' + (uSkr ? 'u škripcu' : 'na podložnoj ploči sa steznim pandžama') + '; nultočka G54 u stražnjem lijevom gornjem kutu.');
   }
   const G = pr.G, redci = G.replace(/\r/g, '').split('\n');
   /* stanje vretena i objašnjenje za svaki redak */
@@ -308,10 +353,10 @@ function ucitaj(ime) {
   const hod = provjeriHod(obseg(G));
   st.prog = { ime, jeA, pr, G, redci, vrti, Sr, obj, ops, opisi, hod, P: null, i: 0, ide: false, gotov: false, trenRed: 0, zadRed: -1, prikRed: -1, single: st.prog ? st.prog.single : false, preskoci: false, F: 0, v: 0 };
   st.pregled = 0;
-  status('File loaded: ' + ime + '.tap' + (hod.length ? ' — upozorenje: ' + hod.join('; ') : ''));
+  status('File loaded: ' + ime + '.tap' + mjT + (hod.length ? ' — upozorenje: ' + hod.join('; ') : ''));
   info((napomena ? napomena + ' ' : '') + (hod.length ? 'POZOR: program ne stane u hod stroja — ' + hod.join('; ') + '. Mach3 bi ga zaustavio kod soft limits.' : 'Program stane u hod stroja.'), !!hod.length);
   crtajPredmet(); crtaj();
-  dogadaj('ucitan', { ime, stane: !hod.length, jeA });
+  dogadaj('ucitan', { ime, stane: !hod.length, jeA, mj: jeA ? 1 : pr.mj, pribor: st.pribor });
 }
 function pripremiPutanju() {
   const A = st.prog;
@@ -377,7 +422,7 @@ function obradi(rez) {
   const sk = S.pribor.skripac;
   if (sk && S.skripac.visible) {
     for (const c of sk.celjusti) if (t.z < c.z1 && krugPravokutnik(t.x, t.y, R, c)) return 'skripac';
-    const b = sk.tijelo; if (t.z < sk.bot && t.x > b.x0 && t.x < b.x1 && t.y > b.y0 && t.y < b.y1) return 'skripac';
+    const b = sk.tijelo; if (t.z < (sk.dno || sk.bot) && t.x > b.x0 && t.x < b.x1 && t.y > b.y0 && t.y < b.y1) return 'skripac';
   }
   if (st.pribor === 'pandze' && S.pribor.pandze && PL && !vrti && t.z < S.pribor.pandze.D && t.x > PL.x0 - 20 && t.x < PL.x0 + PL.L + 20 && t.y > PL.y0 - 20 && t.y < PL.y0 + PL.W + 20) return 'podloga';
   /* stezna glava i konjić */
@@ -578,7 +623,7 @@ function crtajPredmet() {
   const el = $('predmet'), A = st.prog;
   if (!A) { el.innerHTML = '<p class="pom">Učitaj program (Load G-Code): naši predmeti P01 … P21 ili primjeri A1 … A3 za četvrtu os.</p>'; return; }
   const pr = A.pr;
-  let h = '<p><b>' + esc(A.ime) + '</b> · ' + (A.jeA ? esc(pr.naziv) + ' · valjak Ø' + pr.d + ' × ' + pr.L + ' mm' : 'pripremak ' + pr.L + ' × ' + pr.W + ' × ' + pr.H + ' mm') + ' · ' + A.redci.length + ' redaka</p>';
+  let h = '<p><b>' + esc(A.ime) + '</b> · ' + (A.jeA ? esc(pr.naziv) + ' · valjak Ø' + pr.d + ' × ' + pr.L + ' mm' : 'pripremak ' + pr.L + ' × ' + pr.W + ' × ' + pr.H + ' mm' + (pr.mj && pr.mj !== 1 ? ' · mjerilo ' + postoMj(pr.mj) : '')) + ' · ' + A.redci.length + ' redaka</p>';
   if (A.jeA) h += '<p class="pom">' + esc(pr.opis) + '</p>';
   h += A.hod.length ? '<p class="upoz">Ne stane u hod: ' + esc(A.hod.join('; ')) + '.</p>' : '<p class="pom">Program stane u hod stroja (X 300 × Y 200 × Z 55 mm).</p>';
   h += '<ol class="ops" id="ops">' + A.ops.map((o, i) => '<li data-op="' + i + '"><b>' + esc(o.naziv.replace(/_/g, ' ')) + '</b> <span class="pom">(' + esc(o.vrsta) + ', od retka ' + (o.red + 1) + ')</span><br><span>' + esc(o.opis || A.opisi[i] || '') + '</span>' + (o.opis && A.opisi[i] ? '<br><span class="pom">' + esc(A.opisi[i]) + '</span>' : '') + '</li>').join('') + '</ol>';
@@ -723,9 +768,19 @@ $('m3-cw').addEventListener('click', () => {
 });
 $('m3-load').addEventListener('click', () => {
   if (st.mach3 !== 'on') return; if (st.prog && st.prog.ide) { info('Program radi — najprije Stop.'); return; }
-  $('m3-dlg-l').innerHTML = PROGRAMI.map((n) => { const p = PREDMETI[n] || PRIMJERI_A[n]; const op = PREDMETI[n] ? p.L + ' × ' + p.W + ' × ' + p.H + ' mm' : p.naziv + ', valjak Ø' + p.d; return '<button type="button" class="m3-dat-i" data-dat="' + n + '" aria-pressed="false"><b>' + n + '.tap</b><span>' + esc(op) + '</span></button>'; }).join('');
+  crtajPopisDat();
   $('m3-dlg').hidden = false; st.dlgOdabir = null; const prvi = $('m3-dlg-l').querySelector('button'); if (prvi) prvi.focus();
 });
+function crtajPopisDat() {
+  const izb = $('m3-mj').value;
+  $('m3-dlg-l').innerHTML = PROGRAMI.map((n) => {
+    let op;
+    if (PREDMETI[n]) { const p = skaliraniPredmet(n, izb); op = (p.mj !== 1 ? postoMj(p.mj) + ': ' : '') + p.L + ' × ' + p.W + ' × ' + p.H + ' mm · <span class="sk">' + (p.stez.skr ? 'škripac' : 'pandže') + '</span>'; }
+    else { const p = PRIMJERI_A[n]; op = esc(p.naziv + ', valjak Ø' + p.d) + ' · <span class="sk">4. os</span>'; }
+    return '<button type="button" class="m3-dat-i" data-dat="' + n + '" aria-pressed="' + (n === st.dlgOdabir) + '"><b>' + n + '.tap</b><span>' + op + '</span></button>';
+  }).join('');
+}
+$('m3-mj').addEventListener('change', () => { const o = st.dlgOdabir; crtajPopisDat(); st.dlgOdabir = o; });
 $('m3-dlg-l').addEventListener('click', (e) => { const b = e.target.closest('[data-dat]'); if (!b) return; st.dlgOdabir = b.dataset.dat; $('m3-dlg-l').querySelectorAll('[data-dat]').forEach((q) => q.setAttribute('aria-pressed', String(q === b))); });
 $('m3-dlg-l').addEventListener('dblclick', (e) => { const b = e.target.closest('[data-dat]'); if (!b) return; $('m3-dlg').hidden = true; ucitaj(b.dataset.dat); });
 $('m3-dlg-open').addEventListener('click', () => { if (!st.dlgOdabir) { info('Označi datoteku u popisu.'); return; } $('m3-dlg').hidden = true; ucitaj(st.dlgOdabir); });
