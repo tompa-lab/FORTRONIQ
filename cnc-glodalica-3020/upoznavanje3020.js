@@ -2,7 +2,7 @@
    © ForTroniQ d.o.o. */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { napraviStroj3020, postaviOkolinu, GEO } from './stroj3020.js?v=02';
+import { napraviStroj3020, postaviOkolinu, GEO } from './stroj3020.js?v=03';
 
 const $ = (id) => document.getElementById(id);
 
@@ -13,13 +13,13 @@ const SKLOPOVI = [
 <p>Krutost okvira određuje koliko se stroj savija pod silom rezanja. Mala glodalica zato traži ravnu i stabilnu podlogu, oštar alat i male zahvate — dublji rez razdijeli u više prolaza.</p>
 <p class="pazi-m">Prije rada provjeri da stroj stoji na sve četiri nožice i da su vijci okvira pritegnuti; labav spoj vidi se kao valovita površina i netočne mjere.</p>` },
   { id: 'stol', naziv: 'Stol s T-utorima i os Y', dijelovi: ['stol'], anim: 'Y', pogled: 'radni', tekst: `
-<p>Stol je aluminijska ploča s T-utorima (oko 450 × 280 mm — procjena). U utore se T-maticama i vijcima pričvršćuju škripac, stezne pandže s podložnom pločom i četvrta os.</p>
+<p>Stol je aluminijska ploča s T-utorima, dug po Y, a uzak po X (oko 460 × 290 mm, sedam utora uzduž osi Y — procjena s fotografija). U utore se T-maticama i vijcima pričvršćuju škripac, stezne pandže s podložnom pločom i četvrta os.</p>
 <p>Stol se giba naprijed–natrag: to je <b>os Y</b>. Klizi na dvije okrugle vodilice s linearnim ležajevima, a pogoni ga koračni motor na stražnjoj strani preko navojnog vretena.</p>
 <p class="pazi-m">Smjer osi uvijek se gleda kao gibanje <b>alata prema obratku</b>. Kad se stol giba prema tebi, alat u odnosu na obradak ide prema natrag — to je smjer +Y.</p>` },
   { id: 'portal', naziv: 'Portal i os X', dijelovi: ['portal'], anim: 'X', pogled: 'stroj', tekst: `
 <p>Portal je nepomičan most preko stola: dvije bočne ploče i poprečna greda. Na gredi su dvije okrugle vodilice i navojno vreteno osi X, a po njima klizi nosač osi Z.</p>
-<p>Gibanje nosača lijevo–desno je <b>os X</b>; +X je udesno. Motor osi X je na desnoj bočnoj ploči.</p>
-<p>Hod prema oznaci 3020 je 300 mm u X i 200 mm u Y. Za ovaj stroj to je pretpostavka — provjeri je u Mach3 (Config → Homing/Limits) i mjerenjem od graničnika do graničnika.</p>` },
+<p>Gibanje nosača lijevo–desno je <b>os X</b>; +X je udesno. Motor osi X je na lijevoj bočnoj ploči.</p>
+<p>Hod je oko 200 mm u X i 300 mm u Y: stol je dug po Y, pa je dulji hod uzduž stola. To je procjena s fotografija stroja — provjeri je u Mach3 (Config → Homing/Limits) i mjerenjem od graničnika do graničnika.</p>` },
   { id: 'osZ', naziv: 'Os Z', dijelovi: ['osZ'], anim: 'Z', pogled: 'radni', tekst: `
 <p>Os Z diže i spušta vreteno. Klizna ploča vozi se po dvije vertikalne vodilice; pogoni je motor na vrhu nosača preko kratkog navojnog vretena. <b>+Z je prema gore</b>, od obratka.</p>
 <p>Hod osi Z je kratak, oko 55 mm (pretpostavka). Zato se vreteno u obujmici steže na visinu koja odgovara pripremku: alat mora prijeći preko pripremka i pribora, a ipak dosegnuti najveću dubinu programa.</p>
@@ -45,7 +45,9 @@ const SKLOPOVI = [
 <li>Kuglično vreteno: kuglice se kotrljaju između vretena i matice — manje trenje, veća točnost, viša cijena.</li></ul>
 <p>Koja su vretena na ovom stroju, treba provjeriti (u modelu: kuglična 1605). Zračnost se pokaže kad os promijeni smjer; Mach3 je može djelomično nadoknaditi (Config → Backlash), ali je pouzdanije rubove dodirivati uvijek iz istog smjera.</p>` },
   { id: 'skripac', naziv: 'Škripac', dijelovi: ['skripac'], anim: null, pogled: 'skripac', postav: 'skripac', tekst: `
-<p>Mali bušilični škripac steže pripremke do oko <b>60 mm</b> širine (otvor čeljusti, po osi Y) i do <b>100 mm</b> duljine (širina čeljusti, po osi X).</p>
+<p>Mali lijevani bušilični škripac steže pripremke do oko <b>60 mm</b> širine (otvor čeljusti, po osi Y) i do <b>100 mm</b> duljine (širina čeljusti, po osi X). Na fotografiji stroja okrenut je vretenom ulijevo; za predmete P01–P21, kojima je dulja stranica po X, okreće se vretenom prema operateru — tako je prikazan i ovdje.</p>
+<p><button type="button" class="gumb tanki" data-skripac="original">Škripac sa stroja</button> <button type="button" class="gumb tanki" data-skripac="pojednostavljeni">Pojednostavljeni škripac</button></p>
+<p>Kako se pripremak steže i koje sile djeluju na čeljusti i stol, prikazano je u <a href="../cnc-glodanje-840d/upoznavanje-stroja.html">Upoznavanju stroja SINUMERIK 840D</a> (stavke Škripac i Stezne pandže).</p>
 <p>Škripac se pričvrsti vijcima i T-maticama u utore stola. Nepomična čeljust mora biti paralelna s osi X — provjeri komparatorom ili barem dodirom alata na oba kraja čeljusti.</p>
 <p>Pripremak leži na paralelnim podlošcima i viri iznad čeljusti nekoliko milimetara: dovoljno za dodir ruba alatom i za obradu, a da glodalo ne zahvati čeljust.</p>
 <p>Pripremak nema dodatka za obradu — ima isti vanjski gabarit kao gotov dio.</p>` },
@@ -65,7 +67,7 @@ const SKLOPOVI = [
   { id: 'konjic', naziv: 'Konjić', dijelovi: ['konjic'], anim: 'konjic', pogled: 'osA', tekst: `
 <p>Konjić podupire slobodni kraj obratka šiljkom u središnjem provrtu, da se dugi obradak ne savija i ne izvlači iz čeljusti.</p>
 <p>Os šiljka mora se poklapati s osi A, inače valjak „baca”. Konjić se pomiče po T-utorima i steže vijcima, a šiljak se primiče ručnim kotačem i zakoči ručicom.</p>
-<p>Kad se obrađuju ploče, konjić se odmakne na desni kraj stola, izvan hoda alata.</p>` },
+<p>4. os stoji na stražnjem dijelu stola; kad se obrađuju ploče na prednjem dijelu, konjić se odmakne udesno, uz stražnji rub stola.</p>` },
   { id: 'nultocke', naziv: 'Nultočka stroja i obratka', dijelovi: ['nultocke'], anim: null, pogled: 'radni', tekst: `
 <p><b style="color:#e0533d">Nultočka stroja</b> (crveno) je položaj koji Mach3 nađe referenciranjem (Ref All Home): os Z gore, X lijevo, Y sprijeda. Koordinate stroja (Machine Coords) su tada 0, 0, 0.</p>
 <p>Ako stroj nema referentnih sklopki, referenciranje se preskače, a koordinate stroja vrijede od položaja u kojem je Mach3 pokrenut.</p>
@@ -110,13 +112,13 @@ let valjak = null, blok = null;
 function postav(vrsta) {
   if (blok) { S.obrGrupa.remove(blok); blok.geometry.dispose(); blok = null; }
   if (vrsta === 'pandze') {
-    const p = S.pandzeZa(150, 100, 20, 0, 0);
-    blok = new THREE.Mesh(new THREE.BoxGeometry(150, 20, 100), mMdf); blok.position.set(0, p.bot + 10, 0);
-    S.konjicNa(165); valjak.visible = false;
+    const p = S.pandzeZa(150, 100, 20, 0, GEO.PRIBOR_Y);
+    blok = new THREE.Mesh(new THREE.BoxGeometry(150, 20, 100), mMdf); blok.position.set(0, p.bot + 10, -GEO.PRIBOR_Y);
+    S.konjicNa(GEO.KONJIC_PARK); valjak.visible = false;
     S.nulaW.position.set(p.x0, p.top, -p.y0);
   } else {
-    const p = S.skripacZa(80, 50, 20, 75, 0);
-    blok = new THREE.Mesh(new THREE.BoxGeometry(80, 20, 50), mBlank); blok.position.set(75, p.bot + 10, 0);
+    const p = S.skripacZa(80, 50, 20, 0, GEO.PRIBOR_Y);
+    blok = new THREE.Mesh(new THREE.BoxGeometry(80, 20, 50), mBlank); blok.position.set(0, p.bot + 10, -GEO.PRIBOR_Y);
     S.konjicNa(GEO.A.lice + 85); valjak.visible = true;
     S.nulaW.position.set(p.x0, p.top, -p.y0);
   }
@@ -131,8 +133,8 @@ S.zaslonTekst(true);
 
 function pogled(p) {
   const P = {
-    stroj: [[-420, 640, 1350], [80, 90, 120]], radni: [[300, 300, 640], [0, 70, 120]], osA: [[-60, 380, 640], [-105, 62, 130]],
-    upravljanje: [[1150, 420, 1050], [560, -20, 200]], vreteno: [[330, 330, 560], [80, 120, 100]], skripac: [[300, 260, 480], [75, 30, 120]], pandze: [[300, 300, 520], [0, 20, 120]]
+    stroj: [[-420, 640, 1350], [40, 90, 120]], radni: [[300, 300, 640], [0, 70, 120]], osA: [[30, 330, 420], [-15, 62, 0]],
+    upravljanje: [[1080, 420, 1050], [490, -20, 200]], vreteno: [[330, 330, 560], [80, 120, 100]], skripac: [[240, 280, 520], [0, 30, 190]], pandze: [[260, 320, 560], [0, 20, 190]]
   }[p] || [[900, 700, 1250], [60, 80, 100]];
   camera.position.set(...P[0]); controls.target.set(...P[1]); controls.update();
 }
@@ -171,6 +173,7 @@ $('sklopovi').addEventListener('click', (e) => { const b = e.target.closest('[da
 $('k-prethodni').addEventListener('click', () => { const i = odabran ? SKLOPOVI.indexOf(odabran) : 0; odaberi(SKLOPOVI[(i - 1 + SKLOPOVI.length) % SKLOPOVI.length].id); });
 $('k-sljedeci').addEventListener('click', () => { const i = odabran ? SKLOPOVI.indexOf(odabran) : -1; odaberi(SKLOPOVI[(i + 1) % SKLOPOVI.length].id); });
 document.querySelectorAll('[data-pogled]').forEach((b) => b.addEventListener('click', () => pogled(b.dataset.pogled)));
+document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-skripac]'); if (!b) return; S.vrstaSkripca(b.dataset.skripac); postav('skripac'); document.querySelectorAll('[data-skripac]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); });
 let animira = true;
 $('animacija').addEventListener('click', () => { animira = !animira; $('animacija').setAttribute('aria-pressed', String(animira)); $('animacija').textContent = animira ? 'Animacija uključena' : 'Animacija isključena'; });
 
