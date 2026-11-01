@@ -1,7 +1,7 @@
 /* FORTRONIQ · Mala CNC glodalica 3020 — vlastiti primjeri za četvrtu os A (Mach3).
    Pripremak: valjak Ø40 × 100 mm (MDF ili aluminij), 15 mm u čeljustima, konjić na desnom kraju.
    Nultočka G54: X0 na čelu čeljusti, Y0 i Z0 na osi valjka, A0 po volji (Zero 4).  Alat T1: ravno glodalo Ø3, 2 oštrice.
-   Prije svakog zakreta osi A alat je na sigurnoj visini iznad valjka (Z ≥ 25, polumjer valjka je 20).  © ForTroniQ d.o.o. */
+   Prije svakog zakreta osi A alat je na sigurnoj visini iznad valjka (Z ≥ 25, polumjer valjka je 20); prije i poslije programa alat je na Z55, iznad stezne glave Ø100.  © ForTroniQ d.o.o. */
 
 const f = (v) => v.toFixed(3);
 const ZAGLAVLJE = (ime, opis) => [
@@ -13,7 +13,7 @@ const ZAGLAVLJE = (ime, opis) => [
   'G17 G40 G49',
   'M6 T1',
   'M3 S18000',
-  'G0 Z30.000'
+  'G0 Z55.000'
 ];
 
 /* A1 — obodni utor: X stoji, os A napravi puni okret (dva prolaza po 1 mm) */
@@ -26,7 +26,7 @@ const A1 = [...ZAGLAVLJE('A1', 'OBODNI UTOR SIRINE 3 I DUBINE 2 MM'),
   'G1 A360.000 F1800.000',
   'G1 Z18.000 F150.000',
   'G1 A0.000 F1800.000',
-  'G0 Z30.000',
+  'G0 Z55.000',
   'M5',
   'M30'].join('\n');
 
@@ -38,7 +38,7 @@ const A2 = [...ZAGLAVLJE('A2', 'ZAVOJNI UTOR, DVA OKRETA NA 55 MM'),
   'G1 Z18.500 F150.000',
   '(F VRIJEDI ZA ZAJEDNICKI PUT 55 MM I 720 STUPNJEVA: OKO 0,6 MIN)',
   'G1 X70.000 A720.000 F1200.000',
-  'G0 Z30.000',
+  'G0 Z55.000',
   'M5',
   'M30'].join('\n');
 
@@ -47,7 +47,7 @@ function a3() {
   const r = [...ZAGLAVLJE('A3', 'CETIRI RAVNE PLOHE, INDEKSIRANJE PO 90 STUPNJEVA')];
   [0, 90, 180, 270].forEach((kut) => {
     r.push('(OP Ploha_A' + kut + ')');
-    r.push('G0 Z25.000', 'G0 X10.000 Y-12.000 A' + f(kut));
+    r.push('G0 X10.000 Y-12.000 A' + f(kut), 'G0 Z25.000');   /* najprije X i Y na sigurnoj visini, zatim spuštanje */
     [18.5, 17].forEach((z) => {
       r.push('G1 Z' + f(z) + ' F150.000');
       let x = 10;
@@ -58,7 +58,7 @@ function a3() {
       r.push('G0 Z25.000', 'G0 X10.000 Y-12.000');
     });
   });
-  r.push('G0 Z30.000', 'M5', 'M30');
+  r.push('G0 Z55.000', 'M5', 'M30');
   return r.join('\n');
 }
 

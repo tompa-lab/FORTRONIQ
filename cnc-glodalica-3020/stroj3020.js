@@ -1,17 +1,20 @@
 /* FORTRONIQ · Mala CNC glodalica 3020 — 3D model stroja (zajednički za „Upoznavanje stroja” i simulator Mach3).
-   Mjere su približne (stroj nema natpisnu pločicu). v03 (1. 11. 2026.) prema fotografijama stroja: stol je dug po Y, a uzak po X
-   (T-utori uzduž Y), hod X 200 × Y 300 × Z 55 mm, motor osi X lijevo, 4. os A straga (os paralelna s X), originalni bušilični škripac.
-   Koordinate: 1 jedinica = 1 mm. Okvir stola: x udesno, y prema natrag (os Y stroja), z gore; ishodište = sredina gornje plohe stola.
-   U three.js: x = x, y = z (gore), z = −y (prema korisniku).  © ForTroniQ d.o.o. */
+   v05 (1. 11. 2026.) prema fotografijama i videu vlasnika: aluminijski stol s T-utorima MIRUJE, a giba se cijeli portal (os X)
+   s nosačem osi Y i osi Z. Oznaka na gredi portala: X prema operateru, Y udesno, Z gore (pravilo desne ruke).
+   Hod X 300 × Y 200 × Z 55 mm (vlasnik). Stezna glava (4. os A) i konjić leže uzduž osi X (dulja os); os A okreće se oko X.
+   Koordinate okvira stola (u mm): x = smjer osi X stroja (prema operateru), y = smjer osi Y (udesno), z gore; ishodište = sredina gornje plohe stola.
+   U three.js grupa „masina” ima x = X, y = z (gore), z = −Y, a zakrenuta je tako da X ide prema gledatelju, a Y udesno.  © ForTroniQ d.o.o. */
 
 export const GEO = {
-  HOD: { X: [0, 200], Y: [0, 300], Z: [-55, 0] },   /* hod osi (koordinate stroja; Z = 0 gore) — procjena s fotografija */
-  XT0: -100, YT0: -150,                             /* položaj vrha alata u okviru stola kad su X = 0 i Y = 0 */
-  TOOL_Z: 130,                                       /* os vretena u three.js (z) — portal je nepomičan */
-  STOL: { L: 290, W: 460, H: 18 },                  /* stol s T-utorima: L po X (uzak), W po Y (dug) — procjena */
-  A: { lice: -50, visina: 65, y: 130 },             /* 4. os straga: čelo čeljusti (x), visina osi iznad stola, položaj osi po Y */
-  KONJIC_PARK: 40,                                   /* konjić kad u 4. osi nema valjka */
-  PRIBOR_Y: -60,                                     /* škripac i pandže na prednjem dijelu stola (y središta) */
+  HOD: { X: [0, 300], Y: [0, 200], Z: [-55, 0] },   /* hod osi (koordinate stroja; Z = 0 gore) — vlasnik */
+  XT0: -110, YT0: -100,                             /* vrh alata u okviru stola kad su X = 0 i Y = 0: straga lijevo */
+  TOOL_Z: 130,                                       /* os vretena je 130 mm ispred sredine grede portala (prema +X) */
+  STOL: { L: 460, W: 290, H: 18 },                  /* stol: L po X (dulja os), W po Y — procjena s fotografija */
+  A: { lice: -30, visina: 65, y: -55 },             /* 4. os: čelo čeljusti (x), visina osi iznad stola, položaj osi po Y (lijevo) */
+  KONJIC_PARK: 95,                                   /* vrh konjića kad u steznoj glavi nema valjka */
+  SKRIPAC: { x: 30, y: 70 },                         /* škripac desno od 4. osi; vreteno strši preko desnog ruba stola */
+  PRIBOR_Y: 70,                                      /* (zadržano za starije pozive) */
+  PANDZE: { x: 0, y: 0 },                            /* ploče na pandžama: sredina stola (4. os i škripac se tada skidaju) */
   R_ALATA: 1.5, ISTUR: 20                           /* glodalo Ø3, istak iz stezne čahure */
 };
 
@@ -31,7 +34,6 @@ export function postaviOkolinu(THREE, renderer, scene) {
 export function napraviStroj3020(THREE, scene) {
   const dijelovi = new Map();
   const mat = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.55, metalness: 0.15 }, o));
-  /* tekstura navoja za vretena */
   const navoj = (() => {
     const c = document.createElement('canvas'); c.width = 64; c.height = 64; const g = c.getContext('2d');
     g.fillStyle = '#c9ced2'; g.fillRect(0, 0, 64, 64); g.strokeStyle = '#6f777d'; g.lineWidth = 10;
@@ -40,12 +42,15 @@ export function napraviStroj3020(THREE, scene) {
   })();
   const M = {
     alu: mat(0xc9cfd4, { metalness: 0.6, roughness: 0.42 }), aluT: mat(0x9aa2a8, { metalness: 0.55, roughness: 0.45 }),
-    plava: mat(0x1f5fae, { metalness: 0.35, roughness: 0.42 }), crna: mat(0x23272b, { roughness: 0.6 }), crna2: mat(0x34393e, { roughness: 0.5 }),
+    bez: mat(0xd2ccb4, { metalness: 0.08, roughness: 0.62 }), bezT: mat(0xbeb79c, { metalness: 0.08, roughness: 0.66 }),
+    plava: mat(0xd2ccb4, { metalness: 0.08, roughness: 0.62 }),
+    crna: mat(0x23272b, { roughness: 0.6 }), crna2: mat(0x34393e, { roughness: 0.5 }),
     celik: mat(0xe1e5e8, { metalness: 0.85, roughness: 0.22 }), sivo: mat(0x8e979d, { metalness: 0.4 }), vreteno: mat(0xe4e7ea, { metalness: 0.8, roughness: 0.22 }),
     navoj: new THREE.MeshStandardMaterial({ map: navoj, metalness: 0.7, roughness: 0.3 }), utor: mat(0x3a4045), mdf: mat(0xb48a5a, { roughness: 0.85 }),
-    crvena: mat(0xd2322a, { roughness: 0.45 }), zuta: mat(0xf2c21a), zelena: mat(0x1d9e4b), cijevP: mat(0x2c7fd6, { roughness: 0.35, transparent: true, opacity: 0.85 }),
-    cijevC: mat(0x1b1d1f, { roughness: 0.4 }), radni: mat(0x7a6650, { roughness: 0.9 }), lcd: mat(0x0d1a12, { emissive: 0x000000 }),
-    plavaKut: mat(0x355f8c, { metalness: 0.4, roughness: 0.4 }), mjed: mat(0xc8a24a, { metalness: 0.8, roughness: 0.3 }), glodalo: mat(0xf0f2f4, { metalness: 0.95, roughness: 0.12 })
+    crvena: mat(0xd2322a, { roughness: 0.45 }), zuta: mat(0xf2c21a), zelena: mat(0x1d9e4b), plavi: mat(0x2f78c4, { roughness: 0.4 }),
+    cijevP: mat(0xc9a46a, { roughness: 0.35, transparent: true, opacity: 0.85 }), cijevC: mat(0x1b1d1f, { roughness: 0.4 }), radni: mat(0xe8e8e4, { roughness: 0.9 }),
+    plavaKut: mat(0x355f8c, { metalness: 0.4, roughness: 0.4 }), mjed: mat(0xc8a24a, { metalness: 0.8, roughness: 0.3 }), glodalo: mat(0xf0f2f4, { metalness: 0.95, roughness: 0.12 }),
+    glava: mat(0x5c5046, { metalness: 0.55, roughness: 0.5 })
   };
   const box = (w, h, d, m) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
   const cyl = (r, h, m, s = 28, r2) => new THREE.Mesh(new THREE.CylinderGeometry(r2 === undefined ? r : r2, r, h, s), m);
@@ -57,92 +62,106 @@ export function napraviStroj3020(THREE, scene) {
     const d = dijelovi.get(id);
     obj.forEach((o) => { d.objekti.push(o); o.traverse((m) => { if (m.isMesh && !m.userData.dio) m.userData.dio = id; }); });
   }
-  /* koračni motor NEMA 23 (57 × 57 × 76 mm); smjer osi: 'x', 'y', 'z' (three) */
+  /* koračni motor NEMA 23 (57 × 57 × 76 mm); smjer osi: 'x', '-x', 'z', '-z', 'y', '-y' */
   function nema(p, smjer, x, y, z, duz = 76) {
     const g = new THREE.Group(); add(p, g, x, y, z);
     add(g, box(57, duz - 16, 57, M.crna), 0, 0, 0);
     add(g, box(57, 8, 57, M.sivo), 0, duz / 2 - 4, 0); add(g, box(57, 8, 57, M.sivo), 0, -duz / 2 + 4, 0);
     add(g, cyl(19, 2, M.sivo), 0, duz / 2 + 1, 0); add(g, cyl(4.2, 20, M.celik, 12), 0, duz / 2 + 10, 0);
-    for (const [a, b] of [[23.5, 23.5], [-23.5, 23.5], [23.5, -23.5], [-23.5, -23.5]]) add(g, cyl(2.6, 3, M.celik, 8), a, -duz / 2 - 1, b);
     add(g, box(14, 10, 10, M.crna2), 0, -duz / 2 + 14, 30);
     if (smjer === 'x') g.rotation.z = -Math.PI / 2; if (smjer === '-x') g.rotation.z = Math.PI / 2;
     if (smjer === 'z') g.rotation.x = Math.PI / 2; if (smjer === '-z') g.rotation.x = -Math.PI / 2;
     if (smjer === '-y') g.rotation.x = Math.PI;
     return g;
   }
-  function natpis(tekst, w, h, boja = '#e8eef1', poz = '#23272b', vel = 30) {
-    const c = document.createElement('canvas'); c.width = 256; c.height = Math.round(256 * h / w); const g = c.getContext('2d');
-    g.fillStyle = poz; g.fillRect(0, 0, c.width, c.height); g.fillStyle = boja; g.font = '600 ' + vel + 'px "IBM Plex Sans",Arial,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    tekst.split('\n').forEach((t, i, a) => g.fillText(t, c.width / 2, c.height / 2 + (i - (a.length - 1) / 2) * vel * 1.15));
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c) })); return m;
+  function platno(w, h, crtaj, px = 4) {
+    const c = document.createElement('canvas'); c.width = Math.round(w * px); c.height = Math.round(h * px); const g = c.getContext('2d'); g.scale(px, px); crtaj(g);
+    const t = new THREE.CanvasTexture(c); t.anisotropy = 4;
+    return new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t }));
   }
 
   const korijen = new THREE.Group(); scene.add(korijen);
   const TZ = GEO.TOOL_Z;
 
   /* ---------------------------------------------------------------- radni stol (podloga) */
-  const podloga = add(korijen, box(1500, 30, 900, M.radni), 140, -133, 120); podloga.userData.dio = 'podloga';
+  const podloga = add(korijen, box(1900, 30, 1000, M.radni), -250, -133, 80); podloga.userData.dio = 'podloga';
 
-  /* ---------------------------------------------------------------- okvir (postolje) */
-  const okvir = new THREE.Group(); korijen.add(okvir);
-  const zC = TZ, zL = 520, BO = 160, SO = 2 * BO + 40;                       /* postolje uže po X, dulje po Y */
-  for (const sx of [-1, 1]) {
-    add(okvir, box(40, 60, zL, M.alu), sx * BO, -70, zC);                     /* uzdužni profil 40 × 60 */
-    add(okvir, box(4, 8, zL, M.utor), sx * (BO + 21), -70, zC);
-    add(okvir, box(4, 8, zL, M.utor), sx * (BO - 21), -70, zC);
-    for (const sz of [-1, 1]) add(okvir, cyl(14, 18, M.crna2, 16), sx * BO, -109, zC + sz * 240);   /* nožice */
-  }
-  add(okvir, box(SO, 60, 14, M.plava), 0, -70, zC - zL / 2 - 7);               /* stražnja ploča */
-  add(okvir, box(SO, 60, 14, M.plava), 0, -70, zC + zL / 2 + 7);               /* prednja ploča */
-  add(okvir, box(SO, 6, 70, M.crna), 0, -97, zC - zL / 2 + 40);
-  /* vodilice osi Y (okrugle Ø16 na nosačima) */
-  const osY = new THREE.Group(); korijen.add(osY);
-  add(okvir, box(SO, 6, zL, M.crna2), 0, -97, zC);
-  for (const sx of [-1, 1]) {
-    add(osY, box(30, 54, zL - 20, M.aluT), sx * 100, -67, zC);
-    cylZ(osY, 8, zL - 24, M.celik, sx * 100, -32, zC, 20);
-  }
-  reg('okvir', 'Okvir (postolje)', okvir);
+  /* stroj: okvir stola (x = X, y gore, z = −Y), zakrenut tako da X ide prema gledatelju, a Y udesno */
+  const masina = new THREE.Group(); korijen.add(masina); masina.rotation.y = -Math.PI / 2;
 
-  /* ---------------------------------------------------------------- portal (nepomičan) */
-  const portal = new THREE.Group(); korijen.add(portal);
-  const strana = new THREE.Shape(); strana.moveTo(-100, -100); strana.lineTo(70, -100); strana.lineTo(45, 340); strana.lineTo(-75, 340); strana.lineTo(-100, -100);
+  /* ---------------------------------------------------------------- postolje (u svojem okviru: z_o uzduž X, x_o = −Y) */
+  const okvir = new THREE.Group(); masina.add(okvir); okvir.rotation.y = Math.PI / 2; okvir.position.x = -40;   /* postolje je dulje straga zbog hoda portala */
+  const zL = 600, BO = 168;
   for (const sx of [-1, 1]) {
-    const g = new THREE.Mesh(new THREE.ExtrudeGeometry(strana, { depth: 15, bevelEnabled: false }), M.plava);
-    g.rotation.y = Math.PI / 2; g.position.set(sx > 0 ? 175 : -190, 0, 0); portal.add(g);
-    /* three: ExtrudeGeometry u ravnini XY oblika, zakret oko y → oblik x → −z; y ostaje y */
+    add(okvir, box(10, 92, zL, M.bez), sx * BO, -64, 0);                                  /* bočne stranice postolja */
+    add(okvir, box(36, 40, zL - 20, M.aluT), sx * (BO - 24), -48, 0);                      /* uzdužni nosač s vodilicom portala */
+    cylZ(okvir, 8, zL - 30, M.celik, sx * (BO - 24), -22, 0, 18);                          /* okrugla vodilica osi X */
+    for (const sz of [-1, 1]) add(okvir, cyl(16, 12, M.crna2, 16), sx * (BO - 10), -116, sz * (zL / 2 - 30));   /* nožice */
   }
-  add(portal, box(380, 160, 40, M.alu), 0, 232, -10);                           /* greda X */
-  for (const yy of [190, 274]) add(portal, box(380, 5, 3, M.utor), 0, yy, 11);
-  for (const yy of [180, 285]) { add(portal, box(380, 12, 10, M.aluT), 0, yy, 14); cylX(portal, 8, 380, M.celik, 0, yy, 24, 20); }
-  const motorX = nema(portal, 'x', -(190 + 14 + 46), 232, 24); reg('motori', 'Koračni motori NEMA 23', motorX);   /* motor X na lijevoj bočnoj ploči */
-  add(portal, box(14, 70, 70, M.crna), -197, 232, 24);
-  add(portal, box(330, 4, 44, M.aluT), 0, 314, -10);                            /* nosač lanca za kabele */
-  for (let i = 0; i < 17; i++) add(portal, box(16, 16, 34, M.crna2), -152 + i * 19, 324, -10);
-  reg('portal', 'Portal i os X', portal);
+  const prednja = add(okvir, box(2 * BO + 10, 92, 10, M.bez), 0, -64, zL / 2 + 5);           /* prednja ploča s ležajem vretena */
+  void prednja;
+  cylZ(okvir, 10, 8, M.celik, 0, -60, zL / 2 + 13, 18); cylZ(okvir, 6, 10, M.celik, 0, -60, zL / 2 + 18, 6);
+  for (const sx of [-1, 1]) cylZ(okvir, 6, 3, M.crna, sx * 120, -64, zL / 2 + 11, 14);          /* rupe za vijke */
+  add(okvir, box(2 * BO + 10, 92, 10, M.bez), 0, -64, -zL / 2 - 5);                          /* stražnja ploča */
+  add(okvir, box(2 * BO, 6, zL, M.bezT), 0, -107, 0);                                       /* dno */
+  reg('okvir', 'Postolje (okvir)', okvir);
 
-  /* nosač osi X (klizi po gredi) */
-  const nosacX = new THREE.Group(); korijen.add(nosacX);
+  /* ---------------------------------------------------------------- stol (miruje) s T-utorima uzduž osi X */
+  const stol = new THREE.Group(); masina.add(stol);
+  const S = GEO.STOL;
+  add(stol, box(S.L, 8, S.W, M.alu), 0, -S.H + 4, 0);
+  const utori = [-108, -72, -36, 0, 36, 72, 108];                                          /* 7 T-utora uzduž X */
+  { const rub = [-S.W / 2, ...utori.flatMap((u) => [u - 4, u + 4]), S.W / 2];
+    for (let k = 0; k < rub.length; k += 2) { const a = rub[k], b = rub[k + 1]; add(stol, box(S.L, 10, b - a, M.alu), 0, -5, -(a + b) / 2); }
+    utori.forEach((u) => { add(stol, box(S.L, 1, 14, M.utor), 0, -9.5, -u); }); }
+  for (const sz of [-1, 1]) add(stol, box(S.L, 20, 10, M.aluT), 0, -24, sz * 110);           /* nosači stola */
+  reg('stol', 'Stol s T-utorima (miruje)', stol);
+
+  /* ---------------------------------------------------------------- portal (giba se po X) s nosačem osi Y i osi Z
+     okvir portala: x_g = smjer osi Y, z_g = smjer osi X (os vretena je na z_g = TZ, ispred grede) */
+  const portal = new THREE.Group(); masina.add(portal); portal.rotation.y = Math.PI / 2;
+  for (const sx of [-1, 1]) {
+    const xs = sx * 182;
+    add(portal, box(14, 330, 150, M.bez), xs, 115, 0);                                     /* bočna ploča */
+    add(portal, box(14, 60, 150, M.bez), xs, -30, 0);                                      /* noga prema vodilici */
+    add(portal, box(40, 26, 60, M.crna2), sx * 144, -22, 0);                               /* klizač na vodilici X */
+  }
+  add(portal, box(378, 150, 40, M.bez), 0, 232, -10);                                       /* greda (nosač osi Y) */
+  add(portal, box(378, 14, 120, M.bez), 0, 314, 30);                                        /* gornja ploča grede */
+  add(portal, box(378, 110, 4, M.bezT), 0, 222, 12);                                        /* prednja maska grede */
+  for (const yy of [180, 285]) cylX(portal, 8, 350, M.celik, 0, yy, 24, 20);                /* vodilice osi Y */
+  const motorY = nema(portal, 'x', -(189 + 46), 280, 24); reg('motori', 'Koračni motori NEMA 23', motorY);   /* motor osi Y na lijevoj bočnoj ploči */
+  add(portal, box(10, 70, 70, M.crna), -194, 280, 24);
+  for (let i = 0; i < 12; i++) add(portal, box(16, 16, 34, M.crna2), 20 + i * 14, 334, 20);  /* lanac za kabele osi Y (desno gore) */
+  /* oznaka osi na gredi: Z (točka = gore), X prema operateru, Y udesno — kao na stroju */
+  const oznaka = platno(90, 26, (g) => { g.fillStyle = '#d2ccb4'; g.fillRect(0, 0, 90, 26); g.strokeStyle = '#a0522d'; g.fillStyle = '#a0522d'; g.lineWidth = 1.4;
+    g.beginPath(); g.arc(14, 9, 6, 0, 7); g.stroke(); g.font = '600 7px Arial'; g.fillText('Z', 11.5, 11.5);
+    g.beginPath(); g.arc(40, 9, 6, 0, 7); g.stroke(); g.beginPath(); g.arc(40, 9, 1.4, 0, 7); g.fill();
+    g.beginPath(); g.moveTo(46, 9); g.lineTo(80, 9); g.stroke(); g.fillText('Y', 82, 11.5);
+    g.beginPath(); g.moveTo(40, 15); g.lineTo(40, 22); g.stroke(); g.beginPath(); g.moveTo(36, 19); g.lineTo(40, 24); g.lineTo(44, 19); g.fill(); g.fillText('X', 46, 24); });
+  oznaka.rotation.x = -Math.PI / 2; add(portal, oznaka, -110, 321.2, 30);
+  reg('portal', 'Portal — os X i nosač osi Y', portal);
+
+  /* nosač osi Y (klizi po gredi) */
+  const nosacX = new THREE.Group(); portal.add(nosacX);
   for (const yy of [180, 285]) for (const sx of [-1, 1]) add(nosacX, box(40, 26, 22, M.crna2), sx * 38, yy, 26);
-  add(nosacX, box(140, 200, 14, M.plava), 0, 235, 41);
-  add(nosacX, box(36, 26, 26, M.mjed), 0, 232, 30);                             /* matica vretena X */
+  add(nosacX, box(140, 200, 14, M.bez), 0, 235, 41);
+  add(nosacX, box(36, 26, 26, M.mjed), 0, 232, 30);                                         /* matica vretena Y */
   for (const sx of [-1, 1]) add(nosacX, box(22, 200, 14, M.aluT), sx * 46, 235, 55);
   const zr1 = add(nosacX, cyl(6, 200, M.celik, 16), -46, 235, 62), zr2 = add(nosacX, cyl(6, 200, M.celik, 16), 46, 235, 62);
-  add(nosacX, box(140, 14, 70, M.plava), 0, 342, 70);                           /* gornja ploča osi Z */
-  add(nosacX, box(140, 14, 70, M.plava), 0, 128, 70);
+  add(nosacX, box(140, 14, 70, M.bez), 0, 342, 70);                                          /* gornja ploča osi Z */
+  add(nosacX, box(140, 14, 70, M.bez), 0, 128, 70);
   const motorZ = nema(nosacX, '-y', 0, 349 + 38, 74); reg('motori', 'Koračni motori NEMA 23', motorZ);
-  reg('portal', 'Portal i os X', nosacX);
+  reg('portal', 'Portal — os X i nosač osi Y', nosacX);
 
-  /* os Z: klizna ploča, obujmica vretena */
+  /* os Z: klizna ploča i obujmica vretena (bež, kao na stroju) */
   const glavaZ = new THREE.Group(); nosacX.add(glavaZ);
   for (const yy of [190, 270]) for (const sx of [-1, 1]) add(glavaZ, box(26, 30, 18, M.crna2), sx * 46, yy, 66);
-  add(glavaZ, box(120, 170, 10, M.alu), 0, 230, 80);
-  add(glavaZ, box(30, 22, 18, M.mjed), 0, 300, 72);                            /* matica vretena Z */
-  add(glavaZ, box(100, 50, 14, M.alu), 0, 200, 92);
-  const obujmica = add(glavaZ, cyl(42, 52, M.alu, 36), 0, 200, TZ); obujmica.userData.obujmica = true;
-  add(glavaZ, box(3, 52, 10, M.utor), 0, 200, TZ + 40);
-  add(glavaZ, box(26, 44, 10, M.alu), 0, 200, TZ + 46);
-  for (const yy of [188, 212]) cylX(glavaZ, 3.2, 34, M.crna, 0, yy, TZ + 47, 8);
+  add(glavaZ, box(120, 170, 10, M.bez), 0, 230, 80);
+  add(glavaZ, box(30, 22, 18, M.mjed), 0, 300, 72);
+  add(glavaZ, box(100, 60, 30, M.bez), 0, 200, 100);
+  const obujmica = add(glavaZ, box(96, 56, 96, M.bez), 0, 200, TZ); obujmica.userData.obujmica = true;
+  for (const yy of [184, 216]) for (const sx of [-1, 1]) cylZ(glavaZ, 4, 3, M.crna, sx * 40, yy, TZ + 48.5, 10);
   reg('osZ', 'Os Z (vertikalno gibanje vretena)', glavaZ, zr1, zr2);
 
   /* vreteno (vodeno hlađeno Ø65, 800 W) — vrh alata je u ishodištu grupe */
@@ -150,72 +169,76 @@ export function napraviStroj3020(THREE, scene) {
   add(vreteno, cyl(32.5, 180, M.vreteno, 40), 0, 25 + 90, 0);
   for (const yy of [60, 150]) add(vreteno, cyl(33.2, 3, M.aluT, 40), 0, yy, 0);
   add(vreteno, cyl(30, 12, M.crna, 32), 0, 211, 0);
-  add(vreteno, cyl(9, 22, M.crna2, 16), 18, 228, 0);                             /* utikač napajanja */
+  add(vreteno, cyl(9, 22, M.vreteno, 16), 14, 228, 0);                                      /* utikač napajanja */
   add(vreteno, cyl(20, 8, M.vreteno, 28), 0, 21, 0);
-  const matica = add(vreteno, cyl(10, 11, M.celik, 6), 0, 12, 0);              /* matica ER11 */
-  for (const sx of [-1, 1]) { const n = cylZ(vreteno, 3.5, 14, M.mjed, sx * 12, 196, -32 - 6, 10); void n; }
-  /* cijevi za vodu i kabel */
+  const matica = add(vreteno, cyl(10, 11, M.celik, 6), 0, 12, 0);                          /* matica ER11 */
+  for (const sx of [-1, 1]) cylZ(vreteno, 3.5, 14, M.mjed, sx * 12, 196, -32 - 6, 10);
   const cijev = (tocke, m, r) => new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(tocke.map((p) => new THREE.Vector3(...p))), 40, r, 10, false), m);
   vreteno.add(cijev([[-12, 196, -45], [-14, 200, -62], [-14, 250, -66], [-12, 300, -90], [-8, 330, -125]], M.cijevP, 4.5));
   vreteno.add(cijev([[12, 196, -45], [14, 200, -60], [14, 252, -64], [12, 300, -88], [8, 330, -122]], M.cijevP, 4.5));
-  vreteno.add(cijev([[18, 238, 0], [20, 270, -12], [10, 310, -70], [0, 334, -128]], M.cijevC, 4));
-  /* alat */
+  vreteno.add(cijev([[14, 238, 0], [20, 270, -12], [10, 310, -70], [0, 334, -128]], M.cijevC, 4));
   const alatG = new THREE.Group(); vreteno.add(alatG);
   add(alatG, cyl(1.59, 22, M.celik, 16), 0, 12 + 11 - 4, 0);
   add(alatG, cyl(GEO.R_ALATA, 10, M.glodalo, 16), 0, 5, 0);
   for (let i = 0; i < 4; i++) { const s = add(alatG, box(0.6, 3.2, 3.15, M.sivo), 0, 1.6 + i * 2.2, 0); s.rotation.y = i * 0.9; }
   reg('vreteno', 'Vreteno i alat', vreteno);
 
-  /* ---------------------------------------------------------------- stol (giba se po Y) */
-  const stol = new THREE.Group(); korijen.add(stol);
-  const S = GEO.STOL;
-  add(stol, box(S.L, 8, S.W, M.alu), 0, -S.H + 4, 0);
-  const utori = [-108, -72, -36, 0, 36, 72, 108];                               /* 7 T-utora uzduž osi Y (kao na stroju) */
-  { const rub = [-S.L / 2, ...utori.flatMap((u) => [u - 4, u + 4]), S.L / 2];
-    for (let k = 0; k < rub.length; k += 2) { const a = rub[k], b = rub[k + 1]; add(stol, box(b - a, 10, S.W, M.alu), (a + b) / 2, -5, 0); }
-    utori.forEach((u) => { add(stol, box(14, 1, S.W, M.utor), u, -9.5, 0); }); }
-  add(stol, box(S.L, 22, 10, M.alu), 0, -11, S.W / 2 + 5);                       /* prednja čeona ploča stola */
-  cylZ(stol, 9, 8, M.celik, 0, -11, S.W / 2 + 14, 16);                           /* ležaj vretena Y sprijeda */
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(stol, box(46, 22, 50, M.crna2), sx * 100, -29, sz * 150);
-  add(stol, box(40, 24, 34, M.mjed), 0, -30, 0);                                /* matica vretena Y */
-  reg('stol', 'Stol s T-utorima i os Y', stol, osY);
-
-  /* navojna vretena */
-  const vrY = cylZ(korijen, 8, zL - 30, M.navoj, 0, -32, zC, 18);
-  const vrX = cylX(portal, 8, 490, M.navoj, 0, 232, 24, 18);
+  /* navojna vretena i motor osi X (straga, ispod stola) */
+  const vrX = cylZ(okvir, 8, zL - 40, M.navoj, 0, -60, 0, 18);
+  const vrY = cylX(portal, 8, 350, M.navoj, 0, 232, 24, 18);
   const vrZ = add(nosacX, cyl(6, 200, M.navoj, 16), 0, 235, 70);
-  add(korijen, box(60, 60, 12, M.crna), 0, -40, zC - zL / 2 - 20);
-  const motorY = nema(korijen, 'z', 0, -40, zC - zL / 2 - 26 - 38); reg('motori', 'Koračni motori NEMA 23', motorY);
+  add(portal, box(60, 30, 40, M.mjed), 0, -46, 0);                                         /* matica vretena X na portalu */
+  const motorX = nema(okvir, 'z', 0, -60, -zL / 2 - 10 - 38); reg('motori', 'Koračni motori NEMA 23', motorX);
   reg('vretena', 'Navojna vretena osi X, Y i Z', vrX, vrY, vrZ);
 
-  /* ---------------------------------------------------------------- 4. os A i konjić (na stolu, lijevo) */
+  /* lanac za kabele uz lijevu stranu (portal ga vuče po X) */
+  const lanac = new THREE.Group(); masina.add(lanac);
+  for (let i = 0; i < 22; i++) add(lanac, box(18, 22, 26, M.crna), -220 + i * 19, -78, 212);
+  reg('upravljanje', 'Upravljačka kutija, USB i računalo', lanac);
+
+  /* ---------------------------------------------------------------- 4. os A (stezna glava) i konjić — uzduž osi X, lijevo na stolu */
   const A = GEO.A; const hA = A.visina;
   const osAtijelo = new THREE.Group(); add(stol, osAtijelo, 0, 0, -A.y);
-  add(osAtijelo, box(70, 12, 110, M.crna2), A.lice - 58, 6, 0);                     /* podnožje */
-  add(osAtijelo, box(40, hA + 34, 96, M.crna), A.lice - 58, (hA + 34) / 2 + 12, 0);  /* kućište ležaja i remena */
-  const motorA = nema(osAtijelo, 'x', A.lice - 78 - 38 - 2, 40, 0); reg('motori', 'Koračni motori NEMA 23', motorA);
-  const osA = new THREE.Group(); add(stol, osA, A.lice, hA, -A.y);              /* okreće se oko x */
+  const xF = A.lice - 63;                                                                  /* prednja ploha kućišta */
+  add(osAtijelo, box(70, 10, 150, M.bez), xF - 28, 5, 0);                                    /* podnožje s utorima */
+  for (const sz of [-1, 1]) add(osAtijelo, box(30, 1, 10, M.utor), xF - 28, 10.6, sz * 60);
+  add(osAtijelo, box(50, hA + 48, 112, M.bez), xF - 25, (hA + 48) / 2 + 10, 0);              /* kućište vretena (visoki blok) */
+  add(osAtijelo, box(4, 26, 112, M.bezT), xF - 52, hA + 30, 0);
+  const korito = new THREE.Group(); add(osAtijelo, korito, xF - 50, 0, 0);                   /* korito do stražnje ploče s remenom */
+  add(korito, box(70, 8, 90, M.bez), -35, hA - 18, 0);
+  for (const sz of [-1, 1]) add(korito, box(70, 36, 6, M.bez), -35, hA, sz * 42);
+  add(korito, box(8, hA + 55, 190, M.bez), -74, (hA + 55) / 2 + 2, -30);                     /* stražnja ploča (nosi remen) */
+  const remen = new THREE.Group(); add(korito, remen, -82, 0, 0);                            /* remenski prijenos (stražnja strana) */
+  const ym = 38, zm = -74;                                                                   /* os motora: niže i u stranu */
+  cylX(remen, 30, 14, M.crna2, 0, hA, 0, 32); cylX(remen, 12, 16, M.celik, -2, hA, 0, 16);
+  cylX(remen, 12, 14, M.crna2, 0, ym, zm, 20); cylX(remen, 5, 16, M.celik, -2, ym, zm, 10);
+  { const dy = ym - hA, dz = zm, L = Math.hypot(dy, dz), k = Math.atan2(dy, -dz), ny = Math.cos(k), nz = Math.sin(k);
+    for (const s of [-1, 1]) { const b = add(remen, box(8, 3, L, M.crna), 0, (hA + ym) / 2 + s * 21 * ny, zm / 2 + s * 21 * nz); b.rotation.x = k; } }
+  const motorA = nema(korito, '-x', -36, ym, zm); reg('motori', 'Koračni motori NEMA 23', motorA);   /* motor paralelno s osi, vratilo prema remenu */
+  const osA = new THREE.Group(); add(stol, osA, A.lice, hA, -A.y);                         /* okreće se oko X */
   const glavaA = new THREE.Group(); osA.add(glavaA);
-  cylX(glavaA, 40, 26, M.sivo, -27, 0, 0, 40);
-  cylX(glavaA, 34, 4, M.aluT, -13, 0, 0, 40);
-  for (let i = 0; i < 3; i++) {                                                  /* tri čeljusti */
+  cylX(glavaA, 44, 8, M.aluT, -59, 0, 0, 40);                                               /* prirubnica */
+  cylX(glavaA, 50, 40, M.glava, -35, 0, 0, 44);                                             /* tijelo stezne glave Ø100 */
+  cylX(glavaA, 14, 2, M.crna2, -14.5, 0, 0, 24);
+  for (let i = 0; i < 3; i++) {                                                             /* tri stepenaste čeljusti */
     const k = new THREE.Group(); glavaA.add(k); k.rotation.x = i * 2 * Math.PI / 3;
-    add(k, box(14, 16, 14, M.celik), -7.5, 28, 0); add(k, box(14, 6, 18, M.celik), -7.5, 39, 0);
+    add(k, box(14, 18, 14, M.glava), -7.5, 29, 0); add(k, box(14, 10, 18, M.glava), -7.5, 42, 0);
+    const kv = add(k, cyl(4, 3, M.crna, 6), -15.5, 38, 0); kv.rotation.z = Math.PI / 2;
   }
-  add(osAtijelo, box(4, 8, 4, M.crvena), A.lice - 36, hA + 44, 0);               /* oznaka A0 na kućištu */
+  add(osAtijelo, box(4, 8, 4, M.crvena), xF - 2, hA + 52, 0);                                /* oznaka A0 */
   const obrA = new THREE.Group(); osA.add(obrA);
-  reg('osA', '4. os A (okretna stezna glava)', osAtijelo, osA);
+  reg('osA', '4. os A (stezna glava, remen, motor)', osAtijelo, osA);
 
-  const konjic = new THREE.Group(); stol.add(konjic);                           /* ishodište = vrh šiljka */
-  add(konjic, box(80, 12, 90, M.crna2), 48, -hA + 6, 0);
-  add(konjic, box(60, hA - 16, 50, M.plava), 50, -(hA - 12) / 2 - 2, 0);
-  cylX(konjic, 22, 60, M.plava, 50, 0, 0, 28);
-  cylX(konjic, 6, 20, M.celik, 88, 0, 0, 12);
-  { const k = add(konjic, new THREE.Mesh(new THREE.TorusGeometry(24, 3, 8, 28), M.celik), 98, 0, 0); k.rotation.y = Math.PI / 2; }
-  for (let i = 0; i < 3; i++) { const sp = add(konjic, cyl(1.6, 46, M.celik, 6), 98, 0, 0); sp.rotation.x = i * Math.PI / 3; }
-  cylX(konjic, 11, 36, M.celik, 30, 0, 0, 20);
-  { const s = add(konjic, cyl(9, 14, M.celik, 20, 0.5), 7, 0, 0); s.rotation.z = Math.PI / 2; }
-  { const r = add(konjic, cyl(2.5, 30, M.celik, 10), 30, 30, 0); r.rotation.x = 0.3; add(konjic, cyl(5, 10, M.crvena, 14), 30, 44, -4); }
+  const konjic = new THREE.Group(); stol.add(konjic);                                        /* ishodište = vrh šiljka; tijelo prema +X */
+  add(konjic, box(90, 10, 80, M.bez), 55, -hA + 5, 0);
+  add(konjic, box(70, hA + 18, 52, M.bez), 55, -hA + 10 + (hA + 18) / 2, 0);
+  cylX(konjic, 7, 12, M.celik, 14, 0, 0, 14);
+  { const s = add(konjic, cyl(7, 14, M.celik, 20, 0.5), 3, 0, 0); s.rotation.z = Math.PI / 2; }
+  const zvijezda = (p, x, y, z, os) => { const g = new THREE.Group(); add(p, g, x, y, z); add(g, cyl(5, 14, M.celik, 10), 0, -7, 0);
+    for (let i = 0; i < 5; i++) { const b = add(g, box(5, 8, 22, M.crna), 0, 4, 0); b.rotation.y = i * Math.PI / 5 * 2; b.position.set(Math.sin(i * 1.2566) * 6, 4, Math.cos(i * 1.2566) * 6); }
+    add(g, cyl(8, 8, M.crna, 16), 0, 4, 0); if (os === 'x') g.rotation.z = -Math.PI / 2; return g; };
+  zvijezda(konjic, 40, 28 + 7, 0);                                                           /* stezanje pinole (gore) */
+  zvijezda(konjic, 98, 0, 0, 'x');                                                           /* ručica pinole (straga) */
   reg('konjic', 'Konjić', konjic);
 
   /* ---------------------------------------------------------------- škripac i stezne pandže */
@@ -224,123 +247,138 @@ export function napraviStroj3020(THREE, scene) {
   const obrGrupa = new THREE.Group(); stol.add(obrGrupa);
   const pribor = { skripac: null, pandze: null };
   function isprazni(g) { while (g.children.length) { const c = g.children.pop(); c.traverse((m) => { if (m.isMesh) m.geometry.dispose(); }); } }
-  /* Dvije izvedbe škripca, iste čeljusti (paralelne s X, širina ≈ 100 mm, otvor po Y do 60 mm) i isti podlošci:
-     'original' — lijevani bušilični škripac kakav je na stroju (podnožje s utorima, dugo vreteno, ručica T);
-     'pojednostavljeni' — prvotni plavi strojni škripac iz v02. Na fotografiji je škripac okrenut vretenom ulijevo;
-     za predmete P01–P21 (dulja stranica po X) okreće se vretenom prema operateru. */
+  /* Dvije izvedbe škripca, iste čeljusti (paralelne s X, širina ≈ 100 mm, otvor po Y do 60 mm):
+     'original' — lijevani bušilični škripac sa stroja (podnožje s utorima, dugo vreteno, ručica T), vreteno prema +Y (strši preko desnog ruba stola);
+     'pojednostavljeni' — prvotni model. */
   let vrstaSkr = 'original', zadnjiSkr = null;
   function skripacOriginal(L, W, H, xc, yc) {
-    const zc = -yc, sir = Math.max(W, 20), bot = 27;
+    const zc = -yc, sir = Math.max(W, 20), bot = 27, sg = -1;                                 /* sg = −1: vreteno prema +Y */
     const liv = mat(0x8b9094, { metalness: 0.35, roughness: 0.72 }), tam = mat(0x4a433c, { metalness: 0.45, roughness: 0.6 });
-    add(skripac, box(124, 10, 190, liv), xc, 5, zc + 20);                          /* lijevano podnožje */
-    for (const sz of [-1, 1]) for (const sx of [-1, 1]) {                         /* uši s utorima za T-vijke */
-      add(skripac, box(34, 8, 46, liv), xc + sx * 79, 4, zc + 20 + sz * 62);
-      add(skripac, box(12, 1, 30, M.utor), xc + sx * 82, 8.6, zc + 20 + sz * 62);
+    add(skripac, box(124, 10, 150, liv), xc, 5, zc + sg * 5);
+    for (const sz of [-1, 1]) for (const sx of [-1, 1]) {
+      add(skripac, box(34, 8, 40, liv), xc + sx * 79, 4, zc + sg * 5 + sz * 52);
+      add(skripac, box(12, 1, 26, M.utor), xc + sx * 82, 8.6, zc + sg * 5 + sz * 52);
     }
-    for (const sx of [-1, 1]) add(skripac, box(16, 16, 186, liv), xc + sx * 54, 18, zc + 20);   /* bočne vodilice */
-    add(skripac, box(124, 22, 24, liv), xc, 28, zc - sir / 2 - 12);                 /* nepomična čeljust (straga) */
-    add(skripac, box(108, 14, 3, tam), xc, 32, zc - sir / 2 - 1.5);
-    add(skripac, box(124, 22, 26, liv), xc, 28, zc + sir / 2 + 13);                 /* pomična čeljust (sprijeda) */
-    add(skripac, box(108, 14, 3, tam), xc, 32, zc + sir / 2 + 1.5);
-    add(skripac, box(44, 26, 20, liv), xc, 23, zc + 108);                          /* glava s maticom vretena */
-    cylZ(skripac, 6, 115, M.navoj, xc, 24, zc + sir / 2 + 26 + 57.5, 16);          /* dugo navojno vreteno */
-    const kr = zc + sir / 2 + 26 + 115;
-    add(skripac, cyl(9, 16, M.celik, 16), xc, 24, kr).rotation.x = Math.PI / 2;     /* glava vretena */
-    cylX(skripac, 3.5, 90, M.celik, xc, 24, kr + 4, 10);                          /* ručica T */
-    for (const sx of [-1, 1]) add(skripac, new THREE.Mesh(new THREE.SphereGeometry(5, 12, 10), M.celik), xc + sx * 45, 24, kr + 4);
-    for (const sz of [-1, 1]) add(skripac, box(Math.min(L, 100), bot - 20, 5, M.celik), xc, 20 + (bot - 20) / 2, zc + sz * (W / 2 - 4));   /* podlošci */
+    for (const sx of [-1, 1]) add(skripac, box(16, 16, 146, liv), xc + sx * 54, 18, zc + sg * 5);
+    add(skripac, box(124, 22, 24, liv), xc, 28, zc - sg * (sir / 2 + 12));                 /* nepomična čeljust */
+    add(skripac, box(108, 14, 3, tam), xc, 32, zc - sg * (sir / 2 + 1.5));
+    add(skripac, box(124, 22, 26, liv), xc, 28, zc + sg * (sir / 2 + 13));                 /* pomična čeljust */
+    add(skripac, box(108, 14, 3, tam), xc, 32, zc + sg * (sir / 2 + 1.5));
+    add(skripac, box(44, 26, 20, liv), xc, 23, zc + sg * 70);                         /* glava s maticom vretena */
+    cylZ(skripac, 6, 45, M.navoj, xc, 24, zc + sg * (sir / 2 + 26 + 22.5), 16);          /* vreteno (kraj ostaje unutar portala) */
+    const kr = zc + sg * (sir / 2 + 26 + 45);
+    add(skripac, cyl(9, 16, M.celik, 16), xc, 24, kr).rotation.x = Math.PI / 2;
+    cylX(skripac, 3.5, 90, M.celik, xc, 24, kr + sg * 4, 10);
+    for (const sx of [-1, 1]) add(skripac, new THREE.Mesh(new THREE.SphereGeometry(5, 12, 10), M.celik), xc + sx * 45, 24, kr + sg * 4);
+    for (const sz of [-1, 1]) add(skripac, box(Math.min(L, 100), bot - 20, 5, M.celik), xc, 20 + (bot - 20) / 2, zc + sz * (W / 2 - 4));
     pribor.skripac = { celjusti: [
-      { x0: xc - 62, x1: xc + 62, y0: yc + sir / 2, y1: yc + sir / 2 + 24, z0: 17, z1: 39 },
-      { x0: xc - 62, x1: xc + 62, y0: yc - sir / 2 - 26, y1: yc - sir / 2, z0: 17, z1: 39 }], dno: 20, bot };
+      { x0: xc - 62, x1: xc + 62, y0: yc + sir / 2, y1: yc + sir / 2 + 26, z0: 17, z1: 39 },
+      { x0: xc - 62, x1: xc + 62, y0: yc - sir / 2 - 24, y1: yc - sir / 2, z0: 17, z1: 39 }], dno: 20, bot,
+      tijelo: { x0: xc - 96, x1: xc + 96, y0: yc - 70, y1: yc + 80 } };
     return { x0: xc - L / 2, y0: yc - W / 2, bot, top: bot + H };
   }
-  function skripacZa(L, W, H, xc = 0, yc = GEO.PRIBOR_Y) {
-    isprazni(skripac); isprazni(pandze); skripac.visible = true; pandze.visible = false;
+  function skripacZa(L, W, H, xc = GEO.SKRIPAC.x, yc = GEO.SKRIPAC.y) {
+    isprazni(skripac); isprazni(pandze); skripac.visible = true; pandze.visible = false; prikaziA(true);
     zadnjiSkr = [L, W, H, xc, yc];
     if (vrstaSkr === 'original') { const r = skripacOriginal(L, W, H, xc, yc); skripac.traverse((m) => { if (m.isMesh) m.userData.dio = 'skripac'; }); return r; }
-    const cel = 19, bot = 27, zc = -yc;                                            /* bot = donja ploha pripremka (podlošci) */
-    const Lt = 150, sir = Math.max(W, 20);
-    add(skripac, box(Lt, 8, 150, M.plavaKut), xc, 4, zc - 8);                      /* podnožje s utorima za vijke */
+    const bot = 27, zc = -yc, Lt = 150, sir = Math.max(W, 20);
+    add(skripac, box(Lt, 8, 150, M.plavaKut), xc, 4, zc - 8);
     add(skripac, box(Lt - 30, 12, 130, M.plavaKut), xc, 14, zc - 8);
     for (const sx of [-1, 1]) add(skripac, box(14, 4, 30, M.utor), xc + sx * 62, 8.5, zc - 8);
-    const nep = add(skripac, box(110, 39 - 20, 22, M.plavaKut), xc, 20 + 9.5, zc - sir / 2 - 11);            /* nepomična čeljust (straga) */
+    add(skripac, box(110, 19, 22, M.plavaKut), xc, 29.5, zc - sir / 2 - 11);
     add(skripac, box(104, 12, 3, M.celik), xc, 33, zc - sir / 2 - 1.5);
-    add(skripac, box(110, 39 - 20, 22, M.plavaKut), xc, 20 + 9.5, zc + sir / 2 + 11);                       /* pomična čeljust (sprijeda) */
+    add(skripac, box(110, 19, 22, M.plavaKut), xc, 29.5, zc + sir / 2 + 11);
     add(skripac, box(104, 12, 3, M.celik), xc, 33, zc + sir / 2 + 1.5);
     add(skripac, box(110, 30, 14, M.plavaKut), xc, 20, zc - sir / 2 - 30);
-    cylZ(skripac, 7, 70, M.celik, xc, 22, zc + sir / 2 + 50, 16);                   /* vreteno škripca */
-    cylX(skripac, 3, 70, M.celik, xc, 22, zc + sir / 2 + 84, 10);                   /* ručica */
+    cylZ(skripac, 7, 70, M.celik, xc, 22, zc + sir / 2 + 50, 16);
+    cylX(skripac, 3, 70, M.celik, xc, 22, zc + sir / 2 + 84, 10);
     for (const sx of [-1, 1]) add(skripac, cyl(5, 8, M.crvena, 14), xc + sx * 35, 22, zc + sir / 2 + 84).rotation.z = Math.PI / 2;
-    for (const sz of [-1, 1]) add(skripac, box(Math.min(L, 100), bot - 20, 5, M.celik), xc, 20 + (bot - 20) / 2, zc + sz * (W / 2 - 4));   /* podlošci */
-    void nep; void cel;
+    for (const sz of [-1, 1]) add(skripac, box(Math.min(L, 100), bot - 20, 5, M.celik), xc, 20 + (bot - 20) / 2, zc + sz * (W / 2 - 4));
     pribor.skripac = { celjusti: [
       { x0: xc - 55, x1: xc + 55, y0: yc + sir / 2, y1: yc + sir / 2 + 22, z0: 20, z1: 39 },
-      { x0: xc - 55, x1: xc + 55, y0: yc - sir / 2 - 22, y1: yc - sir / 2, z0: 20, z1: 39 }], dno: 20, bot };
+      { x0: xc - 55, x1: xc + 55, y0: yc - sir / 2 - 22, y1: yc - sir / 2, z0: 20, z1: 39 }], dno: 20, bot,
+      tijelo: { x0: xc - 75, x1: xc + 75, y0: yc - 60, y1: yc + 75 } };
     skripac.traverse((m) => { if (m.isMesh) m.userData.dio = 'skripac'; });
     return { x0: xc - L / 2, y0: yc - W / 2, bot, top: bot + H };
   }
-  /* podložna MDF ploča 8 mm i četiri stezne pandže na T-utorima */
-  function pandzeZa(L, W, H, xc = 0, yc = GEO.PRIBOR_Y) {
-    isprazni(skripac); isprazni(pandze); skripac.visible = false; pandze.visible = true;
+  /* podložna MDF ploča 8 mm i četiri stezne pandže na T-utorima; 4. os i škripac se tada skidaju sa stola */
+  function pandzeZa(L, W, H, xc = GEO.PANDZE.x, yc = GEO.PANDZE.y) {
+    isprazni(skripac); isprazni(pandze); skripac.visible = false; pandze.visible = true; prikaziA(false); zadnjiSkr = null;
     const D = 8, zc = -yc;
     add(pandze, box(Math.min(L + 40, S.L - 10), D, Math.min(W + 40, S.W - 6), M.mdf), xc, D / 2, zc);
     const top = D + H;
-    const tocke = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
-    tocke.forEach(([sx, sy]) => {
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sy]) => {
       const x = xc + sx * (L / 2 - 18), y = yc + sy * (W / 2 + 2);
       const g = new THREE.Group(); add(pandze, g, x, 0, -y);
-      add(g, box(20, top - 2, 16, M.crna2), 0, (top - 2) / 2, -sy * 30);          /* stepenasti blok */
-      const st = add(g, box(16, 8, 62, M.celik), 0, top + 4, -sy * 10);            /* stezna letva */
-      st.rotation.x = sy * 0.04;
+      add(g, box(20, top - 2, 16, M.crna2), 0, (top - 2) / 2, -sy * 30);
+      const st = add(g, box(16, 8, 62, M.celik), 0, top + 4, -sy * 10); st.rotation.x = sy * 0.04;
       add(g, cyl(4, top + 22, M.celik, 10), 0, (top + 22) / 2 - 2, -sy * 12);
-      add(g, cyl(7, 6, M.crna, 6), 0, top + 11, -sy * 12);                       /* matica */
+      add(g, cyl(7, 6, M.crna, 6), 0, top + 11, -sy * 12);
     });
     pribor.pandze = { D, top };
     pandze.traverse((m) => { if (m.isMesh) m.userData.dio = 'pandze'; });
     return { x0: xc - L / 2, y0: yc - W / 2, bot: D, top };
   }
-  function bezPribora() { isprazni(skripac); isprazni(pandze); skripac.visible = pandze.visible = false; pribor.skripac = pribor.pandze = null; zadnjiSkr = null; }
-  /* izbor izvedbe škripca; ako je škripac na stolu, odmah se ponovno složi (pripremak i čeljusti ostaju na istom mjestu) */
+  let imaA = true;
+  function prikaziA(v) { imaA = v; osAtijelo.visible = osA.visible = konjic.visible = v; }
+  function bezPribora() { isprazni(skripac); isprazni(pandze); skripac.visible = pandze.visible = false; pribor.skripac = pribor.pandze = null; zadnjiSkr = null; prikaziA(true); }
   function vrstaSkripca(v) { if (v === undefined) return vrstaSkr; vrstaSkr = v === 'pojednostavljeni' ? v : 'original'; if (zadnjiSkr && skripac.visible) skripacZa(...zadnjiSkr); return vrstaSkr; }
   reg('skripac', 'Bušilični škripac', skripac);
   reg('pandze', 'Stezne pandže i podložna ploča', pandze);
 
-  /* ---------------------------------------------------------------- upravljačka kutija, pretvarač, računalo */
-  const upravljanje = new THREE.Group(); add(korijen, upravljanje, 400, -118, 230);
-  add(upravljanje, box(230, 150, 250, M.crna), 0, 75, 0);
-  add(upravljanje, box(232, 4, 252, M.plava), 0, 150, 0);
-  add(upravljanje, natpis('POWER', 60, 14, '#cfd8dc', '#23272b', 44), -70, 122, 125.6);
-  add(upravljanje, natpis('E-STOP', 70, 14, '#f2c21a', '#23272b', 44), 50, 122, 125.6);
-  add(upravljanje, natpis('USB', 40, 12, '#cfd8dc', '#23272b', 50), -70, 52, 125.6);
-  const sklopka = add(upravljanje, box(24, 34, 10, M.crvena), -70, 92, 128); sklopka.userData.klik = 'sklopka';
-  const gljivaPod = add(upravljanje, cyl(30, 6, M.zuta, 28), 50, 88, 127); gljivaPod.rotation.x = Math.PI / 2;
-  const gljiva = add(upravljanje, cyl(24, 16, M.crvena, 28, 20), 50, 88, 138); gljiva.rotation.x = Math.PI / 2; gljiva.userData.klik = 'gljiva';
-  const usbUt = add(upravljanje, box(16, 8, 4, M.crna2), -70, 36, 126);
-  const svj = add(upravljanje, cyl(5, 4, mat(0x2a2a2a, { emissive: 0x000000 }), 12), -70, 140, 127); svj.rotation.x = Math.PI / 2;
-  for (let i = 0; i < 6; i++) add(upravljanje, box(2, 60, 120, M.crna2), -116, 80, -40 + i * 2 - 6 + i * 14);
-  const kabel = (tocke, r = 3, m = M.cijevC) => new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(tocke.map((p) => new THREE.Vector3(...p))), 50, r, 8, false), m);
-  korijen.add(kabel([[330, -82, 357], [330, -105, 380], [380, -113, 420], [530, -114, 420], [610, -112, 380]], 2.4));          /* USB */
-  korijen.add(kabel([[285, -60, 200], [240, -100, 180], [200, -110, 100], [150, -105, -140], [0, -80, -240]], 5));             /* motorni kabeli */
-  const racunalo = new THREE.Group(); add(korijen, racunalo, 710, -118, 330); racunalo.rotation.y = -0.55;
+  /* ---------------------------------------------------------------- upravljačka kutija „CNC Controller” (lijevo od stroja), kao na fotografiji */
+  const upravljanje = new THREE.Group(); add(korijen, upravljanje, -540, -118, 120);
+  const KW = 360, KD = 300, KH = 150, KF = 55, KS = 70;                                     /* širina, dubina, visina, visina okomitog dijela, uvlaka kosine */
+  { const sh = new THREE.Shape(); sh.moveTo(-KD / 2, 0); sh.lineTo(KD / 2, 0); sh.lineTo(KD / 2, KF); sh.lineTo(KD / 2 - KS, KH); sh.lineTo(-KD / 2, KH); sh.lineTo(-KD / 2, 0);
+    const g = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: KW, bevelEnabled: false }), M.bez);
+    g.rotation.y = -Math.PI / 2; g.position.set(KW / 2, 0, 0); upravljanje.add(g); }
+  for (let i = 0; i < 5; i++) add(upravljanje, box(2, 8, 60, M.crna2), KW / 2 + 0.5, 80 + i * 13, -40);   /* prorezi za zrak (bok) */
+  const kut = Math.atan2(KS, KH - KF), visP = Math.hypot(KS, KH - KF);
+  const ploca = new THREE.Group(); add(upravljanje, ploca, 0, (KF + KH) / 2, KD / 2 - KS / 2); ploca.rotation.x = -kut;
+  const PW = KW - 24, PH = visP - 14;
+  const natpisi = platno(PW, PH, (g) => {
+    g.fillStyle = '#d6d0b8'; g.fillRect(0, 0, PW, PH); g.strokeStyle = '#1b1b1b'; g.lineWidth = 0.7; g.fillStyle = '#1b1b1b';
+    g.font = '700 9px Arial'; g.fillText('CNC Controller', 12, 12);
+    g.strokeRect(8, 16, 186, PH - 22); g.fillRect(8, 16, 186, 9); g.fillStyle = '#fff'; g.font = '700 6.4px Arial'; g.fillText('Spindle motor control', 60, 22.8);
+    g.fillStyle = '#1b1b1b'; g.font = '700 5px Arial'; g.fillText('PC', 120, 43); g.fillText('Manually', 136, 67);
+    g.fillRect(134, PH - 20, 54, 8); g.strokeRect(204, 18, PW - 212, PH - 24);
+    g.fillRect(216, PH - 18, 32, 8); g.fillRect(270, PH - 18, 34, 8); g.fillText('ON', 245, 36); g.fillText('OFF', 245, 62);
+    g.fillStyle = '#fff'; g.font = '700 5.4px Arial'; g.fillText('Spindle mode', 139, PH - 14); g.fillText('Power', 223, PH - 12); g.fillText('Stop', 280, PH - 12);
+  });
+  add(ploca, natpisi, 0, 0, 0.6);
+  const px = (u) => u - PW / 2, py = (v) => PH / 2 - v;                                     /* koordinate s platna (lijevo-gore) u ploču */
+  const pretvarac = new THREE.Group(); ploca.add(pretvarac);
+  add(pretvarac, box(70, 56, 3, M.crna), px(64), py(52), 2);                                  /* pretvarač PRT-E750 ugrađen u ploču */
+  const prtNatpis = platno(30, 5, (g) => { g.fillStyle = '#111'; g.fillRect(0, 0, 30, 5); g.fillStyle = '#ddd'; g.font = '4px Arial'; g.fillText('PRT-E750', 6, 4); }, 8);
+  add(pretvarac, prtNatpis, px(64), py(30), 3.6);
+  const lcdC = document.createElement('canvas'); lcdC.width = 256; lcdC.height = 80; const lcdT = new THREE.CanvasTexture(lcdC);
+  const lcd = add(pretvarac, new THREE.Mesh(new THREE.PlaneGeometry(42, 13), new THREE.MeshBasicMaterial({ map: lcdT })), px(64), py(40), 3.6); void lcd;
+  const run = add(pretvarac, cyl(4.5, 3, M.zelena, 18), px(48), py(56), 4.5); run.rotation.x = Math.PI / 2;
+  const stop = add(pretvarac, cyl(4.5, 3, M.crvena, 18), px(62), py(56), 4.5); stop.rotation.x = Math.PI / 2;
+  const pot = add(pretvarac, cyl(6.5, 6, M.crna, 20), px(80), py(56), 6); pot.rotation.x = Math.PI / 2;
+  const potOz = add(pretvarac, box(1.4, 5, 1.4, M.zuta), px(80), py(53), 9.2);
+  for (let i = 0; i < 4; i++) { const b = add(pretvarac, cyl(4, 3, M.plavi, 18), px(40 + i * 14), py(70), 4.5); b.rotation.x = Math.PI / 2; }
+  const prsten = add(ploca, cyl(10, 4, M.celik, 28), px(146), py(46), 2.5); prsten.rotation.x = Math.PI / 2;
+  const prek = add(ploca, box(5, 14, 7, M.crna), px(146), py(46), 7);                        /* preklopnik PC / Manually */
+  const sklopka = add(ploca, box(13, 19, 8, mat(0xb0261d, { roughness: 0.35 })), px(230), py(48), 4.5); sklopka.userData.klik = 'sklopka';   /* svijetleća sklopka Power */
+  add(ploca, box(17, 23, 2, M.crna), px(230), py(48), 1.5);
+  const gljivaPod = add(ploca, cyl(23, 3, M.zuta, 32), px(288), py(46), 2); gljivaPod.rotation.x = Math.PI / 2;
+  const gNatpis = platno(44, 44, (g) => { g.fillStyle = '#f2c21a'; g.beginPath(); g.arc(22, 22, 22, 0, 7); g.fill(); g.fillStyle = '#111'; g.font = '700 6px Arial'; g.textAlign = 'center';
+    g.save(); g.translate(22, 22); for (const [i, ch] of [...'EMERGENCY'].entries()) { g.save(); g.rotate(-1.15 + i * 0.29); g.fillText(ch, 0, -16); g.restore(); } g.restore(); g.fillText('STOP', 22, 41); }, 8);
+  add(ploca, gNatpis, px(288), py(46), 3.6);
+  const gljiva = add(ploca, cyl(15, 12, M.crvena, 32, 13), px(288), py(46), 10); gljiva.rotation.x = Math.PI / 2; gljiva.userData.klik = 'gljiva';
+  const usbUt = add(upravljanje, box(16, 8, 4, M.crna2), 100, 60, -KD / 2 - 2);
+  korijen.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[-440, 50, -80], [-420, 0, -120], [-320, -70, -180], [-230, -90, -230]].map((p) => new THREE.Vector3(...p))), 50, 5, 8, false), M.cijevC));
+  reg('upravljanje', 'Upravljačka kutija (CNC Controller), USB i računalo', upravljanje, usbUt);
+  reg('pretvarac', 'Pretvarač frekvencije PRT-E750 (u upravljačkoj kutiji)', pretvarac, prek, prsten);
+
+  /* računalo s Mach3 (desno od stroja) */
+  const racunalo = new THREE.Group(); add(korijen, racunalo, 520, -118, 140); racunalo.rotation.y = -0.6;
   add(racunalo, box(300, 14, 210, M.crna2), 0, 7, 0);
   const ekran = add(racunalo, box(300, 200, 8, M.crna), 0, 112, -100); ekran.rotation.x = -0.18;
   const zasC = document.createElement('canvas'); zasC.width = 320; zasC.height = 200; const zasT = new THREE.CanvasTexture(zasC);
   const zaslon = add(racunalo, new THREE.Mesh(new THREE.PlaneGeometry(282, 180), new THREE.MeshBasicMaterial({ map: zasT })), 0, 112, -95.2); zaslon.rotation.x = -0.18;
-  reg('upravljanje', 'Upravljačka kutija, USB i računalo', upravljanje, racunalo, usbUt);
-
-  const pretvarac = new THREE.Group(); add(korijen, pretvarac, 400, -118, -10);
-  add(pretvarac, box(120, 190, 140, mat(0x3c4247)), 0, 95, 0);
-  add(pretvarac, box(110, 60, 2, M.crna), 0, 150, 71);
-  const lcdC = document.createElement('canvas'); lcdC.width = 256; lcdC.height = 96; const lcdT = new THREE.CanvasTexture(lcdC);
-  const lcd = add(pretvarac, new THREE.Mesh(new THREE.PlaneGeometry(80, 30), new THREE.MeshBasicMaterial({ map: lcdT })), 0, 158, 72.2);
-  const pot = add(pretvarac, cyl(11, 10, M.crna2, 20), -25, 115, 76); pot.rotation.x = Math.PI / 2;
-  const potOz = add(pretvarac, box(2, 9, 2, M.zuta), -25, 120, 82);
-  const run = add(pretvarac, box(16, 10, 4, M.zelena), 18, 120, 72); const stop = add(pretvarac, box(16, 10, 4, M.crvena), 38, 120, 72);
-  const prek = add(pretvarac, box(26, 12, 6, M.crna2), 0, 80, 72);
-  add(pretvarac, natpis('PC   RUČNO', 60, 10, '#cfd8dc', '#3c4247', 30), 0, 94, 71.2);
-  for (let i = 0; i < 9; i++) add(pretvarac, box(118, 2, 2, M.crna), 0, 20 + i * 6, 71);
-  korijen.add(kabel([[360, -40, -10], [270, -70, -90], [220, 40, -120], [180, 250, -60], [160, 324, -12]], 4.2));                   /* kabel vretena */
-  reg('pretvarac', 'Pretvarač frekvencije 0,75 kW', pretvarac);
+  reg('upravljanje', 'Upravljačka kutija (CNC Controller), USB i računalo', racunalo);
   function zaslonTekst(ukljucen, osi) {
     const g = zasC.getContext('2d'); g.fillStyle = ukljucen ? '#5d6f80' : '#05080b'; g.fillRect(0, 0, 320, 200);
     if (ukljucen) {
@@ -352,12 +390,14 @@ export function napraviStroj3020(THREE, scene) {
     zasT.needsUpdate = true;
   }
   zaslonTekst(false);
-  function lcdTekst(t, ziv) {
-    const g = lcdC.getContext('2d'); g.fillStyle = ziv ? '#0e2a18' : '#0a0f0c'; g.fillRect(0, 0, 256, 96);
-    if (ziv) { g.fillStyle = '#4dff8a'; g.font = '700 54px "IBM Plex Mono",monospace'; g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillText(t, 240, 52); }
+  function lcdTekst(t, ziv) {                                                                /* crveni 7-segmentni prikaz pretvarača */
+    const g = lcdC.getContext('2d'); g.fillStyle = '#1a0505'; g.fillRect(0, 0, 256, 80);
+    g.fillStyle = ziv ? '#ff3b2f' : '#3a0d0b'; g.font = '700 62px "IBM Plex Mono",monospace'; g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillText(ziv ? t : '8888', 244, 44);
     lcdT.needsUpdate = true;
   }
   lcdTekst('', false);
+  function gljivaStanje(pritisnuta) { gljiva.position.z = pritisnuta ? 7 : 11; }
+  function sklopkaStanje(uk) { sklopka.material.emissive.setHex(uk ? 0x9a1a10 : 0); sklopka.material.color.setHex(uk ? 0xff5a46 : 0xb0261d); }
 
   /* ---------------------------------------------------------------- oznake nultočaka */
   const nultocke = new THREE.Group(); korijen.add(nultocke); nultocke.visible = false;
@@ -372,28 +412,27 @@ export function napraviStroj3020(THREE, scene) {
 
   /* ---------------------------------------------------------------- položaj osi */
   let Ztop = 60;
-  /* vreteno je stegnuto u obujmici tako da je vrh alata pri Z = 0 na visini Ztop iznad stola */
   function postaviZtop(h) { Ztop = h; vreteno.position.y = h; nulaM.position.set(GEO.XT0, h, -GEO.YT0); }
   function postaviOsi(X, Y, Z, Agr) {
-    nosacX.position.x = X + GEO.XT0;
+    portal.position.x = GEO.XT0 + X - TZ;     /* portal nosi os vretena TZ ispred grede: vrh alata je na x = X + XT0 */
+    nosacX.position.x = GEO.YT0 + Y;          /* nosač osi Y: vrh alata je na y = Y + YT0 */
     glavaZ.position.y = Z;
-    stol.position.z = TZ + GEO.YT0 + Y;           /* alat je u okviru stola na y = Y + YT0 */
     osA.rotation.x = (Agr || 0) * Math.PI / 180;
   }
-  /* vreteno je u obujmici; visina vrha alata nad stolom pri Z = 0 je Ztop (podešava se prema pripremku) */
   function vrhNadStolom(Z) { return Z + Ztop; }
   postaviZtop(60);
-  function okreniAlat(kut) { alatG.rotation.y = kut; matica.rotation.y = kut; }
+  function okreniAlat(k) { alatG.rotation.y = k; matica.rotation.y = k; }
   function konjicNa(x) { konjic.position.set(x, hA, -A.y); }
   konjicNa(GEO.KONJIC_PARK);
-  postaviOsi(100, 150, 0, 0);
+  postaviOsi(150, 100, 0, 0);
 
   return {
-    korijen, okvir, stol, portal, nosacX, glavaZ, vreteno, alatG, skripac, pandze, osA, obrA, konjic, obrGrupa, pretvarac, upravljanje, racunalo,
+    korijen, masina, okvir, stol, portal, nosacX, glavaZ, vreteno, alatG, skripac, pandze, osA, obrA, konjic, obrGrupa, pretvarac, upravljanje, racunalo,
     nultocke, nulaM, nulaW, dijelovi, M, GEO,
-    klik: { sklopka, gljiva }, svjetlo: svj, zaslon, potOz, pribor,
-    postaviOsi, postaviZtop, get Ztop() { return Ztop; }, vrhNadStolom, okreniAlat, konjicNa, skripacZa, pandzeZa, bezPribora, vrstaSkripca, lcdTekst, zaslonTekst,
-    /* položaj točke iz okvira stola u three.js (lokalno u grupi stola) */
+    klik: { sklopka, gljiva }, svjetlo: sklopka, zaslon, potOz, pribor,
+    postaviOsi, postaviZtop, get Ztop() { return Ztop; }, vrhNadStolom, okreniAlat, konjicNa, skripacZa, pandzeZa, bezPribora, vrstaSkripca, prikaziA, get imaA() { return imaA; },
+    lcdTekst, zaslonTekst, gljivaStanje, sklopkaStanje,
+    /* točka iz okvira stola (x = X, y = Y, z gore) u lokalne koordinate grupe stola */
     uStol: (x, y, z) => new THREE.Vector3(x, z, -y)
   };
 }

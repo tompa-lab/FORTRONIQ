@@ -3,9 +3,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { PREDMETI } from './programi_p.js?v=02';
-import { PRIMJERI_A } from './programi_a.js?v=02';
+import { PRIMJERI_A } from './programi_a.js?v=05';
 import { prevedi, objasni, opisiOperacije, razlozi } from './gkod.js?v=02';
-import { napraviStroj3020, postaviOkolinu, GEO } from './stroj3020.js?v=03';
+import { napraviStroj3020, postaviOkolinu, GEO } from './stroj3020.js?v=05';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -22,7 +22,7 @@ const JOG = { X: 1000, Y: 1000, Z: 500, A: 1800 };         /* Cont jog — pretp
 const F_REF = 1500, S_MAX = 24000;
 const HA = GEO.A.visina, LICE = GEO.A.lice;                /* os A: visina iznad stola, čelo čeljusti (x u okviru stola) */
 const VALJAK = { d: 40, L: 100, uCelj: 15 };
-const VJEZBA = { L: 80, W: 50, H: 20, xc: 0, yc: GEO.PRIBOR_Y };    /* pripremak za nizove 2 i 3 (u škripcu) */
+const VJEZBA = { L: 80, W: 50, H: 20, xc: GEO.SKRIPAC.x, yc: GEO.SKRIPAC.y };    /* pripremak za nizove 2 i 3 (u škripcu) */
 const ALATI = { 1: 'ravno glodalo Ø3 mm, 2 oštrice' };
 const PROGRAMI = [...Object.keys(PREDMETI).sort(), ...Object.keys(PRIMJERI_A)];
 
@@ -31,37 +31,37 @@ const PROGRAMI = [...Object.keys(PREDMETI).sort(), ...Object.keys(PRIMJERI_A)];
 /* ================================================================== */
 const NIZOVI = [
   { id: 'ukljucivanje', grupa: 'Postavljanje stroja', naziv: 'Uključivanje', koraci: [
-    ['Uključi napajanje upravljačke kutije (POWER).', 'Gumb POWER je na upravljačkoj kutiji ispod zaslona; možeš kliknuti i crveni prekidač na kutiji u 3D prikazu. Zasvijetli lampica.', 'kutija'],
+    ['Uključi napajanje upravljačke kutije (POWER).', 'Gumb POWER je na upravljačkoj kutiji ispod zaslona; možeš kliknuti i crvenu sklopku Power na kutiji „CNC Controller” lijevo od stroja u 3D prikazu. Sklopka zasvijetli.', 'kutija'],
     ['Uključi pretvarač frekvencije i provjeri da je upravljanje brzinom vrtnje na PC.', 'Gumb „Napajanje” na pretvaraču, preklopnik PC / Ručno na PC. U načinu PC brzinu vrtnje zadaje Mach3 (M3, S…).', 'pretvarac'],
     ['Spoji USB kabel kontrolera s računalom.', 'Gumb „USB kabel” na upravljačkoj kutiji. Kontroler mora biti spojen prije pokretanja Mach3, inače ga Mach3 ne nađe.', 'usb'],
     ['Pokreni Mach3 s profilom Mach3Mill.', 'Klikni „Pokreni Mach3” na zaslonu računala i pričekaj da se prikaže zaslon Program Run.', 'mach3'],
     ['Otpusti gljivu za nužno zaustavljanje na upravljačkoj kutiji.', 'Klikni crvenu gljivu E-STOP — zakretanjem se otpušta. Dok je pritisnuta, Mach3 ne dopušta gibanje.', 'gljiva'],
     ['Pritisni Reset u Mach3 — gumb prestaje treptati.', 'Reset u Mach3 uključuje i isključuje nužno zaustavljanje. Dok treperi crveno, osi i vreteno su blokirani.', 'reset'],
-    ['Referenciraj osi: pritisni Ref All Home. Os Z ide prva gore, zatim X lijevo i Y sprijeda.', 'Ako stroj nema referentnih sklopki, ovaj se korak na stroju preskače — tada koordinate stroja vrijede od mjesta gdje je Mach3 pokrenut. Os A nema sklopke i ne referencira se.', 'ref'],
+    ['Referenciraj osi: pritisni Ref All Home. Os Z ide prva gore, zatim X straga i Y lijevo.', 'Ako stroj nema referentnih sklopki, ovaj se korak na stroju preskače — tada koordinate stroja vrijede od mjesta gdje je Mach3 pokrenut. Os A nema sklopke i ne referencira se.', 'ref'],
     ['Kraj niza „Uključivanje”. Vrati se u izbornik ili odaberi sljedeći niz.', 'Klikni „Izbornik” ili odaberi sljedeći niz.', 'kraj']] },
   { id: 'rucno', grupa: 'Postavljanje stroja', naziv: 'Ručno gibanje', koraci: [
     ['Otvori Jog panel tipkom Tab (fokus na upravljanju) ili gumbom Jog (Tab).', 'Klikni na upravljanje da bude u fokusu i pritisni Tab, ili gumb Jog (Tab) desno ispod DRO-a.', 'jogPanel'],
-    ['U načinu Cont drži tipku → (ili gumb X+) i pomakni os X za najmanje 20 mm.', 'Os se giba dok držiš tipku. Pazi na smjer: +X je udesno.', 'contX'],
-    ['Pomakni os Y tipkama ↑ ↓ (ili Y+ / Y−) za najmanje 20 mm.', 'Giba se stol: kad alat ide u +Y (od tebe), stol ide prema tebi.', 'contY'],
+    ['U načinu Cont drži tipku → (ili gumb X+) i pomakni os X za najmanje 20 mm.', 'Os se giba dok držiš tipku. Os X vozi cijeli portal; +X je prema tebi.', 'contX'],
+    ['Pomakni os Y tipkama ↑ ↓ (ili Y+ / Y−) za najmanje 20 mm.', 'Os Y vozi nosač vretena po gredi portala; +Y je udesno. Stol miruje.', 'contY'],
     ['Spusti os Z tipkom PgDn (ili Z−) za najmanje 5 mm.', 'PgUp diže, PgDn spušta os Z. Pazi da alat ne udari u pripremak u škripcu.', 'contZ'],
     ['Prebaci Jog u način Step, odaberi korak 1 i pomakni os Z jednim pritiskom.', 'Gumb Step, zatim 1. Svaki pritisak tipke ili gumba pomakne os točno za korak.', 'step'],
     ['Zakreni os A gumbom A+ do A +90.0000.', 'U načinu Step koraci vrijede u stupnjevima: npr. 9 × 10 °. Može i preklopnik „← → za os A” pa tipke ← →.', 'A90'],
     ['Dovedi alat u položaj X 150.0000, Y 100.0000, Z −20.0000 u koordinatama stroja.', 'Uključi Machine Coords — DRO tada pokazuje koordinate stroja (bez pomaka G54). Kombiniraj korake 10, 1, 0.1 i 0.01.', 'polozaj'],
     ['Kraj niza „Ručno gibanje”. Vrati se u izbornik.', 'Klikni „Izbornik” ili odaberi sljedeći niz.', 'kraj']] },
   { id: 'nultocka', grupa: 'Postavljanje stroja', naziv: 'Nultočka obratka', koraci: [
-    ['Pripremak 80 × 50 × 20 mm stegnut je u škripcu. Nultočka G54 bit će u lijevom prednjem gornjem kutu. Rubove dodiruješ glodalom Ø3 metodom papira: tanak papir drži se između alata i pripremka, a os se pomiče u sve manjim koracima dok papir ne zapne. Vreteno pri tome stoji.', 'Pritisni „Dalje” kad pročitaš uputu. Stanje papira prikazano je ispod zaslona Mach3.', 'dalje'],
-    ['Spusti alat oko 3 mm ispod gornje plohe, lijevo od pripremka, i približi se lijevom rubu dok papir ne zapne.', 'Najprije Cont ili korak 1, blizu ruba 0.1, a na kraju 0.01. Ako pretjeraš, alat udari u pripremak — niz se tada ponavlja.', 'dodirX'],
-    ['U DRO X upiši −1.5 i potvrdi tipkom Enter: os alata je za polumjer glodala lijevo od ruba.', 'Klikni broj u DRO X, upiši -1.5 i pritisni Enter. Mach3 izračuna pomak G54 tako da DRO pokaže upisanu vrijednost.', 'droX'],
-    ['Podigni alat, dovedi ga ispred pripremka (prema tebi) i približi se prednjem rubu dok papir ne zapne.', 'Najprije Z+ iznad pripremka, zatim X na sredinu, Y− ispred ruba, Z− dolje i polako Y+.', 'dodirY'],
-    ['U DRO Y upiši −1.5 i potvrdi tipkom Enter.', 'Isto kao za X: os alata je 1,5 mm ispred prednjeg ruba.', 'droY'],
+    ['Pripremak 80 × 50 × 20 mm stegnut je u škripcu. Nultočka G54 bit će u stražnjem lijevom gornjem kutu (najmanji X i Y). Rubove dodiruješ glodalom Ø3 metodom papira: tanak papir drži se između alata i pripremka, a os se pomiče u sve manjim koracima dok papir ne zapne. Vreteno pri tome stoji.', 'Pritisni „Dalje” kad pročitaš uputu. Stanje papira prikazano je ispod zaslona Mach3.', 'dalje'],
+    ['Spusti alat oko 3 mm ispod gornje plohe, iza pripremka (od tebe), i približi se stražnjem rubu dok papir ne zapne.', 'Najprije Cont ili korak 1, blizu ruba 0.1, a na kraju 0.01. Ako pretjeraš, alat udari u pripremak — niz se tada ponavlja.', 'dodirX'],
+    ['U DRO X upiši −1.5 i potvrdi tipkom Enter: os alata je za polumjer glodala iza stražnjeg ruba.', 'Klikni broj u DRO X, upiši -1.5 i pritisni Enter. Mach3 izračuna pomak G54 tako da DRO pokaže upisanu vrijednost.', 'droX'],
+    ['Podigni alat, dovedi ga lijevo od pripremka i približi se lijevom rubu dok papir ne zapne.', 'Najprije Z+ iznad pripremka, zatim X na sredinu, Y− lijevo od ruba, Z− dolje i polako Y+.', 'dodirY'],
+    ['U DRO Y upiši −1.5 i potvrdi tipkom Enter.', 'Isto kao za X: os alata je 1,5 mm lijevo od lijevog ruba.', 'droY'],
     ['Podigni alat, dovedi ga iznad pripremka i spuštaj ga dok papir ne zapne između vrha alata i gornje plohe.', 'Blizu plohe koristi korake 0.1 i 0.01.', 'dodirZ'],
     ['Pritisni Zero Z: vrh alata je na gornjoj plohi.', 'U ovom postavu nema korekcije duljine alata — nula Z je na vrhu alata.', 'zeroZ'],
     ['Postavi nulu i za os A: Zero 4.', 'Kod ploča os A se ne koristi, ali DRO A neka bude 0.', 'zero4'],
-    ['Kraj niza „Nultočka obratka”. DRO sada pokazuje položaj vrha alata od lijevog prednjeg gornjeg kuta pripremka.', 'Klikni „Izbornik” ili odaberi sljedeći niz.', 'kraj']] },
+    ['Kraj niza „Nultočka obratka”. DRO sada pokazuje položaj vrha alata od stražnjeg lijevog gornjeg kuta pripremka.', 'Klikni „Izbornik” ili odaberi sljedeći niz.', 'kraj']] },
   { id: 'ucitavanje', grupa: 'Program', naziv: 'Učitavanje programa', koraci: [
     ['Pritisni Load G-Code i otvori program P05.', 'U prozoru za odabir označi P05 i pritisni Open. Popis G-koda tada se prikaže lijevo na zaslonu.', 'ucitajP05'],
     ['Pregledaj početak programa: G17 G54 G40 G49 G80 G90, G21 (milimetri), M6 T1 (Mach3 ga samo prihvaća — alat se mijenja ručno) i M3 S24000. Pripremak P05 (150 × 100 mm) veći je od škripca, pa ga simulator steže pandžama na podložnoj ploči i postavlja nultočku kao u nizu 3.', 'Kotačićem miša iznad popisa G-koda možeš listati program. Pritisni „Dalje”.', 'dalje'],
-    ['Učitaj P14 (240 × 240 × 30 mm) i pročitaj upozorenje: program ne stane u hod stroja.', 'Load G-Code → P14 → Open. Putanja alata u X treba više od 200 mm hoda.', 'ucitajP14'],
+    ['Učitaj P14 (240 × 240 × 30 mm) i pročitaj upozorenje: program ne stane u hod stroja.', 'Load G-Code → P14 → Open. Putanja alata u Y treba više od 200 mm hoda.', 'ucitajP14'],
     ['Učitaj program koji stane u hod, npr. P20 (120 × 60 × 10 mm).', 'Load G-Code → P20 → Open. Upozorenja više nema.', 'ucitajOK'],
     ['Kraj niza „Učitavanje programa”. Vrati se u izbornik.', 'Klikni „Izbornik” ili odaberi sljedeći niz.', 'kraj']] },
   { id: 'izvodenje', grupa: 'Program', naziv: 'Izvođenje programa', koraci: [
@@ -74,7 +74,7 @@ const NIZOVI = [
     ['Isključi Single BLK, pritisni Cycle Start i pričekaj kraj programa (M30).', 'Ubrzanje ×20 ili ×100 skraćuje čekanje.', 'gotovo'],
     ['Čestitamo! Program je izveden do kraja. Pogledaj obradak u pogledu „Obradak”.', 'Klikni „Izbornik” ili odaberi sljedeći niz.', 'kraj']] },
   { id: 'osA', grupa: 'Program', naziv: 'Četvrta os', koraci: [
-    ['Valjak Ø40 × 100 mm stegnut je u steznoj glavi (15 mm u čeljustima), a šiljak konjića je u središnjem provrtu na desnom kraju. Nultočka X je na čelu čeljusti, a Y na osi valjka — oboje je već upisano.', 'Pogledaj valjak u pogledu „4. os” i pritisni „Dalje”.', 'dalje'],
+    ['Valjak Ø40 × 100 mm stegnut je u steznoj glavi (15 mm u čeljustima), a šiljak konjića je u središnjem provrtu na prednjem kraju (prema tebi). Nultočka X je na čelu čeljusti, a Y na osi valjka — oboje je već upisano.', 'Pogledaj valjak u pogledu „4. os” i pritisni „Dalje”.', 'dalje'],
     ['DRO A pokazuje kut iz prethodnog rada. Postavi nulu osi A: Zero 4.', 'Zero 4 je gumb uz DRO A.', 'zero4'],
     ['Spuštaj alat iznad valjka dok papir ne zapne na gornjoj izvodnici.', 'Alat je iznad osi (Y na nuli). Blizu valjka koristi korake 0.1 i 0.01.', 'dodirZA'],
     ['Nula Z je na osi valjka, a vrh alata je sada na polumjeru: u DRO Z upiši 20 i potvrdi tipkom Enter.', 'Polumjer valjka Ø40 je 20 mm. Tako vrijednosti Z u programu znače udaljenost od osi.', 'droZA'],
@@ -127,13 +127,14 @@ const S = napraviStroj3020(THREE, scene);
 const BOJA_G = new THREE.Color(0xd7dbde), BOJA_R = new THREE.Color(0x6f8792), BOJA_MDF = new THREE.Color(0xc49a66), BOJA_MDFR = new THREE.Color(0x8a6237);
 
 function pogled(p) {
-  const zs = S.stol.position.z, PY = GEO.PRIBOR_Y, AY = GEO.A.y;
+  /* svijet: x = Y stroja (udesno), z = X stroja (prema gledatelju), ishodište = sredina stola */
+  const AY = GEO.A.y, SK = GEO.SKRIPAC;
   const V = {
-    stroj: [[-420, 640, 1350], [40, 90, 120]], radni: [[260, 330, 620 + zs * 0.3], [0, 50, zs]],
-    obradak: [[-310, 300, 150 + zs - PY], [0, 12, zs - PY]], osA: [[20, 330, 470 + zs - AY], [-15, 62, zs - AY]]
-  }[p] || [[-420, 640, 1350], [40, 90, 120]];
-  if (p === 'obradak' && st.pribor === 'osA') { V[0] = [-5, 250, 250 + zs - AY]; V[1] = [-15, 62, zs - AY]; }
-  if (p === 'obradak' && st.pribor === 'skripac') { V[0] = [125, 260, 240 + zs - PY]; V[1] = [0, 40, zs - PY]; }
+    stroj: [[-760, 620, 1050], [-170, 40, 40]], radni: [[300, 360, 620], [0, 50, 0]],
+    obradak: [[-260, 300, 300], [0, 12, 0]], osA: [[-300, 400, 240], [AY, 62, -30]]
+  }[p] || [[-760, 620, 1050], [-170, 40, 40]];
+  if (p === 'obradak' && st.pribor === 'osA') { V[0] = [AY - 90, 220, 300]; V[1] = [AY, 62, 20]; }
+  if (p === 'obradak' && st.pribor === 'skripac') { V[0] = [SK.y + 230, 250, SK.x + 230]; V[1] = [SK.y, 40, SK.x]; }
   camera.position.set(...V[0]); controls.target.set(...V[1]); controls.update();
 }
 
@@ -253,9 +254,9 @@ function postaviSkripac() {
   opisPribora('Pripremak ' + VJEZBA.L + ' × ' + VJEZBA.W + ' × ' + VJEZBA.H + ' mm u škripcu (aluminij); vreteno je u obujmici namješteno tako da je vrh alata pri Z = 0 30 mm iznad pripremka.');
 }
 function postaviValjak() {
-  ukloniPlocu(); S.bezPribora(); napraviValjak(); S.konjicNa(LICE + VALJAK.L - VALJAK.uCelj);
-  st.pribor = 'osA'; st.Ztop = HA + VALJAK.d / 2 + 25; S.postaviZtop(st.Ztop);
-  opisPribora('Valjak Ø' + VALJAK.d + ' × ' + VALJAK.L + ' mm (MDF) u steznoj glavi, ' + VALJAK.uCelj + ' mm u čeljustima, konjić na desnom kraju. Os A je ' + HA + ' mm iznad stola (pretpostavka).');
+  ukloniPlocu(); S.bezPribora(); S.skripacZa(VJEZBA.L, VJEZBA.W, VJEZBA.H, VJEZBA.xc, VJEZBA.yc); napraviValjak(); S.konjicNa(LICE + VALJAK.L - VALJAK.uCelj);
+  st.pribor = 'osA'; st.Ztop = HA + 60;   /* vrh alata pri Z = 0 je 60 mm iznad osi — iznad stezne glave Ø100 */ S.postaviZtop(st.Ztop);
+  opisPribora('Valjak Ø' + VALJAK.d + ' × ' + VALJAK.L + ' mm (MDF) u steznoj glavi, ' + VALJAK.uCelj + ' mm u čeljustima, konjić na prednjem kraju; prazan škripac ostaje na stolu desno. Os A je ' + HA + ' mm iznad stola (pretpostavka).');
 }
 function bezPribora() { ukloniPlocu(); ukloniValjak(); S.bezPribora(); S.konjicNa(GEO.KONJIC_PARK); st.pribor = null; opisPribora('Na stolu nema pripremka. Pripremak se postavlja kad učitaš program.'); }
 /* raspon koordinata programa (samo izričito zadane vrijednosti) */
@@ -288,14 +289,14 @@ function ucitaj(ime) {
   } else {
     const uSkr = pr.L <= 100 && pr.W <= 60;
     ukloniValjak(); S.konjicNa(GEO.KONJIC_PARK);
-    const p = uSkr ? S.skripacZa(pr.L, pr.W, pr.H, VJEZBA.xc, GEO.PRIBOR_Y) : S.pandzeZa(pr.L, pr.W, pr.H, 0, GEO.PRIBOR_Y);
+    const p = uSkr ? S.skripacZa(pr.L, pr.W, pr.H, VJEZBA.xc, VJEZBA.yc) : S.pandzeZa(pr.L, pr.W, pr.H);
     napraviPlocu(pr.L, pr.W, pr.H, p.x0, p.y0, p.bot, true);
     st.pribor = uSkr ? 'skripac' : 'pandze';
     const ob = obseg(pr.G), raspon = ob.Z[1] - ob.Z[0];
     st.Ztop = PL.top + ob.Z[1] + Math.max(2, Math.min(20, 55 - raspon - 3)); S.postaviZtop(st.Ztop);
     st.G54 = { X: p.x0 - XT0 - st.refOff.X, Y: p.y0 - YT0 - st.refOff.Y, Z: PL.top - st.Ztop - st.refOff.Z, A: mach('A') };
-    napomena = (uSkr ? 'Pripremak je u škripcu.' : 'Pripremak ' + pr.L + ' × ' + pr.W + ' mm veći je od škripca (do 100 × 60 mm), pa je stegnut pandžama na podložnoj MDF ploči.') + ' Nultočka G54 postavljena je na lijevi prednji gornji kut, a vreteno namješteno u obujmici prema visini pripremka.';
-    opisPribora('Pripremak ' + pr.L + ' × ' + pr.W + ' × ' + pr.H + ' mm (MDF) ' + (uSkr ? 'u škripcu' : 'na podložnoj ploči sa steznim pandžama') + '; nultočka G54 u lijevom prednjem gornjem kutu.');
+    napomena = (uSkr ? 'Pripremak je u škripcu.' : 'Pripremak ' + pr.L + ' × ' + pr.W + ' mm veći je od škripca (do 100 × 60 mm), pa je stegnut pandžama na podložnoj MDF ploči na sredini stola (4. os i škripac su skinuti).') + ' Nultočka G54 postavljena je na stražnji lijevi gornji kut, a vreteno namješteno u obujmici prema visini pripremka.';
+    opisPribora('Pripremak ' + pr.L + ' × ' + pr.W + ' × ' + pr.H + ' mm (MDF) ' + (uSkr ? 'u škripcu' : 'na podložnoj ploči sa steznim pandžama') + '; nultočka G54 u stražnjem lijevom gornjem kutu.');
   }
   const G = pr.G, redci = G.replace(/\r/g, '').split('\n');
   /* stanje vretena i objašnjenje za svaki redak */
@@ -374,16 +375,18 @@ function obradi(rez) {
   if (t.z < -0.01) return 'stol';
   /* škripac */
   const sk = S.pribor.skripac;
-  if (st.pribor === 'skripac' && sk) {
+  if (sk && S.skripac.visible) {
     for (const c of sk.celjusti) if (t.z < c.z1 && krugPravokutnik(t.x, t.y, R, c)) return 'skripac';
-    if (t.z < sk.bot && Math.abs(t.x - VJEZBA.xc) < 75 && t.y > VJEZBA.yc - 75 && t.y < VJEZBA.yc + 60) return 'skripac';
+    const b = sk.tijelo; if (t.z < sk.bot && t.x > b.x0 && t.x < b.x1 && t.y > b.y0 && t.y < b.y1) return 'skripac';
   }
   if (st.pribor === 'pandze' && S.pribor.pandze && PL && !vrti && t.z < S.pribor.pandze.D && t.x > PL.x0 - 20 && t.x < PL.x0 + PL.L + 20 && t.y > PL.y0 - 20 && t.y < PL.y0 + PL.W + 20) return 'podloga';
   /* stezna glava i konjić */
-  const yr = t.y - GEO.A.y, zr = t.z - HA, dist = zr > 0 ? Math.hypot(Math.max(0, Math.abs(yr) - R), zr) : Math.max(0, Math.abs(yr) - R);
-  if (t.x - R < LICE + 0.5 && dist < 42) return 'celjust';
-  const xk = S.konjic.position.x;
-  if (t.x + R > xk && t.x - R < xk + 110 && dist < 26) return 'konjic';
+  if (S.imaA) {
+    const yr = t.y - GEO.A.y, zr = t.z - HA, dist = zr > 0 ? Math.hypot(Math.max(0, Math.abs(yr) - R), zr) : Math.max(0, Math.abs(yr) - R);
+    if (t.x - R < LICE + 0.5 && dist < 52) return 'celjust';
+    const xk = S.konjic.position.x;
+    if (t.x + R > xk && t.x - R < xk + 100 && dist < 36) return 'konjic';
+  }
   /* materijal */
   const rezi = rez && vrti;
   const pr = PL ? ploca(t, rezi || (vrti && !st.prog?.ide)) : 0;
@@ -468,7 +471,7 @@ function papir() {
 const zapinje = (p, os) => p && p.os === os && p.g >= -1e-6 && p.g <= 0.05 + 1e-6;
 function tekstPapira() {
   const p = papir(); if (!p) return '— alat nije uz rub ni iznad pripremka';
-  const gdje = { X: 'lijevi rub', Y: 'prednji rub', Z: 'gornja ploha' }[p.os];
+  const gdje = { X: 'stražnji rub', Y: 'lijevi rub', Z: 'gornja ploha' }[p.os];
   if (p.g < -1e-6) return gdje + ': alat je u materijalu';
   if (p.g <= 0.05 + 1e-6) return '<b class="zap">' + gdje + ': papir zapinje — dodir!</b>';
   if (p.g <= 0.2) return gdje + ': papir klizi, alat je vrlo blizu — koristi korak 0.01';
@@ -790,9 +793,9 @@ function simuliraj(dt, dtr, t) {
 function prikazi(t) {
   osvjeziPlocu(); osvjeziValjak();
   S.postaviOsi(st.fiz.X, st.fiz.Y, st.fiz.Z, st.fiz.A);
-  S.svjetlo.material.emissive.setHex(st.kutija ? 0x1d9e4b : 0); S.svjetlo.material.color.setHex(st.kutija ? 0x2ecc71 : 0x2a2a2a);
+  S.sklopkaStanje(st.kutija);
   const lcd = st.pretv ? (st.rpm / 60).toFixed(1) : ''; if (lcd !== lcdZad) { lcdZad = lcd; S.lcdTekst(lcd, st.pretv); }
-  S.klik.gljiva.position.z = st.gljiva ? 133 : 138;
+  S.gljivaStanje(st.gljiva);
   if (t - zadnjiEkran > 400) { zadnjiEkran = t; S.zaslonTekst(st.mach3 === 'on', OSI.map((o) => dro(st.mc ? mach(o) : rad(o)))); }
   controls.update(); renderer.render(scene, camera);
 }

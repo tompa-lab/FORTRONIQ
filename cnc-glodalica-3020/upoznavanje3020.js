@@ -2,24 +2,23 @@
    © ForTroniQ d.o.o. */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { napraviStroj3020, postaviOkolinu, GEO } from './stroj3020.js?v=03';
+import { napraviStroj3020, postaviOkolinu, GEO } from './stroj3020.js?v=05';
 
 const $ = (id) => document.getElementById(id);
 
 /* ------------------------------------------------------------------ sadržaj kartica */
 const SKLOPOVI = [
   { id: 'okvir', naziv: 'Okvir', dijelovi: ['okvir'], anim: null, pogled: 'stroj', tekst: `
-<p>Okvir (postolje) nosi sve ostale sklopove: vodilice stola, nepomični portal i pogon osi Y. Na stroju 3020 sastavljen je od aluminijskih profila s utorima i ploča spojenih vijcima.</p>
+<p>Okvir (postolje) je bež limena kutija s bočnim stranicama, prednjom i stražnjom pločom. Nosi nepomični aluminijski stol, dvije vodilice po kojima klizi portal i navojno vreteno osi X s motorom straga; ležaj vretena vidi se kao vijak na sredini prednje ploče.</p>
 <p>Krutost okvira određuje koliko se stroj savija pod silom rezanja. Mala glodalica zato traži ravnu i stabilnu podlogu, oštar alat i male zahvate — dublji rez razdijeli u više prolaza.</p>
 <p class="pazi-m">Prije rada provjeri da stroj stoji na sve četiri nožice i da su vijci okvira pritegnuti; labav spoj vidi se kao valovita površina i netočne mjere.</p>` },
-  { id: 'stol', naziv: 'Stol s T-utorima i os Y', dijelovi: ['stol'], anim: 'Y', pogled: 'radni', tekst: `
-<p>Stol je aluminijska ploča s T-utorima, dug po Y, a uzak po X (oko 460 × 290 mm, sedam utora uzduž osi Y — procjena s fotografija). U utore se T-maticama i vijcima pričvršćuju škripac, stezne pandže s podložnom pločom i četvrta os.</p>
-<p>Stol se giba naprijed–natrag: to je <b>os Y</b>. Klizi na dvije okrugle vodilice s linearnim ležajevima, a pogoni ga koračni motor na stražnjoj strani preko navojnog vretena.</p>
-<p class="pazi-m">Smjer osi uvijek se gleda kao gibanje <b>alata prema obratku</b>. Kad se stol giba prema tebi, alat u odnosu na obradak ide prema natrag — to je smjer +Y.</p>` },
-  { id: 'portal', naziv: 'Portal i os X', dijelovi: ['portal'], anim: 'X', pogled: 'stroj', tekst: `
-<p>Portal je nepomičan most preko stola: dvije bočne ploče i poprečna greda. Na gredi su dvije okrugle vodilice i navojno vreteno osi X, a po njima klizi nosač osi Z.</p>
-<p>Gibanje nosača lijevo–desno je <b>os X</b>; +X je udesno. Motor osi X je na lijevoj bočnoj ploči.</p>
-<p>Hod je oko 200 mm u X i 300 mm u Y: stol je dug po Y, pa je dulji hod uzduž stola. To je procjena s fotografija stroja — provjeri je u Mach3 (Config → Homing/Limits) i mjerenjem od graničnika do graničnika.</p>` },
+  { id: 'stol', naziv: 'Stol s T-utorima', dijelovi: ['stol'], anim: null, pogled: 'radni', tekst: `
+<p>Stol je aluminijska ploča s T-utorima koja <b>miruje</b>; dulja stranica ide od operatera prema natrag (uzduž osi X), a utori su uzduž nje (oko 460 × 290 mm, sedam utora — procjena s fotografija). U utore se T-maticama i vijcima pričvršćuju škripac, stezne pandže s podložnom pločom, 4. os i konjić.</p>
+<p>Na ovom stroju giba se alat, a ne obradak: portal nosi os Y i os Z i vozi se po osi X preko stola.</p>` },
+  { id: 'portal', naziv: 'Portal: os X i os Y', dijelovi: ['portal'], anim: 'sve', pogled: 'stroj', tekst: `
+<p>Portal je most preko stola: dvije bočne ploče i poprečna greda. <b>Cijeli portal vozi se naprijed–natrag</b> po vodilicama postolja — to je <b>os X</b>, hod 300 mm. Pogoni ga motor straga preko navojnog vretena ispod stola; kabele uz lijevu stranu vodi lanac.</p>
+<p>Po gredi portala klizi nosač vretena lijevo–desno — to je <b>os Y</b>, hod 200 mm. Motor osi Y je na lijevoj bočnoj ploči portala.</p>
+<p>Smjerovi su nacrtani na gredi stroja: <b>+X prema operateru, +Y udesno, +Z gore</b> (pravilo desne ruke). Nultočka stroja je zato u stražnjem lijevom kutu radnog prostora.</p>` },
   { id: 'osZ', naziv: 'Os Z', dijelovi: ['osZ'], anim: 'Z', pogled: 'radni', tekst: `
 <p>Os Z diže i spušta vreteno. Klizna ploča vozi se po dvije vertikalne vodilice; pogoni je motor na vrhu nosača preko kratkog navojnog vretena. <b>+Z je prema gore</b>, od obratka.</p>
 <p>Hod osi Z je kratak, oko 55 mm (pretpostavka). Zato se vreteno u obujmici steže na visinu koja odgovara pripremku: alat mora prijeći preko pripremka i pribora, a ipak dosegnuti najveću dubinu programa.</p>
@@ -38,14 +37,14 @@ const SKLOPOVI = [
 <li><b>DIR (smjer)</b> — razina signala određuje smjer vrtnje.</li></ul>
 <p class="formula">primjer: vreteno koraka 5 mm, 200 koraka × 8 mikrokoraka = 1600 impulsa po okretaju → 320 impulsa/mm (Steps per u Config → Motor Tuning); 1000 mm/min → ≈ 5,3 kHz</p>
 <p>Koračni pogon radi <b>bez povratne veze</b>: ako motor zbog sudara ili prevelikog posmaka preskoči korake, upravljanje to ne zna i položaj je pogrešan. Tada ponovno referenciraj i postavi nultočku obratka.</p>
-<p>U upravljačkoj kutiji su napajanje, moduli motora i kontroler; sprijeda glavna sklopka i gljiva za nužno zaustavljanje.</p>` },
+<p>Upravljačka kutija (natpis „CNC Controller”) stoji lijevo od stroja. U njoj su napajanje, moduli motora, kontroler i <b>pretvarač frekvencije PRT-E750</b> za vreteno. Na kosoj ploči su pretvarač s crvenim zaslonom i tipkama RUN, STOP, FUNC i strelicama, preklopnik <b>Spindle mode</b> (PC / Manually), svijetleća sklopka <b>Power</b> i gljiva <b>Emergency Stop</b>.</p>` },
   { id: 'vretena', naziv: 'Navojna vretena', dijelovi: ['vretena'], anim: 'X', pogled: 'radni', tekst: `
 <p>Navojno vreteno s maticom pretvara okretanje motora u pravocrtno gibanje osi. Na malim strojevima to su <b>trapezna</b> vretena (npr. Tr12 × 3) ili <b>kuglična</b> vretena (npr. 1605: Ø16 mm, korak 5 mm).</p>
 <ul><li>Trapezno vreteno: jeftino, veće trenje i zračnost (mrtvi hod) u matici.</li>
 <li>Kuglično vreteno: kuglice se kotrljaju između vretena i matice — manje trenje, veća točnost, viša cijena.</li></ul>
 <p>Koja su vretena na ovom stroju, treba provjeriti (u modelu: kuglična 1605). Zračnost se pokaže kad os promijeni smjer; Mach3 je može djelomično nadoknaditi (Config → Backlash), ali je pouzdanije rubove dodirivati uvijek iz istog smjera.</p>` },
   { id: 'skripac', naziv: 'Škripac', dijelovi: ['skripac'], anim: null, pogled: 'skripac', postav: 'skripac', tekst: `
-<p>Mali lijevani bušilični škripac steže pripremke do oko <b>60 mm</b> širine (otvor čeljusti, po osi Y) i do <b>100 mm</b> duljine (širina čeljusti, po osi X). Na fotografiji stroja okrenut je vretenom ulijevo; za predmete P01–P21, kojima je dulja stranica po X, okreće se vretenom prema operateru — tako je prikazan i ovdje.</p>
+<p>Mali lijevani bušilični škripac steže pripremke do oko <b>60 mm</b> širine (otvor čeljusti, po osi Y) i do <b>100 mm</b> duljine (širina čeljusti, po osi X). Stoji desno od 4. osi; vreteno s ručicom T strši iz škripca prema desnom rubu stola. Na stolu mogu istodobno biti 4. os i škripac, pa se radi na oboje bez skidanja.</p>
 <p><button type="button" class="gumb tanki" data-skripac="original">Škripac sa stroja</button> <button type="button" class="gumb tanki" data-skripac="pojednostavljeni">Pojednostavljeni škripac</button></p>
 <p>Kako se pripremak steže i koje sile djeluju na čeljusti i stol, prikazano je u <a href="../cnc-glodanje-840d/upoznavanje-stroja.html">Upoznavanju stroja SINUMERIK 840D</a> (stavke Škripac i Stezne pandže).</p>
 <p>Škripac se pričvrsti vijcima i T-maticama u utore stola. Nepomična čeljust mora biti paralelna s osi X — provjeri komparatorom ili barem dodirom alata na oba kraja čeljusti.</p>
@@ -55,10 +54,11 @@ const SKLOPOVI = [
 <p>Pripremci veći od škripca (od naših predmeta P01 … P21 gotovo svi) stežu se <b>steznim pandžama</b>: stepenasti blok, stezna letva i vijak s maticom u T-utoru.</p>
 <ul><li>Letva neka bude vodoravna ili blago nagnuta prema pripremku; vijak što bliže pripremku.</li>
 <li>Ispod pripremka je <b>podložna MDF ploča</b>: kad se kontura glodala kroz cijelu debljinu (npr. Z−20,5 kod pripremka od 20 mm), alat uđe pola milimetra u podlogu, a ne u stol.</li></ul>
+<p>Za ploče na pandžama 4. os, konjić i škripac skidaju se sa stola, a ploča se steže na sredini stola.</p>
 <p class="pazi-m">Prije pokretanja programa provjeri da putanja alata ne prelazi preko pandži. Simulator sudar s pandžama ne provjerava.</p>` },
   { id: 'osA', naziv: '4. os A', dijelovi: ['osA'], anim: 'A', pogled: 'osA', tekst: `
-<p>Četvrta os je okretna <b>os A</b>: stezna glava s tri čeljusti na koračnom motoru NEMA 23, pogonjena remenom. Os vrtnje paralelna je s osi X — zato se zove A.</p>
-<p><b>Smjer +A</b> daje pravilo desne ruke: palac u smjeru +X, savijeni prsti pokazuju +A. Gledano s desne strane prema steznoj glavi, +A je suprotno od kazaljke na satu, a gornja izvodnica valjka ide prema tebi (prema −Y).</p>
+<p>Četvrta os je okretna <b>os A</b>: stezna glava Ø100 s tri čeljusti u bež kućištu. Koračni motor NEMA 23 je ispod korita, paralelno s osi, i okreće glavu zupčastim remenom na stražnjoj ploči. Os vrtnje leži uzduž dulje osi stola, paralelno s osi X — zato se zove A.</p>
+<p><b>Smjer +A</b> daje pravilo desne ruke: palac u smjeru +X (prema operateru), savijeni prsti pokazuju +A. Gledano s mjesta operatera prema steznoj glavi, +A je suprotno od kazaljke na satu.</p>
 <p>Os A programira se u <b>stupnjevima</b>: A90 je četvrtina okreta, A360 cijeli okret. Dva su načina rada:</p>
 <ul><li><b>indeksiranje</b> — os A zakrene se dok je alat iznad obratka, a zatim se glođe samo s X, Y i Z (npr. četiri plohe pod 90°);</li>
 <li><b>istodobno gibanje</b> — A se vrti dok alat stoji (obodni utor) ili dok se giba X (zavojni utor).</li></ul>
@@ -67,11 +67,11 @@ const SKLOPOVI = [
   { id: 'konjic', naziv: 'Konjić', dijelovi: ['konjic'], anim: 'konjic', pogled: 'osA', tekst: `
 <p>Konjić podupire slobodni kraj obratka šiljkom u središnjem provrtu, da se dugi obradak ne savija i ne izvlači iz čeljusti.</p>
 <p>Os šiljka mora se poklapati s osi A, inače valjak „baca”. Konjić se pomiče po T-utorima i steže vijcima, a šiljak se primiče ručnim kotačem i zakoči ručicom.</p>
-<p>4. os stoji na stražnjem dijelu stola; kad se obrađuju ploče na prednjem dijelu, konjić se odmakne udesno, uz stražnji rub stola.</p>` },
+<p>Stezna glava je straga, a konjić sprijeda, oba na istoj osi uzduž osi X, na lijevoj strani stola. Kad u glavi nema obratka, konjić se odmakne prema prednjem rubu stola.</p>` },
   { id: 'nultocke', naziv: 'Nultočka stroja i obratka', dijelovi: ['nultocke'], anim: null, pogled: 'radni', tekst: `
-<p><b style="color:#e0533d">Nultočka stroja</b> (crveno) je položaj koji Mach3 nađe referenciranjem (Ref All Home): os Z gore, X lijevo, Y sprijeda. Koordinate stroja (Machine Coords) su tada 0, 0, 0.</p>
+<p><b style="color:#e0533d">Nultočka stroja</b> (crveno) je položaj koji Mach3 nađe referenciranjem (Ref All Home): os Z gore, X straga, Y lijevo. Koordinate stroja (Machine Coords) su tada 0, 0, 0.</p>
 <p>Ako stroj nema referentnih sklopki, referenciranje se preskače, a koordinate stroja vrijede od položaja u kojem je Mach3 pokrenut.</p>
-<p><b style="color:#17999f">Nultočka obratka</b> (tirkizno) je točka od koje se mjeri program. Kod naših predmeta to je lijevi prednji gornji kut pripremka (G54); kod četvrte osi X0 je na čelu čeljusti, a Y0 i Z0 na osi valjka.</p>
+<p><b style="color:#17999f">Nultočka obratka</b> (tirkizno) je točka od koje se mjeri program. Kod naših predmeta to je stražnji lijevi gornji kut pripremka (najmanji X i Y, G54); kod četvrte osi X0 je na čelu čeljusti, a Y0 i Z0 na osi valjka.</p>
 <p>DRO u Mach3 pokazuje koordinate obratka. Razlika koordinata stroja i obratka je pomak G54, a nastaje kad pritisneš Zero X, Zero Y, Zero Z ili Zero 4 ili kad upišeš vrijednost u DRO.</p>` },
   { id: 'razlike', naziv: 'Mach3 i SINUMERIK 840D', dijelovi: ['upravljanje'], anim: null, pogled: 'upravljanje', tekst: `
 <p>Programi su slični, ali ima razlika koje treba znati:</p>
@@ -112,13 +112,13 @@ let valjak = null, blok = null;
 function postav(vrsta) {
   if (blok) { S.obrGrupa.remove(blok); blok.geometry.dispose(); blok = null; }
   if (vrsta === 'pandze') {
-    const p = S.pandzeZa(150, 100, 20, 0, GEO.PRIBOR_Y);
-    blok = new THREE.Mesh(new THREE.BoxGeometry(150, 20, 100), mMdf); blok.position.set(0, p.bot + 10, -GEO.PRIBOR_Y);
+    const p = S.pandzeZa(150, 100, 20);
+    blok = new THREE.Mesh(new THREE.BoxGeometry(150, 20, 100), mMdf); blok.position.set(GEO.PANDZE.x, p.bot + 10, -GEO.PANDZE.y);
     S.konjicNa(GEO.KONJIC_PARK); valjak.visible = false;
     S.nulaW.position.set(p.x0, p.top, -p.y0);
   } else {
-    const p = S.skripacZa(80, 50, 20, 0, GEO.PRIBOR_Y);
-    blok = new THREE.Mesh(new THREE.BoxGeometry(80, 20, 50), mBlank); blok.position.set(0, p.bot + 10, -GEO.PRIBOR_Y);
+    const p = S.skripacZa(80, 50, 20);
+    blok = new THREE.Mesh(new THREE.BoxGeometry(80, 20, 50), mBlank); blok.position.set(GEO.SKRIPAC.x, p.bot + 10, -GEO.SKRIPAC.y);
     S.konjicNa(GEO.A.lice + 85); valjak.visible = true;
     S.nulaW.position.set(p.x0, p.top, -p.y0);
   }
@@ -133,8 +133,8 @@ S.zaslonTekst(true);
 
 function pogled(p) {
   const P = {
-    stroj: [[-420, 640, 1350], [40, 90, 120]], radni: [[300, 300, 640], [0, 70, 120]], osA: [[30, 330, 420], [-15, 62, 0]],
-    upravljanje: [[1080, 420, 1050], [490, -20, 200]], vreteno: [[330, 330, 560], [80, 120, 100]], skripac: [[240, 280, 520], [0, 30, 190]], pandze: [[260, 320, 560], [0, 20, 190]]
+    stroj: [[-760, 620, 1050], [-170, 40, 40]], radni: [[340, 380, 640], [0, 60, 0]], osA: [[-300, 400, 240], [-55, 62, -30]],
+    upravljanje: [[-420, 420, 760], [-540, 40, 150]], vreteno: [[360, 360, 560], [0, 150, 0]], skripac: [[330, 300, 360], [70, 30, 30]], pandze: [[330, 360, 480], [0, 20, 0]]
   }[p] || [[900, 700, 1250], [60, 80, 100]];
   camera.position.set(...P[0]); controls.target.set(...P[1]); controls.update();
 }
