@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Čitač i OBS — Industrijski robot IRB 120</title>
+<style>
+/* Čitač za drugi zaslon s upravljanjem OBS-om (obs-websocket v5). Otvara se kao lokalna datoteka u Chromeu. */
+:root{--paper:#FFFFFF;--ink:#10394A;--body:#55717F;--rule:#D7E1E6;--teal:#17656E;--cyan:#2ECAD4;--bar:#132026;--bar-ink:#E7EEF1;--warn:#B54708;--ok:#1C7C54;--font:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;--mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0E1A1F;--ink:#E6F1F4;--body:#9DB6C2;--rule:#24363E;--teal:#4FD3DB;--bar:#081014;--warn:#F79009;--ok:#3CCB7F;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0E1A1F;--ink:#E6F1F4;--body:#9DB6C2;--rule:#24363E;--teal:#4FD3DB;--bar:#081014;--warn:#F79009;--ok:#3CCB7F;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font)}
+.vrh{position:sticky;top:0;z-index:5;background:var(--bar);color:var(--bar-ink);padding:10px 16px}
+.red{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.znak{letter-spacing:.17em;font-weight:700;font-size:.8rem}.znak b{color:var(--cyan)}
+.vr{font:700 1.5rem/1 var(--mono);font-variant-numeric:tabular-nums}
+.st{font-size:.85rem;opacity:.8}
+.desno{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.vrh button,.vrh select,.vrh input{font:inherit;font-size:.88rem;background:transparent;color:var(--bar-ink);border:1px solid rgba(231,238,241,.35);border-radius:8px;padding:5px 10px}
+.vrh button{cursor:pointer}
+.vrh button:hover,.vrh button:focus-visible{border-color:var(--cyan);color:var(--cyan);outline:none}
+.vrh button.akt{background:var(--cyan);color:#06262B;border-color:var(--cyan)}
+.vrh button.rec{border-color:#F04438;color:#FDA29B}.vrh button.rec.akt{background:#F04438;color:#fff}
+.vrh select option{color:#10394A}
+.obs{margin-top:8px;border-top:1px solid rgba(231,238,241,.18);padding-top:8px}
+.obs summary{cursor:pointer;font-size:.88rem;opacity:.9}
+.obs .red{margin-top:8px}
+.oznaka{font-size:.78rem;opacity:.7}
+.lamp{display:inline-block;width:10px;height:10px;border-radius:50%;background:#667085;margin-right:6px;vertical-align:middle}
+.lamp.ok{background:#3CCB7F}.lamp.greska{background:#F04438}
+#poruka{font-size:.82rem;opacity:.85;min-height:1.2em}
+.kadrovi{display:flex;flex-wrap:wrap;gap:6px}
+.popis{max-width:1100px;margin:0 auto;padding:14px 16px 60vh}
+.k{scroll-margin-top:calc(var(--vrh,120px) + 12px);border:1px solid var(--rule);border-radius:14px;padding:16px 20px;margin:0 0 12px;opacity:.55;transition:opacity .3s,border-color .3s}
+.k.sada{opacity:1;border-color:var(--teal);box-shadow:0 0 0 2px var(--teal) inset}
+.k.gotov{opacity:.35}
+.gl{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.t{font:700 1rem var(--mono);color:var(--teal);font-variant-numeric:tabular-nums}
+.dio{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--body);font-weight:600}
+.k h2{margin:0;font-size:1.25rem}
+.plan{display:flex;flex-wrap:wrap;gap:6px;margin:.5rem 0 0}
+.plan span{font:500 .78rem var(--mono);border:1px solid var(--rule);border-radius:6px;padding:2px 7px;color:var(--body)}
+.plan span.sad{border-color:var(--teal);color:var(--teal)}
+.klik{margin:.5rem 0 .6rem;font-size:.92rem;color:var(--body);border-left:3px solid var(--cyan);padding-left:10px}
+.tekst{font-size:var(--vel,1.45rem);line-height:1.5;margin:.4rem 0 0;max-width:70ch}
+.dop{font-size:calc(var(--vel,1.45rem)*.82);line-height:1.5;margin:.7rem 0 0;color:var(--body);max-width:70ch}
+.dop b{color:var(--ink)}
+.napr{height:5px;border-radius:3px;background:var(--rule);margin-top:12px;overflow:hidden}
+.napr i{display:block;height:100%;width:0;background:var(--teal)}
+/* uređivač kadrova */
+#urednik{position:fixed;inset:0;z-index:20;background:rgba(5,14,18,.88);display:none;align-items:center;justify-content:center;padding:16px}
+#urednik.otv{display:flex}
+.ur-okvir{background:var(--paper);color:var(--ink);border-radius:14px;padding:16px;max-width:1300px;width:100%;max-height:100%;overflow:auto}
+.ur-okvir h3{margin:0 0 6px}
+.ur-okvir p{margin:.2rem 0 .6rem;color:var(--body);font-size:.9rem}
+.ur-okvir button{font:inherit;font-size:.9rem;border:1px solid var(--rule);background:transparent;color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer}
+.ur-okvir button.akt{background:var(--teal);color:#fff;border-color:var(--teal)}
+#platno{display:block;width:auto;max-width:100%;max-height:62vh;height:auto;margin:10px 0;border-radius:8px;cursor:crosshair;background:#000;touch-action:none}
+@media (max-width:680px){.tekst{font-size:1.15rem}.vr{font-size:1.2rem}.vrh{position:static}}
+@media (prefers-reduced-motion:reduce){.k{transition:none}}
+</style>
+</head>
+<body>
+<div class="vrh">
+ <div class="red"><span class="znak">FORTRONI<b>Q</b></span><span class="vr" id="vr">00:00 / 90:00</span><span class="st" id="st">pauza</span>
+  <div class="desno"><button id="b-prije" title="Prethodni korak (←)">⏮</button><button id="b-igraj" title="Pokreni ili pauziraj (razmaknica)">▶ Pokreni</button><button id="b-dalje" title="Sljedeći korak (→)">⏭</button><button id="b-m5">−5 s</button><button id="b-p5">+5 s</button><button id="b-manje" title="Manje pismo">A−</button><button id="b-vece" title="Veće pismo">A+</button><button id="b-tema" title="Svijetlo ili tamno">◐</button></div></div>
+ <div class="red" style="margin-top:8px"><span class="oznaka">Kadar:</span><div class="kadrovi" id="kadrovi"></div>
+  <label class="oznaka"><input type="checkbox" id="c-auto" checked> automatski</label>
+  <div class="desno"><button id="b-rec" class="rec" title="Pokreni ili zaustavi snimanje u OBS-u">● Snimaj</button><button id="b-sve" title="Pokreni snimanje i sat od početka">● Kreni sve</button></div></div>
+ <details class="obs" id="obs-ploca" open><summary><span class="lamp" id="lamp"></span><span id="obs-st">OBS nije spojen</span></summary>
+  <div class="red"><input id="i-url" size="20" value="ws://127.0.0.1:4455" aria-label="Adresa OBS WebSocket poslužitelja"><input id="i-loz" type="password" size="16" placeholder="lozinka iz OBS-a" aria-label="Lozinka"><label class="oznaka"><input type="checkbox" id="c-pamti"> zapamti</label><button id="b-spoji">Spoji</button>
+   <span class="oznaka">Snimani zaslon:</span><select id="s-izvor"><option value="">— spoji se —</option></select><button id="b-novi" title="Napravi novi izvor snimanja zaslona">+ izvor</button>
+   <span class="oznaka">Kamera:</span><select id="s-kam"><option value="">bez kamere</option></select></div>
+  <div class="red"><button id="b-pripremi">Pripremi scene u OBS-u</button><button id="b-uredi">Namjesti kadrove</button>
+   <label class="oznaka"><input type="checkbox" id="c-natpis" checked> natpis koraka na snimci</label>
+   <label class="oznaka"><input type="checkbox" id="c-cekaj"> čekaj ⏭ na kraju koraka</label>
+   <label class="oznaka"><input type="checkbox" id="c-pauzarec"> pauza sata pauzira snimanje</label>
+   <div class="desno"><button id="b-pogl" title="Preuzmi poglavlja za YouTube iz stvarnih vremena snimke">Poglavlja (.txt)</button><button id="b-srt" title="Preuzmi naslove koraka kao titlove">Naslovi (.srt)</button></div></div>
+  <div id="poruka" role="status"></div>
+ </details>
+</div>
+<main class="popis" id="popis"></main>
+<div id="urednik" role="dialog" aria-modal="true" aria-labelledby="ur-n"><div class="ur-okvir">
+ <h3 id="ur-n">Namjesti kadrove</h3>
+ <p>Odaberi kadar, pa na snimci povuci pravokutnik (omjer je zaključan na omjer snimke). Snimka je trenutni prikaz izvora iz OBS-a — prije toga na snimanom zaslonu otvori autopilot.</p>
+ <div class="kadrovi" id="ur-kadrovi"></div>
+ <canvas id="platno" width="1280" height="720"></canvas>
+ <div class="kadrovi"><button id="ur-osvjezi">Nova snimka</button><button id="ur-zadano">Zadano za odabrani</button><button id="ur-spremi" class="akt">Spremi i primijeni</button><button id="ur-zatvori">Zatvori</button></div>
+</div></div>
+<script>
+(function(){
+'use strict';
+const S=[{"t": 0, "dio": "Uvod", "naslov": "Dobrodošlica i cilj predavanja", "klik": "Naslovnica područja Industrijski robot ABB IRB 120.", "tekst": "Dobar dan. Danas upoznajemo industrijski robot ABB IRB 120 — malog, šestoosnog robota koji se godinama koristio za montažu, rukovanje sitnim dijelovima i u nastavi. Proći ćemo ga iznutra: članke, motore s kočnicama, prijenosnike i zupčaste remene, mjerni sustav s baterijom i kalibraciju, zatim upravljački ormar IRC5 Compact i privjesak FlexPendant. Nakon toga računamo izravnu i inverznu kinematiku, pogledamo stvarnog robota u laboratoriju, robota u petlji s PLC-om, programiranje u RobotStudiju, i na kraju kamo ide robotika — prema fizičkoj umjetnoj inteligenciji. Sve što ćete vidjeti radi u pregledniku, pa sve možete ponoviti sami.", "dopuna": "Pitanje za vas: po čemu se industrijski robot poput IRB 120 razlikuje od kobota UR3e koji smo već upoznali — u zaštiti, brzini i načinu programiranja?", "kadrovi": [[0, "naslov"], [6, "cijeli"]], "kartica": ["Industrijski robot ABB IRB 120", "Građa, kinematika, RobotStudio i put prema fizičkoj AI"]}, {"t": 90, "dio": "Uvod", "naslov": "Što ćemo moći nakon predavanja", "klik": "Blok „Moći ću” — pet ishoda (pokazivač prelazi preko svakoga).", "tekst": "Na vrhu stranice je pet ishoda. Nakon današnjeg sata trebali biste nabrojati dijelove robota IRB 120 i pokazati ih na modelu; objasniti pogon osi — motor, kočnicu, prijenosnik i zupčasti remen; opisati mjerni sustav, bateriju i kalibraciju; opisati ormar IRC5 Compact, privjesak, načine rada i sigurnosni lanac; i objasniti programiranje izvan robota u RobotStudiju te kako se simulacija povezuje sa stvarnim robotom. Na kraju sata ishode ćemo provjeriti.", "dopuna": "Zapišite ishode — na kraju sata svaki ćemo označiti.", "kadrovi": [[0, "cijeli"]]}, {"t": 180, "dio": "Uvod", "naslov": "Poglavlja područja", "klik": "Popis poglavlja: Upoznavanje, Upravljanje (u petlji), Kinematika, RobotStudio, proširena stvarnost, Prema fizičkoj AI; klik na prvo.", "tekst": "Područje ima šest poglavlja. Upoznavanje robota je robot dio po dio, s animacijama „Kako radi”. Upravljanje vodi na simulator robota u petlji s virtualnim privjeskom i PLC-om. Kinematika računa uživo, od kutova do alata i natrag. RobotStudio je ABB-ov alat za programiranje izvan robota. Tu su i robot u proširenoj stvarnosti i stranica o fizičkoj umjetnoj inteligenciji. Ispod poglavlja su još četiri primjene: crtanje, glodanje, 3D ispis i skeniranje. Krećemo s upoznavanjem.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 240, "dio": "1 Upoznavanje", "naslov": "Raspored stranice", "klik": "Stranica Upoznavanje robota: lijevo izbornik dijelova (81 stavka), u sredini 3D prikaz, desno objašnjenje.", "tekst": "Stranica ima tri stupca. Lijevo je izbornik s 81 stavkom — od cijelog robota preko svake osi do ormara i privjeska; stavke sa strelicom otvaraju podizbornik, a uz pregledane se pojavi kvačica. U sredini je trodimenzionalni model. Vanjski oblik robota dolazi iz ABB-ovih CAD podataka, pojednostavljen za mobitel, a unutrašnjost je naš načelni crtež. Desno je objašnjenje odabranog dijela. Kad kliknete stavku, model se okrene prema njoj i istakne je.", "dopuna": "", "kadrovi": [[0, "naslov"], [6, "cijeli"]], "kartica": ["Cjelina 1: Upoznavanje robota", "Članci, pogoni osi, mjerni sustav, ormar IRC5 Compact i privjesak"]}, {"t": 300, "dio": "1 Upoznavanje", "naslov": "Pogledi i rukovanje 3D prikazom", "klik": "Gumbi pogleda Sve, Sprijeda, Bok, Odozgo, Robot; polagano okretanje; prelazak mišem pokazuje naziv dijela.", "tekst": "Gumbima iznad prikaza mijenjate pogled: Sve — robot, ormar i privjesak; zatim sprijeda, bočno i odozgo; i samo robot. Mišem povucite za okretanje, kotačićem zumirate, desnom tipkom pomičete prikaz. Kad prijeđete mišem preko modela, pojavi se naziv dijela, a klikom ga odaberete. Na mobitelu je sve isto, prstima.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 390, "dio": "1 Upoznavanje", "naslov": "Cijeli robot i položaji", "klik": "Stavka „Cijeli robot”; gumbi Položaj: Nulti, Sklopljen, Kalibracijski, Početni.", "tekst": "IRB 120 ima masu 25 kilograma, nosivost 3 kilograma — 4 kilograma kad zapešće gleda okomito dolje — i doseg 580 milimetara, mjeren do središta zapešća. Ponovljivost položaja je 0,01 milimetra prema ISO 9283. Postolje je 180 puta 180 milimetara, robot je visok oko 700 milimetara, zaštita je IP30, a postoji i izvedba za čisti prostor razreda ISO 5. Montira se na pod, zid ili naopako, pod bilo kojim kutom. U nultom položaju donja ruka stoji uspravno, a gornja vodoravno; kalibracijski položaj je onaj iz priručnika za kalibraciju. ABB je robot predstavio 2009., a danas ga vodi kao ukinut model; nasljednik je IRB 1200.", "dopuna": "Ponovljivost 0,01 mm nije točnost: robot se vrlo precizno vraća u istu točku, ali apsolutni položaj u prostoru može odstupati više. Pitanje: zašto je za većinu zadataka važnija ponovljivost?", "kadrovi": [[0, "cijeli"]]}, {"t": 510, "dio": "1 Upoznavanje", "naslov": "Kako radi: sferno zapešće", "klik": "Animacija „Sferno zapešće”: klizači osi 2, 3 i 5, gumbi „Os 5 na 0°” i „Nulti položaj”.", "tekst": "Osi 4, 5 i 6 sijeku se u jednoj točki — središtu zapešća. U nultoj pozi ono je 302 milimetra ispred osi 1 i 630 milimetara iznad poda, a prirubnica je još 72 milimetra dalje. Zato je zapešće sferno: osi 1 do 3 određuju gdje je središte zapešća, a osi 4 do 6 kako je alat okrenut. Na tome počiva i inverzna kinematika koju radimo poslije. Kad os 5 dođe na nulu, osi 4 i 6 leže na istom pravcu — to je singularni položaj zapešća: dvije osi rade isto gibanje i robot pri pravocrtnom gibanju mora naglo zakretati.", "dopuna": "Pitanje: zašto proizvođači gotovo uvijek grade zapešće kao sferno, iako bi drugačiji raspored osi dao veću slobodu oblikovanja?", "kadrovi": [[0, "cijeli"]]}, {"t": 660, "dio": "1 Upoznavanje", "naslov": "Postolje, priključci i korisnički vodovi", "klik": "Stavke Postolje, Priključci R1.MP i R1.SMB, Korisnički priključci i zrak, Priključci na gornjoj ruci.", "tekst": "Postolje se pričvrsti s četiri vijka M10 i dva zatika. Na stražnjoj strani su priključci kabela prema ormaru: R1.MP nosi napajanje motora i kočnica, a R1.SMB signale mjernog sustava. Za alat robot ima ugrađene vodove: četiri crijeva za zrak, vanjskog promjera 4 milimetra, do 5 bara, i deset signalnih vodiča — od priključka R1.CP/CS na postolju kroz robota do R3.CP/CS na gornjoj ruci, 49 volta i 500 miliampera. Tako hvataljka ili ventil na alatu nemaju vanjskih kabela koji bi zapinjali.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 780, "dio": "1 Upoznavanje", "naslov": "Kako radi: mjerni sustav i baterija", "klik": "Stavka „Ploča sučelja enkodera”; animacija: Isključi ormar, Pomakni os rukom, Isprazni bateriju, Ažuriraj brojač okretaja.", "tekst": "Svaki motor ima mjerni pretvornik kuta. Signali idu na ploču sučelja enkodera u postolju robota, odatle signalnim kabelom na priključak R1.SMB u ormaru i do osnog računala. Pretvornik zna kut unutar jednog okretaja motora, a broj okretaja broji elektronika — i pamti ga kad je ormar isključen, zahvaljujući bateriji u robotu. Kad se baterija isprazni, robot javlja upozorenje 38213 „Battery charge low”, a nakon gubitka napajanja broj okretaja treba ažurirati. ABB propisuje zamjenu baterije svakih 36 mjeseci ili na to upozorenje.", "dopuna": "Pitanje: što bi se dogodilo da robot nakon prazne baterije krene bez ažuriranja brojača okretaja?", "kadrovi": [[0, "cijeli"]]}, {"t": 930, "dio": "1 Upoznavanje", "naslov": "Članci robota", "klik": "Stavke Okretno kućište, Donja ruka, Gornja ruka, Kućište zapešća, Nagibno kućište, Prirubnica alata.", "tekst": "Robot je lanac članaka: postolje, okretno kućište koje se vrti oko osi 1, donja ruka oko osi 2, gornja ruka oko osi 3, zatim kućište zapešća, nagibno kućište i prirubnica alata. Između osi 2 i 3 je 270 milimetara, lakat je pomaknut 70 milimetara, od lakta do središta zapešća je 302, a do prirubnice još 72 milimetra. Prirubnica je mjesto gdje se pričvršćuje alat i gdje je ishodište alatnog koordinatnog sustava tool0. Svaka stavka u izborniku istakne svoj članak u modelu.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 1050, "dio": "1 Upoznavanje", "naslov": "Os 1: pogon iznutra", "klik": "Stavka „Os 1” i podstavke Motor, Kočnica, Mjerenje kuta; „Prikaži unutrašnjost”, „Pomakni os”.", "tekst": "Os 1 okreće cijelu ruku: opseg ±165°, najveća brzina 250° u sekundi. Prema ABB-ovu popisu rezervnih dijelova, osi 1 i 2 pogone okretni izmjenični motori s ugrađenim prijenosnikom — motor i prijenosnik mijenjaju se kao jedna cjelina. Na stražnjem kraju motora je kočnica, a uz nju mjerni pretvornik kuta. „Prikaži unutrašnjost” učini kućište prozirnim, a „Pomakni os” zakrene samo tu os; rotor u modelu vrti se brže od izlaza, jer prijenosnik smanjuje brzinu. Smještaj i mjere unutarnjih dijelova su naša procjena — ABB ih ne objavljuje.", "dopuna": "Zamjena motora i prijenosnika kao cjeline skraćuje servis, ali poskupljuje rezervni dio. Pitanje: što je u proizvodnji važnije?", "kadrovi": [[0, "cijeli"]]}, {"t": 1200, "dio": "1 Upoznavanje", "naslov": "Kako radi: valni prijenosnik", "klik": "Stavka „Prijenosnik”; animacija valnog prijenosnika: Jedan okretaj ulaza, 200 / 202, Pokreni, Njihanje.", "tekst": "ABB u priručniku ne piše kakav je prijenosnik u kojoj osi. No sve osi IRB 120 podmazuju se mašću Harmonic grease 4B No.2, koja se koristi za valne prijenosnike — pa zaključujemo da su valni. To je naš zaključak, ne podatak proizvođača. Valni prijenosnik ima tri dijela: eliptični generator vala, tankostijeni fleksibilni zupčanik i kruti prsten s dva zuba više. Za jedan okretaj ulaza izlaz zaostane za dva zuba — uz 200 i 202 zuba omjer je 100. Prijenosnik je kompaktan, u jednom stupnju i bez zračnosti, što je za robota s ponovljivošću od stotinke milimetra presudno.", "dopuna": "Pitanje: koja je cijena valnog prijenosnika — što se događa u fleksibilnom zupčaniku milijunima puta tijekom životnog vijeka?", "kadrovi": [[0, "cijeli"]]}, {"t": 1350, "dio": "1 Upoznavanje", "naslov": "Kako radi: motor i regulacija", "klik": "Animacija motora (komutacija Sinusna / Blok, kut Ispravan / Pomaknut 90°), zatim animacija kaskadne regulacije (Pomakni na 90°, pojačanje Kp).", "tekst": "Motor treba struju u namotima u pravom trenutku, prema kutu rotora — to je komutacija. Ako elektronika krivo zna kut, motor ne daje moment iako teče puna struja. Regulacija je kaskadna: vanjska petlja uspoređuje zadani i stvarni kut i daje zadanu brzinu, srednja daje zadanu struju, a unutarnja struju regulira. Premalo pojačanje položaja znači da os zaostaje za zadanim, preveliko da prebaci. ABB ne objavljuje takt ni pojačanja regulatora IRC5 — vrijednosti u animaciji su primjer.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 1470, "dio": "1 Upoznavanje", "naslov": "Osi 2 i 3", "klik": "Stavke „Os 2” i „Os 3”; izbornik Os, „Pomakni os”, „Prikaži unutrašnjost”.", "tekst": "Os 2 diže i spušta donju ruku: ±110°, 250° u sekundi. To je gravitacijom najopterećenija os — drži masu cijele ruke i tereta na najvećem kraku. Os 3 okreće gornju ruku: od plus 70 do minus 110 stupnjeva, također 250° u sekundi. Kod osi 3 motor ne sjedi na samoj osi: prema ABB-u to je motorna jedinica s remenicom i zupčasti remen, a prijenosnik osi 3 nalazi se u donjoj ruci. Motor je tako bliže osi 2, pa ruka ima manji moment tromosti.", "dopuna": "Pitanje: zašto je motor osi 3 smješten uz rame, a ne uz lakat?", "kadrovi": [[0, "cijeli"]]}, {"t": 1590, "dio": "1 Upoznavanje", "naslov": "Kako radi: zupčasti remen osi 3 i 5", "klik": "Stavka „Zupčasti remen”; animacija: Pokreni, klizač napetosti (premala, prevelika, u granicama), Os 5.", "tekst": "Remen prenosi vrtnju s male remenice na motoru na veću remenicu ulaza prijenosnika. Ukupni omjer je umnožak omjera remena i prijenosnika. Premala napetost znači da remen preskače zube i os gubi položaj — upravljanje to vidi kao odstupanje položaja. Prevelika napetost troši ležajeve. ABB propisuje pregled zupčastih remena svakih 36 mjeseci i opisuje postupak podešavanja napetosti remena osi 3 i 5. Broj zuba remenica u animaciji je primjer.", "dopuna": "Pitanje: kako biste na stvarnom robotu provjerili napetost remena bez rastavljanja?", "kadrovi": [[0, "cijeli"]]}, {"t": 1740, "dio": "1 Upoznavanje", "naslov": "Osi 4, 5 i 6 i rastavljanje robota", "klik": "Stavke Os 4, Os 5, Os 6; „Rastavi robota”; „Sve osi redom”, „Stani”.", "tekst": "Zapešće ima tri osi. Os 4 zakreće kućište zapešća: ±160°, 320° u sekundi. Os 5 naginje zapešće: ±120°, 320° u sekundi; i ona ima motor s remenom, a prijenosnik je u gornjoj ruci. Os 6 okreće prirubnicu: zadano ±400°, a softverski do ±242 okretaja; brzina 420° u sekundi. Brža izvedba IRB 120T ima na osima 4, 5 i 6 420, 590 i 600° u sekundi. „Rastavi robota” razmakne članke duž lanca, a „Sve osi redom” pokrene osi od prve do šeste — dobro se vidi koji dio ruke pokreće koja os.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 1890, "dio": "1 Upoznavanje", "naslov": "Kako radi: kočnice i otpuštanje kočnica", "klik": "Stavka „Tipka za otpuštanje kočnica”; animacija kočnice: Motors On, Drži: otpuštanje kočnica, Ispočetka.", "tekst": "Motori osi imaju kočnice koje drže robota kad su motori isključeni. IRB 120 nema tipke za otpuštanje kočnica na samom robotu: na prednjoj ploči ormara IRC5 Compact, ispod poklopca, jedna tipka otpušta kočnice svih osi odjednom. Drugi način je vanjskih 24 volta na priključak R1.MP. Pozor: bez kočnica ruka pada pod vlastitom težinom — prije otpuštanja ruku treba poduprijeti. To se radi samo za izvlačenje robota nakon sudara ili kod servisa.", "dopuna": "Pitanje: tko u laboratoriju smije otpustiti kočnice i što mora biti pripremljeno prije toga?", "kadrovi": [[0, "cijeli"]]}, {"t": 2010, "dio": "1 Upoznavanje", "naslov": "Kabelski snop, prihvatnica i podmazivanje", "klik": "Stavke „Unutarnji kabelski snop” i „Prihvatnica (primjer alata)”; kvačica „prihvatnica”.", "tekst": "Kabeli i crijeva prolaze kroz unutrašnjost robota od postolja do zapešća, pa se pri gibanju savijaju i uvijaju — zato kabelski snop ima vodilice i prigušnice. Prihvatnica u modelu je naš primjer: paralelna hvataljka s prstima, kakvu koristimo u simulatorima crtanja i paletizacije. Prijenosnici su podmazani mašću, ne uljem: prema ABB-u 58 grama u osi 1, 40 u osi 2, 11 u osi 3, te 3,5, 5 i 3,5 grama u osima 4, 5 i 6. Generalni servis ABB predviđa oko 30 000 sati rada.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 2070, "dio": "1 Upoznavanje", "naslov": "Kako radi: kalibracija", "klik": "Stavka „Kalibracija”; animacija: Ažuriranje brojača okretaja, klizač kuta od oznake, Na oznaku, Ažuriraj osi 1–3 i 4–6, Kalibracija.", "tekst": "Kalibracija postoji na dvije razine. Ažuriranje brojača okretaja treba nakon prazne baterije ili zamjene dijela: os se dovede na sinkronizacijsku oznaku, s točnošću unutar pola okretaja motora, pa se brojač ažurira s privjeska — osi 1 do 3 i 4 do 6 u skupinama. Prava kalibracija određuje točan nulti kut. ABB je u novijim izdanjima priručnika kao standardni postupak uveo Axis Calibration; starije izdanje opisuje finu kalibraciju s kalibracijskim alatom. Kalibracijski položaji iz priručnika su: os 1 −170,2°, os 2 −115,1°, os 3 +75,8°, os 4 −174,7°, os 5 −90° i os 6 +90°.", "dopuna": "Pitanje: koja je razlika između ažuriranja brojača okretaja i kalibracije, i kad treba koje?", "kadrovi": [[0, "cijeli"]]}, {"t": 2220, "dio": "1 Upoznavanje", "naslov": "Upravljački ormar IRC5 Compact", "klik": "Stavka „Upravljački ormar IRC5 Compact”, pogled Ormar; podstavke: glavna sklopka, preklopnik, Motors On, gljiva, glavno i osno računalo, pogonska jedinica, sigurnosna ploča, sklopnici.", "tekst": "IRC5 Compact je mali ormar za male robote. Druga generacija ima oko 310 puta 449 puta 442 milimetra — ABB-ov list iz 2023. navodi visinu 320 — i masu oko 28 kilograma; izvori se tu malo razlikuju. Napaja se jednofaznih 220 ili 230 volta, zaštite IP20. Sprijeda su glavna sklopka, preklopnik načina rada, tipka Motors On, gljiva za nužno zaustavljanje i, ispod poklopca, otpuštanje kočnica. Unutra su glavno računalo s RobotWareom, osno računalo koje računa regulaciju osi, pogonska jedinica s pretvaračima za motore, napajanje 24 volta, I/O ploča sa 16 ulaza i 16 izlaza, sigurnosna ploča, sklopnici, otpornik za kočenje, mrežni filtar i ventilatori.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 2370, "dio": "1 Upoznavanje", "naslov": "Kako radi: tok energije i signala u ormaru", "klik": "Animacija „ormarIRC5”: Motors On, Kočenje.", "tekst": "Energija ide iz mreže kroz mrežni filtar u napajanje i pogonsku jedinicu, a odatle kroz sklopnike i kabel R1.MP do motora. Signali idu drugim putem: glavno računalo planira gibanje, osno računalo regulira osi, privjesak je spojen mrežom na priključak LAN1, a mjerni sustav vraća kutove kroz R1.SMB. Kad robot koči, motori rade kao generatori — tu energiju troši otpornik za kočenje.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 2460, "dio": "1 Upoznavanje", "naslov": "Kako radi: sigurnosni lanac", "klik": "Stavka „Sigurnosni lanac”; animacija: Ručni / Automatski, Motors On.", "tekst": "IRC5 ima dva jednaka sigurnosna lanca. U njima su ulazi za nužno zaustavljanje, automatsko zaustavljanje, opće zaustavljanje, uređaj za omogućavanje i granične sklopke. Motori smiju dobiti napajanje tek kad su oba lanca zatvorena: tada se uključe sklopnici motora, a poseban sklopnik otpušta kočnice. Ako se lanci ne slažu — jedan zatvoren, drugi otvoren — ormar to otkrije kao kvar i ne dopušta Motors On. U automatskom načinu vrata zaštitne ograde obično su vezana na automatsko zaustavljanje.", "dopuna": "Pitanje: zašto su lanci dva i jednaki, umjesto jednog jačeg?", "kadrovi": [[0, "cijeli"]]}, {"t": 2580, "dio": "1 Upoznavanje", "naslov": "Kako radi: načini rada", "klik": "Stavka „Načini rada”; animacija: Auto, Ručni (smanjena brzina), klizač programirane brzine, Ručni 100 %.", "tekst": "Robot ima tri načina rada. Automatski — program se izvodi, a u ćeliji nema nikoga. Ručni sa smanjenom brzinom — za učenje točaka i probu programa: brzina alata ograničena je na 250 milimetara u sekundi, koliko god programirali. Treći, ručni s punom brzinom, je opcija i nije dostupan svugdje; traži držanje tipke „hold-to-run” i uređaja za omogućavanje. Način se bira preklopnikom s ključem na ormaru.", "dopuna": "Pitanje: zašto je ograničenje od 250 mm/s izabrano baš tako — koliko daleko robot prijeđe dok čovjek reagira?", "kadrovi": [[0, "cijeli"]]}, {"t": 2700, "dio": "1 Upoznavanje", "naslov": "Privjesak FlexPendant i uređaj za omogućavanje", "klik": "Stavka „Privjesak FlexPendant” i podstavke; animacija tripoložajnog uređaja: 2 — lagano, 3 — jako, 1 — pusti.", "tekst": "FlexPendant ima oko kilogram, dodirni zaslon u boji, palicu za ručno vođenje, gljivu za nužno zaustavljanje, četiri programirljive tipke, tipke Start, Stop i korak naprijed i natrag, te USB priključak. Na stražnjoj strani je tripoložajni uređaj za omogućavanje: gibanje u ručnom načinu dopušteno je samo u srednjem položaju. Pušteno ili jako stisnuto znači stop — u opasnosti čovjek ili pusti ruku ili je grčevito stisne. Iz jakog pritiska ne može se izravno natrag u gibanje: tipku treba pustiti do kraja.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 2850, "dio": "1 Upoznavanje", "naslov": "Kako radi: kategorije zaustavljanja", "klik": "Stavka „Kategorije zaustavljanja”; animacija: kategorija 0, kategorija 1, Stop programa.", "tekst": "Norme razlikuju kategorije zaustavljanja. Kategorija 0: napajanje motora odmah se prekida, a robot zaustavljaju kočnice. Kategorija 1: robot se najprije kontrolirano zaustavi, pa se tek onda prekida napajanje. Na IRC5 ulazi nužnog, automatskog i općeg zaustavljanja mogu se konfigurirati kao kategorija 0 ili 1. Tipka Stop na privjesku samo zaustavi program — motori ostaju pod napajanjem; to nije sigurnosna funkcija.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 2940, "dio": "1 Upoznavanje", "naslov": "RobotWare, održavanje i podaci", "klik": "Stavke „RobotWare i RobotStudio”, „Održavanje”, „Podaci o robotu”; tablice podataka s izvorima.", "tekst": "Softver ormara zove se RobotWare; na IRC5 su to generacije 5 i 6, a programi se pišu u ABB-ovom jeziku RAPID. Održavanje ukratko: pregled remena i zamjena baterije svakih 36 mjeseci, generalni servis oko 30 000 sati. Ispod 3D prikaza su tablice: osnovni podaci, osi s opsegom, brzinom i količinom masti, ormar i privjesak — svaki podatak s brojem izvora. Izvori su ABB-ovi dokumenti: specifikacija proizvoda, list podataka i priručnici.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 3030, "dio": "2 Kinematika", "naslov": "Izravna kinematika: kutovi osi", "klik": "Stranica Kinematika robota, kartica Izravna: klizači q1–q6, desno položaj, središte zapešća, Euler ZYX, kvaternion.", "tekst": "Drugo poglavlje: kinematika. Izravna kinematika iz šest kutova osi računa gdje je prirubnica i kako je okrenuta. Pomičem os 1, pa os 2, os 3 i os 5. Desno se uživo mijenja položaj prirubnice u milimetrima, položaj središta zapešća, orijentacija kao Eulerovi kutovi ZYX — kako ih prikazuje RobotStudio — i kvaternion kakav piše u RAPID-u. Zadnji redak uspoređuje položaj iz 3D modela i iz našeg računa: odstupanje je nula, model i račun se slažu.", "dopuna": "", "kadrovi": [[0, "naslov"], [6, "cijeli"]], "kartica": ["Cjelina 2: Kinematika robota", "Izravna i inverzna kinematika uživo na 3D modelu"]}, {"t": 3150, "dio": "2 Kinematika", "naslov": "Nulta poza i matrica T06", "klik": "Gumbi Nulta poza, Alat prema dolje, Nasumična poza; matrica T06 u rasklopnom dijelu.", "tekst": "U nultoj pozi prirubnica je na x 374, y 0, z 630 milimetara: 302 plus 72 naprijed, a 290 plus 270 plus 70 gore. Matrica T06 je umnožak šest matrica A, po jedna za svaki redak DH tablice. Gornji lijevi dio 3 puta 3 je orijentacija — stupci su osi x, y i z alata izražene u bazi — a desni stupac je položaj. „Alat prema dolje” je poza iz koje se najčešće radi: os 5 na 90°, pa os z alata gleda u pod.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 3270, "dio": "2 Kinematika", "naslov": "DH tablica IRB 120", "klik": "Tekst ispod simulatora: formula T06 i DH tablica (a, α, d, pomak, θ).", "tekst": "Svaki redak DH tablice opisuje prijelaz iz jednog koordinatnog sustava u sljedeći četirima brojevima: zakret θ oko z, pomak d uzduž z, pomak a uzduž nove osi x i zakret α oko nje. Za IRB 120: d1 je 290, a2 270, a3 70, d4 302, d6 72 milimetra. Uz os 2 je pomak od minus 90°, a uz os 6 od 180°, jer ABB-ova nulta poza nije ona koju bi dalo samo DH pravilo. Isti lanac korak po korak, s momentima u motorima, gradi se u alatu „Kinematika i dinamika industrijskog robota” u području Industrijska robotika.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 3360, "dio": "2 Kinematika", "naslov": "Inverzna kinematika: osam rješenja", "klik": "Kartica Inverzna: primjer „alat dolje ispred robota”, tablica 8 rješenja (rame, lakat, zapešće, u granicama ili izvan), „Prikaži”.", "tekst": "Inverzna kinematika radi obrnuto: zadam položaj i orijentaciju alata — ovdje točku 380, 0, 200 milimetara s alatom okomito dolje — a program traži kutove osi. Pronašao je osam rješenja: rame naprijed ili natrag, lakat gore ili dolje, zapešće s pozitivnom ili negativnom osi 5. U granicama osi ostalo je samo jedno — ostala bi tražila kut izvan opsega. Klikom na „Prikaži” robot se pomakne u to rješenje. Svako rješenje provjereno je izravnom kinematikom.", "dopuna": "Pitanje: ako su dva rješenja u granicama osi, koje biste izabrali za pick & place i zašto?", "kadrovi": [[0, "cijeli"]]}, {"t": 3510, "dio": "2 Kinematika", "naslov": "Kako se rješava i singularnosti", "klik": "Primjeri „alat vodoravno, ulijevo” i „izvan dosega”; tekst o rješavanju u četiri koraka i okvir „Singularni položaji”.", "tekst": "Kako se to računa? Zbog sfernog zapešća zadaća se raspada na dvije. Od prirubnice se vratimo 72 milimetra uz os alata do središta zapešća. Os 1 gleda prema njemu — dva rješenja. Rame, lakat i zapešće čine trokut, pa kosinusni poučak daje lakat gore ili dolje. Ostatak orijentacije rade osi 4 do 6 — opet dva rješenja. Dva puta dva puta dva je osam. Ako je točka izvan dosega, rješenja nema. Upravljanje bira rješenje prema konfiguraciji spremljenoj u točki — u RAPID-u robtarget nosi i confdata — pa točka snimljena s laktom gore ne preskoči u lakat dolje.", "dopuna": "Pitanje: u kojoj točki ispred robota biste očekivali singularnost ramena?", "kadrovi": [[0, "cijeli"]]}, {"t": 3630, "dio": "3 Stvarni robot", "naslov": "Robot u laboratoriju", "klik": "Stranica „IRB 120 u laboratoriju”: fotografije stvarnog robota, prihvatnice, ormara i privjeska.", "tekst": "Treće poglavlje: isti robot, stvarni, u laboratoriju. Na fotografijama su robot na stolu s našom prihvatnicom — paralelna hvataljka s prstima, krak sa sisaljkom i držač flomastera, isprintani 3D pisačem prema istom modelu koji vidite u simulatoru — zatim ormar IRC5 Compact i privjesak. Usporedite zaslon privjeska sa simulatorom „robot u petlji”: iste kartice, isti izbornici i iste poruke. To je cilj — da se na stvarnom robotu snađete jer ste sve već prošli u pregledniku.", "dopuna": "", "kadrovi": [[0, "naslov"], [6, "cijeli"]], "kartica": ["Cjelina 3: Stvarni robot", "IRB 120 u laboratoriju — od G-koda do crteža"]}, {"t": 3750, "dio": "3 Stvarni robot", "naslov": "Od G-koda do crteža na stvarnom robotu", "klik": "Sekcije o programu i crtanju: G-kod iz simulatora, pretvorba u RAPID, nulta točka teksta, proba u zraku, ispis.", "tekst": "Na stvarnom robotu ponovili smo cijeli lanac. Prvo sigurnosna kopija sustava. Zatim G-kod iz našeg simulatora crtanja, pretvorba u RAPID-ov modul, učitavanje modula na kontroler i alat — flomaster u bočnom držaču. Nulta točka teksta snimi se tamo gdje vrh flomastera dodiruje ploču; tekst se pomiče samo po x i y. Prvo proba u zraku, iznad ploče, pa tek onda pravi ispis. Na kraju se probni moduli spremaju i uklanjaju, a robot se vraća na prethodni program paletizacije.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 3870, "dio": "3 Stvarni robot", "naslov": "Zamke na stvarnom robotu", "klik": "Sekcija „Zamke”: što je na stvarnom robotu pošlo krivo i kako smo riješili.", "tekst": "Stvarni robot uvijek iznenadi. Dvije tipične zamke: učitani modul s vlastitom rutinom main sukobljava se s glavnim programom, pa robot ne zna odakle krenuti; i ime modula koje već postoji u sustavu. Rješenje je pokretanje točno određene rutine i jedinstvena imena modula. Simulator te zamke danas javlja istim porukama kao stvarni kontroler — upravo zato što smo ih prvo doživjeli na robotu. Simulator nije zamjena za robota, nego priprema za njega.", "dopuna": "Pitanje: koju biste zamku dodali na popis iz vlastitog iskustva sa strojevima?", "kadrovi": [[0, "cijeli"]]}, {"t": 3990, "dio": "4 Robot u petlji", "naslov": "Stanica u petlji s PLC-om", "klik": "Simulator „IRB 120 u petlji”: 3D stanica, primjer paletizacije kockica, postav stanice.", "tekst": "Četvrto poglavlje je poglavlje Upravljanje: simulator robota u petlji. Robot je u stanici s pokretnom trakom, fotoćelijom, okretnim stolom i paletom. Paletizacija kockica radi kao na stvarnom robotu: traka doveze kockicu, fotoćelija je javi PLC-u, PLC javi robotu, robot je uzme i složi u raster. Postav stanice možete mijenjati: samo robot, robot s trakom, ili cijela stanica.", "dopuna": "", "kadrovi": [[0, "naslov"], [6, "cijeli"]], "kartica": ["Cjelina 4: Robot u petlji", "Virtualni FlexPendant, RAPID, PLC i HMI"]}, {"t": 4110, "dio": "4 Robot u petlji", "naslov": "Virtualni FlexPendant, PLC i HMI", "klik": "Virtualni FlexPendant, PLC s ladder dijagramom i tablicom signala, HMI panel.", "tekst": "Desno je virtualni FlexPendant s istim karticama kao na stvarnom robotu: ručno vođenje, programski urednik, točke i poruke. Programi se pišu u podskupu RAPID-a, uključujući čekanje na ulaze i postavljanje izlaza. Ispod je PLC s ladder dijagramom i tablicom signala između robota i PLC-a — ta tablica je ugovor: isti signali vrijede i kad jednog dana na mjesto emuliranog PLC-a spojimo pravi. I HMI panel s gumbima i stanjem stanice.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 4260, "dio": "5 RobotStudio", "naslov": "Programiranje izvan robota", "klik": "Stranica RobotStudio: tekst „Što je programiranje izvan robota”.", "tekst": "Peto poglavlje: RobotStudio. Robot se programira na dva načina. Učenjem na robotu: programer privjeskom vodi robota do svake točke i sprema je — a robot za to vrijeme ne radi. Ili programiranjem izvan robota: stanica se složi na računalu, točke se izvedu iz CAD modela, program se napiše i isproba u simulaciji, a na robot se prenese gotov. RobotStudio je ABB-ov program za to; programi se pišu u RAPID-u, istom jeziku koji izvodi IRC5.", "dopuna": "", "kadrovi": [[0, "naslov"], [6, "cijeli"]], "kartica": ["Cjelina 5: RobotStudio", "Programiranje izvan robota i virtualni kontroler"]}, {"t": 4380, "dio": "5 RobotStudio", "naslov": "Virtualni kontroler", "klik": "Odjeljak „Virtualni kontroler” i shema: isti RobotWare u virtualnom i stvarnom kontroleru.", "tekst": "Ključ RobotStudija je virtualni kontroler. Većina simulatora ima vlastiti kod za kinematiku i gibanje. RobotStudio pokreće isti softver RobotWare koji radi u ormaru, samo na računalu. Zato su putanje, brzine i vremena ciklusa u simulaciji vrlo blizu stvarnih, a poruke o greškama iste kao na privjesku. Ono što virtualni kontroler ne zna: stvarni položaj obratka, savijanje alata, trenje u hvataljci, kašnjenje senzora. Zato prvi prolaz na robotu uvijek ide smanjenom brzinom.", "dopuna": "Pitanje: koja dva fizikalna učinka virtualni kontroler sigurno ne vidi, a na stvarnom robotu mogu pokvariti putanju?", "kadrovi": [[0, "cijeli"]]}, {"t": 4500, "dio": "5 RobotStudio", "naslov": "Tok rada i kartice programa", "klik": "Shema toka rada u osam koraka; tablica glavnih kartica (Home, Modeling, Simulation, Controller, RAPID, Add-Ins).", "tekst": "Tok rada ima osam koraka: stanica s robotom, alatom i obratkom; koordinatni sustavi — tooldata za vrh alata i wobjdata za obradak; točke i putanje, ručno ili AutoPathom iz rubova CAD modela; program u RAPID-u; simulacija sa sudarima, dosegom i vremenom ciklusa; prijenos na kontroler; dotjerivanje točaka privjeskom; i proizvodnja. Petlja simulacija–ispravak ponavlja se dok program ne prođe bez sudara. Kartice programa slijede taj redoslijed: Home i Modeling za stanicu, Simulation, Controller za virtualni i stvarni kontroler, RAPID za kod i Add-Ins za dodatke.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 4620, "dio": "5 RobotStudio", "naslov": "Licence i usporedba s našim simulatorima", "klik": "Tablica inačica i licenci; tablica usporedbe RobotStudija i simulatora u pregledniku.", "tekst": "RobotStudio ima besplatnu osnovnu razinu, Basic i Premium. Za obrazovne ustanove ABB nudi besplatnu licencu s Premium funkcijama, do 100 korisnika, samo za nekomercijalnu uporabu. Najnovija inačica koju smo našli je 2026.2, za Windows 11. Naši simulatori u pregledniku ne pokreću RobotWare — računaju kinematiku vlastitim kodom. Rade bez instalacije, i na mobitelu, ali nisu kopija kontrolera. Preporučeni put: prvo preglednik, za razumijevanje; onda RobotStudio, za pravi program; onda stvarni robot.", "dopuna": "Pitanje: za koji biste zadatak izabrali preglednik, a za koji RobotStudio?", "kadrovi": [[0, "cijeli"]]}, {"t": 4710, "dio": "5 RobotStudio", "naslov": "Vježba: složi korake redom", "klik": "Vježba: ispremiješani koraci toka rada, klik redom od prvog do zadnjeg.", "tekst": "Vježba: koraci toka rada su ispremiješani, a vi ih klikate redom kojim se rade. Prvo stanica, pa koordinatni sustavi alata i obratka, pa točke i putanje, pa program, simulacija, prijenos, dotjerivanje i proizvodnja. Pogrešan klik se označi — i to je smisao vježbe: zapitati se što mora postojati prije sljedećeg koraka. Na primjer, točke nemaju smisla dok nije zadan alat, jer se točka uvijek odnosi na vrh alata.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 4830, "dio": "5 RobotStudio", "naslov": "RobotStudio HyperReality", "klik": "Odjeljak „RobotStudio HyperReality”.", "tekst": "U ožujku 2026. ABB je s NVIDIA-om najavio RobotStudio HyperReality: RobotStudio povezan s knjižnicama platforme Omniverse. Virtualni kontroler i dalje računa gibanje, a Omniverse dodaje fotorealističnu scenu — svjetlo, odsjaje, sjene i kameru. Iz takve scene mogu se automatski napraviti tisuće slika za treniranje modela strojnog vida. ABB navodi točnost prijenosa iz simulacije u stvarnost do 99 %, do 80 % kraće puštanje u rad i do 40 % niže troškove — to su ABB-ove brojke, ne neovisna mjerenja. Početkom studenoga ABB i NVIDIA najavili su i zajednički obrazovni program za fizičku AI, s certifikatom; pojedinosti još nisu objavljene.", "dopuna": "Pitanje: kako biste provjerili tvrdnju od 99 % na vlastitom robotu?", "kadrovi": [[0, "cijeli"]]}, {"t": 4920, "dio": "6 Prema fizičkoj AI", "naslov": "Što je fizička AI i gdje smo mi", "klik": "Stranica „Prema fizičkoj AI”: objašnjenje pojma; tablica pojmova s oznakama danas / djelomično / smjer.", "tekst": "Zadnje poglavlje gleda naprijed. Fizička umjetna inteligencija je AI koja ne ostaje na zaslonu, nego upravlja strojem u stvarnom prostoru — robotskom rukom, mobilnim robotom, dronom. Model se uči u simulaciji, na sintetičkim podacima, pa se prenosi na stvarni stroj. U tablici je svaki pojam iz najava uz stanje za IRB 120 kod nas: RobotStudio — danas; virtualni kontroler — samo u RobotStudiju; Omniverse i OpenUSD — smjer; HyperReality — dijelovi postoje odvojeno. Iskreno: naši simulatori programiraju robota, ali još ne uče.", "dopuna": "", "kadrovi": [[0, "naslov"], [6, "cijeli"]], "kartica": ["Cjelina 6: Prema fizičkoj AI", "Od programiranog robota prema robotu koji uči"]}, {"t": 5070, "dio": "6 Prema fizičkoj AI", "naslov": "Put u pet koraka", "klik": "Shema puta u pet koraka i kartice koraka s poveznicama.", "tekst": "Put ima pet koraka. Prvi, programirani robot — točke, G-kod, RAPID — postoji danas. Drugi, robot u petlji sa signalima i PLC-om, također danas, s emuliranim PLC-om. Treći je percepcija u petlji: kamera u simulatoru vidi predmet, a isti algoritam radi s web-kamerom na stvarnom robotu — u pripremi, a stanica za skeniranje je prvi korak. Četvrti su sintetički podaci u malom: stotinjak slika predmeta iz simulatora pod različitim svjetlom, i na njima jednostavan klasifikator. Peti — virtualni kontroler i HyperReality — smjer, za koji treba jača oprema.", "dopuna": "Pitanje: što bi vaš laboratorij prije napravio — kupio jednu jaku grafičku stanicu ili stavio web-kameru na robota koji već ima?", "kadrovi": [[0, "cijeli"]]}, {"t": 5190, "dio": "6 Prema fizičkoj AI", "naslov": "Što to znači za nastavu", "klik": "Odjeljci „Što to znači za nastavu” i „Tri pitanja za razmišljanje”.", "tekst": "Za nastavu to znači da simulator postaje glavna učionica: u simulaciji se uči ono što se na stvarnom robotu ne može ili ne smije, a stvarni robot dolazi na kraju, kao provjera. Naši simulatori to već rade za kinematiku, programiranje i puštanje u rad; sljedeći korak je da u njima počne i učenje. Na kraju stranice su tri pitanja za razmišljanje — ponesite ih kući.", "dopuna": "", "kadrovi": [[0, "cijeli"]]}, {"t": 5280, "dio": "Kraj", "naslov": "Sažetak i zadatak", "klik": "Povratak na naslovnicu; ishodi „Moći ću”.", "tekst": "Sažmimo. IRB 120 je šestoosni robot s osima 1 i 2 pogonjenima motorima s ugrađenim prijenosnikom, osima 3 i 5 preko zupčastog remena, i sfernim zapešćem. Mjerni sustav pamti okretaje uz bateriju, a kalibracija vraća točan nulti kut. Ormar IRC5 Compact ima dva sigurnosna lanca, a privjesak uređaj za omogućavanje. Iz kutova računamo položaj alata, a iz položaja do osam rješenja za kutove. Za samostalni rad: prođite sve stavke Upoznavanja do kvačice i u Kinematici za tri točke po izboru pronađite sva rješenja i objasnite zašto su neka izvan granica. Hvala na pažnji.", "dopuna": "", "kadrovi": [[0, "naslov"], [6, "cijeli"], [110, "naslov"]], "kartica": ["Sažetak i zadatak", "Industrijski robot ABB IRB 120 — hvala na pažnji"]}], KRAJ=5400, KD={"cijeli": {"naziv": "Cijeli zaslon", "tipka": "1"}, "naslov": {"naziv": "Naslovna kartica", "tipka": "2"}}, KLJUC='ftq-citac-irb120-obs', KLJUC2='ftq-citac-lx-obs', REZ='ftq-predavanje-irb120';
+const PREF='FTQ · ';
+const scena=k=>PREF+KD[k].naziv;
+const KAD=Object.keys(KD), ZOOM=KAD.filter(k=>KD[k].r);
+const $=id=>document.getElementById(id);
+const mm=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ki=t=>{let i=0;for(let j=0;j<S.length;j++)if(S[j].t<=t)i=j;return i};
+const sp=(k,v)=>{try{localStorage.setItem(KLJUC+'-'+k,JSON.stringify(v))}catch(e){}};
+const ucitaj=(k,d)=>{try{const v=localStorage.getItem(KLJUC+'-'+k);return v==null?d:JSON.parse(v)}catch(e){return d}};
+const poruka=t=>{$('poruka').textContent=t};
+/* zapamćeno u drugom čitaču na istoj domeni (lozinka, adresa, izvor) — da se ne upisuje ponovno */
+const ucitaj2=(k,d)=>{const v=ucitaj(k,null);if(v!=null&&v!=='')return v;if(!KLJUC2)return d;try{const x=localStorage.getItem(KLJUC2+'-'+k);return x==null?d:JSON.parse(x)}catch(e){return d}};
+/* veza s autopilotom (režiserom) na istoj domeni: njegov sat vodi čitač, gumbi čitača upravljaju njime */
+let bc=null;try{if(REZ)bc=new BroadcastChannel(REZ)}catch(e){bc=null}
+const rz={t:-1e9,sat:0,igra:false,i:-1,ceka:false};
+const uz=()=>!!bc&&performance.now()-rz.t<1500;
+const rzCmd=(cmd,a)=>{bc.postMessage({cmd,a})};
+
+/* ---------- popis koraka ---------- */
+$('popis').innerHTML=S.map((k,i)=>'<article class="k" id="k'+i+'"><div class="gl"><span class="t">'+mm(k.t)+'</span><span class="dio">'+esc(k.dio)+'</span><h2>'+esc(k.naslov)+'</h2></div>'+
+ '<div class="plan">'+k.kadrovi.map((p,j)=>'<span data-j="'+j+'">'+mm(k.t+p[0])+' '+esc(KD[p[1]].naziv)+'</span>').join('')+'</div>'+
+ '<p class="klik">'+esc(k.klik)+'</p><p class="tekst">'+esc(k.tekst)+'</p>'+(k.dopuna?'<p class="dop"><b>Dopuna / pitanje: </b>'+esc(k.dopuna)+'</p>':'')+'<div class="napr"><i></i></div></article>').join('');
+$('kadrovi').innerHTML=KAD.map(k=>'<button data-k="'+k+'" title="Tipka '+KD[k].tipka+'">'+KD[k].tipka+' '+esc(KD[k].naziv)+'</button>').join('');
+
+/* ---------- sat ---------- */
+let vel=ucitaj('vel',1.45);
+const vp=()=>{document.documentElement.style.setProperty('--vel',vel+'rem');sp('vel',vel)};vp();
+let sat=0,igra=false,t0=0,zad=-1,ceka=false,zadUCekanju=-1;
+const sad=()=>uz()?Math.min(KRAJ,rz.sat+(rz.igra?(performance.now()-rz.t)/1000:0)):igra?Math.min(KRAJ,sat+(performance.now()-t0)/1000):sat;
+const post=s=>{if(uz()){rzCmd('post',Math.max(0,Math.min(KRAJ,s)));return}sat=Math.max(0,Math.min(KRAJ,s));t0=performance.now();ceka=false;zadUCekanju=ki(sat)};
+function igraj(da){if(uz()){if(da!==rz.igra)rzCmd('igraj');return}if(da===igra)return;if(igra){sat=sad();igra=false}else{t0=performance.now();igra=true;ceka=false}
+ if($('c-pauzarec').checked&&obs.ok&&snima)R(igra?'ResumeRecord':'PauseRecord').catch(()=>{})}
+const igrajPauza=()=>igraj(!(uz()?rz.igra:igra));
+const dalje=()=>{if(uz()){rzCmd('dalje');return}const bio=ceka,s=sad(),i=ki(s);post(i+1<S.length?S[i+1].t:KRAJ);if(bio)igraj(true)};
+const prije=()=>{if(uz()){rzCmd('prije');return}const s=sad(),i=ki(s);post(s-S[i].t>3||i===0?S[i].t:S[i-1].t)};
+$('b-igraj').onclick=igrajPauza;$('b-dalje').onclick=dalje;$('b-prije').onclick=prije;
+$('b-m5').onclick=()=>post(sad()-5);$('b-p5').onclick=()=>post(sad()+5);
+$('b-manje').onclick=()=>{vel=Math.max(.9,+(vel-.1).toFixed(2));vp()};$('b-vece').onclick=()=>{vel=Math.min(3,+(vel+.1).toFixed(2));vp()};
+$('b-tema').onclick=()=>{const r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark'};
+$('popis').addEventListener('dblclick',e=>{const a=e.target.closest('.k');if(a)post(S[+a.id.slice(1)].t)});
+addEventListener('keydown',e=>{if(e.target.closest('input,select,textarea'))return;
+ if(e.key===' '){e.preventDefault();igrajPauza()}else if(e.key==='ArrowRight')dalje();else if(e.key==='ArrowLeft')prije();
+ else{const k=KAD.find(x=>KD[x].tipka===e.key);if(k)rucniKadar(k)}});
+
+if(bc)bc.onmessage=e=>{const d=e.data||{};if(typeof d.sat!=='number')return;const bio=uz(),bioIgra=rz.igra;
+ Object.assign(rz,{t:performance.now(),sat:d.sat,igra:!!d.igra,i:d.i,ceka:!!d.ceka});
+ if(!bio){rzCmd('cekaj',$('c-cekaj').checked);igra=false}
+ /* pauza autopilota (iz čitača ili tipkom na snimanom zaslonu) pauzira i snimanje */
+ if(bio&&bioIgra!==rz.igra&&$('c-pauzarec').checked&&obs.ok&&snima&&(rz.igra?!!pauzaOd:!pauzaOd))R(rz.igra?'ResumeRecord':'PauseRecord').catch(()=>{})};
+/* ---------- SHA-256 i base64 (za prijavu u OBS) ---------- */
+function sha256(bytes){const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+ const H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+ const l=bytes.length,n=((l+9+63)>>6)<<6,m=new Uint8Array(n);m.set(bytes);m[l]=0x80;const dv=new DataView(m.buffer);dv.setUint32(n-4,l*8>>>0);dv.setUint32(n-8,Math.floor(l/0x20000000));
+ const w=new Uint32Array(64),r=(x,c)=>(x>>>c)|(x<<(32-c));
+ for(let o=0;o<n;o+=64){for(let i=0;i<16;i++)w[i]=dv.getUint32(o+i*4);
+  for(let i=16;i<64;i++){const a=w[i-15],b=w[i-2];w[i]=(w[i-16]+(r(a,7)^r(a,18)^(a>>>3))+w[i-7]+(r(b,17)^r(b,19)^(b>>>10)))>>>0}
+  let[a,b,c,d,e,f,g,h]=H;
+  for(let i=0;i<64;i++){const t1=(h+(r(e,6)^r(e,11)^r(e,25))+((e&f)^(~e&g))+K[i]+w[i])>>>0,t2=((r(a,2)^r(a,13)^r(a,22))+((a&b)^(a&c)^(b&c)))>>>0;h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0}
+  H[0]=(H[0]+a)>>>0;H[1]=(H[1]+b)>>>0;H[2]=(H[2]+c)>>>0;H[3]=(H[3]+d)>>>0;H[4]=(H[4]+e)>>>0;H[5]=(H[5]+f)>>>0;H[6]=(H[6]+g)>>>0;H[7]=(H[7]+h)>>>0}
+ const out=new Uint8Array(32);H.forEach((v,i)=>{out[i*4]=v>>>24;out[i*4+1]=(v>>>16)&255;out[i*4+2]=(v>>>8)&255;out[i*4+3]=v&255});return out}
+const utf8=s=>new TextEncoder().encode(s);
+const b64=u=>{let s='';u.forEach(x=>s+=String.fromCharCode(x));return btoa(s)};
+const obsAuth=(loz,salt,izazov)=>b64(sha256(utf8(b64(sha256(utf8(loz+salt)))+izazov)));
+
+/* ---------- OBS WebSocket v5 ---------- */
+const obs={ws:null,ok:false,n:0,cek:new Map()};
+let spremno=false,snima=false,rec0=0,pauzaOd=0,pauzaUk=0,trenScena='',CW=1920,CH=1080,tekstVrsta='',bojaVrsta='',ids={};
+function lamp(st,t){$('lamp').className='lamp '+st;$('obs-st').textContent=t}
+function R(tip,pod){return new Promise((res,rej)=>{if(!obs.ok&&tip!=='__'){rej(new Error('OBS nije spojen'));return}
+ const id='r'+(++obs.n);obs.cek.set(id,{res,rej,tip});obs.ws.send(JSON.stringify({op:6,d:{requestType:tip,requestId:id,requestData:pod||{}}}));
+ setTimeout(()=>{if(obs.cek.has(id)){obs.cek.delete(id);rej(new Error('OBS ne odgovara: '+tip))}},10000)})}
+function spoji(){
+ if(obs.ws){try{obs.ws.close()}catch(e){}}
+ const url=$('i-url').value.trim(),loz=$('i-loz').value;
+ if($('c-pamti').checked){sp('url',url);sp('loz',loz)}else{sp('loz','')}
+ lamp('','spajam se na '+url+' …');
+ let ws;try{ws=new WebSocket(url,'obswebsocket.json')}catch(e){lamp('greska','Neispravna adresa');return}
+ obs.ws=ws;obs.ok=false;
+ ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}const d=m.d||{};
+  if(m.op===0){const id={rpcVersion:1,eventSubscriptions:4|64};
+   if(d.authentication){if(!loz){lamp('greska','OBS traži lozinku');ws.close();return}id.authentication=obsAuth(loz,d.authentication.salt,d.authentication.challenge)}
+   ws.send(JSON.stringify({op:1,d:id}))}
+  else if(m.op===2){obs.ok=true;lamp('ok','OBS spojen');nakonSpajanja().catch(e=>poruka('Greška: '+e.message))}
+  else if(m.op===7){const c=obs.cek.get(d.requestId);if(!c)return;obs.cek.delete(d.requestId);
+   if(d.requestStatus&&d.requestStatus.result)c.res(d.responseData||{});else{const er=new Error(c.tip+': '+((d.requestStatus&&d.requestStatus.comment)||'pogreška '+(d.requestStatus&&d.requestStatus.code)));er.code=d.requestStatus&&d.requestStatus.code;c.rej(er)}}
+  else if(m.op===5){const e=d.eventData||{};
+   if(d.eventType==='CurrentProgramSceneChanged'){trenScena=e.sceneName;oznaciKadar()}
+   else if(d.eventType==='RecordStateChanged'){if(e.outputState==='OBS_WEBSOCKET_OUTPUT_STARTED'){snima=true;rec0=performance.now();pauzaOd=0;pauzaUk=0;zapisPoglavlja=[];zabiljezi(ki(sad()))}
+    else if(e.outputState==='OBS_WEBSOCKET_OUTPUT_PAUSED'){if(!pauzaOd)pauzaOd=performance.now()}
+    else if(e.outputState==='OBS_WEBSOCKET_OUTPUT_RESUMED'){if(pauzaOd){pauzaUk+=performance.now()-pauzaOd;pauzaOd=0}}
+    else if(e.outputState==='OBS_WEBSOCKET_OUTPUT_STOPPED'){snima=false;poruka('Snimanje zaustavljeno'+(e.outputPath?': '+e.outputPath:'')+'. Poglavlja su spremna za preuzimanje.')}
+    $('b-rec').classList.toggle('akt',snima);$('b-rec').textContent=snima?'■ Zaustavi':'● Snimaj'}}};
+ ws.onclose=ev=>{obs.ok=false;spremno=false;obs.cek.forEach(c=>c.rej(new Error('veza prekinuta')));obs.cek.clear();
+  lamp('greska',ev.code===4009?'Kriva lozinka':ev.code===1006?'Nema veze — je li OBS otvoren i WebSocket uključen?':'Veza prekinuta ('+ev.code+')')};
+ ws.onerror=()=>{};
+}
+/* popis izvora: vrijednost = točno ime iz OBS-a (s eventualnim razmacima ili prijelomom reda na kraju) */
+const vidljivo=n=>n.replace(/[\r\n\t]+/g,' ').trim()+(n!==n.trim()?' ⚠ (ime ima razmak ili prijelom reda na kraju)':'');
+function puniPopis(sel,imena,zad,prazno){sel.innerHTML='';if(prazno)sel.add(new Option(prazno,''));imena.forEach(n=>sel.add(new Option(vidljivo(n),n,false,n===zad||(!!zad&&n.trim()===zad.trim()))))}
+async function nakonSpajanja(){
+ const v=await R('GetVideoSettings');CW=v.baseWidth;CH=v.baseHeight;
+ const ver=await R('GetVersion');
+ const ul=(await R('GetInputList')).inputs||[];
+ const izv=ul.filter(i=>/capture|screen|window|xshm|pipewire|display/i.test(i.inputKind)&&!/audio|wasapi|pulse|coreaudio|alsa|jack/i.test(i.inputKind));
+ const kam=ul.filter(i=>/dshow|av_capture|v4l2|video_capture/i.test(i.inputKind));
+ const zadIzv=ucitaj2('izvor',''),zadKam=ucitaj2('kamera','');
+ puniPopis($('s-izvor'),izv.map(i=>i.inputName),zadIzv,izv.length?'':'nema izvora — klikni + izvor');
+ puniPopis($('s-kam'),kam.map(i=>i.inputName),zadKam,'bez kamere');
+ const sc=await R('GetCurrentProgramScene');trenScena=sc.currentProgramSceneName||sc.sceneName||'';oznaciKadar();
+ const rs=await R('GetRecordStatus');snima=!!rs.outputActive;$('b-rec').classList.toggle('akt',snima);$('b-rec').textContent=snima?'■ Zaustavi':'● Snimaj';
+ const imaju=((await R('GetSceneList')).scenes||[]).some(s=>s.sceneName===scena('cijeli'));
+ lamp('ok','OBS '+ver.obsVersion+' spojen · platno '+CW+'×'+CH+(imaju?' · scene FTQ postoje':' · scene još nisu pripremljene'));
+ spremno=imaju;zadTekst=-1;zadKadar='';if(imaju)await ucitajIds().catch(()=>{});
+}
+$('b-spoji').onclick=spoji;
+$('s-izvor').onchange=()=>sp('izvor',$('s-izvor').value);$('s-kam').onchange=()=>sp('kamera',$('s-kam').value);
+$('i-url').value=ucitaj2('url','ws://127.0.0.1:4455');$('i-loz').value=ucitaj2('loz','');$('c-pamti').checked=!!ucitaj2('loz','');
+['c-natpis','c-cekaj','c-pauzarec','c-auto'].forEach(id=>{const v=ucitaj(id,null);if(v!==null)$(id).checked=v;$(id).addEventListener('change',()=>{sp(id,$(id).checked);if(id==='c-natpis')natpisVidljiv();if(id==='c-cekaj'&&uz())rzCmd('cekaj',$(id).checked)})});
+if(!ZOOM.length)$('b-uredi').hidden=true;
+
+/* ---------- priprema scena ---------- */
+const ABGR=hex=>{const n=parseInt(hex.slice(1),16);return((0xFF000000|((n&255)<<16)|(n&0xFF00)|(n>>16))>>>0)};
+const BOJE={tamna:'#0C3F47',teal:'#17656E',cyan:'#2ECAD4',bijela:'#FFFFFF',svijetla:'#BFEFF2'};
+function tekstPostavke(t,vel,boja,opc){const s={text:t,font:{face:'Segoe UI',size:Math.round(vel),style:opc&&opc.tanko?'Regular':'Bold',flags:opc&&opc.tanko?0:1},color:ABGR(boja),color1:ABGR(boja),color2:ABGR(boja),opacity:100,outline:false};
+ if(opc&&opc.sirina){s.extents=true;s.extents_cx=Math.round(opc.sirina);s.extents_cy=Math.round(opc.visina||vel*1.6);s.extents_wrap=true;s.wrap=true}return s}
+const bojaPostavke=(hex,w,h)=>({color:ABGR(hex),width:Math.round(w),height:Math.round(h)});
+async function popisUlaza(){return new Set(((await R('GetInputList')).inputs||[]).map(i=>i.inputName))}
+async function stavi(sc,ime,vrsta,post,ulazi){
+ if(ulazi.has(ime)){if(post)await R('SetInputSettings',{inputName:ime,inputSettings:post,overlay:true});return(await R('CreateSceneItem',{sceneName:sc,sourceName:ime})).sceneItemId}
+ const r=await R('CreateInput',{sceneName:sc,inputName:ime,inputKind:vrsta,inputSettings:post||{}});ulazi.add(ime);return r.sceneItemId}
+const polozaj=(sc,id,x,y,dod)=>R('SetSceneItemTransform',{sceneName:sc,sceneItemId:id,sceneItemTransform:Object.assign({positionX:Math.round(x),positionY:Math.round(y),alignment:5,rotation:0,scaleX:1,scaleY:1},dod||{})});
+async function velicinaIzvora(sc,id){let t=(await R('GetSceneItemTransform',{sceneName:sc,sceneItemId:id})).sceneItemTransform||{};
+ if(!t.sourceWidth){await new Promise(r=>setTimeout(r,400));t=(await R('GetSceneItemTransform',{sceneName:sc,sceneItemId:id})).sceneItemTransform||{}}
+ return[t.sourceWidth||CW,t.sourceHeight||CH]}
+let reg=Object.assign({},...ZOOM.map(k=>({[k]:KD[k].r.slice()})),ucitaj('reg',{}));
+function okvirKadra(k,sw,sh){const[x,y,w]=reg[k];let h=w*(sw/sh)*(CH/CW);let yy=y;if(yy+h>1)yy=Math.max(0,1-h);return{x,y:yy,w,h:Math.min(1,h)}}
+async function postaviZoom(k,sw,sh){const sc=scena(k),id=ids[sc]&&ids[sc].izvor;if(id==null)return;const o=okvirKadra(k,sw,sh);
+ const cl=Math.round(o.x*sw),ct=Math.round(o.y*sh),cr=Math.max(0,Math.round(sw-(o.x+o.w)*sw)),cb=Math.max(0,Math.round(sh-(o.y+o.h)*sh));
+ const vw=sw-cl-cr,vh=sh-ct-cb;
+ await R('SetSceneItemTransform',{sceneName:sc,sceneItemId:id,sceneItemTransform:{boundsType:'OBS_BOUNDS_NONE',cropLeft:cl,cropTop:ct,cropRight:cr,cropBottom:cb,scaleX:CW/vw,scaleY:CH/vh,positionX:0,positionY:0,alignment:5,rotation:0}})}
+async function pripremi(){
+ const izvor=$('s-izvor').value;if(!izvor){poruka('Prvo odaberi izvor snimanja zaslona (ili klikni + izvor).');return}
+ poruka('Pripremam scene …');$('b-pripremi').disabled=true;
+ try{
+  const v=await R('GetVideoSettings');CW=v.baseWidth;CH=v.baseHeight;const u=CH/1080;
+  const vrste=(await R('GetInputKindList',{unversioned:false})).inputKinds||[];
+  tekstVrsta=['text_gdiplus_v3','text_gdiplus_v2','text_gdiplus','text_ft2_source_v2','text_ft2_source'].find(x=>vrste.includes(x))||'text_gdiplus_v3';
+  bojaVrsta=['color_source_v3','color_source_v2','color_source'].find(x=>vrste.includes(x))||'color_source_v3';
+  const postoje=new Set(((await R('GetSceneList')).scenes||[]).map(s=>s.sceneName));
+  for(const k of KAD){const sc=scena(k);
+   if(postoje.has(sc)){const it=(await R('GetSceneItemList',{sceneName:sc})).sceneItems||[];for(const i of it)await R('RemoveSceneItem',{sceneName:sc,sceneItemId:i.sceneItemId})}
+   else await R('CreateScene',{sceneName:sc})}
+  const ulazi=await popisUlaza();ids={};
+  const kamera=$('s-kam').value;
+  for(const k of KAD.filter(x=>x!=='naslov')){const sc=scena(k);ids[sc]={};
+   const id=await R('CreateSceneItem',{sceneName:sc,sourceName:izvor});ids[sc].izvor=id.sceneItemId;
+   if(k==='cijeli')await R('SetSceneItemTransform',{sceneName:sc,sceneItemId:id.sceneItemId,sceneItemTransform:{boundsType:'OBS_BOUNDS_SCALE_INNER',boundsWidth:CW,boundsHeight:CH,boundsAlignment:0,positionX:0,positionY:0,alignment:5,cropLeft:0,cropTop:0,cropRight:0,cropBottom:0,rotation:0}});
+   if(kamera){const kid=await R('CreateSceneItem',{sceneName:sc,sourceName:kamera});ids[sc].kamera=kid.sceneItemId;
+    await R('SetSceneItemTransform',{sceneName:sc,sceneItemId:kid.sceneItemId,sceneItemTransform:{boundsType:'OBS_BOUNDS_SCALE_OUTER',boundsWidth:Math.round(CW*.2),boundsHeight:Math.round(CW*.2*9/16),boundsAlignment:0,positionX:Math.round(CW*.78),positionY:Math.round(CH*.03),alignment:5,rotation:0}})}
+   ids[sc].traka=await stavi(sc,PREF+'traka natpisa',bojaVrsta,bojaPostavke(BOJE.tamna,CW*.6,CH*.075),ulazi);await polozaj(sc,ids[sc].traka,CW*.03,CH*.87);
+   ids[sc].crta=await stavi(sc,PREF+'crta natpisa',bojaVrsta,bojaPostavke(BOJE.cyan,CW*.006,CH*.075),ulazi);await polozaj(sc,ids[sc].crta,CW*.03,CH*.87);
+   ids[sc].natpis=await stavi(sc,PREF+'natpis',tekstVrsta,tekstPostavke('',40*u,BOJE.bijela,{sirina:CW*.56,visina:CH*.06}),ulazi);await polozaj(sc,ids[sc].natpis,CW*.045,CH*.882)}
+  const sn=scena('naslov');ids[sn]={};
+  ids[sn].poz=await stavi(sn,PREF+'podloga kartice',bojaVrsta,bojaPostavke(BOJE.tamna,CW,CH),ulazi);await polozaj(sn,ids[sn].poz,0,0);
+  ids[sn].znak=await stavi(sn,PREF+'znak',tekstVrsta,tekstPostavke('F O R T R O N I ',36*u,BOJE.bijela),ulazi);await polozaj(sn,ids[sn].znak,CW*.07,CH*.08);
+  ids[sn].znakq=await stavi(sn,PREF+'znak Q',tekstVrsta,tekstPostavke('Q',36*u,BOJE.cyan),ulazi);
+  const[zw]=await velicinaIzvora(sn,ids[sn].znak);await polozaj(sn,ids[sn].znakq,CW*.07+(zw&&zw<CW?zw:36*u*8*.75),CH*.08);
+  ids[sn].veliki=await stavi(sn,PREF+'naslov kartice',tekstVrsta,tekstPostavke('',84*u,BOJE.bijela,{sirina:CW*.84,visina:CH*.28}),ulazi);await polozaj(sn,ids[sn].veliki,CW*.07,CH*.36);
+  ids[sn].crta=await stavi(sn,PREF+'crta kartice',bojaVrsta,bojaPostavke(BOJE.cyan,CW*.16,Math.max(4,5*u)),ulazi);await polozaj(sn,ids[sn].crta,CW*.07,CH*.33);
+  ids[sn].mali=await stavi(sn,PREF+'podnaslov kartice',tekstVrsta,tekstPostavke('',54*u,BOJE.svijetla,{sirina:CW*.84,visina:CH*.2,tanko:true}),ulazi);await polozaj(sn,ids[sn].mali,CW*.07,CH*.66);
+  const[sw,sh]=await velicinaIzvora(scena('cijeli'),ids[scena('cijeli')].izvor);
+  for(const k of ZOOM)await postaviZoom(k,sw,sh);
+  await prijelaz();sp('ids',ids);spremno=true;lamp('ok','OBS spojen · platno '+CW+'×'+CH+' · scene FTQ pripremljene');setTimeout(()=>{$('obs-ploca').open=false},2500);
+  await natpisVidljiv();zad=-1;zadKadar='';zadTekst=-1;
+  poruka('Scene su pripremljene: '+KAD.map(scena).join(', ')+'. Izvor '+sw+'×'+sh+'.'+(ZOOM.length?' Kadrove namjesti gumbom „Namjesti kadrove”.':''));
+ }catch(e){poruka('Greška pri pripremi: '+e.message)}finally{$('b-pripremi').disabled=false}}
+async function prijelaz(){try{const t=(await R('GetSceneTransitionList')).transitions||[];
+ const mv=t.find(x=>x.transitionKind==='move_transition'),fd=t.find(x=>x.transitionKind==='fade_transition');const izb=mv||fd;
+ if(izb){await R('SetCurrentSceneTransition',{transitionName:izb.transitionName});await R('SetCurrentSceneTransitionDuration',{transitionDuration:mv?600:350})}}catch(e){}}
+async function ucitajIds(){ids={};for(const k of KAD){const sc=scena(k);const it=(await R('GetSceneItemList',{sceneName:sc})).sceneItems||[];ids[sc]={};
+ for(const i of it){const n=i.sourceName;const map={[PREF+'traka natpisa']:'traka',[PREF+'crta natpisa']:'crta',[PREF+'natpis']:'natpis',[PREF+'podloga kartice']:'poz',[PREF+'naslov kartice']:'veliki',[PREF+'podnaslov kartice']:'mali'};
+  if(map[n])ids[sc][map[n]]=i.sceneItemId;else if(k!=='naslov'&&!n.startsWith(PREF)){if(ids[sc].izvor==null&&n===$('s-izvor').value)ids[sc].izvor=i.sceneItemId;else if(n===$('s-kam').value)ids[sc].kamera=i.sceneItemId}}}}
+async function natpisVidljiv(){if(!obs.ok)return;const da=$('c-natpis').checked;
+ for(const k of KAD.filter(x=>x!=='naslov')){const sc=scena(k);if(!ids[sc])continue;for(const d of['traka','crta','natpis'])if(ids[sc][d]!=null)await R('SetSceneItemEnabled',{sceneName:sc,sceneItemId:ids[sc][d],sceneItemEnabled:da}).catch(()=>{})}}
+$('b-pripremi').onclick=pripremi;
+$('b-novi').onclick=async()=>{try{const vr=(await R('GetInputKindList',{unversioned:false})).inputKinds||[];
+ const v=['monitor_capture','xshm_input','screen_capture','pipewire-desktop-capture-source'].find(x=>vr.includes(x));if(!v){poruka('OBS nema vrstu izvora za snimanje zaslona.');return}
+ const sc=(await R('GetCurrentProgramScene')).currentProgramSceneName;const ime=PREF+'zaslon';
+ await R('CreateInput',{sceneName:sc,inputName:ime,inputKind:v,inputSettings:{}});
+ $('s-izvor').add(new Option(ime,ime,true,true));$('s-izvor').value=ime;sp('izvor',ime);
+ poruka('Napravljen izvor „'+ime+'” u sceni „'+sc+'”. U OBS-u provjeri da snima pravi monitor (desni klik → Svojstva), pa klikni „Pripremi scene”.')}catch(e){poruka(e.code===601?'Izvor „FTQ · zaslon” već postoji — odaberi ga u popisu.':'Greška: '+e.message)}};
+
+/* ---------- kadrovi po vremenu ---------- */
+let zadKadar='',rucno=null,zadTekst=-1;
+function kadarU(s){const i=ki(s),k=S[i];let r=k.kadrovi[0]?k.kadrovi[0][1]:'cijeli',j=0;k.kadrovi.forEach((p,n)=>{if(k.t+p[0]<=s){r=p[1];j=n}});return{k:r,i,j}}
+function oznaciKadar(){document.querySelectorAll('#kadrovi button').forEach(b=>b.classList.toggle('akt',scena(b.dataset.k)===trenScena))}
+function rucniKadar(k){rucno={k,od:kadarU(sad())};prebaci(k)}
+function prebaci(k){zadKadar=k;if(!obs.ok||!spremno)return;const sc=scena(k);if(sc===trenScena)return;R('SetCurrentProgramScene',{sceneName:sc}).then(()=>{trenScena=sc;oznaciKadar()}).catch(e=>poruka(e.code===600?'Scena „'+sc+'” ne postoji — klikni „Pripremi scene u OBS-u”.':'Greška: '+e.message))}
+$('kadrovi').addEventListener('click',e=>{const b=e.target.closest('button');if(b)rucniKadar(b.dataset.k)});
+function tekstovi(i){if(!obs.ok||!spremno)return;const k=S[i];const kt=k.kartica||[k.dio,k.naslov];
+ R('SetInputSettings',{inputName:PREF+'natpis',inputSettings:{text:k.naslov},overlay:true}).catch(()=>{});
+ R('SetInputSettings',{inputName:PREF+'naslov kartice',inputSettings:{text:kt[0]},overlay:true}).catch(()=>{});
+ R('SetInputSettings',{inputName:PREF+'podnaslov kartice',inputSettings:{text:kt[1]},overlay:true}).catch(()=>{})}
+
+/* ---------- snimanje i poglavlja ---------- */
+let zapisPoglavlja=ucitaj('poglavlja',[]);
+/* vrijeme snimke: bez trajanja pauza (OBS javlja PAUSED/RESUMED) */
+function recT(){const n=performance.now();return (n-rec0-pauzaUk-(pauzaOd?n-pauzaOd:0))/1000}
+function zabiljezi(i){if(!snima)return;const t=recT();if(zapisPoglavlja.length&&zapisPoglavlja[zapisPoglavlja.length-1].i===i)return;zapisPoglavlja.push({i,t});sp('poglavlja',zapisPoglavlja)}
+$('b-rec').onclick=()=>{R(snima?'StopRecord':'StartRecord').catch(e=>poruka('Greška: '+e.message))};
+$('b-sve').onclick=async()=>{if(uz()){try{if(!snima)await R('StartRecord');rzCmd('kreni');zad=-1}catch(e){poruka('Greška: '+e.message)}return}
+ if(REZ)poruka('Autopilot nije otvoren — sat teče samo u čitaču. Za predavanje otvori autopilot na snimanom zaslonu.');post(0);igraj(false);zad=-1;try{if(!snima)await R('StartRecord');igraj(true)}catch(e){poruka('Greška: '+e.message)}};
+function preuzmi(ime,tekst){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([tekst],{type:'text/plain;charset=utf-8'}));a.download=ime;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+const hms=s=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return(h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(x).padStart(2,'0')};
+/* čišćenje: kratki skokovi (< 20 s) se zanemaruju, poglavlja idu redom koraka */
+function ocisti(z){if(!z.length)return z;const kraj=Math.max(z[z.length-1].t+30,snima?recT():0);
+ const seg=z.map((p,n)=>({i:p.i,t0:p.t,t1:n+1<z.length?z[n+1].t:kraj})),dug=seg.filter(s=>s.t1-s.t0>=20);
+ const koraci=[...new Set(dug.map(s=>s.i))].sort((a,b)=>a-b),out=[];
+ for(const i of koraci){const prije=Math.max(0,...dug.filter(s=>s.i<i).map(s=>s.t1));const c=dug.find(s=>s.i===i&&s.t0>=prije-0.01)||dug.filter(s=>s.i===i).pop();
+  if(!out.length||c.t0>out[out.length-1].t)out.push({i,t:c.t0})}
+ if(out.length)out[0].t=0;return out}
+function poglavlja(){const z=zapisPoglavlja.length?ocisti(zapisPoglavlja):S.map((k,i)=>({i,t:k.t}));const red=[];let zadDio='';
+ z.forEach((p,n)=>{const k=S[p.i];const t=n===0?0:p.t;if(red.length&&t-red[red.length-1].t<10)return;red.push({t,n:(k.dio!==zadDio?k.dio+' — ':'')+k.naslov});zadDio=k.dio});
+ return red.map(r=>hms(r.t)+' '+r.n).join('\n')+'\n'}
+$('b-pogl').onclick=()=>{preuzmi('poglavlja-youtube.txt',poglavlja());if(!zapisPoglavlja.length)poruka('Nema zapisa snimanja — poglavlja su iz vremena scenarija.')};
+const srtT=s=>{const ms=Math.round(s*1000);const h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000),x=Math.floor(ms%60000/1000),r=ms%1000;return[h,m,x].map(v=>String(v).padStart(2,'0')).join(':')+','+String(r).padStart(3,'0')};
+$('b-srt').onclick=()=>{const z=zapisPoglavlja.length?ocisti(zapisPoglavlja):S.map((k,i)=>({i,t:k.t}));
+ preuzmi('naslovi-koraka.srt',z.map((p,n)=>(n+1)+'\n'+srtT(p.t)+' --> '+srtT(p.t+5)+'\n'+S[p.i].naslov+'\n').join('\n'))};
+
+/* ---------- uređivač kadrova ---------- */
+let urK=ZOOM[0],slika=null,sw0=CW,sh0=CH,vuce=null,regU=null;
+const pl=$('platno'),cx=pl.getContext('2d');
+$('ur-kadrovi').innerHTML=ZOOM.map(k=>'<button data-k="'+k+'">'+esc(KD[k].naziv)+'</button>').join('');
+function urOznaci(){document.querySelectorAll('#ur-kadrovi button').forEach(b=>b.classList.toggle('akt',b.dataset.k===urK))}
+function urCrtaj(){cx.fillStyle='#000';cx.fillRect(0,0,pl.width,pl.height);if(slika)cx.drawImage(slika,0,0,pl.width,pl.height);
+ for(const k of ZOOM){const o=okvirKadraU(k);cx.lineWidth=k===urK?4:2;cx.strokeStyle=k===urK?'#2ECAD4':'rgba(255,255,255,.6)';cx.setLineDash(k===urK?[]:[8,6]);
+  cx.strokeRect(o.x*pl.width,o.y*pl.height,o.w*pl.width,o.h*pl.height);cx.setLineDash([]);cx.fillStyle=k===urK?'#2ECAD4':'rgba(255,255,255,.8)';cx.font='600 22px Segoe UI, sans-serif';cx.fillText(KD[k].naziv,o.x*pl.width+8,o.y*pl.height+26)}}
+function okvirKadraU(k){const s=reg;reg=regU;const o=okvirKadra(k,sw0,sh0);reg=s;return o}
+async function urSnimka(){if(!obs.ok){poruka('Spoji OBS za snimku izvora.');return}
+ try{const izv=$('s-izvor').value;const sc=scena('cijeli');if(ids[sc]&&ids[sc].izvor!=null){[sw0,sh0]=await velicinaIzvora(sc,ids[sc].izvor)}
+  pl.width=1280;pl.height=Math.round(1280*sh0/sw0);
+  /* OBS iscrtava snimanje zaslona samo dok je izvor aktivan: prije snimke prebaci na scenu Cijeli zaslon */
+  if(spremno&&trenScena!==scena('cijeli')){await R('SetCurrentProgramScene',{sceneName:scena('cijeli')});trenScena=scena('cijeli');zadKadar='cijeli';oznaciKadar();await new Promise(r=>setTimeout(r,600))}
+  const r=await R('GetSourceScreenshot',{sourceName:izv,imageFormat:'jpg',imageWidth:1280,imageCompressionQuality:75});
+  const im=new Image();im.onload=()=>{slika=im;urCrtaj()};im.src=r.imageData}catch(e){poruka('Snimka nije uspjela: '+e.message)}}
+$('b-uredi').onclick=()=>{regU=JSON.parse(JSON.stringify(reg));$('urednik').classList.add('otv');urOznaci();urCrtaj();urSnimka()};
+$('ur-zatvori').onclick=()=>$('urednik').classList.remove('otv');
+$('ur-osvjezi').onclick=urSnimka;
+$('ur-kadrovi').addEventListener('click',e=>{const b=e.target.closest('button');if(b){urK=b.dataset.k;urOznaci();urCrtaj()}});
+$('ur-zadano').onclick=()=>{regU[urK]=KD[urK].r.slice();urCrtaj()};
+const tocka=e=>{const r=pl.getBoundingClientRect();return[Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),Math.min(1,Math.max(0,(e.clientY-r.top)/r.height))]};
+pl.addEventListener('pointerdown',e=>{vuce=tocka(e);pl.setPointerCapture(e.pointerId)});
+pl.addEventListener('pointermove',e=>{if(!vuce)return;const[x,y]=tocka(e);let w=Math.abs(x-vuce[0]);const kh=(sw0/sh0)*(CH/CW);
+ if(Math.abs(y-vuce[1])/kh>w)w=Math.abs(y-vuce[1])/kh;w=Math.max(.08,Math.min(1,w));const h=w*kh;
+ let x0=x<vuce[0]?vuce[0]-w:vuce[0],y0=y<vuce[1]?vuce[1]-h:vuce[1];x0=Math.max(0,Math.min(1-w,x0));y0=Math.max(0,Math.min(1-h,y0));
+ regU[urK]=[+x0.toFixed(4),+y0.toFixed(4),+w.toFixed(4)];urCrtaj()});
+pl.addEventListener('pointerup',()=>{vuce=null});
+$('ur-spremi').onclick=async()=>{reg=JSON.parse(JSON.stringify(regU));sp('reg',reg);
+ if(obs.ok){try{const sc=scena('cijeli');if(!ids[sc]||ids[sc].izvor==null)await ucitajIds();const[sw,sh]=await velicinaIzvora(sc,ids[sc].izvor);for(const k of ZOOM)await postaviZoom(k,sw,sh);poruka('Kadrovi spremljeni i primijenjeni u OBS-u.')}catch(e){poruka('Spremljeno, ali nije primijenjeno: '+e.message)}}
+ else poruka('Kadrovi spremljeni; primijenit će se kod sljedeće pripreme scena.');
+ $('urednik').classList.remove('otv')};
+
+/* ---------- glavna petlja ---------- */
+function crtaj(){let s=sad();const i0=ki(s);
+ if(!uz()&&igra&&$('c-cekaj').checked&&!ceka&&i0>zadUCekanju){const kraj=S[zadUCekanju+1]?S[zadUCekanju+1].t:KRAJ;if(s>=kraj&&zadUCekanju>=0){sat=kraj-.05;igra=false;ceka=true;s=sat}}
+ const i=ki(s),sl=i+1<S.length?S[i+1].t:KRAJ;if(!ceka)zadUCekanju=i;
+ if(!uz()&&igra&&s>=KRAJ){sat=KRAJ;igra=false}
+ const ig=uz()?rz.igra:igra,ck=uz()?rz.ceka:ceka;
+ $('vr').textContent=mm(s)+' / '+mm(KRAJ);
+ $('st').textContent=(REZ?(uz()?'autopilot povezan · ':'autopilot nije otvoren · '):'')+(ck?'čeka ⏭ (sljedeći korak)':ig?'sat teče':'pauza')+' · sljedeće za '+mm(sl-s)+(snima?(pauzaOd?' · ❚❚ snimanje pauzirano ':' · ● snima ')+hms(recT()):'')+' · dvoklik na korak = skok';
+ $('b-igraj').textContent=ig?'⏸ Pauza':'▶ Pokreni';
+ if(i!==zad){document.querySelectorAll('.k').forEach((el,j)=>{el.classList.toggle('sada',j===i);el.classList.toggle('gotov',j<i)});
+  const el=$('k'+i);if(el&&zad>=0)el.scrollIntoView({behavior:'smooth',block:'start'});zad=i;zabiljezi(i)}
+ if(i!==zadTekst&&obs.ok){tekstovi(i);zadTekst=i}
+ const kd=kadarU(s);
+ document.querySelectorAll('#k'+i+' .plan span').forEach(e=>e.classList.toggle('sad',+e.dataset.j===kd.j));
+ if(rucno&&(rucno.od.i!==kd.i||rucno.od.j!==kd.j))rucno=null;
+ const zelja=rucno?rucno.k:kd.k;
+ if($('c-auto').checked&&obs.ok&&!rucno&&zelja!==zadKadar){zadKadar=zelja;prebaci(zelja)}
+ const b=document.querySelector('#k'+i+' .napr i');if(b)b.style.width=Math.min(100,(s-S[i].t)/(sl-S[i].t)*100)+'%';
+ requestAnimationFrame(crtaj)}
+const vrhV=()=>document.documentElement.style.setProperty('--vrh',document.querySelector('.vrh').offsetHeight+'px');vrhV();
+new ResizeObserver(vrhV).observe(document.querySelector('.vrh'));
+requestAnimationFrame(crtaj);
+window.__citac={get sat(){return sad()},post,igraj,dalje,obs,get ids(){return ids},get reg(){return reg},R,pripremi,obsAuth,sha256,b64,utf8,poglavlja,ocisti,recT,get rz(){return rz},uz};
+})();
+</script>
+</body>
+</html>
