@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RobotStudio — Industrijski robot ABB IRB 120 — građa, upravljanje i RobotStudio | FORTRONIQ</title>
+<meta name="description" content="RobotStudio od temelja: programiranje izvan robota, virtualni kontroler s istim RobotWareom, tok rada od CAD-a do točke na robotu, licence i HyperReality.">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/industrijski-robot-irb120/robotstudio.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="RobotStudio">
+<meta property="og:description" content="RobotStudio od temelja: programiranje izvan robota, virtualni kontroler s istim RobotWareom, tok rada od CAD-a do točke na robotu, licence i HyperReality.">
+<meta property="og:url" content="https://dos.fortroniq.hr/industrijski-robot-irb120/robotstudio.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+.podnaslov{font-size:.95rem;margin:14px 0 6px}.hero .stanice{margin-top:10px;font-size:.95rem}.hero .stanice a{font-weight:600}
+
+.lcd{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;background:#B9D84A;color:#1D2A0E;border:6px solid #2F3A3E;border-radius:8px;padding:8px 12px;display:grid;grid-template-columns:auto 1fr;gap:0 14px;font-size:.92rem;line-height:1.45;max-width:300px;box-shadow:inset 0 0 12px rgba(0,0,0,.25)}
+.lcd b{font-weight:600;letter-spacing:.04em}
+.pad{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.koraci-popis{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.koraci-popis button{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:6px 10px;border-radius:8px;font-size:.88rem;color:var(--body);border:1px solid transparent}
+.koraci-popis button:hover,.koraci-popis button:focus-visible{border-color:var(--rule);outline:none}
+.koraci-popis li.aktivan button{background:var(--tanko,rgba(46,202,212,.14));color:var(--ink);border-color:var(--teal)}
+.korak-tekst{min-height:3.2em;font-size:.92rem;color:var(--body);margin:6px 0 0}
+.korak-tekst b{color:var(--ink)}
+.stablo{list-style:none;margin:0;padding:0;font-size:.88rem}
+.stablo li{margin:0}
+.stablo button{all:unset;cursor:pointer;display:flex;gap:8px;align-items:center;width:100%;box-sizing:border-box;padding:4px 8px;border-radius:6px;color:var(--ink)}
+.stablo button[aria-pressed="true"]{background:var(--tanko,rgba(46,202,212,.14))}
+.stablo button:focus-visible{outline:2px solid var(--teal)}
+.stablo .uv{padding-left:22px}
+.stablo i{display:inline-block;width:14px;height:14px;border-radius:3px;border:1.5px solid var(--teal);flex:none}
+.stablo small{color:var(--body)}
+.tbl{width:100%;border-collapse:collapse;font-size:.86rem}
+.tbl th,.tbl td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--rule);vertical-align:top}
+.tbl th{font-weight:500;color:var(--ink)}
+.tbl td:last-child{color:var(--body);font-size:.8rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.polja label{display:flex;flex-direction:column;gap:3px;font-size:.82rem;color:var(--body)}
+.polja input[type=number],.polja select{font:inherit;font-size:.9rem;padding:4px 6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);text-align:right;width:100%;box-sizing:border-box}
+.polja select{text-align:left}
+#mreza{display:block;width:100%;height:clamp(380px,70vh,720px);background:var(--paper)}
+.slojevi-popis{list-style:none;margin:6px 0 0;padding:0;font-size:.84rem;color:var(--body);display:grid;gap:3px}
+.tekst-sim{max-width:860px}
+.tekst-sim h2{margin-top:34px}
+.tekst-sim p,.tekst-sim li{color:var(--body);line-height:1.62}
+.galerija{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin:12px 0 0}
+.galerija a{display:block;border:1px solid var(--rule);border-radius:12px;padding:14px;text-decoration:none;color:var(--ink);background:var(--paper)}
+.galerija a:hover{border-color:var(--teal)}
+.galerija b{display:block;margin-bottom:4px}
+.galerija span{font-size:.84rem;color:var(--body)}
+.modul-zn{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--rule);color:var(--body);margin-left:6px;vertical-align:2px}
+</style>
+<style>
+.cr-tijelo{padding:30px 0 56px}
+.cr-mreza{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;align-items:start}
+.karta{background:var(--paper);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+.karta-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.karta-h h2{margin:0;font-size:1.05rem;color:var(--ink);font-weight:600}
+.karta-in{padding:14px 18px}
+#scena{position:relative;height:clamp(360px,66vh,640px);touch-action:none;cursor:grab;background:radial-gradient(ellipse at 50% 85%,rgba(46,202,212,.10),transparent 62%)}
+#scena canvas{display:block;width:100%;height:100%}
+.ucitavanje{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--body)}
+.gumbi{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.gumb.tanki{cursor:pointer}.gumb.tanki[aria-pressed="true"]{background:var(--tanko)}.gumb.tanki:disabled{opacity:.45;cursor:default}
+.traka-napretka{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 18px;border-top:1px solid var(--rule);font-size:.88rem;color:var(--body)}
+.traka-napretka progress{flex:1 1 160px;height:8px;accent-color:var(--teal)}
+.traka-napretka select{font:inherit;font-size:.85rem}
+.stup{display:flex;flex-direction:column;gap:20px}
+.polje{padding:8px 0;border-bottom:1px solid var(--rule)}
+.polje label{display:block;font-size:.88rem;color:var(--ink);font-weight:600;margin-bottom:4px}
+.ulaz{display:grid;grid-template-columns:1fr 84px 24px;gap:8px;align-items:center}
+.ulaz input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+.ulaz input[type=number]{width:100%;font:inherit;font-size:.9rem;padding:4px 6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);text-align:right}
+.ulaz span{font-size:.85rem;color:var(--body)}
+.pom,.info,.napomena{font-size:.82rem;color:var(--body);line-height:1.5;margin:4px 0 0;text-align:left;hyphens:manual}
+.info{margin-top:10px}
+.upoz{color:#B23B2A;font-weight:600}
+fieldset{border:0;margin:0;padding:8px 0;border-bottom:1px solid var(--rule)}
+legend{font-size:.88rem;color:var(--ink);font-weight:600;padding:0;margin-bottom:4px}
+fieldset label{margin-right:14px;font-size:.9rem;color:var(--body);cursor:pointer}
+.izvori{display:flex;flex-wrap:wrap;gap:6px 14px}
+.kv{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--body);padding:6px 0;cursor:pointer}
+.kv input{accent-color:var(--teal)}
+textarea,select,input[type=file]{font:inherit;font-size:.9rem;max-width:100%}
+textarea{width:100%;min-height:64px;border:1px solid var(--rule);border-radius:8px;padding:6px 8px;background:var(--paper);color:var(--ink)}
+select{border:1px solid var(--rule);border-radius:6px;padding:4px 6px;background:var(--paper);color:var(--ink)}
+.t-traka{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:6px;border:1px solid var(--rule);border-bottom:0;border-radius:8px 8px 0 0;background:var(--tanko)}
+.t-traka select,.t-traka input{font:inherit;font-size:.85rem;height:30px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);padding:0 4px}
+.t-traka select{width:auto;max-width:13rem}.t-traka #tekst-h{width:58px}.t-jed,.t-lab{font-size:.8rem;color:var(--body)}
+.t-skup{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.t-sep{width:1px;height:22px;background:var(--rule);margin:0 2px}
+.t-g{width:30px;height:30px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--ink);cursor:pointer;font:inherit;font-size:.95rem;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.t-g:hover{border-color:var(--rule)}.t-g[aria-pressed="true"]{background:var(--paper);border-color:var(--teal);color:var(--teal)}
+.t-g svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;fill:none}
+[data-izvor="tekst"] textarea{border-radius:0 0 8px 8px;min-height:96px;resize:vertical;line-height:1.45}
+.t-pregled{display:block;width:100%;height:120px;margin-top:8px;border:1px dashed var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+.t-polja{display:flex;flex-wrap:wrap;gap:6px 14px}.t-polja label{white-space:nowrap}.t-polja input{width:64px}
+.t-raz{display:flex;align-items:center;gap:6px}.t-raz input{flex:1;min-width:80px}
+.red2{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;padding:6px 0;font-size:.88rem;color:var(--body)}
+#slika-pregled{max-width:100%;max-height:150px;border:1px solid var(--rule);border-radius:6px;margin-top:8px;background:#fff;image-rendering:pixelated}
+.legenda{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--body);margin-top:6px}
+.legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+.os{display:grid;grid-template-columns:52px 1fr 52px;gap:8px;align-items:center;padding:5px 0}
+.os label{font-size:.85rem;color:var(--ink)}
+.os input{width:100%;accent-color:var(--teal);margin:0}
+.os output{text-align:right;font-size:.85rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.test-traka{background:#FFF4D6;color:#5C4400;border-bottom:1px solid #E8D18A;font-size:.85rem;padding:7px 0;text-align:center}
+.gkod{height:260px;overflow:auto;background:#0E1B21;color:#D8E6EA;border-radius:8px;padding:6px 0;font:12.5px/1.45 'IBM Plex Mono',ui-monospace,Consolas,monospace;margin-top:8px}
+.gkod div{white-space:pre;padding:0 10px}
+.gkod i{display:inline-block;width:46px;color:#6E8790;font-style:normal;text-align:right;margin-right:12px;user-select:none}
+.gkod .kom{color:#8FB8A0}
+.gkod .akt{background:#17656E;color:#fff}
+.gkod .akt i{color:#CFE9EC}
+[hidden]{display:none!important}
+.qr{display:flex;gap:16px;align-items:center}
+.qr-slika{flex:0 0 auto;background:#fff;padding:9px;border-radius:10px;border:1px solid var(--rule);line-height:0}
+.qr-slika svg{width:132px;height:132px}
+.qr p,.mob p{margin:0 0 8px;color:var(--body);font-size:.9rem;line-height:1.5;text-align:left}
+.qr p b,.mob p b{color:var(--ink)}
+.adresa{font-size:.78rem;word-break:break-all;color:var(--teal)!important}
+.mob{display:none}.je-mob .mob{display:block}.je-mob .qr{display:none}
+.ar-gumb{width:100%;justify-content:center;font-size:1.02rem;padding:13px 16px;font-weight:600;margin-bottom:6px}
+#xr-sloj{position:fixed;inset:0;z-index:100;pointer-events:none;color:#fff}
+.xr-vrh,.xr-dno{pointer-events:auto;background:rgba(6,30,36,.8);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.xr-vrh{position:absolute;left:10px;right:10px;top:10px;border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:.92rem;line-height:1.35}
+.xr-dno{position:absolute;left:10px;right:10px;bottom:10px;border-radius:14px;padding:10px 12px 8px}
+.xr-gumbi{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+#xr-sloj button{font:inherit;font-size:.9rem;font-weight:600;color:#fff;background:#17656E;border:0;border-radius:9px;padding:9px 12px;flex:1}
+#xr-sloj button[aria-pressed="true"]{background:#2ECAD4;color:#06262B}
+#xr-izlaz{flex:0 0 auto!important;background:#B23B2A!important}
+.xr-os{display:grid;grid-template-columns:58px 1fr 46px;gap:8px;align-items:center;padding:4px 0}
+.xr-os b{font-size:.84rem}.xr-os input{width:100%;accent-color:#2ECAD4;margin:0;height:26px}.xr-os output{text-align:right;font-size:.84rem}
+.xr-napredak{margin:4px 0 0;font-size:.82rem;color:#CFE9EC}
+.slojevi-omot{overflow-x:auto;margin-top:8px}
+table.slojevi{width:100%;border-collapse:collapse;font-size:.85rem}
+.slojevi th{text-align:left;color:var(--ink);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--rule)}
+.slojevi td{padding:4px 6px;border-bottom:1px solid var(--rule);color:var(--body);white-space:nowrap}
+.slojevi select{font-size:.82rem;padding:2px 4px}
+.slojevi input[type=color],#pr-ploca{width:38px;height:26px;padding:0 2px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);cursor:pointer;vertical-align:middle}
+.kvadrat{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+@media (max-width:980px){.cr-mreza{grid-template-columns:minmax(0,1fr);gap:20px}.stup{display:contents}.cr-mreza>.stup>.karta{order:5}#k-scena{order:1!important}#k-ar{order:2!important}#k-crtez{order:3!important}#k-ploca{order:4!important}}
+
+.gkod span.kom,.gkod div.kom{color:#F0A58F}
+.gkod span.kom{color:#8FB8A0}
+#p-tekst{min-height:230px;font:13px/1.5 'IBM Plex Mono',ui-monospace,Consolas,monospace;resize:vertical}
+.graf-omot{position:relative;margin-top:6px}
+.graf-omot canvas{display:block;width:100%;height:170px}
+.graf-crta{position:absolute;top:10px;bottom:26px;width:0;border-left:1.5px solid var(--ink);opacity:.55;pointer-events:none}
+table.rez{width:100%;border-collapse:collapse;font-size:.82rem;margin:6px 0 0}
+.rez th,.rez td{padding:5px 4px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap}
+.rez th:first-child{text-align:left;color:var(--ink);font-weight:600}
+.rez thead th{color:var(--ink);font-weight:600;font-size:.8rem}
+table.rez8{width:100%;border-collapse:collapse;font-size:.84rem;margin:8px 0 0}
+.rez8 th,.rez8 td{padding:5px 6px;border-bottom:1px solid var(--rule);vertical-align:top;text-align:left;color:var(--body)}
+.rez8 th{color:var(--ink);font-weight:600}
+.lista{margin:6px 0 0;padding-left:1.1rem;font-size:.86rem;color:var(--body);line-height:1.5}
+#prog-info code,.pom code,.napomena code{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;font-size:.85em;background:var(--tanko);padding:0 4px;border-radius:4px}
+.samo-tello{}
+@media (max-width:980px){#k-scena{order:1!important}#k-program{order:2!important}#k-graf{order:3!important}#k-model{order:4!important}#k-ar{order:5!important}}
+@media (max-width:680px){.cr-tijelo{padding:16px 0 40px}#scena{height:clamp(300px,58vh,460px)}.karta-h,.karta-in{padding-left:14px;padding-right:14px}}
+</style>
+<style>
+:root{--rs-krivo:#B4671A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--rs-krivo:#E3A55A}}
+:root[data-theme="dark"]{--rs-krivo:#E3A55A}
+.rs-vjezba{border:1px solid var(--rule);border-radius:14px;padding:14px 18px;margin:0 0 1.4rem;background:var(--paper)}
+.rs-odabrano{margin:.4rem 0 .8rem;padding-left:1.4rem;min-height:1.2rem}
+.rs-odabrano li{color:var(--ink);margin:0 0 .3rem}
+.rs-odabrano li::marker{color:var(--teal);font-weight:600}
+.rs-ponuda{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 .6rem}
+.rs-ponuda .rs-korak{text-align:left;white-space:normal;line-height:1.35}
+.rs-ponuda .rs-krivo{border-color:var(--rs-krivo);outline:2px solid var(--rs-krivo)}
+.rs-poruka{min-height:1.4em;font-weight:500;color:var(--teal)}
+.rs-izvori a{word-break:break-word}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Robot IRB 120</a><i aria-hidden="true">/</i><span aria-current="page">RobotStudio</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">INDUSTRIJSKI ROBOT IRB 120 &middot; ABB</p><p class="nadnaslov">RobotStudio</p><h1>RobotStudio — robot prije robota</h1><p>Robot se može programirati i bez robota: na računalu, u virtualnoj stanici, s istim upravljačkim softverom kakav radi u pravom ormaru. Ovdje je od temelja objašnjeno što je programiranje izvan robota, zašto je ABB-ov virtualni kontroler toliko vjeran stvarnosti, kako izgleda tok rada od CAD modela do točaka na robotu i gdje su granice — uz usporedbu s našim simulatorima u pregledniku i kratki pogled na RobotStudio HyperReality.</p><p class="stanice">Podaci o programu iz ABB-ovih dokumenata i priopćenja (popis izvora na dnu) &middot; tekst i crteži su naši &middot; nazivi kartica i funkcija ostavljeni su na engleskom, kako ih prikazuje program.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti razliku između učenja na robotu i programiranja izvan robota</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>objasniti zašto je virtualni kontroler vjeran stvarnom robotu i gdje su mu granice</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>opisati tok rada od CAD modela preko tooldata, wobjdata, točaka i RAPID-a do dotjerivanja na robotu</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>usporediti RobotStudio s našim simulatorima u pregledniku i odabrati alat za zadatak</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>opisati što donosi RobotStudio HyperReality i razlikovati proizvođačeve tvrdnje od mjerenja</span></li></ul></div></div></header>
+
+<section class="tekst-sim omot"><h2>Što je programiranje izvan robota</h2><div class="crta"></div>
+<p>Industrijski robot obično se programira na dva načina. <b>Učenjem na robotu</b> (engl. <i>online</i>, <i>teach-in</i>): operater privjeskom za učenje (FlexPendant) vodi robota do svake točke, sprema je i složi program. Robot za to vrijeme ne radi, a programer stoji u radnom prostoru. <b>Programiranjem izvan robota</b> (engl. <i>offline programming</i>, OLP): stanica — robot, alat, obradak i oprema — složi se na računalu, točke se izvedu iz CAD modela, program se napiše i isproba u simulaciji, a na robot se prenese gotov.</p>
+<p>Prednosti OLP-a su jasne: proizvodnja ne staje dok se piše novi program, sudari i nedohvatljive točke otkriju se prije nego što se išta slomi, a vrijeme ciklusa zna se unaprijed. Cijena je to što virtualna stanica nikad nije savršeno jednaka stvarnoj — položaj obratka, alat i stol na stvarnoj ćeliji uvijek se malo razlikuju, pa se na kraju nekoliko točaka ipak dotjera na robotu.</p>
+<p><b>RobotStudio</b> je ABB-ov program za programiranje izvan robota i simulaciju ABB-ovih robota. Radi na računalu sa sustavom Windows, a programi se pišu u ABB-ovu jeziku <b>RAPID</b> — istom jeziku koji izvodi kontroler IRC5 ili OmniCore na stvarnom robotu.</p>
+
+<h2>Virtualni kontroler — zašto simulacija vjeruje stvarnosti</h2><div class="crta"></div>
+<p>Većina simulatora robota sama računa kinematiku i putanje: autor simulatora napisao je vlastite jednadžbe za gibanje, ubrzanja i interpolaciju. Rezultat je sličan stvarnom robotu, ali nije isti, jer pravi kontroler ima svoje algoritme planiranja gibanja, ograničenja brzine i momenta, ponašanje u singularitetima i zaglađivanje putanje kroz zone.</p>
+<p>RobotStudio radi drukčije. U njemu se pokreće <b>virtualni kontroler</b> — prema ABB-u točna kopija stvarnog upravljačkog softvera <b>RobotWare</b>, koja upravlja simulacijom. Isti kod koji u ormaru planira gibanje stvarnog robota planira ga i na računalu. Zato su doseg, putanja, brzine i vrijeme ciklusa u simulaciji vrlo blizu stvarnima, a poruke o greškama (npr. točka izvan dosega, granica osi) iste su kao na privjesku.</p>
+<figure class="crtez"><svg viewBox="0 0 640 230" role="img" aria-label="Shema: isti RobotWare u virtualnom i u stvarnom kontroleru">
+<rect class="pf" x="20" y="30" width="250" height="150" rx="10"/><text x="38" y="58">Računalo · RobotStudio</text>
+<rect class="cf" x="40" y="74" width="210" height="44" rx="6"/><rect class="l2" x="40" y="74" width="210" height="44" rx="6"/><text x="56" y="102">virtualni kontroler</text>
+<text class="mali" x="40" y="140">RobotWare (ista inačica)</text><text class="mali" x="40" y="162">+ 3D stanica, sudari, vrijeme</text>
+<rect class="pf" x="370" y="30" width="250" height="150" rx="10"/><text x="388" y="58">Stvarni robot · IRC5</text>
+<rect class="cf" x="390" y="74" width="210" height="44" rx="6"/><rect class="l2" x="390" y="74" width="210" height="44" rx="6"/><text x="406" y="102">upravljački ormar</text>
+<text class="mali" x="390" y="140">RobotWare (ista inačica)</text><text class="mali" x="390" y="162">+ pogoni, motori, kočnice</text>
+<path class="t" d="M270 96h88"/><path class="if" d="M370 96l-14-7v14z"/><text class="mali" x="282" y="86">program</text><text class="mali" x="286" y="122">RAPID</text>
+<path class="l2 dash" d="M145 180v26h350v-26"/><text class="mali" x="232" y="222">isti kod planira gibanje u oba</text>
+</svg><figcaption>Virtualni i stvarni kontroler izvode isti <b>RobotWare</b>: razlika je samo u tome pokreće li planirano gibanje 3D model ili stvarne motore.</figcaption></figure>
+<div class="okvir"><h4>Dobro je znati</h4><p>Virtualni kontroler vjerno prenosi ono što radi softver kontrolera. Ne prenosi ono čega u modelu nema: stvarni položaj obratka, savijanje alata, trenje u hvataljci, kašnjenje senzora ili osobe u radnom prostoru. Zato se i nakon dobre simulacije prvi prolaz na stvarnom robotu radi smanjenom brzinom.</p></div>
+
+<h2>Tok rada: od CAD modela do točke na robotu</h2><div class="crta"></div>
+<figure class="crtez"><svg viewBox="0 0 640 300" role="img" aria-label="Tok rada u RobotStudiju u osam koraka">
+<rect class="pf" x="10" y="20" width="140" height="64" rx="8"/><text x="24" y="46">1 Stanica</text><text class="mali" x="24" y="68">robot, alat, CAD</text>
+<path class="l2" d="M150 52h8"/><path class="if" d="M168 52l-10-5v10z"/>
+<rect class="pf" x="168" y="20" width="146" height="64" rx="8"/><text x="182" y="46">2 Koordinate</text><text class="mali" x="182" y="68">wobjdata, tooldata</text>
+<path class="l2" d="M314 52h8"/><path class="if" d="M332 52l-10-5v10z"/>
+<rect class="pf" x="332" y="20" width="146" height="64" rx="8"/><text x="346" y="46">3 Točke</text><text class="mali" x="346" y="68">putanje, AutoPath</text>
+<path class="l2" d="M478 52h8"/><path class="if" d="M496 52l-10-5v10z"/>
+<rect class="pf" x="496" y="20" width="134" height="64" rx="8"/><text x="510" y="46">4 RAPID</text><text class="mali" x="510" y="68">program</text>
+<path class="l2" d="M563 84v40"/><path class="if" d="M563 134l-5-10h10z"/>
+<rect class="cf" x="430" y="134" width="200" height="64" rx="8"/><rect class="l2" x="430" y="134" width="200" height="64" rx="8"/><text x="444" y="160">5 Simulacija</text><text class="mali" x="444" y="182">sudari, doseg, ciklus</text>
+<path class="l2 dash" d="M530 198v24h-125"/><text class="mali" x="300" y="246">ispravi točke ili program pa ponovi</text>
+<path class="l2" d="M430 166h-26"/><path class="if" d="M394 166l10-5v10z"/>
+<rect class="pf" x="214" y="134" width="180" height="64" rx="8"/><text x="228" y="160">6 Prijenos</text><text class="mali" x="228" y="182">na IRC5 (Controller)</text>
+<path class="l2" d="M214 166h-26"/><path class="if" d="M178 166l10-5v10z"/>
+<rect class="pf" x="10" y="134" width="168" height="64" rx="8"/><text x="24" y="160">7 Dotjerivanje</text><text class="mali" x="24" y="182">točaka privjeskom</text>
+<path class="l2" d="M94 198v40"/><path class="if" d="M94 248l-5-10h10z"/>
+<rect class="cf" x="10" y="248" width="230" height="44" rx="8"/><rect class="t" x="10" y="248" width="230" height="44" rx="8"/><text x="24" y="276">8 Proizvodnja</text>
+</svg><figcaption>Tipičan tok rada u RobotStudiju. Kod koraka 5 petlja <b>simulacija → ispravak</b> ponavlja se dok program ne prođe bez sudara i s prihvatljivim vremenom ciklusa.</figcaption></figure>
+<ol class="tekst">
+<li><b>Stanica.</b> U praznu stanicu dodaje se robot iz ABB-ove knjižnice (npr. IRB 120), virtualni kontroler s odgovarajućim RobotWareom, alat na prirubnici i obradak, stol ili naprava uvezeni iz CAD-a.</li>
+<li><b>Koordinatni sustavi.</b> Alatu se zadaje <b>tooldata</b> — položaj vrha alata (TCP) i masa u odnosu na prirubnicu; obratku <b>wobjdata</b> — koordinatni sustav obratka. Točke se tada pišu u sustavu obratka, pa se cijeli program pomakne kad se obradak na stvarnoj ćeliji izmjeri na drugom mjestu.</li>
+<li><b>Točke i putanje.</b> Točke (<i>targets</i>) postavljaju se ručno ili se izvode iz geometrije: AutoPath stvara putanju uzduž odabranih rubova CAD modela. Za svaku točku provjerava se je li dohvatljiva i u kojoj konfiguraciji ruke.</li>
+<li><b>RAPID.</b> Iz putanja nastaje program s naredbama gibanja (MoveJ, MoveL, MoveC), brzinama, zonama zaglađivanja i signalima (npr. Set za hvataljku).</li>
+<li><b>Simulacija.</b> Virtualni kontroler izvodi program; RobotStudio pokazuje putanju, mjeri vrijeme ciklusa i javlja sudare između odabranih skupina objekata. Greška se ispravi u točkama ili programu i simulacija se ponovi.</li>
+<li><b>Prijenos.</b> Na kartici Controller RobotStudio se spaja na stvarni kontroler preko mreže i prenosi module programa (rad <i>online</i>).</li>
+<li><b>Dotjerivanje.</b> Na stvarnoj ćeliji prvi prolaz ide smanjenom brzinom; točke koje zbog razlike između modela i stvarnosti ne pogađaju točno, ispravljaju se privjeskom (ModPos) — ili se izmjeri koordinatni sustav obratka pa se pomakne cijeli program.</li>
+<li><b>Proizvodnja.</b> Program radi u automatskom načinu; izmjene se i dalje mogu raditi izvan robota pa ponovno prenijeti.</li></ol>
+
+<h2>Glavne kartice programa</h2><div class="crta"></div>
+<div class="tablica-omot"><table class="tbl"><caption>Kartice RobotStudija (nazivi kako ih prikazuje program)</caption><thead><tr><th scope="col">Kartica</th><th scope="col">Čemu služi</th></tr></thead><tbody>
+<tr><td>Home</td><td>slaganje stanice: robot, alat, obradak, koordinatni sustavi, točke i putanje, ručno pomicanje robota</td></tr>
+<tr><td>Modeling</td><td>3D geometrija: uvoz CAD-a, jednostavna tijela, mjerenja, izrada mehanizama i alata</td></tr>
+<tr><td>Simulation</td><td>pokretanje simulacije, otkrivanje sudara, logika stanice i signali, snimanje i mjerenje vremena</td></tr>
+<tr><td>Controller</td><td>virtualni i stvarni kontroler: konfiguracija, ulazi i izlazi, prijenos programa, rad <i>online</i></td></tr>
+<tr><td>RAPID</td><td>uređivač programa u jeziku RAPID, sinkronizacija između stanice i kontrolera, provjera programa</td></tr>
+<tr><td>Add-Ins</td><td>dodaci i proširenja za posebne primjene</td></tr></tbody></table></div>
+<ul class="tekst">
+<li><b>Smart Components</b> — pametne komponente: objekti stanice s vlastitim ponašanjem (npr. traka koja pomiče predmet, senzor koji ga opazi, hvataljka koja ga prihvati), povezani signalima.</li>
+<li><b>Logika stanice i signali</b> (Station Logic) — povezuju signale komponenata s ulazima i izlazima virtualnog kontrolera, pa program u RAPID-u „vidi” traku i senzor kao na stvarnoj ćeliji.</li>
+<li><b>Visual SafeMove</b> — alat za konfiguraciju SafeMovea, ABB-ovih opcija funkcionalne sigurnosti (sigurne zone, ograničenja brzine i položaja), ugrađen u RobotStudio.</li></ul>
+<p class="pom">Pojedinosti o radu pametnih komponenata i logike stanice ovdje su opisane samo po nazivu i namjeni; detaljne upute su u ABB-ovu priručniku za RobotStudio.</p>
+
+<h2>Inačice i licence</h2><div class="crta"></div>
+<div class="tablica-omot"><table class="tbl"><caption>Razine RobotStudija prema ABB-u</caption><thead><tr><th scope="col">Razina</th><th scope="col">Što uključuje</th></tr></thead><tbody>
+<tr><td>Freemium</td><td>osnovne funkcije bez licence, vezano uz jedno računalo</td></tr>
+<tr><td>Basic</td><td>odabrane funkcije za konfiguraciju, programiranje i pokretanje virtualnog kontrolera, uključujući rad sa stvarnim kontrolerom</td></tr>
+<tr><td>Premium</td><td>puno programiranje izvan robota i simulacija više robota; uz pretplatu i RobotStudio Cloud (od 2022.: rad na stanici u pregledniku, istodobna suradnja, praćenje promjena) i AI pomoćnik (od 2025.)</td></tr>
+<tr><td>Obrazovna licenca</td><td>bez naknade za ustanove koje ispunjavaju ABB-ove uvjete: funkcije Premiuma, do 100 korisnika-učenika, samo za nekomercijalnu uporabu</td></tr></tbody></table></div>
+<p>Najnovija inačica koju smo našli je <b>RobotStudio 2026.2</b> (svibanj 2026.): traži Windows 11, radi s RobotWareom 5.07 i novijim, a licenca je vezana uz korisnika i njegov račun Robotics One.</p>
+
+<h2>RobotStudio i naši simulatori u pregledniku</h2><div class="crta"></div>
+<p>Za IRB 120 na ovim stranicama postoji šest simulatora koji rade u pregledniku, bez instalacije, i na mobitelu. Nisu zamjena za RobotStudio — rade drugi posao. Usporedba bez uljepšavanja:</p>
+<div class="tablica-omot"><table class="tbl"><caption>Usporedba</caption><thead><tr><th scope="col"></th><th scope="col">RobotStudio</th><th scope="col">Simulatori na DOS-u</th></tr></thead><tbody>
+<tr><td>Gibanje računa</td><td>virtualni kontroler — RobotWare, isti kao u ormaru</td><td>naš vlastiti kod (kinematika, interpolacija, provjera dosega)</td></tr>
+<tr><td>Vjernost vremena i putanje</td><td>vrlo bliska stvarnom robotu</td><td>približna; razliku prema stvarnom robotu mjerimo, ne skrivamo</td></tr>
+<tr><td>Jezik</td><td>puni RAPID</td><td>podskup RAPID-a (u simulatoru „u petlji”), G-kod i točke</td></tr>
+<tr><td>Instalacija i uređaj</td><td>Windows, instalacija, licenca</td><td>preglednik; računalo, tablet ili mobitel; besplatno</td></tr>
+<tr><td>Proširena stvarnost</td><td>—</td><td>robot u stvarnoj veličini na stolu ili podu (Android, iPhone)</td></tr>
+<tr><td>Najbolje za</td><td>stvarne ćelije, točan program, vrijeme ciklusa, prijenos na robot</td><td>prve korake, pojmove, kinematiku, vježbu kod kuće, pripremu prije laboratorija</td></tr></tbody></table></div>
+<ul class="tekst">
+<li><a href="../ar/irb120/index.html">IRB 120 u 3D prikazu i proširenoj stvarnosti</a> — šest osi, radni opseg, prihvatnica i primjer uzimanja i odlaganja.</li>
+<li><a href="../ar/irb120-crtanje/index.html">IRB 120 crta flomasterom</a> — tekst, slika, DXF ili G-kod postaje putanja robota.</li>
+<li><a href="../ar/irb120-glodanje/index.html">IRB 120 gloda</a> — sirovac u škripcu, prolazi po dubini.</li>
+<li><a href="../ar/irb120-ispis/index.html">IRB 120 kao 3D pisač</a> — slojevi iz STL-a ili G-koda.</li>
+<li><a href="../ar/irb120-skeniranje/index.html">IRB 120 skenira</a> — kamera na robotu, oblak točaka, usporedba s CAD-om.</li>
+<li><a href="../ar/irb120-u-petlji/index.html">IRB 120 u petlji</a> — virtualni privjesak, RAPID, signali s PLC-om i HMI-jem, traka i okretni stol.</li></ul>
+<div class="okvir primjer"><h4>Preporučeni put</h4><p><b>1.</b> Pojmovi i prvi program u pregledniku (gore navedeni simulatori). <b>2.</b> Ista zadaća u RobotStudiju, s virtualnim kontrolerom i stvarnim vremenom ciklusa. <b>3.</b> Prijenos na stvarni robot, prvi prolaz smanjenom brzinom, dotjerivanje točaka. Svaki korak je bliži stvarnosti i skuplji — zato se greške ispravljaju što ranije.</p></div>
+
+<h2>Vježba: složi korake redom</h2><div class="crta"></div>
+<div class="rs-vjezba" id="rs-vjezba"><p>Koraci toka rada su ispremiješani. Klikni ih redom kojim se rade — od prvog do zadnjeg. Pogrešan klik se označi, a možeš krenuti ispočetka.</p>
+<ol class="rs-odabrano" id="rs-odabrano" aria-live="polite"></ol>
+<div class="rs-ponuda" id="rs-ponuda" role="group" aria-label="Ponuđeni koraci"></div>
+<p class="rs-poruka" id="rs-poruka" aria-live="polite"></p>
+<div class="gumbi"><button type="button" class="gumb tanki" id="rs-ponovo">Ispočetka</button></div></div>
+<noscript><p>Vježba treba JavaScript; redoslijed je u popisu iznad.</p></noscript>
+
+<h2>RobotStudio HyperReality</h2><div class="crta"></div>
+<p>ABB je 9. ožujka 2026. zajedno s NVIDIA-om najavio <b>RobotStudio HyperReality</b>: RobotStudio povezan s knjižnicama platforme <b>NVIDIA Omniverse</b>. Virtualni kontroler i dalje računa gibanje, a Omniverse dodaje fotorealističnu, fizikalno točnu scenu. Digitalni blizanac tada ima tri sloja — <b>proizvod</b> (CAD, materijali), <b>fotometrijsko okruženje</b> (svjetlo, odsjaji, sjene, kamera) i <b>robot</b> (mehanika, senzori, upravljačka logika).</p>
+<p>Iz takve scene mogu se automatski izraditi tisuće slika s različitim svjetlom, položajem i izgledom predmeta — <b>sintetički podaci</b> na kojima se treniraju modeli strojnog vida i drugi modeli fizičke AI, prije nego što robot vidi ijedan stvarni komad. ABB navodi da time razlika između simulacije i stvarnosti pada na manje od 1 % (točnost „do 99 %”), da se puštanje u rad skraćuje do 80 %, a troškovi smanjuju do 40 % — to su ABB-ove brojke, ne neovisna mjerenja. Puno izdanje za oko 60 000 korisnika RobotStudija najavljeno je za drugu polovicu 2026.</p>
+<p>Početkom studenoga 2026. ABB i NVIDIA najavili su i zajednički obrazovni program za fizičku AI: teorija i praktični rad u RobotStudiju i Omniverseu, završno s certifikatom. Naziv, trajanje, cijena i način upisa nisu objavljeni. Što to znači za IRB 120 i naše materijale, opisano je na stranici <a href="fizicka-ai.html">Od programiranog robota prema fizičkoj AI</a>.</p>
+
+<h2>Izvori</h2><div class="crta"></div>
+<ol class="tekst rs-izvori">
+<li><a href="https://one.robotics.abb.com/en/software/p/RobotStudio" rel="noopener" target="_blank">ABB — RobotStudio (razine i licence)</a></li>
+<li><a href="https://new.abb.com/news/detail/96221/10-ways-that-abbs-robotstudior-software-can-help-you-optimize-your-robots-performance" rel="noopener" target="_blank">ABB, 21. 10. 2022. — virtualni kontroler kao kopija stvarnog softvera</a></li>
+<li><a href="https://library.e.abb.com/public/d11e7784c590c24dc1257b5900503e1f/3HAC032104-en.pdf" rel="noopener" target="_blank">ABB — Operating manual RobotStudio (Basic i Premium)</a></li>
+<li><a href="https://library.e.abb.com/public/db6ae87c1cf9468bba3faa01b094fb3b/RobotStudio%202026.2%20Release%20Notes.pdf" rel="noopener" target="_blank">ABB — RobotStudio 2026.2 Release Notes</a></li>
+<li><a href="https://www.abb.com/gb/en/areas/robotics/products/software/robotstudio-suite/robotstudio-license" rel="noopener" target="_blank">ABB — RobotStudio licence (obrazovna licenca)</a></li>
+<li><a href="https://new.abb.com/news/detail/97646/prsrl-abb-robotstudior-takes-to-the-cloud-enabling-real-time-collaboration" rel="noopener" target="_blank">ABB, 7. 12. 2022. — RobotStudio Cloud</a></li>
+<li><a href="https://www.roboticstomorrow.com/news/2025/09/26/abb-robotics-adds-generative-ai-assistant-to-robotstudio/25605" rel="noopener" target="_blank">RoboticsTomorrow, 26. 9. 2025. — AI pomoćnik u RobotStudiju</a></li>
+<li><a href="https://www.abb.com/global/en/news/134030" rel="noopener" target="_blank">ABB, 9. 3. 2026. — RobotStudio HyperReality s NVIDIA Omniverseom</a></li>
+<li><a href="https://www.abb.com/global/en/areas/robotics/innovation/robotstudio-hyperreality" rel="noopener" target="_blank">ABB — RobotStudio HyperReality</a></li>
+<li><a href="https://www.abb.com/global/en/news/139691/prsrl-abb-robotics-sets-out-blueprint-for-physical-ai-education-at-nvidia-gtc-berlin" rel="noopener" target="_blank">ABB — obrazovni program za fizičku AI (NVIDIA GTC Berlin)</a></li>
+</ol>
+<p>Dalje: <a href="fizicka-ai.html">Prema fizičkoj AI</a> &middot; <a href="upoznavanje-robota.html">Upoznavanje robota</a> &middot; <a href="index.html">Naslovnica područja</a>.</p></section></main>
+
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Autori: dr.sc. Tomislav Pavlic, mag.ing.mech., Krunoslav Kušec, mag.ing.mech., Alen Britvić, bacc.ing.mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-industrijski-robot-irb120-robotstudio-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+</script>
+<script type="importmap">{"imports":{"three":"../ar/lib/three.module.min.js","three/addons/":"../ar/lib/addons/"}}</script>
+<script type="module" src="robotstudio.js?v=01"></script>
+</body>
+</html>
