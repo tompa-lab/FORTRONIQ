@@ -366,6 +366,7 @@ figure.crtez figcaption b{color:var(--teal)}
   .karta-h{flex-wrap:wrap}
   .osi-t td:nth-child(3){display:none}
 }
+.pp-lab-red{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding:10px 18px;border-bottom:1px solid var(--rule);font-size:.88rem;color:var(--body)}.pp-lab-red b{flex-basis:100%;color:var(--ink);font-weight:600}.pp-lab-red small{flex-basis:100%}
 </style>
 </head>
 <body>
@@ -377,7 +378,7 @@ figure.crtez figcaption b{color:var(--teal)}
 
 <div class="stup">
 <div class="karta" id="k-scena">
-<div class="karta-h"><h2>Trodimenzionalni prikaz</h2><div class="gumbi"><button type="button" class="gumb tanki" id="pocetni">Početni položaj</button><button type="button" class="gumb tanki" id="gibanje" aria-pressed="false">Pokaži gibanje</button><button type="button" class="gumb tanki" id="pp" aria-pressed="false" disabled>Pick &amp; place</button></div></div>
+<div class="karta-h"><h2>Trodimenzionalni prikaz</h2><div class="gumbi"><button type="button" class="gumb tanki" id="pocetni">Početni položaj</button><button type="button" class="gumb tanki" id="gibanje" aria-pressed="false">Pokaži gibanje</button><button type="button" class="gumb tanki" id="pp" aria-pressed="false" disabled>Pick &amp; place</button><button type="button" class="gumb tanki" id="pp-lab" aria-pressed="false">Pick &amp; place iz laboratorija</button></div></div><div class="pp-lab-red" id="pp-lab-info" hidden><span>Iz vodiča <a href="../../industrijski-robot-irb120/pick-and-place.html">Pick &amp; place korak po korak</a>:</span><button type="button" class="gumb tanki" data-lab="p1">p1</button><button type="button" class="gumb tanki" data-lab="p2">p2</button><button type="button" class="gumb tanki" data-lab="p3">p3</button><button type="button" class="gumb tanki" data-lab="ciklus">Ciklus 1 → 2 → 3 → 1</button><b></b><small>Točke izmjerene na stvarnom robotu (tool0, wobj0). Duljina i širina pločice su procjena.</small></div>
 <div id="scena" aria-label="Trodimenzionalni model robota ABB IRB 120; povuci za okretanje, kotačićem ili s dva prsta za približavanje"><div class="ucitavanje" id="ucitavanje">Učitavam model robota…</div><p class="uputa">Povuci za okretanje &middot; kotačić ili dva prsta za zum</p></div>
 </div>
 
@@ -473,7 +474,7 @@ figure.crtez figcaption b{color:var(--teal)}
 <div id="xr-sloj" hidden>
 <div class="xr-vrh"><span id="xr-uputa">Usmjeri kameru prema podu i dodirni krug da postaviš robota.</span><button type="button" id="xr-izlaz">Izlaz</button></div>
 <div class="xr-dno">
-<div class="xr-gumbi"><button type="button" id="xr-gib" aria-pressed="false">Gibanje</button><button type="button" id="xr-pp" aria-pressed="false">Pick &amp; place</button><button type="button" id="xr-nula">Početni</button><button type="button" id="xr-premjesti">Premjesti</button></div>
+<div class="xr-gumbi"><button type="button" id="xr-gib" aria-pressed="false">Gibanje</button><button type="button" id="xr-pp" aria-pressed="false">Pick &amp; place</button><button type="button" id="xr-lab" aria-pressed="false">Laboratorij</button><button type="button" id="xr-nula">Početni</button><button type="button" id="xr-premjesti">Premjesti</button></div>
 <div id="xr-osi"></div>
 <p id="xr-sidro" class="xr-stanje" aria-live="polite"></p>
 </div>
@@ -764,6 +765,7 @@ new GLTFLoader().load('irb120.glb', function (g) {
   korijen.add(g.scene);
   document.getElementById('ucitavanje').remove();
   try { pripremiProgram(); } catch (e) { console.error('Pick & place:', e); }
+  try { labPripremi(); labIzAdrese(); } catch (e) { console.error('Pick & place iz laboratorija:', e); }
 }, undefined, function () {
   document.getElementById('ucitavanje').textContent = 'Model se nije mogao učitati. Stranicu otvori preko poslužitelja (dos.fortroniq.hr), ne izravno iz datoteke.';
 });
@@ -786,7 +788,7 @@ document.getElementById('pocetni').addEventListener('click', function () {
 });
 
 // --- PICK & PLACE: prihvatnica SCHUNK PGN 80, kocke 35 mm ---------------------------
-var tcpN = null, prstP = null, prstN = null, kocke = [];
+var tcpN = null, prstP = null, prstN = null, kocke = [], ppPloce = [];
 var prog = { aktivan: false, seg: [], i: 0, t: 0, q: [0, 0, 0, 0, 0, 0] };
 var KOCKA = 0.035, OTV = 0.008, ZATV = 0.004, PODLOGA = 0.008;
 var RED = [[0.34, -0.18], [0.40, -0.18], [0.46, -0.18]];   // početni položaj kocki (KS baze, m)
@@ -802,6 +804,7 @@ function poza(x, y, z) {
 }
 function postaviKocke() {
   kocke.forEach(function (k, i) {
+    if (i > 2) return;
     korijen.attach(k);
     var r = smjer(RED[i][0], RED[i][1]);
     k.position.copy(g3(RED[i][0], RED[i][1], PODLOGA + KOCKA / 2));
@@ -864,7 +867,7 @@ function pripremiProgram() {
   var pm = new THREE.MeshStandardMaterial({ color: 0x8A9AA3, roughness: 0.8 });
   function ploca(x, y, dx, dy) {
     var r = smjer(x, y), m = new THREE.Mesh(new THREE.BoxGeometry(dx, PODLOGA, dy), pm);
-    m.position.copy(g3(x, y, PODLOGA / 2)); m.rotation.set(0, Math.atan2(-r.z, r.x), 0); m.receiveShadow = true; korijen.add(m);
+    m.position.copy(g3(x, y, PODLOGA / 2)); m.rotation.set(0, Math.atan2(-r.z, r.x), 0); m.receiveShadow = true; korijen.add(m); ppPloce.push(m);
   }
   ploca(0.40, -0.18, 0.20, 0.07); ploca(TORANJ[0], TORANJ[1], 0.07, 0.07);
   postaviKocke(); prsti(OTV);
@@ -917,6 +920,154 @@ function prebaciProgram() {
 }
 gPP.addEventListener('click', prebaciProgram);
 xPP.addEventListener('click', prebaciProgram);
+
+// --- PICK & PLACE IZ LABORATORIJA (vodič industrijski-robot-irb120/pick-and-place.html) — v07, 10. 11. 2026. ---
+// Točke su izmjerene na stvarnom robotu (tool0, wobj0, mm). Prsti dotaknu stol kad je prirubnica na Z 154,65 mm,
+// pa je vrh prstiju 154,65 mm ispod prirubnice; stol je u ravnini postolja robota (z = 0).
+// Mjere pločice: debljina iz visine hvata (prsti na pola debljine), duljina i širina su PROCJENA s fotografija.
+var LAB = {
+  T: [ // ime, x, y, z prirubnice, EZ (°)
+    ['p1_gore', 87.77, -362.50, 210.95, 90], ['p1', 87.77, -362.50, 160.30, 90],
+    ['p2_gore', 89.96, -238.23, 210.94, 90], ['p2', 89.96, -238.24, 160.74, 90],
+    ['p3_gore', -82.91, -342.96, 210.90, 180], ['p3', -82.91, -342.98, 160.70, 180]
+  ],
+  PRST: 154.65,                      // mm, prirubnica → vrh prstiju (iz sudara na Z 154,65)
+  PL: [0.090, 0.050, 0.0113],        // pločica: duljina, širina (procjena), debljina (iz mjerenja)
+  aktivan: false, seg: [], q: {}, obj: [], ploca: null, osZatv: null, poz: ''
+};
+function labT(ime) { for (var i = 0; i < LAB.T.length; i++) if (LAB.T[i][0] === ime) return LAB.T[i]; }
+function labOsZatvaranja() {
+  // smjer zatvaranja prstiju u KS vrha alata (tcp) modela — izmjeri se na modelu, ne pretpostavlja
+  korijen.updateMatrixWorld(true);
+  prsti(OTV); korijen.updateMatrixWorld(true);
+  var a = new THREE.Vector3().setFromMatrixPosition(prstP.matrixWorld);
+  prsti(ZATV); korijen.updateMatrixWorld(true);
+  var b = new THREE.Vector3().setFromMatrixPosition(prstP.matrixWorld);
+  prsti(OTV); korijen.updateMatrixWorld(true);
+  var inv = new THREE.Matrix4().copy(tcpN.matrixWorld).invert();
+  var d = b.sub(a).applyMatrix4(new THREE.Matrix4().extractRotation(inv)).normalize();
+  return Math.abs(d.x) >= Math.abs(d.y) ? 'x' : 'y';
+}
+function labPoza(t) {
+  // položaj vrha prstiju i orijentacija: os z alata dolje, prsti se zatvaraju po osi x alata ABB-a = (cos EZ, sin EZ, 0)
+  var ez = t[4] * Math.PI / 180;
+  var zt = new THREE.Vector3(0, -1, 0);
+  var d = g3(Math.cos(ez), Math.sin(ez), 0).normalize();
+  var x, y;
+  if (LAB.osZatv === 'x') { x = d; y = zt.clone().cross(x); } else { y = d; x = y.clone().cross(zt); }
+  return { p: g3(t[1] / 1000, t[2] / 1000, (t[3] - LAB.PRST) / 1000), x: x, y: y, z: zt };
+}
+function labPlocaNa(ime) {
+  var t = labT(ime), k = LAB.ploca;
+  korijen.attach(k);
+  k.position.copy(g3(t[1] / 1000, t[2] / 1000, LAB.PL[2] / 2));
+  k.rotation.set(0, (t[4] - 90) * Math.PI / 180, 0); // EZ 90° → duža stranica po osi X baze
+}
+function labOznaka(tekst, x, y, ez) {
+  var c = document.createElement('canvas'); c.width = 128; c.height = 128;
+  var g = c.getContext('2d'); g.fillStyle = '#C8372D'; g.font = 'bold 96px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(tekst, 64, 70);
+  var m = new THREE.Mesh(new THREE.PlaneGeometry(0.045, 0.045), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }));
+  var r = (ez - 90) * Math.PI / 180, ox = -0.075 * Math.sin(r), oy = 0.075 * Math.cos(r);
+  m.rotation.x = -Math.PI / 2; m.position.copy(g3(x + ox, y - oy, 0.0006)); korijen.add(m); LAB.obj.push(m);
+  var okv = new THREE.Mesh(new THREE.PlaneGeometry(LAB.PL[0] + 0.012, LAB.PL[1] + 0.012), new THREE.MeshBasicMaterial({ color: 0xC8372D, transparent: true, opacity: 0.35, depthWrite: false }));
+  okv.rotation.set(-Math.PI / 2, 0, r); okv.position.copy(g3(x, y, 0.0004)); korijen.add(okv); LAB.obj.push(okv);
+}
+function labPripremi() {
+  if (LAB.seg.length || !tcpN) return;
+  LAB.osZatv = labOsZatvaranja();
+  var stol = new THREE.Mesh(new THREE.BoxGeometry(0.80, 0.02, 0.80), new THREE.MeshStandardMaterial({ color: 0xB9C2C7, roughness: 0.6, metalness: 0.3 }));
+  stol.position.copy(g3(0, -0.22, -0.0101)); stol.receiveShadow = true; korijen.add(stol); LAB.obj.push(stol);
+  [['1', 'p1'], ['2', 'p2'], ['3', 'p3']].forEach(function (o) { var t = labT(o[1]); labOznaka(o[0], t[1] / 1000, t[2] / 1000, t[4]); });
+  LAB.ploca = new THREE.Mesh(new THREE.BoxGeometry(LAB.PL[0], LAB.PL[2], LAB.PL[1]), new THREE.MeshStandardMaterial({ color: 0xD7DDE0, roughness: 0.35, metalness: 0.6 }));
+  LAB.ploca.castShadow = true; LAB.ploca.receiveShadow = true; korijen.add(LAB.ploca); LAB.obj.push(LAB.ploca);
+  kocke.push(LAB.ploca); LAB.iPloce = kocke.length - 1;
+  labPlocaNa('p1');
+  // IK za svih šest točaka, redom kao u programu (svaka iz prethodne, da os 6 ide najkraćim putem)
+  var q = [0, 0, 0, 0, 0, 0], lose = 0;
+  function ikPolazno(c, q0) { // prvo iz prethodne točke; ako ne konvergira, iz više polaznih položaja osi 1 i 5
+    var r = ik(c, q0); if (r.ok) return r;
+    var naj = null;
+    for (var a1 = -150; a1 <= 150; a1 += 30) for (var a5 = 30; a5 <= 90; a5 += 30) {
+      var s = ik(c, [a1, 0, 0, 0, a5, 0]); if (!s.ok) continue;
+      var dm = 0; for (var i = 0; i < 6; i++) dm += Math.abs(s.q[i] - q0[i]);
+      if (!naj || dm < naj.dm) naj = { q: s.q, ok: true, dm: dm };
+    }
+    return naj || r;
+  }
+  ['p1_gore', 'p1', 'p2_gore', 'p2', 'p3_gore', 'p3'].forEach(function (ime) {
+    var r = ikPolazno(labPoza(labT(ime)), q); if (!r.ok) lose++; LAB.q[ime] = r.q; q = r.q;
+  });
+  var seg = [], qa = [0, 0, 0, 0, 0, 0], k = LAB.iPloce;
+  function Jn(ime, dur) { var qn = LAB.q[ime], dm = 0; for (var i = 0; i < 6; i++) dm = Math.max(dm, Math.abs(qn[i] - qa[i])); seg.push({ tip: 'J', q0: qa, q1: qn, dur: dur || Math.max(0.6, dm / 60), glatko: true, red: 'MoveJ ' + ime }); qa = qn; }
+  function Ln(ime) { var t = labT(ime), t0 = null, n = 6; // pravocrtno: međutočke po Z
+    for (var j = 0; j < LAB.T.length; j++) if (LAB.q[LAB.T[j][0]] === qa) t0 = LAB.T[j];
+    if (!t0) { Jn(ime); return; }
+    var qq = qa;
+    for (var s = 1; s <= n; s++) { var tm = [ime, t[1], t[2], t0[3] + (t[3] - t0[3]) * s / n, t[4]]; var r = ikPolazno(labPoza(tm), qq); if (!r.ok) lose++; seg.push({ tip: 'J', q0: qq, q1: r.q, dur: Math.abs(t[3] - t0[3]) / 1000 / 0.08 / n, glatko: false, red: 'MoveL ' + ime }); qq = r.q; }
+    seg[seg.length - 1].q1 = LAB.q[ime]; qa = LAB.q[ime];
+  }
+  function Gz(zatv) { seg.push({ tip: 'G', d0: zatv ? OTV : ZATV, d1: zatv ? ZATV : OTV, dur: 0.5, zatvori: zatv, kocka: k, red: (zatv ? 'Set' : 'Reset') + ' DO_0_gripper' }); seg.push({ tip: 'W', dur: 0.5, red: 'WaitTime 0.5' }); }
+  Jn('p1_gore'); Ln('p1'); Gz(true); Ln('p1_gore');
+  Jn('p2_gore'); Ln('p2'); Gz(false); Ln('p2_gore');
+  Ln('p2'); Gz(true); Ln('p2_gore');
+  Jn('p3_gore'); Ln('p3'); Gz(false); Ln('p3_gore');
+  Ln('p3'); Gz(true); Ln('p3_gore');
+  Jn('p1_gore'); Ln('p1'); Gz(false); Ln('p1_gore');
+  seg.push({ tip: 'W', dur: 1.5, red: 'ENDPROC' });
+  LAB.seg = seg; LAB.loseIK = lose;
+  LAB.obj.forEach(function (o) { o.visible = false; });
+  fk([0, 0, 0, 0, 0, 0]); for (var i = 0; i < 6; i++) postavi(i, 0);
+  window.FTQ_LAB_PROVJERA = function () { // za test: kut između smjera zatvaranja prstiju i širine pločice, razmak vrha i pločice
+    korijen.updateMatrixWorld(true);
+    var a = new THREE.Vector3().setFromMatrixPosition(prstP.matrixWorld), bq = new THREE.Vector3().setFromMatrixPosition(prstN.matrixWorld);
+    var d = bq.clone().sub(a).normalize(), w = new THREE.Vector3(0, 0, 1).transformDirection(LAB.ploca.matrixWorld);
+    var tc = new THREE.Vector3().setFromMatrixPosition(tcpN.matrixWorld), pc = new THREE.Vector3().setFromMatrixPosition(LAB.ploca.matrixWorld);
+    var inv = new THREE.Matrix4().copy(korijen.matrixWorld).invert(); tc.applyMatrix4(inv); pc.applyMatrix4(inv);
+    return { kut: Math.round(Math.acos(Math.min(1, Math.abs(d.dot(w)))) * 180 / Math.PI), vrhIznadStola_mm: +(tc.y * 1000).toFixed(1), odmakXY_mm: +(Math.hypot(tc.x - pc.x, tc.z - pc.z) * 1000).toFixed(1) };
+  };
+  window.FTQ_LAB = { segmenata: seg.length, loseIK: lose, osZatv: LAB.osZatv, q: LAB.q, trajanje: seg.reduce(function (a, s) { return a + s.dur; }, 0) };
+}
+var labStari = null, labGumb = document.getElementById('pp-lab'), labXr = document.getElementById('xr-lab'), labInfo = document.getElementById('pp-lab-info');
+function labUkljuci(da) {
+  labPripremi(); if (!LAB.seg.length) return;
+  stani();
+  if (da && !LAB.aktivan) {
+    labStari = prog.seg; prog.seg = LAB.seg; prog.i = 0; prog.t = 0; prog.q = [0, 0, 0, 0, 0, 0];
+    kocke.forEach(function (kk, i) { kk.visible = i === LAB.iPloce; });
+    ppPloce.forEach(function (o) { o.visible = false; });
+    LAB.obj.forEach(function (o) { o.visible = true; });
+  } else if (!da && LAB.aktivan) {
+    prog.seg = labStari; prog.i = 0; prog.t = 0; prog.q = [0, 0, 0, 0, 0, 0];
+    korijen.attach(LAB.ploca);
+    kocke.forEach(function (kk, i) { kk.visible = i !== LAB.iPloce; });
+    ppPloce.forEach(function (o) { o.visible = true; });
+    LAB.obj.forEach(function (o) { o.visible = false; });
+    postaviKocke(); prsti(OTV);
+  }
+  LAB.aktivan = da;
+  [labGumb, labXr].forEach(function (b) { if (b) b.setAttribute('aria-pressed', da ? 'true' : 'false'); });
+  if (labInfo) labInfo.hidden = !da;
+}
+function labPozicija(p) {
+  // p1 / p2 / p3: robot stoji iznad pozicije, pločica na njoj; ciklus: program 1 → 2 → 3 → 1 od početka
+  labUkljuci(true);
+  if (p === 'ciklus') { labPlocaNa('p1'); prsti(OTV); prog.i = 0; prog.t = 0; prebaciProgram(); LAB.poz = p; return; }
+  var ime = p + '_gore', q = LAB.q[ime]; if (!q) return;
+  korijen.attach(LAB.ploca); labPlocaNa(p); prsti(OTV);
+  for (var i = 0; i < 6; i++) { postavi(i, q[i]); klizaci[i].value = q[i]; ispis(i, q[i]); }
+  prog.q = q.slice(); prog.i = 0; prog.t = 0; LAB.poz = p;
+  if (labInfo) { var t = labT(ime); var f = function (v) { return v.toFixed(2).replace('.', ',').replace('-', '−'); }; labInfo.querySelector('b').textContent = ime + ': X ' + f(t[1]) + ' · Y ' + f(t[2]) + ' · Z ' + f(t[3]) + ' mm · EZ ' + t[4] + '°'; }
+}
+if (labGumb) labGumb.addEventListener('click', function () { labUkljuci(!LAB.aktivan); if (LAB.aktivan) labPozicija('ciklus'); });
+if (labXr) labXr.addEventListener('click', function () { labUkljuci(!LAB.aktivan); if (LAB.aktivan) labPozicija('ciklus'); });
+document.querySelectorAll('[data-lab]').forEach(function (b) { b.addEventListener('click', function () { labPozicija(b.dataset.lab); }); });
+function labIzAdrese() {
+  var m = /[#&]pp=(p1|p2|p3|ciklus)/.exec(location.hash); if (!m || !tcpN) return false;
+  labPozicija(m[1]); var k = document.getElementById('k-scena'); if (k && k.scrollIntoView) k.scrollIntoView({ block: 'start' });
+  return true;
+}
+window.addEventListener('hashchange', labIzAdrese);
+
 function korakPrograma(dt) {
   var s = prog.seg[prog.i]; prog.t += dt;
   var u = Math.min(1, prog.t / s.dur);
