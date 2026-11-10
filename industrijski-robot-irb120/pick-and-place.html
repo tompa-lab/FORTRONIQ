@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pick &amp; place na pravom robotu — korak po korak — Industrijski robot ABB IRB 120 — građa, upravljanje i RobotStudio | FORTRONIQ</title>
+<meta name="description" content="Pick &amp; place na stvarnom robotu IRB 120, dodir po dodir na FlexPendantu: točke, zakret prihvatnice, proba, greške, spremanje i automatski način — uz fotografije i video.">
+<meta name="author" content="ForTroniQ d.o.o.">
+<link rel="canonical" href="https://dos.fortroniq.hr/industrijski-robot-irb120/pick-and-place.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FORTRONIQ">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Pick &amp; place na pravom robotu — korak po korak">
+<meta property="og:description" content="Pick &amp; place na stvarnom robotu IRB 120, dodir po dodir na FlexPendantu: točke, zakret prihvatnice, proba, greške, spremanje i automatski način — uz fotografije i video.">
+<meta property="og:url" content="https://dos.fortroniq.hr/industrijski-robot-irb120/pick-and-place.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#10394A; --body:#5D7C90; --rule:#DCE4E8;
+  --teal:#17656E; --teal-d:#0F4A52; --cyan:#2ECAD4;
+  --hero-a:#1B6A72; --hero-b:#0C3F47; --bar:#17181A;
+  --karta:#FFFFFF; --tanko:#F4F7F8; --sjena:0 1px 2px rgba(16,57,74,.05),0 10px 30px rgba(16,57,74,.07);
+  --pismo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mjera:1rem; --prored:1.72; --razmak-slova:0em; --razmak-rijeci:0em;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+    --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+    --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+    --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1317; --ink:#E8F2F5; --body:#9DB5C0; --rule:#1D2F37;
+  --teal:#2ECAD4; --teal-d:#17656E; --cyan:#2ECAD4;
+  --hero-a:#124F57; --hero-b:#06262B; --bar:#07090A;
+  --karta:#0F1C22; --tanko:#101E24; --sjena:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+html{font-size:var(--mjera);-webkit-text-size-adjust:100%}
+html[data-dys="1"]{--pismo:"Atkinson Hyperlegible",system-ui,sans-serif;--prored:1.95;--razmak-slova:.035em;--razmak-rijeci:.12em}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--pismo);
+  line-height:var(--prored);letter-spacing:var(--razmak-slova);word-spacing:var(--razmak-rijeci);
+  font-size:1.0625rem;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);font-weight:700;letter-spacing:-.026em;line-height:1.22;margin:0}
+a{color:var(--teal);text-underline-offset:3px}
+img,svg{max-width:100%}
+.preskoci{position:absolute;left:-9999px;top:0;background:var(--paper);color:var(--ink);padding:.6rem 1rem;z-index:60}
+.preskoci:focus{left:.5rem;top:.5rem}
+.omot{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------------------------------------------------------- gornja traka */
+.traka{background:var(--bar);color:#E9EDEF;position:sticky;top:0;z-index:30}
+.traka .omot{display:flex;align-items:center;gap:1rem;min-height:52px;flex-wrap:wrap}
+.znak{font-weight:700;letter-spacing:.17em;font-size:.82rem;color:#fff;text-decoration:none;white-space:nowrap}
+.znak b{color:var(--cyan);font-weight:700}
+.putanja{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.78rem;color:#9AA6AC;margin-left:auto}
+.putanja a{color:#C6D0D4;text-decoration:none}
+.putanja a:hover{color:#fff;text-decoration:underline}
+.putanja span[aria-current]{color:var(--cyan)}
+.putanja i{font-style:normal;opacity:.45}
+@media (max-width:680px){.traka .omot{min-height:46px}.putanja{font-size:.72rem;margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:.3rem;scrollbar-width:none}.putanja::-webkit-scrollbar{display:none}}
+
+/* ------------------------------------------------------------------ hero */
+.hero{background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:5px;background:var(--cyan)}
+.hero-in{max-width:1120px;margin:0 auto;padding-left:clamp(16px,4vw,40px);padding-right:clamp(16px,4vw,40px);
+  padding-block:clamp(30px,6vw,64px) clamp(26px,5vw,48px);display:grid;grid-template-columns:1fr;gap:clamp(20px,4vw,44px);align-items:center}
+.hero-in.sa-slikom{grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.hero-in.sa-slikom{grid-template-columns:1fr}.mrlja{max-width:340px;margin:0 auto}}
+.nadnaslov{text-transform:uppercase;letter-spacing:.17em;font-size:.72rem;color:var(--cyan);font-weight:600;margin:0 0 .9rem}
+.hero h1{color:#fff;font-size:clamp(1.6rem,4.2vw,2.7rem);margin:0 0 .85rem}
+.hero p{color:#CFE4E6;margin:0;max-width:62ch;text-align:justify;hyphens:auto}
+.hero .oznaka-modula{display:inline-block;background:rgba(46,202,212,.16);border:1px solid rgba(46,202,212,.42);
+  color:#BFF3F6;border-radius:999px;padding:.2rem .7rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;margin-bottom:.9rem}
+.mrlja{position:relative;display:block}
+.mrlja svg{display:block;width:100%;height:auto}
+.igraj{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:var(--teal-d);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 8px 26px rgba(0,0,0,.28)}
+.igraj:hover{background:#fff}
+.igraj svg{width:20px;height:20px}
+
+/* ----------------------------------------------------------- Moći ću: */
+.goals{border-top:1px solid rgba(255,255,255,.16);padding:clamp(20px,3.4vw,30px) 0 clamp(26px,4vw,38px)}
+.goals-h{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.goals-h svg{width:26px;height:18px;flex:0 0 auto;color:var(--cyan)}
+.goals-h span{font-weight:700;color:#fff;font-size:1.02rem;letter-spacing:.01em}
+.goals ul{columns:3;column-gap:2.2rem;list-style:none;margin:0;padding:0}
+.goals li{break-inside:avoid;display:flex;gap:.55rem;align-items:flex-start;margin:0 0 .72rem;color:#D6E8EA;font-size:.92rem;line-height:1.5}
+.goals li svg{width:11px;height:11px;flex:0 0 11px;margin-top:.42rem;color:var(--cyan)}
+@media (max-width:900px){.goals ul{columns:2}}
+@media (max-width:600px){.goals ul{columns:1}}
+
+/* ------------------------------------------------------------- sadržaj */
+main{padding:clamp(34px,6vw,64px) 0 clamp(40px,7vw,72px)}
+section{margin:0 0 clamp(30px,5vw,52px)}
+section>h2{font-size:clamp(1.22rem,2.6vw,1.62rem);margin:0 0 .35rem}
+section>h2+.pod{color:var(--teal);font-weight:600;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 1.1rem}
+.crta{height:4px;width:56px;background:var(--cyan);border-radius:2px;margin:.2rem 0 1.2rem}
+h3{font-size:1.06rem;margin:1.7rem 0 .55rem}
+p{margin:0 0 1rem;text-align:justify;hyphens:auto}
+ul.tekst,ol.tekst{margin:0 0 1.1rem;padding-left:1.25rem}
+ul.tekst li,ol.tekst li{margin:0 0 .5rem}
+strong{color:var(--ink);font-weight:600}
+.uvodni{font-size:1.12rem;color:var(--ink)}
+
+/* --------------------------------------------------------------- kartice */
+.moduli{list-style:none;margin:0;padding:0}
+.modul{display:grid;grid-template-columns:64px 1fr;gap:clamp(14px,2.5vw,26px);padding:clamp(20px,3vw,28px) 0;border-top:1px solid var(--rule)}
+.modul:last-child{border-bottom:1px solid var(--rule)}
+.kolut{width:56px;height:56px;border-radius:50%;background:var(--tanko);border:1px solid var(--rule);
+  display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.16rem}
+.modul-t{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,32px);align-items:start}
+.modul-t h3{margin:.1rem 0 .6rem;font-size:1.16rem}
+.modul-t p{margin:0;text-align:justify;font-size:.96rem}
+.gumb{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;text-decoration:none;
+  border:0;border-radius:999px;padding:.56rem 1.15rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer}
+.gumb:hover{background:var(--teal-d)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gumb:not(.tanki){color:#06262B}}
+:root[data-theme="dark"] .gumb:not(.tanki){color:#06262B}
+:root[data-theme="light"] .gumb:not(.tanki){color:#fff}
+.gumb.tanki{color:var(--teal)}
+.gumb.tanki{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.gumb.tanki:hover{background:var(--tanko)}
+.gumb svg{width:13px;height:13px}
+@media (max-width:760px){.modul{grid-template-columns:46px 1fr}.kolut{width:42px;height:42px;font-size:1rem}.modul-t{grid-template-columns:1fr}}
+
+.jedinice{list-style:none;margin:0;padding:0}
+.jed{display:grid;grid-template-columns:74px 1fr auto;gap:clamp(12px,2.4vw,22px);align-items:center;
+  padding:clamp(16px,2.4vw,22px) 0;border-top:1px solid var(--rule)}
+.jed:last-child{border-bottom:1px solid var(--rule)}
+.slicica{width:66px;height:66px;border-radius:50%;overflow:hidden;background:var(--tanko);border:1px solid var(--rule);display:grid;place-items:center}
+.slicica svg{width:100%;height:100%}
+.jed-oznaka{color:var(--teal);font-weight:700;font-size:.8rem;letter-spacing:.08em}
+.jed h3{margin:.1rem 0 .35rem;font-size:1.04rem}
+.jed p{margin:0;font-size:.93rem;text-align:left}
+@media (max-width:760px){.jed{grid-template-columns:52px 1fr;row-gap:.8rem}.slicica{width:48px;height:48px}.jed .gumb{grid-column:2}}
+
+/* --------------------------------------------------------------- okviri */
+.okvir{border:1px solid var(--rule);border-left:4px solid var(--cyan);background:var(--tanko);
+  border-radius:0 10px 10px 0;padding:1.05rem 1.2rem;margin:0 0 1.3rem}
+.okvir h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin:0 0 .5rem}
+.okvir p:last-child,.okvir ul:last-child,.okvir ol:last-child{margin-bottom:0}
+.okvir.pazi{border-left-color:#D9822B}
+.okvir.pazi h4{color:#B4671A}
+:root[data-theme="dark"] .okvir.pazi h4{color:#E3A55A}
+.okvir.primjer{border-left-color:var(--teal)}
+.mjesto{border:1px dashed var(--rule);border-radius:12px;background:var(--tanko);padding:1.4rem;text-align:center;margin:0 0 1.3rem}
+.mjesto b{display:block;color:var(--teal);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.mjesto span{font-size:.92rem}
+figure{margin:0 0 1.4rem}
+figure svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);border-radius:12px}
+figcaption{font-size:.84rem;margin-top:.55rem;color:var(--body)}
+
+table{width:100%;border-collapse:collapse;margin:0 0 1.4rem;font-size:.93rem}
+.tablica-omot{overflow-x:auto;margin:0 0 1.4rem}
+.tablica-omot table{margin:0}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--ink);font-weight:600;background:var(--tanko)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--tanko);
+  border:1px solid var(--rule);border-radius:5px;padding:.08em .35em}
+pre{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto;margin:0 0 1.3rem}
+pre code{background:none;border:0;padding:0;font-size:.88rem;line-height:1.6}
+
+/* ---------------------------------------------------- interaktivni dio */
+.racun{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);
+  padding:clamp(16px,3vw,24px);margin:0 0 1.5rem}
+.racun-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.racun-h b{color:var(--ink);font-size:1rem}
+.racun-h em{font-style:normal;margin-left:auto;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.racun>p{font-size:.93rem;margin:0 0 1rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem 1.4rem}
+.polje label{display:block;font-size:.85rem;color:var(--ink);font-weight:600;margin-bottom:.35rem}
+.polje output{float:right;color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+select,input[type=number],input[type=text]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);
+  border:1px solid var(--rule);border-radius:8px;padding:.45rem .6rem}
+.ishod{margin-top:1.15rem;border-top:1px solid var(--rule);padding-top:1rem;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9rem}
+.ish{background:var(--tanko);border:1px solid var(--rule);border-radius:10px;padding:.7rem .8rem}
+.ish span{display:block;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--body)}
+.ish b{display:block;color:var(--ink);font-size:1.22rem;font-variant-numeric:tabular-nums;margin-top:.15rem}
+.ish b small{font-size:.6em;font-weight:600;color:var(--body);margin-left:.28rem}
+.poruka{margin-top:.9rem;font-size:.9rem;color:var(--teal);min-height:1.4em}
+.segment{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--tanko);flex-wrap:wrap}
+.segment button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--body);padding:.42rem .95rem;cursor:pointer}
+.segment button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .segment button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .segment button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .segment button[aria-pressed="true"]{color:#fff}
+.cipovi{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1rem}
+.cip{font:inherit;font-size:.85rem;border:1px solid var(--rule);background:var(--tanko);color:var(--body);
+  border-radius:999px;padding:.35rem .8rem;cursor:pointer}
+.cip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cip[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .cip[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .cip[aria-pressed="true"]{color:#fff}
+
+/* ------------------------------------------------------------------ kviz */
+.kviz{background:var(--karta);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:clamp(16px,3vw,24px);margin:0 0 1.3rem}
+.kviz .pit{font-weight:600;color:var(--ink);margin:0 0 .8rem;text-align:left}
+.kviz .odg{display:grid;gap:.5rem}
+.kviz .odg button{font:inherit;font-size:.94rem;text-align:left;border:1px solid var(--rule);background:var(--paper);
+  color:var(--body);border-radius:10px;padding:.6rem .85rem;cursor:pointer}
+.kviz .odg button:hover{border-color:var(--teal)}
+.kviz .odg button.tocno{border-color:#1E8A5F;background:rgba(30,138,95,.1);color:var(--ink)}
+.kviz .odg button.netocno{border-color:#C2493D;background:rgba(194,73,61,.1);color:var(--ink)}
+.kviz .obraz{margin:.85rem 0 0;font-size:.9rem;color:var(--body);display:none}
+.kviz .obraz.vidi{display:block}
+.rezultat{font-weight:600;color:var(--teal);margin-top:1rem}
+.brojac{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--body);margin:0 0 .45rem}
+
+.zadaci{counter-reset:z;list-style:none;padding:0;margin:0}
+.zadaci li{counter-increment:z;position:relative;padding:0 0 1.15rem 2.6rem;margin:0;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+.zadaci li:last-child{border-bottom:0}
+.zadaci li::before{content:counter(z);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--tanko);border:1px solid var(--rule);color:var(--teal);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.zadaci b{display:block;color:var(--ink);margin-bottom:.25rem}
+
+/* --------------------------------------------------------------- dalje */
+.dalje{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--rule);padding-top:1.4rem;margin-top:2rem}
+
+/* -------------------------------------------------------------- podnožje */
+footer.pod{border-top:1px solid var(--rule);background:var(--tanko);padding:clamp(24px,4vw,38px) 0;font-size:.85rem}
+footer.pod .omot{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+footer.pod p{margin:0;text-align:left}
+footer.pod a{color:var(--teal)}
+
+/* ------------------------------------------------------------- crteži */
+figure.crtez{margin:0 0 1.5rem}
+figure.crtez svg{display:block;width:100%;height:auto;background:var(--tanko);border:1px solid var(--rule);
+  border-radius:12px;padding:10px}
+figure.crtez .l{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .l2{fill:none;stroke:var(--body);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .t{fill:none;stroke:var(--teal);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+figure.crtez .tf{fill:var(--teal);stroke:none}
+figure.crtez .if{fill:var(--ink);stroke:none}
+figure.crtez .bf{fill:var(--body);stroke:none}
+figure.crtez .pf{fill:var(--paper);stroke:var(--rule);stroke-width:1.4}
+figure.crtez .cf{fill:var(--cyan);opacity:.16;stroke:none}
+figure.crtez .rf{fill:var(--rule);stroke:none}
+figure.crtez .dash{stroke-dasharray:7 6}
+figure.crtez text{fill:var(--ink);font-family:var(--pismo);font-size:16px;font-weight:600}
+figure.crtez text.mali{fill:var(--body);font-size:14px;font-weight:500}
+/* na uskim zaslonima crtež zadržava svoj razmještaj i vodoravno se pomiče u vlastitom okviru */
+@media (max-width:680px){figure.crtez{overflow-x:auto}figure.crtez svg{min-width:600px}}
+figure.crtez figcaption b{color:var(--teal)}
+
+/* ---------------------------------------------------------- alatna traka */
+#ploca{position:fixed;inset:0;z-index:20;pointer-events:none}
+#ploca.aktivno{pointer-events:auto;touch-action:none}
+.alati{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:40;background:var(--karta);
+  border:1px solid var(--rule);border-radius:14px;box-shadow:var(--sjena);padding:6px;display:flex;flex-direction:column;gap:3px}
+.alati button{width:34px;height:32px;border:0;background:transparent;color:var(--body);border-radius:8px;
+  display:grid;place-items:center;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600}
+.alati button:hover{background:var(--tanko);color:var(--ink)}
+.alati button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alati button[aria-pressed="true"]{color:#06262B}}
+:root[data-theme="dark"] .alati button[aria-pressed="true"]{color:#06262B}
+:root[data-theme="light"] .alati button[aria-pressed="true"]{color:#fff}
+.alati button svg{width:16px;height:16px}
+.alati hr{border:0;border-top:1px solid var(--rule);margin:3px 2px;width:calc(100% - 4px)}
+.boje{display:flex;flex-direction:column;gap:3px}
+.boje button{width:34px;height:18px;border-radius:6px}
+.boje button i{display:block;width:16px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.boje button[aria-pressed="true"]{background:var(--tanko);outline:2px solid var(--teal);outline-offset:-2px}
+@media (max-width:680px){
+  .alati{right:0;left:0;bottom:0;top:auto;transform:none;flex-direction:row;border-radius:0;
+    border-left:0;border-right:0;border-bottom:0;padding:5px 8px;gap:4px;overflow-x:auto;align-items:center}
+  .alati hr{border-top:0;border-left:1px solid var(--rule);width:0;height:22px;margin:0 3px;flex:0 0 auto}
+  .boje{flex-direction:row;gap:4px}
+  .boje button{width:24px;height:26px}
+  body{padding-bottom:54px}
+}
+@media (max-width:420px){
+  .alati{justify-content:space-between;padding:5px 6px;gap:2px}
+  .alati button{width:29px;height:30px}
+  .boje button{width:20px;height:26px}
+}
+@media print{.alati,#ploca,.traka{display:none}}
+.podnaslov{font-size:.95rem;margin:14px 0 6px}.hero .stanice{margin-top:10px;font-size:.95rem}.hero .stanice a{font-weight:600}
+
+.lcd{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;background:#B9D84A;color:#1D2A0E;border:6px solid #2F3A3E;border-radius:8px;padding:8px 12px;display:grid;grid-template-columns:auto 1fr;gap:0 14px;font-size:.92rem;line-height:1.45;max-width:300px;box-shadow:inset 0 0 12px rgba(0,0,0,.25)}
+.lcd b{font-weight:600;letter-spacing:.04em}
+.pad{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.koraci-popis{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.koraci-popis button{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:6px 10px;border-radius:8px;font-size:.88rem;color:var(--body);border:1px solid transparent}
+.koraci-popis button:hover,.koraci-popis button:focus-visible{border-color:var(--rule);outline:none}
+.koraci-popis li.aktivan button{background:var(--tanko,rgba(46,202,212,.14));color:var(--ink);border-color:var(--teal)}
+.korak-tekst{min-height:3.2em;font-size:.92rem;color:var(--body);margin:6px 0 0}
+.korak-tekst b{color:var(--ink)}
+.stablo{list-style:none;margin:0;padding:0;font-size:.88rem}
+.stablo li{margin:0}
+.stablo button{all:unset;cursor:pointer;display:flex;gap:8px;align-items:center;width:100%;box-sizing:border-box;padding:4px 8px;border-radius:6px;color:var(--ink)}
+.stablo button[aria-pressed="true"]{background:var(--tanko,rgba(46,202,212,.14))}
+.stablo button:focus-visible{outline:2px solid var(--teal)}
+.stablo .uv{padding-left:22px}
+.stablo i{display:inline-block;width:14px;height:14px;border-radius:3px;border:1.5px solid var(--teal);flex:none}
+.stablo small{color:var(--body)}
+.tbl{width:100%;border-collapse:collapse;font-size:.86rem}
+.tbl th,.tbl td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--rule);vertical-align:top}
+.tbl th{font-weight:500;color:var(--ink)}
+.tbl td:last-child{color:var(--body);font-size:.8rem}
+.polja{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.polja label{display:flex;flex-direction:column;gap:3px;font-size:.82rem;color:var(--body)}
+.polja input[type=number],.polja select{font:inherit;font-size:.9rem;padding:4px 6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);text-align:right;width:100%;box-sizing:border-box}
+.polja select{text-align:left}
+#mreza{display:block;width:100%;height:clamp(380px,70vh,720px);background:var(--paper)}
+.slojevi-popis{list-style:none;margin:6px 0 0;padding:0;font-size:.84rem;color:var(--body);display:grid;gap:3px}
+.tekst-sim{max-width:860px}
+.tekst-sim h2{margin-top:34px}
+.tekst-sim p,.tekst-sim li{color:var(--body);line-height:1.62}
+.galerija{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin:12px 0 0}
+.galerija a{display:block;border:1px solid var(--rule);border-radius:12px;padding:14px;text-decoration:none;color:var(--ink);background:var(--paper)}
+.galerija a:hover{border-color:var(--teal)}
+.galerija b{display:block;margin-bottom:4px}
+.galerija span{font-size:.84rem;color:var(--body)}
+.modul-zn{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--rule);color:var(--body);margin-left:6px;vertical-align:2px}
+</style>
+<style>
+.cr-tijelo{padding:30px 0 56px}
+.cr-mreza{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;align-items:start}
+.karta{background:var(--paper);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+.karta-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.karta-h h2{margin:0;font-size:1.05rem;color:var(--ink);font-weight:600}
+.karta-in{padding:14px 18px}
+#scena{position:relative;height:clamp(360px,66vh,640px);touch-action:none;cursor:grab;background:radial-gradient(ellipse at 50% 85%,rgba(46,202,212,.10),transparent 62%)}
+#scena canvas{display:block;width:100%;height:100%}
+.ucitavanje{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--body)}
+.gumbi{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.gumb.tanki{cursor:pointer}.gumb.tanki[aria-pressed="true"]{background:var(--tanko)}.gumb.tanki:disabled{opacity:.45;cursor:default}
+.traka-napretka{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 18px;border-top:1px solid var(--rule);font-size:.88rem;color:var(--body)}
+.traka-napretka progress{flex:1 1 160px;height:8px;accent-color:var(--teal)}
+.traka-napretka select{font:inherit;font-size:.85rem}
+.stup{display:flex;flex-direction:column;gap:20px}
+.polje{padding:8px 0;border-bottom:1px solid var(--rule)}
+.polje label{display:block;font-size:.88rem;color:var(--ink);font-weight:600;margin-bottom:4px}
+.ulaz{display:grid;grid-template-columns:1fr 84px 24px;gap:8px;align-items:center}
+.ulaz input[type=range]{width:100%;accent-color:var(--teal);margin:0}
+.ulaz input[type=number]{width:100%;font:inherit;font-size:.9rem;padding:4px 6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);text-align:right}
+.ulaz span{font-size:.85rem;color:var(--body)}
+.pom,.info,.napomena{font-size:.82rem;color:var(--body);line-height:1.5;margin:4px 0 0;text-align:left;hyphens:manual}
+.info{margin-top:10px}
+.upoz{color:#B23B2A;font-weight:600}
+fieldset{border:0;margin:0;padding:8px 0;border-bottom:1px solid var(--rule)}
+legend{font-size:.88rem;color:var(--ink);font-weight:600;padding:0;margin-bottom:4px}
+fieldset label{margin-right:14px;font-size:.9rem;color:var(--body);cursor:pointer}
+.izvori{display:flex;flex-wrap:wrap;gap:6px 14px}
+.kv{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--body);padding:6px 0;cursor:pointer}
+.kv input{accent-color:var(--teal)}
+textarea,select,input[type=file]{font:inherit;font-size:.9rem;max-width:100%}
+textarea{width:100%;min-height:64px;border:1px solid var(--rule);border-radius:8px;padding:6px 8px;background:var(--paper);color:var(--ink)}
+select{border:1px solid var(--rule);border-radius:6px;padding:4px 6px;background:var(--paper);color:var(--ink)}
+.t-traka{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:6px;border:1px solid var(--rule);border-bottom:0;border-radius:8px 8px 0 0;background:var(--tanko)}
+.t-traka select,.t-traka input{font:inherit;font-size:.85rem;height:30px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);padding:0 4px}
+.t-traka select{width:auto;max-width:13rem}.t-traka #tekst-h{width:58px}.t-jed,.t-lab{font-size:.8rem;color:var(--body)}
+.t-skup{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.t-sep{width:1px;height:22px;background:var(--rule);margin:0 2px}
+.t-g{width:30px;height:30px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--ink);cursor:pointer;font:inherit;font-size:.95rem;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.t-g:hover{border-color:var(--rule)}.t-g[aria-pressed="true"]{background:var(--paper);border-color:var(--teal);color:var(--teal)}
+.t-g svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;fill:none}
+[data-izvor="tekst"] textarea{border-radius:0 0 8px 8px;min-height:96px;resize:vertical;line-height:1.45}
+.t-pregled{display:block;width:100%;height:120px;margin-top:8px;border:1px dashed var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+.t-polja{display:flex;flex-wrap:wrap;gap:6px 14px}.t-polja label{white-space:nowrap}.t-polja input{width:64px}
+.t-raz{display:flex;align-items:center;gap:6px}.t-raz input{flex:1;min-width:80px}
+.red2{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;padding:6px 0;font-size:.88rem;color:var(--body)}
+#slika-pregled{max-width:100%;max-height:150px;border:1px solid var(--rule);border-radius:6px;margin-top:8px;background:#fff;image-rendering:pixelated}
+.legenda{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--body);margin-top:6px}
+.legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+.os{display:grid;grid-template-columns:52px 1fr 52px;gap:8px;align-items:center;padding:5px 0}
+.os label{font-size:.85rem;color:var(--ink)}
+.os input{width:100%;accent-color:var(--teal);margin:0}
+.os output{text-align:right;font-size:.85rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.test-traka{background:#FFF4D6;color:#5C4400;border-bottom:1px solid #E8D18A;font-size:.85rem;padding:7px 0;text-align:center}
+.gkod{height:260px;overflow:auto;background:#0E1B21;color:#D8E6EA;border-radius:8px;padding:6px 0;font:12.5px/1.45 'IBM Plex Mono',ui-monospace,Consolas,monospace;margin-top:8px}
+.gkod div{white-space:pre;padding:0 10px}
+.gkod i{display:inline-block;width:46px;color:#6E8790;font-style:normal;text-align:right;margin-right:12px;user-select:none}
+.gkod .kom{color:#8FB8A0}
+.gkod .akt{background:#17656E;color:#fff}
+.gkod .akt i{color:#CFE9EC}
+[hidden]{display:none!important}
+.qr{display:flex;gap:16px;align-items:center}
+.qr-slika{flex:0 0 auto;background:#fff;padding:9px;border-radius:10px;border:1px solid var(--rule);line-height:0}
+.qr-slika svg{width:132px;height:132px}
+.qr p,.mob p{margin:0 0 8px;color:var(--body);font-size:.9rem;line-height:1.5;text-align:left}
+.qr p b,.mob p b{color:var(--ink)}
+.adresa{font-size:.78rem;word-break:break-all;color:var(--teal)!important}
+.mob{display:none}.je-mob .mob{display:block}.je-mob .qr{display:none}
+.ar-gumb{width:100%;justify-content:center;font-size:1.02rem;padding:13px 16px;font-weight:600;margin-bottom:6px}
+#xr-sloj{position:fixed;inset:0;z-index:100;pointer-events:none;color:#fff}
+.xr-vrh,.xr-dno{pointer-events:auto;background:rgba(6,30,36,.8);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.xr-vrh{position:absolute;left:10px;right:10px;top:10px;border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:.92rem;line-height:1.35}
+.xr-dno{position:absolute;left:10px;right:10px;bottom:10px;border-radius:14px;padding:10px 12px 8px}
+.xr-gumbi{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+#xr-sloj button{font:inherit;font-size:.9rem;font-weight:600;color:#fff;background:#17656E;border:0;border-radius:9px;padding:9px 12px;flex:1}
+#xr-sloj button[aria-pressed="true"]{background:#2ECAD4;color:#06262B}
+#xr-izlaz{flex:0 0 auto!important;background:#B23B2A!important}
+.xr-os{display:grid;grid-template-columns:58px 1fr 46px;gap:8px;align-items:center;padding:4px 0}
+.xr-os b{font-size:.84rem}.xr-os input{width:100%;accent-color:#2ECAD4;margin:0;height:26px}.xr-os output{text-align:right;font-size:.84rem}
+.xr-napredak{margin:4px 0 0;font-size:.82rem;color:#CFE9EC}
+.slojevi-omot{overflow-x:auto;margin-top:8px}
+table.slojevi{width:100%;border-collapse:collapse;font-size:.85rem}
+.slojevi th{text-align:left;color:var(--ink);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--rule)}
+.slojevi td{padding:4px 6px;border-bottom:1px solid var(--rule);color:var(--body);white-space:nowrap}
+.slojevi select{font-size:.82rem;padding:2px 4px}
+.slojevi input[type=color],#pr-ploca{width:38px;height:26px;padding:0 2px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);cursor:pointer;vertical-align:middle}
+.kvadrat{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+@media (max-width:980px){.cr-mreza{grid-template-columns:minmax(0,1fr);gap:20px}.stup{display:contents}.cr-mreza>.stup>.karta{order:5}#k-scena{order:1!important}#k-ar{order:2!important}#k-crtez{order:3!important}#k-ploca{order:4!important}}
+
+.gkod span.kom,.gkod div.kom{color:#F0A58F}
+.gkod span.kom{color:#8FB8A0}
+#p-tekst{min-height:230px;font:13px/1.5 'IBM Plex Mono',ui-monospace,Consolas,monospace;resize:vertical}
+.graf-omot{position:relative;margin-top:6px}
+.graf-omot canvas{display:block;width:100%;height:170px}
+.graf-crta{position:absolute;top:10px;bottom:26px;width:0;border-left:1.5px solid var(--ink);opacity:.55;pointer-events:none}
+table.rez{width:100%;border-collapse:collapse;font-size:.82rem;margin:6px 0 0}
+.rez th,.rez td{padding:5px 4px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap}
+.rez th:first-child{text-align:left;color:var(--ink);font-weight:600}
+.rez thead th{color:var(--ink);font-weight:600;font-size:.8rem}
+table.rez8{width:100%;border-collapse:collapse;font-size:.84rem;margin:8px 0 0}
+.rez8 th,.rez8 td{padding:5px 6px;border-bottom:1px solid var(--rule);vertical-align:top;text-align:left;color:var(--body)}
+.rez8 th{color:var(--ink);font-weight:600}
+.lista{margin:6px 0 0;padding-left:1.1rem;font-size:.86rem;color:var(--body);line-height:1.5}
+#prog-info code,.pom code,.napomena code{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;font-size:.85em;background:var(--tanko);padding:0 4px;border-radius:4px}
+.samo-tello{}
+@media (max-width:980px){#k-scena{order:1!important}#k-program{order:2!important}#k-graf{order:3!important}#k-model{order:4!important}#k-ar{order:5!important}}
+@media (max-width:680px){.cr-tijelo{padding:16px 0 40px}#scena{height:clamp(300px,58vh,460px)}.karta-h,.karta-in{padding-left:14px;padding-right:14px}}
+</style>
+<style>
+.lab-sadrzaj{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:0 0 1.4rem;padding:.7rem 1rem;border:1px solid var(--rule);border-radius:12px}
+.lab-sadrzaj a{color:var(--teal);font-weight:500;text-decoration:none}
+.lab-sadrzaj a:hover{text-decoration:underline}
+.lab-mreza{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin:1.1rem 0 1.6rem}
+.lab-mreza figure{margin:0;border:1px solid var(--rule);border-radius:12px;overflow:hidden;background:var(--paper);display:flex;flex-direction:column}
+.lab-mreza img{display:block;width:100%;height:220px;object-fit:cover;cursor:zoom-in;background:var(--rule)}
+.lab-mreza figcaption{padding:.6rem .75rem .75rem;font-size:.86rem;line-height:1.45;color:var(--body)}
+.lab-tbl td{vertical-align:top}
+.lab-tbl code,.lab code{font-size:.88em}
+.lab-uvecaj{max-width:min(96vw,1200px);max-height:94vh;padding:.8rem;border:1px solid var(--rule);border-radius:14px;background:var(--paper);color:var(--body)}
+.lab-uvecaj::backdrop{background:rgba(4,16,20,.78)}
+.lab-uvecaj img{display:block;max-width:100%;max-height:78vh;margin:0 auto;object-fit:contain}
+.lab-uvecaj p{margin:.6rem .2rem 0;font-size:.92rem}
+.lab-uvecaj form{display:flex;justify-content:flex-end;margin-bottom:.5rem}
+@media (max-width:560px){.lab-mreza{grid-template-columns:1fr}.lab-mreza img{height:200px}}
+</style>
+<style>
+.koraci{counter-reset:k;list-style:none;margin:0 0 1.4rem;padding:0}
+.koraci>li{counter-increment:k;position:relative;padding:0 0 1rem 2.6rem;margin:0 0 .4rem;border-bottom:1px solid var(--rule)}
+.koraci>li:last-child{border-bottom:0}
+.koraci>li::before{content:counter(k);position:absolute;left:0;top:.05rem;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--teal);color:#fff;font-weight:600;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+.koraci>li>p{margin:.15rem 0 .6rem}
+.koraci>li .pp-sl{display:inline-block;vertical-align:top;margin:0 .7rem .7rem 0;max-width:min(100%,340px)}
+.pp-sl{margin:0;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--paper)}
+.pp-sl img{display:block;width:100%;height:auto;max-height:340px;object-fit:contain;background:var(--rule);cursor:zoom-in}
+.pp-sl figcaption{padding:.45rem .6rem .55rem;font-size:.82rem;line-height:1.4;color:var(--body)}
+.okvir .lab-mreza{margin-bottom:.2rem}
+.pp-kt{margin:.4rem 0 1.4rem;padding:.7rem .9rem;border:2px dashed var(--teal);border-radius:12px;color:var(--ink)}
+.pp-kt label{display:flex;gap:.6rem;align-items:flex-start;cursor:pointer;line-height:1.5}
+.pp-kt input{width:1.15rem;height:1.15rem;margin-top:.2rem;accent-color:var(--teal);flex:none}
+.pp-video{margin:1rem 0 1.6rem;border:1px solid var(--rule);border-radius:12px;overflow:hidden;background:var(--paper)}
+.pp-video video{display:block;width:100%;height:auto;background:#000}
+.pp-video figcaption{padding:.55rem .75rem .7rem;font-size:.86rem;color:var(--body)}
+#pp-kt-popis ol{margin:0 0 1.2rem;padding-left:1.3rem}
+#pp-kt-popis li{margin:0 0 .45rem;color:var(--body)}
+#pp-kt-popis li.ok{color:var(--teal)}
+#pp-kt-popis li.ok::after{content:" ✔"}
+.tekst-sim h3{margin:1.6rem 0 .7rem;color:var(--ink);font-size:1.08rem}
+@media (max-width:560px){.koraci>li{padding-left:2.2rem}.koraci>li .pp-sl{display:block;max-width:100%;margin-right:0}.pp-sl img{max-height:300px}}
+.pp :not(pre)>code{overflow-wrap:anywhere;word-break:break-word}
+.pp pre{max-width:100%}
+.pp-kt label{min-width:0}
+.pp-kt label>*{min-width:0}
+</style>
+</head>
+<body>
+<a class="preskoci" href="#glavno">Preskoči na sadržaj</a>
+<header class="traka"><div class="omot"><a class="znak" href="https://fortroniq.hr/">FORTRONI<b>Q</b></a><div class="putanja"><a href="https://fortroniq.hr/">Izbornik</a><i aria-hidden="true">/</i><a href="../index.html">Digitalni sadržaji</a><i aria-hidden="true">/</i><a href="index.html">Robot IRB 120</a><i aria-hidden="true">/</i><span aria-current="page">Pick &amp; place korak po korak</span></div></div></header>
+<main id="glavno"><header class="hero"><div class="hero-in"><p class="oznaka-modula">INDUSTRIJSKI ROBOT IRB 120 &middot; ABB</p><p class="nadnaslov">Robot u laboratoriju</p><h1>Pick &amp; place na pravom robotu: korak po korak</h1><p>Robot uzima pločicu s pozicije 1, nosi je na poziciju 2, pa zakrenutu za 90° na poziciju 3 i natrag na 1. Svaki dodir na privjesku FlexPendant zapisan je kao zaseban korak, uz fotografiju zaslona i robota — zajedno s greškama koje smo napravili i kako smo ih ispravili. Na kraju je program pušten u automatskom načinu.</p><p class="stanice">Fotografije i video iz našeg laboratorija &middot; 10. 11. 2026. &middot; klikni fotografiju za uvećanje &middot; kontrolne točke 📷 su dokaz da je korak napravljen.</p></div><div class="goals"><div class="omot"><div class="goals-h"><svg viewBox="0 0 46 32" aria-hidden="true" focusable="false"><path d="M2 17.5 12 27 44 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Moći ću:</span></div><ul id="goals"><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>uključiti robota, provjeriti prihvatnicu i postaviti ručno vođenje na 25 %</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>odrediti smjerove osi palicom i poravnati prihvatnicu oko osi Z</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>napraviti modul i rutinu, naučiti točke i provjeriti ih s View Value</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>izvesti program korak po korak, pronaći i ispraviti krivo spremljene točke</span></li><li><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6.4 4.2 9.6 11 2.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>spremiti modul i pokrenuti program u automatskom načinu</span></li></ul></div></div></header>
+<section class="tekst-sim omot lab pp"><nav class="lab-sadrzaj" aria-label="Sadržaj stranice"><a href="#zadatak">Zadatak</a><a href="#sigurnost">Sigurnost</a><a href="#a">A Uključivanje</a><a href="#b">B Prihvatnica</a><a href="#c">C Ručno vođenje</a><a href="#d">D Iznad predmeta</a><a href="#e">E Modul i rutina</a><a href="#f">F Prva točka</a><a href="#g">G Hvat</a><a href="#h">H Proba</a><a href="#i">I Pozicija 2</a><a href="#j">J Pozicija 3</a><a href="#k">K Greške</a><a href="#l">L Spremanje</a><a href="#m">M Automatski način</a><a href="#kontrolne">Kontrolne točke</a><a href="#program">Program</a><a href="#zamke">Zamke</a><a href="#blizanac">Simulator</a></nav>
+<h2 id="zadatak">Zadatak: predmet putuje 1 → 2 → 3 → 1</h2><div class="crta"></div>
+<p>Robot uzima metalnu pločicu s pozicije 1, ostavlja je na poziciji 2, ponovo je uzima i nosi na poziciju 3, pa je vraća na poziciju 1. Pozicije 1 i 2 imaju istu orijentaciju, a pozicija 3 je zakrenuta za 90° — prihvatnica se između 2 i 3 mora zakrenuti oko osi Z. Sve se radi na privjesku FlexPendant, u ručnom načinu, brzinom 25 %; tek na kraju program se pušta u automatskom načinu.</p>
+<div class="lab-mreza"><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-17.jpg" width="900" height="507" alt="Oznake pozicija 1, 2 i 3 na stolu. Pozicija 3 je zakrenuta za 90°."><figcaption>Oznake pozicija 1, 2 i 3 na stolu. Pozicija 3 je zakrenuta za 90°.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-16.jpg" width="507" height="900" alt="Predmet i mjesta odlaganja."><figcaption>Predmet i mjesta odlaganja.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-18.jpg" width="900" height="507" alt="Predmet na poziciji 1 — polazno stanje."><figcaption>Predmet na poziciji 1 — polazno stanje.</figcaption></figure></div>
+<p>Za svaku poziciju naučit ćemo <b>dvije točke</b>: „gore” (50 mm iznad predmeta) i „dolje” (visina hvata). To je ukupno šest točaka:</p>
+<div class="uz-tbl-omot"><table class="tbl lab-tbl"><caption>Točke programa (izmjereno na robotu, tool0, wobj0)</caption><thead><tr><th scope="col">Točka</th><th scope="col">X mm</th><th scope="col">Y mm</th><th scope="col">Z mm</th><th scope="col">EZ</th><th scope="col">Uloga</th></tr></thead><tbody><tr><td><code>p1_gore</code></td><td>87,77</td><td>−362,50</td><td>210,95</td><td>≈ 90°</td><td>iznad pozicije 1</td></tr><tr><td><code>p1</code></td><td>≈ 87,8</td><td>≈ −362,5</td><td>≈ 160,3</td><td>≈ 90°</td><td>hvat / odlaganje na 1</td></tr><tr><td><code>p2_gore</code></td><td>89,96</td><td>−238,23</td><td>210,94</td><td>≈ 90°</td><td>iznad pozicije 2</td></tr><tr><td><code>p2</code></td><td>89,96</td><td>−238,24</td><td>160,74</td><td>≈ 90°</td><td>hvat / odlaganje na 2</td></tr><tr><td><code>p3_gore</code></td><td>−82,91</td><td>−342,96</td><td>210,90</td><td>≈ 180°</td><td>iznad pozicije 3</td></tr><tr><td><code>p3</code></td><td>−82,91</td><td>−342,98</td><td>160,70</td><td>≈ 180°</td><td>hvat / odlaganje na 3</td></tr></tbody></table></div>
+<p>Tvoj robot, stol i oznake neće biti na istom mjestu — brojke su tu da znaš što otprilike očekivati: točke „gore” i „dolje” razlikuju se samo po Z, za oko 50 mm.</p>
+<figure class="pp-video"><video controls playsinline muted preload="none" poster="lab/pp/pp-v2-auto-25.jpg" width="1280" height="720"><source src="lab/pp/pp-v2-auto-25.mp4" type="video/mp4"></video><figcaption>Gotov program u automatskom načinu, brzina 25 %: cijeli ciklus 1 → 2 → 3 → 1 traje oko 45 s.</figcaption></figure>
+<h2 id="sigurnost">Prije početka: sigurnost</h2><div class="crta"></div>
+<ul class="tekst"><li>Robot se giba <b>samo dok je tipka za omogućavanje</b> na poleđini privjeska pritisnuta <b>do pola</b>. Pusti li je — ili stisne do kraja — motori se isključe.</li><li>U gornjoj traci zaslona: <b>Motors On</b> = robot se može gibati; <b>Guard Stop</b> = tipka puštena, robot stoji.</li><li>Rukom u radni prostor robota (namjestiti predmet, provjeriti stisak) <b>samo dok piše Guard Stop</b>.</li><li>Brzina programa cijelu vježbu je <b>25 %</b>. Ručno vođenje palicom uvijek počni <b>malim otklonom</b>.</li><li>Ako robot krene drukčije nego što očekuješ: <b>pusti tipku za omogućavanje</b>. Crvena gljiva (E-stop) na privjesku i na ormaru zaustavlja sve.</li><li>Uz robota je samo onaj tko drži privjesak. Ostali su izvan dosega ruke i kraka vakuumske sisaljke.</li></ul>
+<div class="lab-mreza"><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-25b.jpg" width="507" height="900" alt="Tipka za omogućavanje: crni ispupčeni dio pod remenom na poleđini privjeska. Tri položaja: pušten — do pola (Motors On) — do kraja (stop)."><figcaption>Tipka za omogućavanje: crni ispupčeni dio pod remenom na poleđini privjeska. Tri položaja: pušten — do pola (Motors On) — do kraja (stop).</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-34.jpg" width="900" height="507" alt="Tipka do pola: u gornjoj traci piše Motors On."><figcaption>Tipka do pola: u gornjoj traci piše <b>Motors On</b>.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-35.jpg" width="900" height="507" alt="Tipka puštena: Guard Stop."><figcaption>Tipka puštena: <b>Guard Stop</b>.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-26.jpg" width="507" height="900" alt="Bijela tipka Motors On na ormaru svijetli stalno dok je tipka za omogućavanje do pola; treperi kad su motori isključeni."><figcaption>Bijela tipka Motors On na ormaru svijetli stalno dok je tipka za omogućavanje do pola; treperi kad su motori isključeni.</figcaption></figure></div>
+<h2 id="a">A. Uključivanje robota</h2><div class="crta"></div>
+<ol class="koraci"><li><p>Pogledaj polazno stanje: robot, stol s oznakama, ormar IRC5 Compact ispod stola.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-01.jpg" width="507" height="900" alt="Polazno stanje: robot na stolu, ormar ispod."><figcaption>Polazno stanje: robot na stolu, ormar ispod.</figcaption></figure></li><li><p>Otvori vrata ormara. Lijevo je dio <b>POWER</b> s glavnom sklopkom, desno dio <b>CONTROL</b> s ključem, E-stopom i tipkom Motors On.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-02.jpg" width="900" height="507" alt="Ormar IRC5 Compact s vratima otvorenima."><figcaption>Ormar IRC5 Compact s vratima otvorenima.</figcaption></figure></li><li><p>Glavnu sklopku okreni u položaj <b>I ON</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-03.jpg" width="507" height="900" alt="Glavna sklopka u dijelu POWER, ispod priključka XP1."><figcaption>Glavna sklopka u dijelu POWER, ispod priključka XP1.</figcaption></figure></li><li><p>Pričekaj: kontroler se pali, na privjesku se pojavi zaslon RobotWare s trakom učitavanja (oko minute).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-04.jpg" width="900" height="507" alt="Učitavanje na privjesku."><figcaption>Učitavanje na privjesku.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-06.jpg" width="900" height="507" alt="Ormar uključen: svijetle zelene lampice."><figcaption>Ormar uključen: svijetle zelene lampice.</figcaption></figure></li><li><p>Kad se učitavanje završi, vidiš početni zaslon. Gore lijevo tapni <b>≡</b> da otvoriš glavni izbornik.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-05.jpg" width="900" height="507" alt="Početni zaslon."><figcaption>Početni zaslon.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-07.jpg" width="900" height="507" alt="Glavni izbornik: Inputs and Outputs, Jogging, Program Editor, Program Data, Production Window, Backup and Restore…"><figcaption>Glavni izbornik: Inputs and Outputs, Jogging, Program Editor, Program Data, Production Window, Backup and Restore…</figcaption></figure></li></ol>
+<div class="okvir primjer"><h4>Gornja traka zaslona</h4><p>Lijevo: način rada (<b>Manual</b> ili <b>Auto</b>) i ime sustava (<b>120-102663</b> — serijski broj robota, isti je na naljepnici na osi 6). Desno: stanje motora (<b>Guard Stop</b> / <b>Motors On</b>) i stanje programa (<b>Stopped</b> / <b>Running</b>) s brzinom u zagradi (<b>Speed 25%</b>). Ispod trake je naslov otvorenog prozora — u Program Editoru piše i <i>u kojem si modulu i rutini</i>.</p></div>
+<h2 id="b">B. Prihvatnica: otvori i zatvori prste</h2><div class="crta"></div>
+<p>Pneumatske prste upravlja digitalni izlaz <code>DO_0_gripper</code>: <b>0 = otvoreno</b>, <b>1 = zatvoreno</b>. Prije prvog pomaka provjeri da prihvatnica radi.</p>
+<ol class="koraci"><li><p>≡ → <b>Inputs and Outputs</b>. Otvori se popis <i>Most Common</i> — na ovom kontroleru je prazan.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-08.jpg" width="900" height="507" alt="Inputs and Outputs, popis Most Common prazan."><figcaption>Inputs and Outputs, popis Most Common prazan.</figcaption></figure></li><li><p>Dolje desno tapni <b>View</b> → u izborniku tapni <b>Digital Outputs</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-09.jpg" width="900" height="507" alt="Izbornik View: Digital Outputs."><figcaption>Izbornik View: Digital Outputs.</figcaption></figure></li><li><p>U popisu su <code>DO_0_gripper</code> i <code>DO_1_vacuum</code>. Tapni redak <b>DO_0_gripper</b> da postane plav.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-10.jpg" width="900" height="507" alt="Digitalni izlazi."><figcaption>Digitalni izlazi.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-12.jpg" width="900" height="507" alt="Odabran DO_0_gripper."><figcaption>Odabran DO_0_gripper.</figcaption></figure></li><li><p>Dolje tapni <b>1</b>: prsti se zatvore. Tapni <b>0</b>: prsti se otvore. Gumb <i>Simulate</i> ne diraj.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-11.jpg" width="900" height="507" alt="Prsti otvoreni (0)."><figcaption>Prsti otvoreni (0).</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-13.jpg" width="900" height="507" alt="Prsti zatvoreni (1)."><figcaption>Prsti zatvoreni (1).</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-14.jpg" width="900" height="507" alt="Ponovo otvoreni (0)."><figcaption>Ponovo otvoreni (0).</figcaption></figure></li><li><p>Prste ostavi <b>otvorene</b> (0).</p></li></ol>
+<div class="okvir "><h4>Trenje</h4><p>Na vrhovima PLA prstiju je izolirna traka — bez nje glatka metalna pločica klizi iz prstiju.</p></div>
+<h2 id="c">C. Ručno vođenje (Jogging), brzina i smjerovi osi</h2><div class="crta"></div>
+<ol class="koraci"><li><p>≡ → <b>Jogging</b>. Provjeri retke lijevo: <b>Motion mode: Linear</b>, <b>Coordinate system: Base</b>, <b>Tool: tool0</b>, <b>Work object: wobj0</b>, <b>Joystick lock: None</b>, <b>Increment: None</b>. Ako nešto nije tako, tapni redak i odaberi.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-15.jpg" width="900" height="507" alt="Postavke Jogginga."><figcaption>Postavke Jogginga.</figcaption></figure></li><li><p>Brzina programa: dolje desno tapni kvadrat <b>ROB_1</b> (QuickSet) → ikona <b>Speed</b> → <b>25 %</b>. U gornjoj traci mora pisati <b>Speed 25%</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-38.jpg" width="900" height="507" alt="QuickSet uz desni rub."><figcaption>QuickSet uz desni rub.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-39.jpg" width="900" height="507" alt="Speed: gumbi 0 / 25 / 50 / 100 % i ±1 / ±5 %."><figcaption>Speed: gumbi 0 / 25 / 50 / 100 % i ±1 / ±5 %.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-40.jpg" width="900" height="507" alt="Postavljeno 25 %."><figcaption>Postavljeno 25 %.</figcaption></figure></li></ol>
+<div class="okvir pazi"><h4>Brzina u traci nije brzina palice</h4><p><b>Speed 100%</b> u gornjoj traci je korekcija brzine <i>programa</i> (MoveJ/MoveL). Brzina ručnog vođenja ovisi o tome koliko otkloniš palicu — mali otklon, mala brzina.</p></div>
+<h3>Koja je os gdje: pokazivač i provjera</h3>
+<p>Na stol smo stavili pokazivač koordinatnog sustava (crvene strelice X, Y, Z i luk C = zakret oko Z). Vrijedi samo ako je okrenut kao <b>Base</b> sustav robota — zato ga najprije provjeri palicom, s prstima podignutima iznad predmeta.</p>
+<ol class="koraci"><li><p>Postavi pokazivač uz stol, izvan putanje robota.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-51.jpg" width="900" height="507" alt="Pokazivač X, Y, Z i C uz poziciju 3."><figcaption>Pokazivač X, Y, Z i C uz poziciju 3.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-54.jpg" width="900" height="507" alt="Privjesak i pokazivač: ikone smjerova palice (Joystick directions) dolje desno na zaslonu."><figcaption>Privjesak i pokazivač: ikone smjerova palice (Joystick directions) dolje desno na zaslonu.</figcaption></figure></li><li><p>Napola stisni tipku za omogućavanje i palicu lagano povuci <b>prema sebi</b>. Robot ide <b>udesno</b>, X raste — kao crvena strelica X.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-53.jpg" width="900" height="507" alt="Prije provjere: X 89,55."><figcaption>Prije provjere: X 89,55.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-55.jpg" width="507" height="900" alt="Palica prema sebi: X 179,05 mm, Y i Z isti."><figcaption>Palica prema sebi: X 179,05 mm, Y i Z isti.</figcaption></figure></li><li><p>Gumb palice <b>zakreni suprotno od kazaljke na satu</b>: robot ide <b>gore</b>, Z raste.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-56.jpg" width="507" height="900" alt="Z 161,23 → 206,36 mm."><figcaption>Z 161,23 → 206,36 mm.</figcaption></figure></li><li><p>Palicu nagni <b>udesno</b>: robot ide <b>od tebe, prema bazi</b>, Y raste.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-57.jpg" width="507" height="900" alt="Y −365,41 → −275,62 mm."><figcaption>Y −365,41 → −275,62 mm.</figcaption></figure></li></ol>
+<div class="uz-tbl-omot"><table class="tbl lab-tbl"><caption>Smjerovi palice u sustavu Base (stojiš ispred stola s privjeskom)</caption><thead><tr><th scope="col">Palica</th><th scope="col">Os</th><th scope="col">Robot ide</th></tr></thead><tbody><tr><td>prema sebi</td><td>+X</td><td>udesno</td></tr><tr><td>od sebe</td><td>−X</td><td>ulijevo</td></tr><tr><td>udesno</td><td>+Y</td><td>od tebe, prema bazi</td></tr><tr><td>ulijevo</td><td>−Y</td><td>prema tebi</td></tr><tr><td>zakret suprotno od kazaljke</td><td>+Z</td><td>gore</td></tr><tr><td>zakret u smjeru kazaljke</td><td>−Z</td><td>dolje</td></tr></tbody></table></div>
+<div class="okvir pazi"><h4>Smjer palice nije smjer na stolu</h4><p>Palica „prema sebi” vodi robota udesno. Zato uvijek gledaj ikone <i>Joystick directions</i> i pokazivač, i prvo napravi mali otklon. Pri zakretanju gumba palica se lako i malo nagne — u probi je X usput pao za 4 mm. Kad želiš samo jednu os, uključi <b>Joystick lock</b>.</p></div>
+<h2 id="d">D. Robot iznad predmeta: okomito, centrirano, poravnato</h2><div class="crta"></div>
+<div class="okvir pazi"><h4>Ručno dovođenje uz otpuštene kočnice — samo nastavnik</h4><p>Robot se može dovesti i rukom: nastavnik pritisne plavu tipku za otpuštanje kočnica na ormaru (motori isključeni), a korisnik drži ruku robota objema rukama, ne između članaka, i vodi je kratkim pokretima. Ostali su izvan dosega. Nakon toga kontroler javi poruku 50507 — to je očekivano.</p></div>
+<ol class="koraci"><li><p>Ako je robot doveden rukom: na zaslonu je poruka <b>50507 Movement detected when brakes are applied</b>. Tapni <b>Acknowledge</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-19.jpg" width="507" height="900" alt="Robot rukom doveden iznad pozicije 1."><figcaption>Robot rukom doveden iznad pozicije 1.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-20b.jpg" width="900" height="507" alt="Poruka 50507: 1 = Acknowledge, 2 = kartica I/O."><figcaption>Poruka 50507: 1 = Acknowledge, 2 = kartica I/O.</figcaption></figure></li><li><p>Alat sada stoji ukoso. Na zaslonu Jogging tapni <b>Align…</b> (dolje lijevo).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-21.jpg" width="507" height="900" alt="Alat ukoso nakon ručnog dovođenja."><figcaption>Alat ukoso nakon ručnog dovođenja.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-22b.jpg" width="900" height="507" alt="Align u donjem redu zaslona Jogging."><figcaption>Align u donjem redu zaslona Jogging.</figcaption></figure></li><li><p>U prozoru Align odaberi koordinatni sustav <b>World</b>, napola stisni tipku za omogućavanje i drži <b>Start Align</b> dok se alat ne uspravi. Zatim <b>Close</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-23b.jpg" width="900" height="507" alt="4 = Start Align (drži), 5 = Close."><figcaption>4 = Start Align (drži), 5 = Close.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-27.jpg" width="507" height="900" alt="Nakon Align alat je okomit."><figcaption>Nakon Align alat je okomit.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-28.jpg" width="900" height="507" alt="Jogging nakon Align."><figcaption>Jogging nakon Align.</figcaption></figure></li><li><p>Centriraj prste iznad predmeta palicom X i Y (Linear, Base). Gledaj sprijeda <i>i</i> odozgo.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-29.jpg" width="507" height="900" alt="Prsti nisu centrirani."><figcaption>Prsti nisu centrirani.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-31.jpg" width="900" height="507" alt="Centrirano: X 89,55, Y −365,43."><figcaption>Centrirano: X 89,55, Y −365,43.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-32.jpg" width="507" height="900" alt="Sprijeda."><figcaption>Sprijeda.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-33.jpg" width="507" height="900" alt="Odozgo."><figcaption>Odozgo.</figcaption></figure></li></ol>
+<h3>Prihvatnicu poravnaj oko osi Z</h3>
+<p>Prsti moraju biti <b>paralelni s dužom stranicom predmeta</b>, inače ga pri stiskanju zakrenu. Ovo se radi s prstima <b>iznad</b> predmeta.</p>
+<ol class="koraci"><li><p>Palicom (Linear, Base) podigni robota oko 40 mm, da vrhovi prstiju budu iznad predmeta.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-58.jpg" width="507" height="900" alt="Iznad predmeta prije rotacije: prsti stoje ukoso."><figcaption>Iznad predmeta prije rotacije: prsti stoje ukoso.</figcaption></figure></li><li><p>Na zaslonu Jogging tapni <b>Position Format…</b> → <b>Orientation format: Euler angles</b>, Angle unit: <b>Degrees</b> → <b>OK</b>. Desno umjesto q1–q4 sada pišu kutovi <b>EZ, EY, EX</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-59c.jpg" width="900" height="507" alt="Position Format: 16 = Orientation format, 17 = OK; plavo A–D objašnjenje polja."><figcaption>Position Format: 16 = Orientation format, 17 = OK; plavo A–D objašnjenje polja.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-60.jpg" width="900" height="507" alt="Izbornik: Quaternion ili Euler angles."><figcaption>Izbornik: Quaternion ili Euler angles.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-62.jpg" width="900" height="507" alt="EZ 86,18°, EY 0,02°, EX 179,99°."><figcaption>EZ 86,18°, EY 0,02°, EX 179,99°.</figcaption></figure></li><li><p>Tapni <b>Motion mode</b> → četvrta ikona <b>Reorient</b> → <b>OK</b>. Coordinate system se sam prebaci na <b>Tool</b> — to je u redu.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-63.jpg" width="900" height="507" alt="Motion mode: Linear odabran."><figcaption>Motion mode: Linear odabran.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-64.jpg" width="900" height="507" alt="Odabran Reorient."><figcaption>Odabran Reorient.</figcaption></figure></li><li><p>Tapni <b>Joystick lock</b> → zaključaj <b>Horizontal</b> i <b>Vertical</b> → <b>OK</b>. Slobodno ostaje samo zakretanje palice.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-66.jpg" width="900" height="507" alt="Joystick lock: None, Horizontal, Vertical, Rotation."><figcaption>Joystick lock: None, Horizontal, Vertical, Rotation.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-67.jpg" width="900" height="507" alt="Odabrano Horizontal i Vertical."><figcaption>Odabrano Horizontal i Vertical.</figcaption></figure></li><li><p>Napola stisni tipku i polako zakreći palicu dok <b>EZ ne bude približno 90°</b>, što bliže. EY i EX se ne smiju mijenjati. Pusti tipku.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-68.jpg" width="900" height="507" alt="EZ 89,99°, EY 0,02°, EX 179,99°."><figcaption>EZ 89,99°, EY 0,02°, EX 179,99°.</figcaption></figure></li><li><p><b>Joystick lock</b> → <b>None</b> → OK. <b>Motion mode</b> → <b>Linear</b> → OK. Provjeri: Coordinate system se vratio na <b>Base</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-69.jpg" width="900" height="507" alt="Joystick lock None."><figcaption>Joystick lock None.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-70.jpg" width="900" height="507" alt="Motion mode Linear."><figcaption>Motion mode Linear.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-71.jpg" width="900" height="507" alt="Base, EZ 89,99°."><figcaption>Base, EZ 89,99°.</figcaption></figure></li><li><p>Spusti prste do pola debljine predmeta (gumb palice u smjeru kazaljke). Gledaj sa strane: prsti paralelni s predmetom, vrhovi iznad stola.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-72.jpg" width="507" height="900" alt="Spušteno."><figcaption>Spušteno.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-73.jpg" width="507" height="900" alt="Sprijeda: prst na sredini predmeta."><figcaption>Sprijeda: prst na sredini predmeta.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-74.jpg" width="507" height="900" alt="Sa strane: prsti paralelni s predmetom."><figcaption>Sa strane: prsti paralelni s predmetom.</figcaption></figure></li></ol>
+<div class="okvir primjer"><h4>Što znače polja u Position Format</h4><p><b>Position shown in: Work object</b> — X, Y, Z mjere se od ishodišta radnog objekta <code>wobj0</code>, koji se poklapa s bazom robota. <b>Quaternion</b> — orijentacija kao četiri broja q1–q4, isto kao u RAPID-u u <code>robtarget</code>; <b>Euler angles</b> — tri kuta, lakša za čitanje. Primjer: kvaternion (0; 0,730; 0,683; 0) je isti položaj kao EZ 86,2°, EY 0°, EX 180°. Usporedi oba zapisa uživo na stranici <a href="kinematika-robota.html">Izravna i inverzna kinematika</a>.</p></div>
+<div class="okvir pazi"><h4>Razmislite: smijem li predmet pomaknuti rukom?</h4><p>Na ovoj vježbi predmet smijemo rukom pomaknuti između prstiju (samo u Guard Stop): lagan je, robot je mali, točan položaj nije bitan. Na pravom radnom mjestu: ako je pomak precizan, predmet stoji u steznoj napravi i robot se uči prema predmetu, a ne obrnuto; ako je robot snažan, krivo poravnan prst predmet zgnječi ili odbaci; ako je materijal skup, ogrebotina je škart.</p></div>
+<div class="okvir "><h4>TCP</h4><p>Radimo s alatom <code>tool0</code> — mjeri se prirubnica robota, ne vrh prstiju. Zato točke učimo tako da središte predmeta okom dovedemo između vrhova prstiju. Što je TCP i kako se mjeri, vidi <a href="laboratorij.html#crtanje">Robot u laboratoriju</a>.</p></div>
+<h2 id="e">E. Novi modul i rutina s tvojim prezimenom</h2><div class="crta"></div>
+<ol class="koraci"><li><p>≡ → <b>Program Editor</b>. Otvori se postojeći program. Gore tapni karticu <b>Modules</b> (srednja).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-41b.jpg" width="900" height="507" alt="6 = Modules."><figcaption>6 = Modules.</figcaption></figure></li><li><p>Ako si slučajno tapnuo <b>Routines</b>: dolje desno <b>Back</b>, pa <b>Modules</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-42.jpg" width="900" height="507" alt="Krivo: Routines → Back."><figcaption>Krivo: Routines → Back.</figcaption></figure></li><li><p>Dolje lijevo <b>File</b> → <b>New Module…</b></p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-43b.jpg" width="900" height="507" alt="7 = File."><figcaption>7 = File.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-44.jpg" width="900" height="507" alt="Izbornik File."><figcaption>Izbornik File.</figcaption></figure></li><li><p>Pojavi se upozorenje da ćeš izgubiti programski pokazivač. Tapni <b>Yes</b> — program se ne briše.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-45.jpg" width="900" height="507" alt="Upozorenje o programskom pokazivaču."><figcaption>Upozorenje o programskom pokazivaču.</figcaption></figure></li><li><p>U prozoru New Module desno od Name tapni <b>ABC…</b>, upiši <b>PR_PickPlace_</b> i <b>svoje prezime</b>, pa <b>OK</b>, pa još jednom <b>OK</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-46b.jpg" width="900" height="507" alt="8 = ABC…, 9 = OK."><figcaption>8 = ABC…, 9 = OK.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-49.jpg" width="900" height="507" alt="Tipkovnica: PR_PickPlace_Pavlic."><figcaption>Tipkovnica: PR_PickPlace_Pavlic.</figcaption></figure></li><li><p>Novi modul je u popisu. Tapni ga, pa dolje desno <b>Show Module</b>. Otvori se prazan modul.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-50b.jpg" width="900" height="507" alt="10 = tvoj modul, 11 = Show Module."><figcaption>10 = tvoj modul, 11 = Show Module.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-76.jpg" width="900" height="507" alt="Prazan modul: MODULE … ENDMODULE."><figcaption>Prazan modul: MODULE … ENDMODULE.</figcaption></figure></li><li><p>Gore tapni <b>Routines</b> → <b>File</b> → <b>New Routine…</b> → kod Name <b>ABC…</b> → upiši <b>PickPlace_</b> i svoje prezime → OK. Type ostaje <b>Procedure</b>. <b>OK</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-77.jpg" width="900" height="507" alt="Routine Declaration."><figcaption>Routine Declaration.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-79.jpg" width="900" height="507" alt="Ime rutine PickPlace_Pavlic."><figcaption>Ime rutine PickPlace_Pavlic.</figcaption></figure></li><li><p>Tapni rutinu → <b>Show Routine</b>. Vidiš <code>PROC PickPlace_Pavlic()</code>, prazno mjesto <code>&lt;SMT&gt;</code> i <code>ENDPROC</code>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-80.jpg" width="900" height="507" alt="Prazna rutina."><figcaption>Prazna rutina.</figcaption></figure></li></ol>
+<div class="pp-kt"><label><input type="checkbox" data-kt="1"> <b>Kontrolna točka 1 📷</b> Fotografija zaslona s imenom modula <code>PR_PickPlace_&lt;Prezime&gt;</code> i rutine <code>PickPlace_&lt;Prezime&gt;</code>.</label></div>
+<div class="okvir "><h4>Pravila imena u RAPID-u</h4><p>Samo slova bez kvačica (Ivić → <b>Ivic</b>), znamenke i donja crtica; ime počinje slovom; najviše 32 znaka. Za prezime u imenu modula ostaje 19 znakova.</p></div>
+<h2 id="f">F. Prva točka: p1_gore</h2><div class="crta"></div>
+<div class="okvir pazi"><h4>Pravilo za cijelu vježbu</h4><p><b>Modify Position</b> sprema položaj u kojem robot <i>sada stoji</i> u točku iz označenog retka. Tapni ga samo kad robot stoji točno ondje gdje ta točka treba biti. Kad u novom retku biraš <i>postojeću</i> točku, Modify Position ne tapni.</p></div>
+<ol class="koraci"><li><p>Robot je iznad pozicije 1, prsti oko 50 mm iznad predmeta (Z ≈ 210). Ako nije, podigni ga u Joggingu.</p></li><li><p>U Program Editoru tapni <code>&lt;SMT&gt;</code> da bude plav. Dolje tapni <b>Add Instruction</b>: desno se otvori popis <b>Common</b> (:=, Compact IF, FOR, IF, MoveAbsJ, MoveC, MoveJ, MoveL, ProcCall, Reset, RETURN, Set, ← Previous, Next →).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-82.jpg" width="900" height="507" alt="&lt;SMT&gt; označen."><figcaption>&lt;SMT&gt; označen.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-83.jpg" width="900" height="507" alt="Add Instruction — popis Common."><figcaption>Add Instruction — popis Common.</figcaption></figure></li><li><p>Tapni <b>MoveJ</b>. Pojavi se <code>MoveJ *, v1000, z50, tool0;</code> — zvjezdica je trenutni položaj. Tapni na <b>*</b>: otvori se prozor Change Selected.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-84b.jpg" width="900" height="507" alt="18 = New. Točke p10–p50 pripadaju drugom programu."><figcaption>18 = New. Točke p10–p50 pripadaju drugom programu.</figcaption></figure></li><li><p><b>Česta pogreška:</b> ne biraj p10 ni drugu postojeću točku — Modify Position bi prepisao točku tuđeg programa. Tapni <b>New</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-85.jpg" width="900" height="507" alt="Krivo: odabran p10."><figcaption>Krivo: odabran p10.</figcaption></figure></li><li><p>U prozoru New Data Declaration kod Name tapni <b>…</b>, upiši <b>p1_gore</b>, OK. Provjeri <b>Module: PR_PickPlace_&lt;Prezime&gt;</b>. OK.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-86.jpg" width="900" height="507" alt="New Data Declaration: robtarget, Global, Constant, tvoj modul."><figcaption>New Data Declaration: robtarget, Global, Constant, tvoj modul.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-87.jpg" width="900" height="507" alt="Redak MoveJ p1_gore, v1000, z50."><figcaption>Redak MoveJ p1_gore, v1000, z50.</figcaption></figure></li><li><p>U retku na vrhu tapni <b>v1000</b> → odaberi <b>v200</b>. Tapni <b>z50</b> → odaberi <b>z10</b>. Pazi: popis je u dva stupca po abecedi (z0 | z1, z10 | z100…) — lako se pogodi z1.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-88.jpg" width="900" height="507" alt="Krivo: z1."><figcaption>Krivo: z1.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-89.jpg" width="900" height="507" alt="Ispravno: MoveJ p1_gore, v200, z10, tool0."><figcaption>Ispravno: MoveJ p1_gore, v200, z10, tool0.</figcaption></figure></li><li><p>Pročitaj redak na vrhu prije OK. Tapni <b>OK</b>.</p></li><li><p>Tapni redak <code>MoveJ p1_gore…</code> da bude plav. U donjoj traci tapni <b>Modify Position</b> (četvrti gumb — nije u izborniku Edit).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-90.jpg" width="900" height="507" alt="Izbornik Edit — ovdje nema Modify Position."><figcaption>Izbornik Edit — ovdje nema Modify Position.</figcaption></figure></li><li><p>U prozoru Confirm Modify Position tapni <b>Modify</b>. Kvačicu <i>Don’t show this dialog again</i> <b>ne uključuj</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-91.jpg" width="900" height="507" alt="Confirm Modify Position."><figcaption>Confirm Modify Position.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-92.jpg" width="900" height="507" alt="Ako se kvačica uključi: upit se vraća tek kad zatvoriš i ponovo otvoriš Program Editor."><figcaption>Ako se kvačica uključi: upit se vraća tek kad zatvoriš i ponovo otvoriš Program Editor.</figcaption></figure></li></ol>
+<h3>Provjeri da je točka stvarno spremljena: View Value</h3>
+<ol class="koraci"><li><p>Tapni samo riječ <b>p1_gore</b> u retku. Dolje <b>Debug</b> → lijevi stupac <b>View Value</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-103.jpg" width="900" height="507" alt="Označena riječ p1_gore."><figcaption>Označena riječ p1_gore.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-104.jpg" width="900" height="507" alt="Izbornik Debug."><figcaption>Izbornik Debug.</figcaption></figure></li><li><p>Pročitaj <b>x, y, z</b>. Za točku „gore” z ≈ 210 mm. Tapni <b>Cancel</b> — ne dodiruj brojke, otvara se tipkovnica za izmjenu.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-105.jpg" width="900" height="507" alt="View Value p1_gore: [87,77; −362,5; 210,95]."><figcaption>View Value p1_gore: [87,77; −362,5; 210,95].</figcaption></figure></li></ol>
+<div class="pp-kt"><label><input type="checkbox" data-kt="2"> <b>Kontrolna točka 2 📷</b> Fotografija View Value za <code>p1_gore</code> (z ≈ 210 mm).</label></div>
+<div class="okvir pazi"><h4>Bez View Value ne znaš je li točka spremljena</h4><p>Kod nas je točka p3 ostala na visini „gore” jer Modify Position nije bio napravljen dok je robot bio dolje — robot je otvorio prste 50 mm iznad stola i predmet je pao (vidi <a href="#k">K</a>). Zato nakon <b>svake</b> Modify Position: View Value i fotografija.</p></div>
+<h2 id="g">G. Hvat na poziciji 1</h2><div class="crta"></div>
+<ol class="koraci"><li><p>Spusti robota u Joggingu na visinu hvata (Z ≈ 160): prsti otvoreni, s obje strane predmeta, na pola njegove debljine.</p></li><li><p>Tapni redak <code>MoveJ p1_gore…</code>. <b>Add Instruction</b> → <b>MoveL</b>. Ako se pojavi upit <i>above or below</i>, tapni <b>Below</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-93.jpg" width="900" height="507" alt="Add Instruction → MoveL."><figcaption>Add Instruction → MoveL.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-94.jpg" width="900" height="507" alt="Upit Above / Below."><figcaption>Upit Above / Below.</figcaption></figure></li><li><p>Privjesak je sam upisao ime <b>p1_gore10</b> i prepisao v200, z10 — nema zvjezdice. Tapni <b>p1_gore10</b> → <b>New</b> → ime <b>p1</b> (obriši ponuđeno, npr. p1_gore20) → OK.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-95.jpg" width="900" height="507" alt="Automatsko ime p1_gore10."><figcaption>Automatsko ime p1_gore10.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-96.jpg" width="900" height="507" alt="Change Selected."><figcaption>Change Selected.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-97.jpg" width="900" height="507" alt="New Data Declaration — prepiši ime u p1."><figcaption>New Data Declaration — prepiši ime u p1.</figcaption></figure></li><li><p>Brzina <b>v50</b>, zona <b>fine</b> (robot točno stane u točki — nužno prije hvata). Provjeri <code>MoveL p1, v50, fine, tool0;</code> → OK.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-99.jpg" width="900" height="507" alt="Zona fine."><figcaption>Zona fine.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-101.jpg" width="900" height="507" alt="MoveJ p1_gore / MoveL p1."><figcaption>MoveJ p1_gore / MoveL p1.</figcaption></figure></li><li><p>Pogledaj razmak prstiju sa strane i odozgo. Ako je jedan prst gotovo uz rub, a drugi daleko, izjednači razmak palicom Y — inače bliži prst pri stiskanju pogura predmet.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-102.jpg" width="507" height="900" alt="Robot u p1, prsti otvoreni."><figcaption>Robot u p1, prsti otvoreni.</figcaption></figure></li><li><p><b>Modify Position</b> → <b>Modify</b>, pa View Value za <b>p1</b> (z ≈ 160).</p></li><li><p>Tapni redak <code>MoveL p1…</code> → <b>Add Instruction</b> → <b>Set</b> → desno <b>DO_0_gripper</b> → OK.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-106.jpg" width="900" height="507" alt="Set &lt;EXP&gt;."><figcaption>Set &lt;EXP&gt;.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-107.jpg" width="900" height="507" alt="Odabran DO_0_gripper."><figcaption>Odabran DO_0_gripper.</figcaption></figure></li><li><p><b>Add Instruction</b> → dolje <b>Next →</b> (druga stranica: WaitDI, WaitDO, WaitTime…) → <b>WaitTime</b> → <b>123…</b> → <b>0.5</b> → OK → OK.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-108.jpg" width="900" height="507" alt="Druga stranica popisa."><figcaption>Druga stranica popisa.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-110.jpg" width="900" height="507" alt="Brojčana tipkovnica: 0.5."><figcaption>Brojčana tipkovnica: 0.5.</figcaption></figure></li><li><p><b>Add Instruction</b> → <b>← Previous</b> → <b>MoveL</b> → tapni ime točke → u popisu odaberi <b>postojeću p1_gore</b> (ne New) → v100, fine → OK. Ovdje <b>nema</b> Modify Position.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-112.jpg" width="900" height="507" alt="Odabir brzine."><figcaption>Odabir brzine.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-113.jpg" width="900" height="507" alt="Pet redaka hvata."><figcaption>Pet redaka hvata.</figcaption></figure></li></ol>
+<pre><code>MoveJ p1_gore, v200, z10, tool0;
+MoveL p1, v50, fine, tool0;
+Set DO_0_gripper;
+WaitTime 0.5;
+MoveL p1_gore, v100, fine, tool0;</code></pre>
+<h2 id="h">H. Prva proba korak po korak</h2><div class="crta"></div>
+<ol class="koraci"><li><p>Na početak rutine dodaj otvaranje prstiju: tapni redak <code>MoveJ p1_gore…</code> → <b>Add Instruction</b> → <b>Reset</b> → <b>DO_0_gripper</b> → OK → upit <i>above or below</i> → <b>Above</b>. Upit se kod Reset pojavi tek nakon odabira signala.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-114b.jpg" width="900" height="507" alt="19 = redak, 20 = Add Instruction, 21 = Debug."><figcaption>19 = redak, 20 = Add Instruction, 21 = Debug.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-116.jpg" width="900" height="507" alt="Reset &lt;EXP&gt;."><figcaption>Reset &lt;EXP&gt;.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-117.jpg" width="900" height="507" alt="Upit Above / Below — tapni Above."><figcaption>Upit Above / Below — tapni Above.</figcaption></figure></li></ol>
+<div class="okvir pazi"><h4>Opasno: program pointer u tuđem programu</h4><p>Ako Program Editor otvoriš preko <b>≡ → Program Editor</b>, otvori se ondje gdje stoji programski pokazivač — u starom programu (<code>MainModule/main</code>). Step forward bi tada izveo tuđi program. Prije svakog pritiska tipke pogledaj naslov ispod gornje trake: mora pisati <code>…/PR_PickPlace_&lt;Prezime&gt;/PickPlace_&lt;Prezime&gt;</code>. U svoj modul vraćaš se karticom <b>T_ROB1 PR_PickPl…</b> na najdonjem redu.</p><div class="lab-mreza"><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-118.jpg" width="900" height="507" alt="Krivo: MainModule/main, strelica na tuđem MoveL p20."><figcaption>Krivo: MainModule/main, strelica na tuđem MoveL p20.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-119b.jpg" width="900" height="507" alt="22 = kartica tvog modula."><figcaption>22 = kartica tvog modula.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-120.jpg" width="900" height="507" alt="Ispravno: tvoja rutina, prvi redak Reset."><figcaption>Ispravno: tvoja rutina, prvi redak Reset.</figcaption></figure></div></div>
+<ol class="koraci"><li><p>Dolje <b>Debug</b> → lijevi stupac, <b>drugi</b> redak <b>PP to Routine…</b> (ne PP to Main u prvom retku).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-121.jpg" width="900" height="507" alt="Krivo: PP to Main → upit „move PP to main?” — tapni No."><figcaption>Krivo: PP to Main → upit „move PP to main?” — tapni No.</figcaption></figure></li><li><p>U popisu tapni <b>PickPlace_&lt;Prezime&gt;</b> → OK. Strelica (PP) stoji uz <code>Reset DO_0_gripper;</code>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-122.jpg" width="900" height="507" alt="Move PP to Routine."><figcaption>Move PP to Routine.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-123.jpg" width="900" height="507" alt="Strelica PP na prvom retku tvoje rutine."><figcaption>Strelica PP na prvom retku tvoje rutine.</figcaption></figure></li><li><p>Tipke za izvođenje su četiri u rombu desno dolje: gore <b>Start ▶</b> (ne!), lijevo Step backward, <b>desno Step forward ▶|</b>, dolje Stop ■.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-124b.jpg" width="900" height="507" alt="23 = Step forward."><figcaption>23 = Step forward.</figcaption></figure></li><li><p>Stani u stranu, napola stisni tipku za omogućavanje i pritisni <b>Step forward</b> jednom. Izvede se jedan redak. Ponavljaj redak po redak.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-125.jpg" width="900" height="507" alt="Mali robot = MP (gdje je robot stigao), strelica = PP (sljedeći redak)."><figcaption>Mali robot = MP (gdje je robot stigao), strelica = PP (sljedeći redak).</figcaption></figure></li><li><p>Nakon <code>Set</code> pusti tipku (Guard Stop) i rukom lagano provjeri drži li prst predmet. Čeljusti ne smiju doći do kraja hoda.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-126.jpg" width="507" height="900" alt="Prsti stisnuli predmet."><figcaption>Prsti stisnuli predmet.</figcaption></figure></li><li><p>Nastavi do <code>ENDPROC</code>: robot drži predmet iznad pozicije 1.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-127.jpg" width="507" height="900" alt="Predmet podignut."><figcaption>Predmet podignut.</figcaption></figure></li></ol>
+<div class="pp-kt"><label><input type="checkbox" data-kt="3"> <b>Kontrolna točka 3 📷</b> Fotografija robota s predmetom u prstima i zaslona sa strelicom na ENDPROC.</label></div>
+<figure class="pp-video"><video controls playsinline muted preload="none" poster="lab/pp/pp-v1-korak-po-korak.jpg" width="1280" height="720"><source src="lab/pp/pp-v1-korak-po-korak.mp4" type="video/mp4"></video><figcaption>Proba korak po korak: operater pritišće Step forward, robot izvodi redak po redak.</figcaption></figure>
+<h2 id="i">I. Pozicija 2: odlaganje i ponovno uzimanje</h2><div class="crta"></div>
+<p>Točke odlaganja učimo <b>s predmetom u prstima</b> — tako je visina odlaganja prava, iako stol nije savršeno ravan prema bazi robota.</p>
+<ol class="koraci"><li><p>Jogging, Linear, Base: s predmetom u prstima pomakni robota <b>samo vodoravno</b> iznad oznake 2. EZ ostaje ≈ 90°. Položaj provjeri <b>okomito odozgo</b> — s privjeska perspektiva vara.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-128.jpg" width="507" height="900" alt="Iznad pozicije 2: Y −238,23, Z 210,94."><figcaption>Iznad pozicije 2: Y −238,23, Z 210,94.</figcaption></figure></li><li><p>Program: tapni zadnji redak <code>MoveL p1_gore…</code> → <b>Add Instruction</b> → <b>MoveJ</b> → tapni ime točke → <b>New</b> → <b>p2_gore</b> (privjesak nudi npr. p1_gore30) → v200, z10 → OK → <b>Modify Position</b> → View Value.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-129.jpg" width="900" height="507" alt="New Data Declaration: prepiši ime."><figcaption>New Data Declaration: prepiši ime.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-131.jpg" width="900" height="507" alt="MoveJ p2_gore, v200, z10."><figcaption>MoveJ p2_gore, v200, z10.</figcaption></figure></li><li><p>Jogging: spusti predmet tik iznad stola, oko 1 mm. Program: <b>MoveL</b> → New <b>p2</b> → v50, fine → OK → <b>Modify Position</b> → View Value (z ≈ 160,7).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-133.jpg" width="507" height="900" alt="Predmet tik iznad stola: Z 160,74."><figcaption>Predmet tik iznad stola: Z 160,74.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-134.jpg" width="900" height="507" alt="MoveL p2, v50, fine."><figcaption>MoveL p2, v50, fine.</figcaption></figure></li><li><p>Dodaj <b>Reset DO_0_gripper</b>, <b>WaitTime 0.5</b>, <b>MoveL p2_gore, v100, fine</b> (postojeća točka). Popis brzina je po abecedi: v100 je na prvoj stranici.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-135.jpg" width="900" height="507" alt="Reset ispod MoveL p2."><figcaption>Reset ispod MoveL p2.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-137.jpg" width="900" height="507" alt="MoveL p2_gore, v100, fine."><figcaption>MoveL p2_gore, v100, fine.</figcaption></figure></li><li><p>Proba samo novog dijela: tapni redak <code>Reset…</code> ispod <code>MoveL p2</code> → <b>Debug</b> → <b>PP to Cursor</b> → tri puta Step forward. <i>Ne</i> PP to Routine — Reset na početku bi ispustio predmet.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-138.jpg" width="507" height="900" alt="Predmet ostavljen na poziciji 2."><figcaption>Predmet ostavljen na poziciji 2.</figcaption></figure></li><li><p>Uzimanje s pozicije 2 — četiri retka s <b>postojećim</b> točkama, <b>bez Modify Position</b>: <code>MoveL p2, v50, fine</code> · <code>Set DO_0_gripper</code> · <code>WaitTime 0.5</code> · <code>MoveL p2_gore, v100, fine</code>. Proba: PP to Cursor na <code>MoveL p2</code> → četiri koraka.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-140.jpg" width="900" height="507" alt="Uzimanje s pozicije 2."><figcaption>Uzimanje s pozicije 2.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-141.jpg" width="507" height="900" alt="Predmet podignut s pozicije 2."><figcaption>Predmet podignut s pozicije 2.</figcaption></figure></li></ol>
+<div class="pp-kt"><label><input type="checkbox" data-kt="4"> <b>Kontrolna točka 4 📷</b> Fotografije View Value za <code>p2_gore</code> i <code>p2</code>, predmeta na poziciji 2 (robot gore, prazni prsti) i predmeta ponovo u prstima.</label></div>
+<h2 id="j">J. Pozicija 3: zakret za 90°</h2><div class="crta"></div>
+<ol class="koraci"><li><p>S predmetom u prstima vodoravno iznad oznake 3 (Z ostaje ≈ 210).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-142.jpg" width="507" height="900" alt="Iznad pozicije 3 prije rotacije: EZ 89,98°."><figcaption>Iznad pozicije 3 prije rotacije: EZ 89,98°.</figcaption></figure></li><li><p><b>Pokazivač koordinata makni s puta</b> — krak vakuumske sisaljke i ugao predmeta pri zakretu prolaze tik uz njega.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-143.jpg" width="507" height="900" alt="Pokazivač odmaknut uz rub stola."><figcaption>Pokazivač odmaknut uz rub stola.</figcaption></figure></li><li><p><b>Motion mode</b> → <b>Reorient</b>; <b>Joystick lock</b> → <b>Horizontal and Vertical</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-144b.jpg" width="900" height="507" alt="24 = Motion mode."><figcaption>24 = Motion mode.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-145.jpg" width="900" height="507" alt="Reorient, Tool."><figcaption>Reorient, Tool.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-146.jpg" width="900" height="507" alt="Joystick lock: Horizontal and Vertical."><figcaption>Joystick lock: Horizontal and Vertical.</figcaption></figure></li><li><p>Stani izvan dosega kraka. Zakreni palicu <b>malo</b> i pogledaj kamo krak kreće: ako prema stupu robota ili prema tebi, zakreni na drugu stranu. Zakreći dok <b>EZ ≈ 180°</b> (ili ≈ 0°).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-147.jpg" width="507" height="900" alt="EZ 180,00°, EY 0,00°, EX −179,99°."><figcaption>EZ 180,00°, EY 0,00°, EX −179,99°.</figcaption></figure></li><li><p>Joystick lock <b>None</b>, Motion mode <b>Linear</b>, Coordinate system <b>Base</b>. Provjeri okomito odozgo da je predmet iznad oznake 3.</p></li><li><p>Program: <b>MoveJ</b> → New <b>p3_gore</b> → v200, z10 → <b>Modify Position</b> → View Value (z ≈ 210).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-149.jpg" width="507" height="900" alt="p3_gore: X −82,90, Y −343,00, Z 210,93."><figcaption>p3_gore: X −82,90, Y −343,00, Z 210,93.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-150.jpg" width="900" height="507" alt="MoveJ p3_gore."><figcaption>MoveJ p3_gore.</figcaption></figure></li><li><p>Jogging: predmet tik iznad stola. <b>MoveL</b> → New <b>p3</b> → v50, fine → <b>Modify Position</b> → View Value (z ≈ 160,7).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-151.jpg" width="507" height="900" alt="Sprijeda."><figcaption>Sprijeda.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-152.jpg" width="507" height="900" alt="Sa strane."><figcaption>Sa strane.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-153.jpg" width="900" height="507" alt="MoveL p3."><figcaption>MoveL p3.</figcaption></figure></li><li><p><b>Reset</b>, <b>WaitTime 0.5</b>, <b>MoveL p3_gore, v100, fine</b>. Proba PP to Cursor od Reset.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-154.jpg" width="507" height="900" alt="Popis brzina: 41 vrijednost po abecedi — v100 je na stranici iznad."><figcaption>Popis brzina: 41 vrijednost po abecedi — v100 je na stranici iznad.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-155.jpg" width="900" height="507" alt="Ostavljanje na poziciji 3."><figcaption>Ostavljanje na poziciji 3.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-156.jpg" width="507" height="900" alt="Predmet zakrenut na poziciji 3."><figcaption>Predmet zakrenut na poziciji 3.</figcaption></figure></li></ol>
+<div class="okvir primjer"><h4>Zašto piše EX −179,99°?</h4><p>Kutovi se prikazuju od −180° do +180°. +180° i −180° su isti zakret — alat gleda ravno dolje. Kut se pri rotaciji promijenio za 0,01° (šum), prešao granicu 180° i prikaz ga je „omotao” u −179,99°. Isto se može dogoditi s EZ. Kvaternion, kojim robot stvarno računa, nema taj skok.</p></div>
+<div class="okvir pazi"><h4>Coordinate system mora biti Base</h4><p>Privjesak pamti koordinatni sustav za svaki način gibanja posebno (Reorient → Tool, Linear → Base), ali nije zajamčeno. U sustavu <b>Tool</b> palica vodi po osima prihvatnice: os Z alata gleda <b>dolje</b>, pa zakret „gore” vodi robota <b>u stol</b>; X i Y ovise o zakretu (kod EZ 180° palica „prema sebi” vodi ulijevo). Tablica smjerova i pokazivač vrijede <b>samo kad piše Base</b>. (Smjerovi u sustavu Tool izračunati su, nisu isprobani.)</p></div>
+<h3>Uzimanje s pozicije 3 i povratak na 1</h3>
+<p>Devet redaka, sve točke već postoje — <b>nijedna Modify Position</b>:</p>
+<pre><code>MoveL p3, v50, fine, tool0;
+Set DO_0_gripper;
+WaitTime 0.5;
+MoveL p3_gore, v100, fine, tool0;
+MoveJ p1_gore, v200, z10, tool0;    ! zakret natrag EZ 180° → 90°
+MoveL p1, v50, fine, tool0;
+Reset DO_0_gripper;
+WaitTime 0.5;
+MoveL p1_gore, v100, fine, tool0;</code></pre>
+<ol class="koraci"><li><p><b>Česta pogreška:</b> novi redak ostane s automatskim imenom (p3_gore20) i brzinom iz retka iznad. Ispravak: tapni redak → <b>Edit</b> → <b>Delete</b> (desni stupac, četvrti redak) ili odmah <b>Undo</b>. Nakon brisanja zatvori Edit — drugi Delete obrisao bi sljedeći redak.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-157.jpg" width="900" height="507" alt="Krivo: MoveL p3_gore20, v100."><figcaption>Krivo: MoveL p3_gore20, v100.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-158.jpg" width="900" height="507" alt="Izbornik Edit: Delete, Undo, Redo, Paste Above…"><figcaption>Izbornik Edit: Delete, Undo, Redo, Paste Above…</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-159.jpg" width="900" height="507" alt="Redak obrisan."><figcaption>Redak obrisan.</figcaption></figure></li><li><p><b>Česta pogreška:</b> preskočeni retci — iza <code>MoveL p3</code> odmah <code>MoveJ p23…</code>. Ispravi redak MoveJ (p1_gore, v200, z10), zatim označi <code>MoveL p3</code> i <b>Below</b> umetni Set, WaitTime, MoveL p3_gore.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-161.jpg" width="900" height="507" alt="Krivo: nedostaju tri retka."><figcaption>Krivo: nedostaju tri retka.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-163.jpg" width="900" height="507" alt="Ispravljen redoslijed."><figcaption>Ispravljen redoslijed.</figcaption></figure></li><li><p>Na kraju provjeri zadnjih deset redaka do <code>ENDPROC</code>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-164.jpg" width="900" height="507" alt="Program upisan do kraja."><figcaption>Program upisan do kraja.</figcaption></figure></li></ol>
+<div class="pp-kt"><label><input type="checkbox" data-kt="5"> <b>Kontrolna točka 5 📷</b> Fotografije View Value za <code>p3_gore</code> i <code>p3</code>, predmeta zakrenutog na poziciji 3 i zaslona s krajem programa.</label></div>
+<h2 id="k">K. Proba cijelog programa — i greške koje smo napravili</h2><div class="crta"></div>
+<p><b>Debug → PP to Routine…</b> → tvoja rutina, predmet na poziciji 1, robot gore, 25 %, Step forward redak po redak. Ako robot napravi bilo što neočekivano: pusti tipku i poslikaj zaslon.</p>
+<h3>Greška 1: robot otvori prste iznad pozicije 3 i predmet padne</h3>
+<ol class="koraci"><li><p>Simptom: kod pozicije 3 prsti se otvore 50 mm iznad stola. MP stoji na <code>MoveL p3</code>, PP na <code>MoveL p3_gore</code>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-167.jpg" width="900" height="507" alt="Predmet je pao prije spuštanja."><figcaption>Predmet je pao prije spuštanja.</figcaption></figure></li><li><p>Uzrok: View Value za <b>p3</b> pokazuje <b>z = 210,91</b> — točka je spremljena na visini „gore”. Modify Position nije napravljen dok je robot bio dolje.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-170.jpg" width="900" height="507" alt="p3 = [−82,91; −342,98; 210,91]."><figcaption>p3 = [−82,91; −342,98; 210,91].</figcaption></figure></li><li><p>Ispravak: ako je točka točno ispod točke „gore” (isti X, Y i orijentacija), dovoljno je u View Value tapnuti <b>z</b>, upisati visinu hvata i <b>OK</b>. Inače: Jogging dolje, redak <code>MoveL p3</code>, Modify Position. Ispravak vrijedi za sve retke s istom točkom.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-181.jpg" width="900" height="507" alt="p3 = [−82,91; −342,98; 160,7] — spremljeno."><figcaption>p3 = [−82,91; −342,98; 160,7] — spremljeno.</figcaption></figure></li></ol>
+<h3>Greška 2: prsti udare u stol</h3>
+<ol class="koraci"><li><p>Kod ponovnog spuštanja prsti su udarili u stol na <b>Z 154,65 mm</b>. Visina hvata je ≈ 160,5, pa točke hvata i odlaganja <b>ne smiju biti niže od ≈ 158 mm</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-172.jpg" width="900" height="507" alt="Koordinate pri dodiru: Z 154,65 mm."><figcaption>Koordinate pri dodiru: Z 154,65 mm.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-173.jpg" width="507" height="900" alt="Otvoreni prsti oslonjeni na stol."><figcaption>Otvoreni prsti oslonjeni na stol.</figcaption></figure></li><li><p>Nastavnik je otpustio kočnice i rukom podigao robota; poruka 50507 → Acknowledge. Alat je nakon toga nagnut oko 14°.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-175.jpg" width="900" height="507" alt="Poruka 50507."><figcaption>Poruka 50507.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-176.jpg" width="900" height="507" alt="Nakon podizanja: EY −4,73°, EX −165,90°."><figcaption>Nakon podizanja: EY −4,73°, EX −165,90°.</figcaption></figure></li><li><p>Najsigurniji povratak: <b>PP to Cursor</b> na <code>MoveJ p3_gore</code> i jedan Step forward — robot se sam ispravi u točku „gore”.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-177.jpg" width="900" height="507" alt="Natrag u p3_gore."><figcaption>Natrag u p3_gore.</figcaption></figure></li><li><p>Zadnjih 10 mm spuštaj u koracima: <b>Increment: Medium</b> (oko 1 mm po kratkom otklonu palice). Nakon dodira pregledaj prste i nosač prihvatnice — 3D tisak puca.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-178.jpg" width="900" height="507" alt="p3 ponovo: Z 160,85."><figcaption>p3 ponovo: Z 160,85.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-179.jpg" width="507" height="900" alt="Prsti oko predmeta, vrhovi iznad stola."><figcaption>Prsti oko predmeta, vrhovi iznad stola.</figcaption></figure></li></ol>
+<h3>Greška 3: robot preskače točku p3_gore</h3>
+<ol class="koraci"><li><p>Simptom: s pozicije 2 robot se s predmetom odmah spušta na poziciju 3, a s pozicije 3 se odmah diže prema poziciji 1 — iznad pozicije 3 ne staje. Uzrok: <b>p3_gore</b> je imao z = 160,8 — Modify Position je napravljen na retku s p3_gore umjesto na retku <code>MoveL p3</code>. Ispravak: View Value p3_gore → z = 210,9 → OK.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-184.jpg" width="900" height="507" alt="p3_gore ispravljen na 210,9."><figcaption>p3_gore ispravljen na 210,9.</figcaption></figure></li></ol>
+<div class="okvir primjer"><h4>Vježba traženja greške</h4><p>Grešku 3 možeš namjerno ponoviti: u View Value upiši za <code>p3_gore</code> z = 160,8 i pusti probu. Zadatak: iz ponašanja robota pronađi koju točku treba popraviti i dokaži to fotografijom View Value.</p></div>
+<h2 id="l">L. Spremanje modula na kontroler</h2><div class="crta"></div>
+<ol class="koraci"><li><p>Program Editor → <b>Modules</b> → tapni svoj modul → <b>File</b> → <b>Save Module As…</b> (treća stavka). <b>Delete Module…</b> je zadnja stavka — ne tapni je.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-185.jpg" width="900" height="507" alt="Izbornik File u popisu modula."><figcaption>Izbornik File u popisu modula.</figcaption></figure></li><li><p>Prozor Save As: putanja <code>/hd0a/120-102663</code> je disk kontrolera. Mape Products i SYSPAR su sistemske — ne diraj ih. Tapni dva puta <b>HOME</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-186.jpg" width="900" height="507" alt="Save As u korijenu diska."><figcaption>Save As u korijenu diska.</figcaption></figure></li><li><p>Putanja sad završava s <b>/HOME</b>. Kod File name tapni <b>…</b> i dopiši broj inačice: <b>PR_PickPlace_&lt;Prezime&gt;_v01</b>. OK.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-191.jpg" width="900" height="507" alt="HOME, ime s _v01."><figcaption>HOME, ime s _v01.</figcaption></figure></li><li><p>Ako se pojavi <i>The file … already exists</i>: OK prepisuje staru datoteku, Cancel je ostavlja. S brojem inačice taj se upit ne pojavi.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-189.jpg" width="900" height="507" alt="Datoteka već postoji."><figcaption>Datoteka već postoji.</figcaption></figure></li></ol>
+<div class="pp-kt"><label><input type="checkbox" data-kt="6"> <b>Kontrolna točka 6 📷</b> Fotografija prozora Save As s putanjom <code>…/HOME</code> i imenom datoteke s brojem inačice.</label></div>
+<h2 id="m">M. Automatski način</h2><div class="crta"></div>
+<div class="okvir pazi"><h4>U automatskom načinu robot vozi bez tipke za omogućavanje</h4><p>Puštena tipka ga ne zaustavlja — samo <b>Stop ■</b> ili <b>E-stop</b>. Nitko nije u dosegu robota. Prelaskom u Auto kontroler <b>vraća programski pokazivač na main</b> i <b>brzinu na 100 %</b> (<i>Auto Condition Reset</i>), a u Autu se pokazivač ne može premjestiti u drugu rutinu.</p></div>
+<h3>Priprema u ručnom načinu: rutina mora krenuti iz main</h3>
+<p>Na našem kontroleru <code>PROC main()</code> je u modulu <code>MainModule</code>. Za probu smo na njegov početak dodali poziv naše rutine i <code>RETURN</code>, da se ostatak starog programa ne izvede. Poslije probe ta se dva retka brišu. (Za korisnike je bolje rješenje vlastiti program s vlastitim <code>PROC main()</code>.)</p>
+<ol class="koraci"><li><p>Program Editor → Modules → <b>MainModule</b> → Show Module → Routines → <b>main</b> → Show Routine. Tapni prvi redak ispod <code>PROC main()</code>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-200.jpg" width="900" height="507" alt="main: prvi redak WaitTime 0.5."><figcaption>main: prvi redak WaitTime 0.5.</figcaption></figure></li><li><p><b>Add Instruction</b> → <b>ProcCall</b> → u popisu <b>PickPlace_&lt;Prezime&gt;</b> → OK.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-201.jpg" width="900" height="507" alt="Odabir rutine."><figcaption>Odabir rutine.</figcaption></figure></li><li><p><b>Česta pogreška:</b> bez upita <i>above/below</i> redak sjedne <i>ispod</i> označenog (ovdje iza starog MoveL p10, v500). Ispravak: tapni redak → Edit → <b>Cut</b> → tapni prvi redak ispod PROC main() → Edit → <b>Paste Above</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-202.jpg" width="900" height="507" alt="Krivo: poziv u retku 18."><figcaption>Krivo: poziv u retku 18.</figcaption></figure></li><li><p>Tapni redak s pozivom → Add Instruction → <b>RETURN</b> → Below.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-204.jpg" width="900" height="507" alt="Poziv odmah ispod PROC main()."><figcaption>Poziv odmah ispod PROC main().</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-205.jpg" width="900" height="507" alt="RETURN ispod poziva."><figcaption>RETURN ispod poziva.</figcaption></figure></li><li><p><b>Debug</b> → <b>Check Program</b> (No errors found) → <b>Debug</b> → <b>PP to Main</b> → Yes. Strelica stoji uz poziv tvoje rutine.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-206.jpg" width="900" height="507" alt="Upit Reset Program Pointer → Yes."><figcaption>Upit Reset Program Pointer → Yes.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-207.jpg" width="900" height="507" alt="Strelica uz PickPlace_Pavlic."><figcaption>Strelica uz PickPlace_Pavlic.</figcaption></figure></li></ol>
+<h3>Prelazak u Auto i pokretanje</h3>
+<ol class="koraci"><li><p>Predmet na poziciju 1, robot gore. Na ormaru okreni ključ <b>ulijevo</b>, na simbol AUTO.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-192b.jpg" width="900" height="507" alt="24 = ključ (lijevo AUTO, desno ruka = ručno), 25 = Motors On. E-stop i plavu tipku za kočnice ne diraj."><figcaption>24 = ključ (lijevo AUTO, desno ruka = ručno), 25 = Motors On. E-stop i plavu tipku za kočnice ne diraj.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-193.jpg" width="900" height="507" alt="Ključ na AUTO."><figcaption>Ključ na AUTO.</figcaption></figure></li><li><p>Na privjesku prozor <b>Auto Condition Reset</b>: tapni <b>Acknowledge</b>, pa <b>OK</b>.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-194.jpg" width="900" height="507" alt="PP se vraća na main, brzina na 100 %."><figcaption>PP se vraća na main, brzina na 100 %.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-195.jpg" width="900" height="507" alt="Nakon Acknowledge aktivan je OK."><figcaption>Nakon Acknowledge aktivan je OK.</figcaption></figure></li><li><p><b>ROB_1</b> (QuickSet) → <b>Speed</b> → <b>25 %</b>; ikona <b>Run Mode</b> (treća) → <b>Single Cycle</b> (program se izvede jednom).</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-196b.jpg" width="900" height="507" alt="26 = Run Mode."><figcaption>26 = Run Mode.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-208.jpg" width="900" height="507" alt="Run Mode: Single Cycle."><figcaption>Run Mode: Single Cycle.</figcaption></figure></li><li><p>Na najdonjem redu kartica <b>Production Window</b>: provjeri naslov <code>MainModule/main</code> i strelicu uz poziv tvoje rutine. Debug je ovdje siv.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-197.jpg" width="900" height="507" alt="Prije dodavanja poziva: strelica u starom programu (MoveL p10, v500) — Start bi pokrenuo tuđi program."><figcaption>Prije dodavanja poziva: strelica u starom programu (MoveL p10, v500) — Start bi pokrenuo tuđi program.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-209.jpg" width="900" height="507" alt="Ispravno: strelica uz PickPlace_Pavlic, Speed 25 %."><figcaption>Ispravno: strelica uz PickPlace_Pavlic, Speed 25 %.</figcaption></figure></li><li><p>Na ormaru pritisni bijelu tipku <b>Motors On</b> — mora svijetliti stalno.</p><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-211.jpg" width="507" height="900" alt="Motors On svijetli."><figcaption>Motors On svijetli.</figcaption></figure></li><li><p>Odmakni se izvan dosega, palac uz E-stop, pritisni <b>Start ▶</b> (gornja tipka u rombu). Ako bilo što krene krivo: <b>Stop ■</b> ili E-stop.</p></li><li><p>Na kraju: ključ natrag <b>udesno</b> (ručni način), a iz <code>main</code> obriši poziv i RETURN.</p></li></ol>
+<div class="pp-kt"><label><input type="checkbox" data-kt="7"> <b>Kontrolna točka 7 📷</b> Fotografija Production Window prije Starta (strelica uz poziv tvoje rutine, Speed 25 %) i predmeta na poziciji 1 nakon ciklusa.</label></div>
+<div class="okvir pazi"><h4>U Autu se ruka ne stavlja u radni prostor</h4><p>Ako predmet nije na poziciji 1, a Motors On svijetli: pritisni E-stop, namjesti predmet, izvuci E-stop (zakret u smjeru strelica), Acknowledge na privjesku, Motors On na ormaru.</p></div>
+<figure class="pp-video"><video controls playsinline muted preload="none" poster="lab/pp/pp-v3-auto-100-privjesak.jpg" width="1280" height="720"><source src="lab/pp/pp-v3-auto-100-privjesak.mp4" type="video/mp4"></video><figcaption>Namjerna proba na 100 %: Production Window, Running (Speed 100%) — strelica prolazi kroz retke rutine.</figcaption></figure>
+<figure class="pp-video"><video controls playsinline muted preload="none" poster="lab/pp/pp-v4-auto-100-robot.jpg" width="1280" height="720"><source src="lab/pp/pp-v4-auto-100-robot.mp4" type="video/mp4"></video><figcaption>Proba na 100 % izbliza.</figcaption></figure>
+<h2 id="kontrolne">Kontrolne točke — popis za predaju</h2><div class="crta"></div>
+<p>Kvačice se pamte samo u ovom pregledniku. Za predaju vrijede fotografije.</p><div id="pp-kt-popis"></div>
+<h2 id="program">Cijeli program</h2><div class="crta"></div>
+<pre><code>PROC PickPlace_Pavlic()
+    Reset DO_0_gripper;
+    MoveJ p1_gore, v200, z10, tool0;
+    MoveL p1, v50, fine, tool0;
+    Set DO_0_gripper;
+    WaitTime 0.5;
+    MoveL p1_gore, v100, fine, tool0;
+    MoveJ p2_gore, v200, z10, tool0;
+    MoveL p2, v50, fine, tool0;
+    Reset DO_0_gripper;
+    WaitTime 0.5;
+    MoveL p2_gore, v100, fine, tool0;
+    MoveL p2, v50, fine, tool0;
+    Set DO_0_gripper;
+    WaitTime 0.5;
+    MoveL p2_gore, v100, fine, tool0;
+    MoveJ p3_gore, v200, z10, tool0;
+    MoveL p3, v50, fine, tool0;
+    Reset DO_0_gripper;
+    WaitTime 0.5;
+    MoveL p3_gore, v100, fine, tool0;
+    MoveL p3, v50, fine, tool0;
+    Set DO_0_gripper;
+    WaitTime 0.5;
+    MoveL p3_gore, v100, fine, tool0;
+    MoveJ p1_gore, v200, z10, tool0;
+    MoveL p1, v50, fine, tool0;
+    Reset DO_0_gripper;
+    WaitTime 0.5;
+    MoveL p1_gore, v100, fine, tool0;
+ENDPROC</code></pre>
+<div class="lab-mreza"><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-169.jpg" width="900" height="507" alt="Početak programa na privjesku."><figcaption>Početak programa na privjesku.</figcaption></figure><figure class="pp-sl"><img loading="lazy" src="lab/pp/pp-168.jpg" width="900" height="507" alt="Kraj programa na privjesku."><figcaption>Kraj programa na privjesku.</figcaption></figure></div>
+<p>Retke u uputama navodimo po tekstu naredbe, ne po broju: broj retka ovisi o deklaracijama točaka iznad rutine i mijenja se sa svakom novom točkom.</p>
+<h2 id="zamke">Zamke i poruke</h2><div class="crta"></div>
+<div class="uz-tbl-omot"><table class="tbl lab-tbl"><thead><tr><th scope="col">Što vidiš</th><th scope="col">Uzrok</th><th scope="col">Što napraviti</th></tr></thead><tbody><tr><td>50507 Movement detected when brakes are applied</td><td>Robot pomaknut rukom uz otpuštene kočnice.</td><td>Acknowledge.</td></tr><tr><td>90211 Two channel fault, Enable Chain</td><td>Tipka za omogućavanje stisnuta prejako ili neravnomjerno.</td><td>Acknowledge, pusti tipku do kraja, pa ponovo do pola.</td></tr><tr><td>Novi redak ima ime p1_gore10, p3_gore20…</td><td>Privjesak sam stvara točku po uzoru na prethodnu.</td><td>Tapni ime → New ili postojeća točka.</td></tr><tr><td>Zona z1 umjesto z10</td><td>Popis zona je u dva stupca po abecedi.</td><td>Pročitaj redak naredbe prije OK.</td></tr><tr><td>Redak se pojavio ispod, a trebao je iznad</td><td>Upit above/below se ponekad ne pojavi.</td><td>Edit → Cut → Paste Above.</td></tr><tr><td>Strelica u MainModule/main</td><td>Program Editor otvoren preko ≡ ili prelazak u Auto.</td><td>Kartica svog modula; Debug → PP to Routine (u Manualu).</td></tr><tr><td>Prsti se otvore iznad predmeta</td><td>Točka „dolje” spremljena gore.</td><td>View Value → ispravi z ili Modify Position.</td></tr><tr><td>Robot ne staje iznad pozicije</td><td>Točka „gore” spremljena dolje.</td><td>View Value točke „gore”.</td></tr><tr><td>Robot ide u stol kad zakrećeš palicu „gore”</td><td>Coordinate system: Tool.</td><td>Coordinate system → Base.</td></tr><tr><td>Debug, Add Instruction, Modify Position sivi</td><td>Automatski način.</td><td>Ključ na ručni način.</td></tr></tbody></table></div>
+<h2 id="blizanac">Isto u simulatoru</h2><div class="crta"></div>
+<p>Ručno vođenje, točke, RAPID i PP vježbaš na <a href="../ar/irb120-u-petlji/index.html">virtualnom FlexPendantu (IRB 120 u petlji)</a>. Ovaj vodič je podloga za nadogradnju simulatora: zasloni Reorient, Euler kutovi, Joystick lock, Increment, View Value, Save Module As, QuickSet Run Mode, Production Window i Auto Condition Reset, uz scenarij pick &amp; place 1 → 2 → 3 → 1 s gornjim točkama — u pripremi.</p>
+<div class="okvir pazi"><h4>Što simulator ne radi</h4><p>Naši simulatori ne izvode ABB-ov softver kontrolera — kinematiku i poruke računaju vlastitim kodom. Zato se svaki program na stvarnom robotu najprije pušta u ručnom načinu, smanjenom brzinom.</p></div>
+<p>Dalje: <a href="laboratorij.html">Robot u laboratoriju</a> · <a href="index.html">Industrijski robot IRB 120 — naslovnica</a>.</p></section></main>
+<dialog class="lab-uvecaj" id="lab-uvecaj" aria-label="Uvećana fotografija"><form method="dialog"><button type="submit" class="gumb tanki lab-zatvori" aria-label="Zatvori">Zatvori ✕</button></form><img id="lab-uvecaj-img" alt=""><p id="lab-uvecaj-opis"></p></dialog>
+
+<footer class="pod"><div class="omot"><p>&copy; ForTroniQ d.o.o. &middot; Sva prava pridržana. Autori: dr.sc. Tomislav Pavlic, mag.ing.mech., Krunoslav Kušec, mag.ing.mech., Alen Britvić, bacc.ing.mech.</p><p><a href="../index.html">Sva područja</a> &middot; <a href="index.html">Naslovnica područja</a></p></div></footer>
+<canvas id="ploca" aria-hidden="true"></canvas>
+<aside class="alati" aria-label="Alatna traka za rad po stranici">
+<button type="button" data-alat="olovka" aria-pressed="false" title="Olovka" aria-label="Olovka"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.3 1.7 14.3 4.7 5.4 13.6 1.7 14.3 2.4 10.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-alat="marker" aria-pressed="false" title="Marker" aria-label="Marker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 1.6 14.4 6.4 7.2 13.6H2.4l-.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 14.4h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<button type="button" data-alat="gumica" aria-pressed="false" title="Gumica" aria-label="Gumica"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 13.5H14M2.2 10.4 8.4 4.2l3.6 3.6-5.8 5.7H4.3L2.2 11.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="ploca" aria-pressed="false" title="Ploča" aria-label="Ploča"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.4" y="2.4" width="13.2" height="9.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 11.8v2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+<hr>
+<div class="boje" role="group" aria-label="Boja">
+<button type="button" data-boja="#E0533D" aria-pressed="true" title="Crvena" aria-label="Crvena"><i style="background:#E0533D"></i></button>
+<button type="button" data-boja="#17656E" aria-pressed="false" title="Tirkizna" aria-label="Tirkizna"><i style="background:#17656E"></i></button>
+<button type="button" data-boja="#E6B422" aria-pressed="false" title="Žuta" aria-label="Žuta"><i style="background:#E6B422"></i></button>
+</div>
+<hr>
+<button type="button" data-radnja="ponisti" title="Poništi" aria-label="Poništi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 7h7a3.4 3.4 0 1 1 0 6.8H6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.6 4 2.6 7l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" data-radnja="obrisi" title="Obriši sve" aria-label="Obriši sve"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4.4h10.8M6.4 4.4V2.8h3.2v1.6M4 4.4l.7 9h6.6l.7-9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<hr>
+<button type="button" data-radnja="manje" title="Manje pismo" aria-label="Smanji pismo">A&#8722;</button>
+<button type="button" data-radnja="vece" title="Veće pismo" aria-label="Povećaj pismo">A+</button>
+<button type="button" data-radnja="dys" aria-pressed="false" title="Pismo za disleksiju" aria-label="Pismo za disleksiju">Dy</button>
+<button type="button" data-radnja="tema" title="Svijetlo ili tamno" aria-label="Svijetlo ili tamno"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8 5.6 5.6 0 1 0 13.2 9.6z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+</aside>
+<script>
+(function(){
+  var kljuc = 'ftq-industrijski-robot-irb120-pick-and-place-strokes';
+  var html = document.documentElement;
+  /* --- tema, veličina pisma, disleksija ------------------------------- */
+  function citaj(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function pisi(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  var t = citaj('ftq-tema'); if (t) html.setAttribute('data-theme', t);
+  var d = citaj('ftq-dys'); if (d === '1') html.setAttribute('data-dys','1');
+  var m = parseFloat(citaj('ftq-mjera') || '1'); if (!(m > 0)) m = 1;
+  html.style.setProperty('--mjera', m + 'rem');
+
+  function tema(){
+    var sad = html.getAttribute('data-theme');
+    if (!sad) sad = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var novo = sad === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', novo); pisi('ftq-tema', novo); crtaj();
+  }
+  function mjera(k){
+    m = Math.min(1.5, Math.max(0.85, m + k));
+    html.style.setProperty('--mjera', m + 'rem'); pisi('ftq-mjera', String(m));
+  }
+  function dys(b){
+    if (html.getAttribute('data-dys') === '1'){ html.removeAttribute('data-dys'); pisi('ftq-dys','0'); b.setAttribute('aria-pressed','false'); }
+    else { html.setAttribute('data-dys','1'); pisi('ftq-dys','1'); b.setAttribute('aria-pressed','true'); }
+  }
+
+  /* --- crtanje po stranici -------------------------------------------- */
+  var c = document.getElementById('ploca');
+  if (!c) return;
+  var x = c.getContext('2d');
+  var potezi = [], tekuci = null, alat = null, boja = '#E0533D', ploca = false;
+
+  try { var s = citaj(kljuc); if (s) potezi = JSON.parse(s) || []; } catch(e){ potezi = []; }
+
+  function podloga(){
+    return getComputedStyle(document.body).backgroundColor || '#fff';
+  }
+  function velicina(){
+    var r = window.devicePixelRatio || 1;
+    c.width = Math.floor(innerWidth * r); c.height = Math.floor(innerHeight * r);
+    c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    x.setTransform(r, 0, 0, r, 0, 0);
+  }
+  function crtaj(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    if (ploca){ x.save(); x.fillStyle = podloga(); x.fillRect(0,0,innerWidth,innerHeight); x.restore(); }
+    var sy = window.scrollY, sx = window.scrollX, i, j, p;
+    for (i = 0; i < potezi.length; i++){
+      p = potezi[i]; if (!p.t || p.t.length < 2) continue;
+      x.save();
+      x.lineCap = 'round'; x.lineJoin = 'round';
+      if (p.a === 'gumica'){ x.globalCompositeOperation = 'destination-out'; x.strokeStyle = 'rgba(0,0,0,1)'; x.lineWidth = 22; }
+      else if (p.a === 'marker'){ x.globalAlpha = .34; x.strokeStyle = p.b; x.lineWidth = 16; }
+      else { x.strokeStyle = p.b; x.lineWidth = 2.4; }
+      x.beginPath(); x.moveTo(p.t[0][0] - sx, p.t[0][1] - sy);
+      for (j = 1; j < p.t.length; j++) x.lineTo(p.t[j][0] - sx, p.t[j][1] - sy);
+      x.stroke(); x.restore();
+    }
+  }
+  function spremi(){ try { pisi(kljuc, JSON.stringify(potezi.slice(-400))); } catch(e){} }
+
+  c.addEventListener('pointerdown', function(e){
+    if (!alat) return;
+    c.setPointerCapture(e.pointerId);
+    tekuci = { a: alat, b: boja, t: [[e.clientX + scrollX, e.clientY + scrollY]] };
+    potezi.push(tekuci);
+  });
+  c.addEventListener('pointermove', function(e){
+    if (!tekuci) return;
+    tekuci.t.push([e.clientX + scrollX, e.clientY + scrollY]); crtaj();
+  });
+  function kraj(){ if (tekuci){ tekuci = null; spremi(); } }
+  c.addEventListener('pointerup', kraj);
+  c.addEventListener('pointercancel', kraj);
+  addEventListener('scroll', crtaj, { passive: true });
+  addEventListener('resize', function(){ velicina(); crtaj(); });
+
+  function postavi(novi, b){
+    var svi = document.querySelectorAll('.alati [data-alat]');
+    alat = (alat === novi) ? null : novi;
+    for (var i = 0; i < svi.length; i++) svi[i].setAttribute('aria-pressed', svi[i] === b && alat ? 'true' : 'false');
+    c.classList.toggle('aktivno', !!alat);
+  }
+
+  document.querySelectorAll('.alati button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.alat, r = b.dataset.radnja;
+      if (k) return postavi(k, b);
+      if (r === 'ploca'){ ploca = !ploca; b.setAttribute('aria-pressed', ploca ? 'true' : 'false'); crtaj(); }
+      if (r === 'ponisti'){ potezi.pop(); crtaj(); spremi(); }
+      if (r === 'obrisi'){ potezi = []; ploca = false;
+        var pb = document.querySelector('[data-radnja="ploca"]'); if (pb) pb.setAttribute('aria-pressed','false');
+        crtaj(); spremi(); }
+      if (r === 'vece') mjera(0.0625);
+      if (r === 'manje') mjera(-0.0625);
+      if (r === 'dys') dys(b);
+      if (r === 'tema') tema();
+      if (b.dataset.boja){
+        boja = b.dataset.boja;
+        document.querySelectorAll('[data-boja]').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      }
+    });
+  });
+  velicina(); crtaj();
+})();
+</script>
+<script type="importmap">{"imports":{"three":"../ar/lib/three.module.min.js","three/addons/":"../ar/lib/addons/"}}</script>
+<script type="module" src="pickplace.js?v=01"></script>
+</body>
+</html>
