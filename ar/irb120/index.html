@@ -790,7 +790,7 @@ document.getElementById('pocetni').addEventListener('click', function () {
 // --- PICK & PLACE: prihvatnica SCHUNK PGN 80, kocke 35 mm ---------------------------
 var tcpN = null, prstP = null, prstN = null, kocke = [], ppPloce = [];
 var prog = { aktivan: false, seg: [], i: 0, t: 0, q: [0, 0, 0, 0, 0, 0] };
-var KOCKA = 0.035, OTV = 0.008, ZATV = 0.004, PODLOGA = 0.008;
+var KOCKA = 0.035, OTV = 0.008, ZATV = 0.0, PODLOGA = 0.008;  // v07: Robo Xmas kandže, zatvoreni razmak vrhova 35 mm = kocka
 var RED = [[0.34, -0.18], [0.40, -0.18], [0.46, -0.18]];   // početni položaj kocki (KS baze, m)
 var TORANJ = [0.40, 0.18];                                  // mjesto slaganja
 var gPP = document.getElementById('pp'), xPP = document.getElementById('xr-pp');
@@ -921,7 +921,7 @@ function prebaciProgram() {
 gPP.addEventListener('click', prebaciProgram);
 xPP.addEventListener('click', prebaciProgram);
 
-// --- PICK & PLACE IZ LABORATORIJA (vodič industrijski-robot-irb120/pick-and-place.html) — v07, 10. 11. 2026. ---
+// --- PICK & PLACE IZ LABORATORIJA (vodič industrijski-robot-irb120/pick-and-place.html) — v07c, 11. 11. 2026. ---
 // Točke su izmjerene na stvarnom robotu (tool0, wobj0, mm). Prsti dotaknu stol kad je prirubnica na Z 154,65 mm,
 // pa je vrh prstiju 154,65 mm ispod prirubnice; stol je u ravnini postolja robota (z = 0).
 // Mjere pločice: debljina iz visine hvata (prsti na pola debljine), duljina i širina su PROCJENA s fotografija.
@@ -932,7 +932,8 @@ var LAB = {
     ['p3_gore', -82.91, -342.96, 210.90, 180], ['p3', -82.91, -342.98, 160.70, 180]
   ],
   PRST: 154.65,                      // mm, prirubnica → vrh prstiju (iz sudara na Z 154,65)
-  PL: [0.090, 0.050, 0.0113],        // pločica: duljina, širina (procjena), debljina (iz mjerenja)
+  PL: [0.090, 0.045, 0.0113],        // pločica: duljina, širina (procjena s fotografija), debljina (iz visine hvata)
+  PRST_ZATV: 0, PRST_OTV: 0.008,     // pomak kandži od zatvorenog položaja (razmak vrhova 35 mm u modelu): na pločici / otvoreno
   aktivan: false, seg: [], q: {}, obj: [], ploca: null, osZatv: null, poz: ''
 };
 function labT(ime) { for (var i = 0; i < LAB.T.length; i++) if (LAB.T[i][0] === ime) return LAB.T[i]; }
@@ -974,6 +975,7 @@ function labOznaka(tekst, x, y, ez) {
 }
 function labPripremi() {
   if (LAB.seg.length || !tcpN) return;
+  LAB.PRST_ZATV = Math.max(0, (LAB.PL[1] - 0.035) / 2);   // kandže stanu na stranice pločice
   LAB.osZatv = labOsZatvaranja();
   var stol = new THREE.Mesh(new THREE.BoxGeometry(0.80, 0.02, 0.80), new THREE.MeshStandardMaterial({ color: 0xB9C2C7, roughness: 0.6, metalness: 0.3 }));
   stol.position.copy(g3(0, -0.22, -0.0101)); stol.receiveShadow = true; korijen.add(stol); LAB.obj.push(stol);
@@ -984,36 +986,87 @@ function labPripremi() {
   labPlocaNa('p1');
   // IK za svih šest točaka, redom kao u programu (svaka iz prethodne, da os 6 ide najkraćim putem)
   var q = [0, 0, 0, 0, 0, 0], lose = 0;
-  function ikPolazno(c, q0) { // prvo iz prethodne točke; ako ne konvergira, iz više polaznih položaja osi 1 i 5
-    var r = ik(c, q0); if (r.ok) return r;
+  function ikOs4Nula(c, q0) {
+    // isti postupak kao ik(), ali os 4 je zaključana na 0° — kao na stvarnom robotu kod alata okomito prema dolje.
+    // Tada je zglob u ravnini ruke, a pri MoveJ između dviju takvih točaka prirubnica ostaje vodoravna (q2 + q3 + q5 = konst.).
+    var q = q0.slice(), h = 0.2, L2 = 1e-4, ok = false; q[3] = 0;
+    for (var it = 0; it < 300; it++) {
+      fk(q); var e = greska(c);
+      if (Math.hypot(e[0], e[1], e[2]) < 2e-4 && Math.hypot(e[3], e[4], e[5]) < 3e-4) { ok = true; break; }
+      var J = [[], [], [], [], [], []];
+      for (var j = 0; j < 6; j++) {
+        if (j === 3) { for (var r = 0; r < 6; r++) J[r][j] = 0; continue; }
+        var qq = q.slice(); qq[j] += h; fk(qq); var e2 = greska(c);
+        for (r = 0; r < 6; r++) J[r][j] = (e[r] - e2[r]) / (h * Math.PI / 180);
+      }
+      var A = [];
+      for (r = 0; r < 6; r++) { A.push([]); for (var k = 0; k < 6; k++) { var s = 0; for (j = 0; j < 6; j++) s += J[r][j] * J[k][j]; A[r].push(s + (r === k ? L2 : 0)); } }
+      var y = rijesi(A, e);
+      for (j = 0; j < 6; j++) {
+        if (j === 3) continue;
+        var d = 0; for (r = 0; r < 6; r++) d += J[r][j] * y[r];
+        d = Math.max(-8, Math.min(8, d * 180 / Math.PI));
+        q[j] = Math.max(+klizaci[j].min, Math.min(+klizaci[j].max, q[j] + d));
+      }
+    }
+    return { q: q, ok: ok };
+  }
+  function ikPolazno(c, q0) { // prvo iz prethodne točke; ako ne konvergira, iz više polaznih položaja osi 1 i 5 (os 4 uvijek 0°)
+    var r = ikOs4Nula(c, q0); if (r.ok) return r;
     var naj = null;
     for (var a1 = -150; a1 <= 150; a1 += 30) for (var a5 = 30; a5 <= 90; a5 += 30) {
-      var s = ik(c, [a1, 0, 0, 0, a5, 0]); if (!s.ok) continue;
+      var s = ikOs4Nula(c, [a1, 0, 0, 0, a5, 0]); if (!s.ok) continue;
       var dm = 0; for (var i = 0; i < 6; i++) dm += Math.abs(s.q[i] - q0[i]);
       if (!naj || dm < naj.dm) naj = { q: s.q, ok: true, dm: dm };
     }
     return naj || r;
   }
-  ['p1_gore', 'p1', 'p2_gore', 'p2', 'p3_gore', 'p3'].forEach(function (ime) {
-    var r = ikPolazno(labPoza(labT(ime)), q); if (!r.ok) lose++; LAB.q[ime] = r.q; q = r.q;
-  });
-  var seg = [], qa = [0, 0, 0, 0, 0, 0], k = LAB.iPloce;
-  function Jn(ime, dur) { var qn = LAB.q[ime], dm = 0; for (var i = 0; i < 6; i++) dm = Math.max(dm, Math.abs(qn[i] - qa[i])); seg.push({ tip: 'J', q0: qa, q1: qn, dur: dur || Math.max(0.6, dm / 60), glatko: true, red: 'MoveJ ' + ime }); qa = qn; }
-  function Ln(ime) { var t = labT(ime), t0 = null, n = 6; // pravocrtno: međutočke po Z
-    for (var j = 0; j < LAB.T.length; j++) if (LAB.q[LAB.T[j][0]] === qa) t0 = LAB.T[j];
-    if (!t0) { Jn(ime); return; }
-    var qq = qa;
-    for (var s = 1; s <= n; s++) { var tm = [ime, t[1], t[2], t0[3] + (t[3] - t0[3]) * s / n, t[4]]; var r = ikPolazno(labPoza(tm), qq); if (!r.ok) lose++; seg.push({ tip: 'J', q0: qq, q1: r.q, dur: Math.abs(t[3] - t0[3]) / 1000 / 0.08 / n, glatko: false, red: 'MoveL ' + ime }); qq = r.q; }
-    seg[seg.length - 1].q1 = LAB.q[ime]; qa = LAB.q[ime];
+  function lanac(t0, t, q0) { // međutočke od t0 do t (položaj i EZ), IK za svaku iz prethodne — isto rješenje (grana) cijelim putem
+    var d = Math.hypot(t[1] - t0[1], t[2] - t0[2], t[3] - t0[3]), n = Math.max(6, Math.ceil(d / 10) + Math.ceil(Math.abs(t[4] - t0[4]) / 10)), qq = q0, put = [];
+    for (var s = 1; s <= n; s++) {
+      var u = s / n, w = u * u * (3 - 2 * u);
+      var tm = [t[0], t0[1] + (t[1] - t0[1]) * w, t0[2] + (t[2] - t0[2]) * w, t0[3] + (t[3] - t0[3]) * w, t0[4] + (t[4] - t0[4]) * w];
+      var r = ikPolazno(labPoza(tm), qq); if (!r.ok) lose++; put.push(r.q); qq = r.q;
+    }
+    return { put: put, d: d };
   }
-  function Gz(zatv) { seg.push({ tip: 'G', d0: zatv ? OTV : ZATV, d1: zatv ? ZATV : OTV, dur: 0.5, zatvori: zatv, kocka: k, red: (zatv ? 'Set' : 'Reset') + ' DO_0_gripper' }); seg.push({ tip: 'W', dur: 0.5, red: 'WaitTime 0.5' }); }
-  Jn('p1_gore'); Ln('p1'); Gz(true); Ln('p1_gore');
+  // točke redom kao u programu; svaka sljedeća iz prethodne preko međutočaka
+  var r0 = ikPolazno(labPoza(labT('p1_gore')), q); if (!r0.ok) lose++; LAB.q.p1_gore = r0.q;
+  [['p1_gore', 'p1'], ['p1_gore', 'p2_gore'], ['p2_gore', 'p2'], ['p2_gore', 'p3_gore'], ['p3_gore', 'p3']].forEach(function (par) {
+    var L = lanac(labT(par[0]), labT(par[1]), LAB.q[par[0]]); LAB.q[par[1]] = L.put[L.put.length - 1];
+  });
+  var seg = [], qa = [0, 0, 0, 0, 0, 0], tren = null, k = LAB.iPloce;
+  function Jn(ime) {
+    // prijelaz između pozicija: prirubnica uvijek vodoravna (os alata okomito dolje) — međutočke u prostoru, IK za svaku.
+    // Iz početnog položaja robota (prvi pomak) gibanje je po osima.
+    var t = labT(ime);
+    if (!tren) { var qn = LAB.q[ime], dm = 0; for (var i = 0; i < 6; i++) dm = Math.max(dm, Math.abs(qn[i] - qa[i])); seg.push({ tip: 'J', q0: qa, q1: qn, dur: Math.max(0.6, dm / 60), glatko: true, red: 'MoveJ ' + ime }); qa = qn; tren = ime; return; }
+    var L = lanac(labT(tren), t, qa), uk = Math.max(0.8, L.d / 1000 / 0.15 + Math.abs(t[4] - labT(tren)[4]) / 90), qq = qa;
+    L.put.forEach(function (qn) { seg.push({ tip: 'J', q0: qq, q1: qn, dur: uk / L.put.length, glatko: false, red: 'MoveJ ' + ime }); qq = qn; });
+    qa = qq; tren = ime;
+  }
+  function Ln(ime) { // pravocrtno dolje/gore: međutočke po Z
+    var t = labT(ime), t0 = labT(tren), L = lanac(t0, t, qa), qq = qa;
+    L.put.forEach(function (qn) { seg.push({ tip: 'J', q0: qq, q1: qn, dur: Math.abs(t[3] - t0[3]) / 1000 / 0.08 / L.put.length, glatko: false, red: 'MoveL ' + ime }); qq = qn; });
+    qa = qq; tren = ime;
+  }
+  function Gz(zatv) { seg.push({ tip: 'G', d0: zatv ? LAB.PRST_OTV : LAB.PRST_ZATV, d1: zatv ? LAB.PRST_ZATV : LAB.PRST_OTV, dur: 0.5, zatvori: zatv, kocka: k, red: (zatv ? 'Set' : 'Reset') + ' DO_0_gripper' }); seg.push({ tip: 'W', dur: 0.5, red: 'WaitTime 0.5' }); }
+  Jn('p1_gore'); seg[0].izPocetnog = true; Ln('p1'); Gz(true); Ln('p1_gore');
   Jn('p2_gore'); Ln('p2'); Gz(false); Ln('p2_gore');
   Ln('p2'); Gz(true); Ln('p2_gore');
   Jn('p3_gore'); Ln('p3'); Gz(false); Ln('p3_gore');
   Ln('p3'); Gz(true); Ln('p3_gore');
   Jn('p1_gore'); Ln('p1'); Gz(false); Ln('p1_gore');
   seg.push({ tip: 'W', dur: 1.5, red: 'ENDPROC' });
+  // v07c (11. 11. 2026.): os 6 + 180° — na stvarnom robotu flomaster je ondje gdje je u v07b bila sisaljka.
+  // Vrh kandži je na osi prirubnice, pa zakret osi 6 za 180° ne mijenja položaj ni okomitost alata, samo strane alata.
+  // IK se računa kao prije (ista grana), a pomak se doda na kraju; početni položaj robota (sve osi 0°) ostaje.
+  var OS6 = 180;
+  function pomak(q) { var r = q.slice(); r[5] += OS6; return r; }
+  seg.forEach(function (s, i) { if (s.tip !== 'J') return; s.q1 = pomak(s.q1); s.q0 = (i === 0) ? s.q0.slice() : pomak(s.q0); });
+  qa = pomak(qa);
+  Object.keys(LAB.q).forEach(function (k) { LAB.q[k] = pomak(LAB.q[k]); });
+  seg[0].q0Pocetak = qa.slice();  // ponavljanje ciklusa kreće iz položaja u kojem je završio
   LAB.seg = seg; LAB.loseIK = lose;
   LAB.obj.forEach(function (o) { o.visible = false; });
   fk([0, 0, 0, 0, 0, 0]); for (var i = 0; i < 6; i++) postavi(i, 0);
@@ -1025,6 +1078,25 @@ function labPripremi() {
     var inv = new THREE.Matrix4().copy(korijen.matrixWorld).invert(); tc.applyMatrix4(inv); pc.applyMatrix4(inv);
     return { kut: Math.round(Math.acos(Math.min(1, Math.abs(d.dot(w)))) * 180 / Math.PI), vrhIznadStola_mm: +(tc.y * 1000).toFixed(1), odmakXY_mm: +(Math.hypot(tc.x - pc.x, tc.z - pc.z) * 1000).toFixed(1) };
   };
+  window.FTQ_LAB_NAGIB = function () { // za test: najveći nagib osi alata od okomice (°) u svim odsječcima, po 10 međukoraka
+    var naj = 0, gdje = '';
+    seg.forEach(function (s) { if (s.tip !== 'J' || s.izPocetnog) return;
+      for (var k = 0; k <= 10; k++) { var u = k / 10, w = s.glatko ? u * u * (3 - 2 * u) : u, qq = [];
+        for (var i = 0; i < 6; i++) qq.push(s.q0[i] + (s.q1[i] - s.q0[i]) * w);
+        fk(qq); var kut = Math.acos(Math.max(-1, Math.min(1, -_z.y))) * 180 / Math.PI; if (kut > naj) { naj = kut; gdje = s.red; } } });
+    fk([0, 0, 0, 0, 0, 0]); for (var i = 0; i < 6; i++) postavi(i, prog.q ? prog.q[i] || 0 : 0);
+    return { najveciNagib: +naj.toFixed(2), uRetku: gdje };
+  };
+  window.FTQ_LAB_SEG = seg;
+  window.FTQ_LAB_STRANE = function (ime) { // za test: položaj vrha flomastera i sisaljke u KS baze (mm) u točki ime
+    var q = LAB.q[ime]; for (var i = 0; i < 6; i++) postavi(i, q[i]); korijen.updateMatrixWorld(true);
+    var inv = new THREE.Matrix4().copy(korijen.matrixWorld).invert();
+    function p(n) { var o = korijen.getObjectByName(n), bb = new THREE.Box3().setFromObject(o), v = bb.getCenter(new THREE.Vector3()).applyMatrix4(inv); return [Math.round(v.x * 1000), Math.round(-v.z * 1000), Math.round(v.y * 1000)]; }
+    var tc = new THREE.Vector3().setFromMatrixPosition(tcpN.matrixWorld).applyMatrix4(inv);
+    var r = { tcp: [Math.round(tc.x * 1000), Math.round(-tc.z * 1000), Math.round(tc.y * 1000)], flomaster: p('l_flomaster_vrh'), sisaljka: p('l_sisaljka_meh'), q: q.map(function (a) { return +a.toFixed(1); }) };
+    for (i = 0; i < 6; i++) postavi(i, 0); return r;
+  };
+
   window.FTQ_LAB = { segmenata: seg.length, loseIK: lose, osZatv: LAB.osZatv, q: LAB.q, trajanje: seg.reduce(function (a, s) { return a + s.dur; }, 0) };
 }
 var labStari = null, labGumb = document.getElementById('pp-lab'), labXr = document.getElementById('xr-lab'), labInfo = document.getElementById('pp-lab-info');
@@ -1082,7 +1154,7 @@ function korakPrograma(dt) {
   if (u >= 1) {
     if (s.umetnut) prog.seg.splice(prog.i, 1); else prog.i = (prog.i + 1) % prog.seg.length;
     prog.t = 0;
-    if (prog.i === 0) prog.seg[0].q0 = [0, 0, 0, 0, 0, 0];
+    if (prog.i === 0) prog.seg[0].q0 = prog.seg[0].q0Pocetak ? prog.seg[0].q0Pocetak.slice() : [0, 0, 0, 0, 0, 0];  // v07: ciklus iz laboratorija ponavlja se iz p1_gore
   }
 }
 var AMP = [60, 30, 28, 70, 55, 120], FR = [0.21, 0.33, 0.27, 0.41, 0.37, 0.5];
