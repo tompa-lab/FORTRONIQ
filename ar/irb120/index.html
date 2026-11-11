@@ -795,7 +795,7 @@ var RED = [[0.34, -0.18], [0.40, -0.18], [0.46, -0.18]];   // početni položaj 
 var TORANJ = [0.40, 0.18];                                  // mjesto slaganja
 var gPP = document.getElementById('pp'), xPP = document.getElementById('xr-pp');
 function g3(x, y, z) { return new THREE.Vector3(x, z, -y); }  // KS baze (Z gore) -> scena (Y gore)
-function prsti(d) { if (prstP) { prstP.position.z = -d; prstN.position.z = d; } }
+function prsti(d) { if (prstP) { prstP.position.y = d; prstN.position.y = -d; } }  // v07d: kandže po osi y čvora j6 (model v06)
 function smjer(x, y) { var p = g3(x, y, 0); p.y = 0; return p.normalize(); }
 function poza(x, y, z) {
   var r = smjer(x, y);
@@ -921,17 +921,17 @@ function prebaciProgram() {
 gPP.addEventListener('click', prebaciProgram);
 xPP.addEventListener('click', prebaciProgram);
 
-// --- PICK & PLACE IZ LABORATORIJA (vodič industrijski-robot-irb120/pick-and-place.html) — v07c, 11. 11. 2026. ---
+// --- PICK & PLACE IZ LABORATORIJA (vodič industrijski-robot-irb120/pick-and-place.html) — v07d, 11. 11. 2026. ---
 // Točke su izmjerene na stvarnom robotu (tool0, wobj0, mm). Prsti dotaknu stol kad je prirubnica na Z 154,65 mm,
 // pa je vrh prstiju 154,65 mm ispod prirubnice; stol je u ravnini postolja robota (z = 0).
 // Mjere pločice: debljina iz visine hvata (prsti na pola debljine), duljina i širina su PROCJENA s fotografija.
 var LAB = {
-  T: [ // ime, x, y, z prirubnice, EZ (°)
-    ['p1_gore', 87.77, -362.50, 210.95, 90], ['p1', 87.77, -362.50, 160.30, 90],
+  T: [ // ime, x, y, z prirubnice, EZ (°) — prepisano iz modula PR_PickPlace_Pavlic u kontroleru (RobotStudio, 11. 11. 2026.): kvaternioni daju točno EZ 90° i 180°
+    ['p1_gore', 87.77, -362.50, 210.95, 90], ['p1', 87.77, -362.50, 160.36, 90],
     ['p2_gore', 89.96, -238.23, 210.94, 90], ['p2', 89.96, -238.24, 160.74, 90],
     ['p3_gore', -82.91, -342.96, 210.90, 180], ['p3', -82.91, -342.98, 160.70, 180]
   ],
-  PRST: 154.65,                      // mm, prirubnica → vrh prstiju (iz sudara na Z 154,65)
+  PRST: 150.5,                       // mm, prirubnica → vrh kandži u modelu v06 (s adapterom 19 mm); dodir na robotu dao je 154,65 — prirubnica ide točno u izmjerene točke
   PL: [0.090, 0.045, 0.0113],        // pločica: duljina, širina (procjena s fotografija), debljina (iz visine hvata)
   PRST_ZATV: 0, PRST_OTV: 0.008,     // pomak kandži od zatvorenog položaja (razmak vrhova 35 mm u modelu): na pločici / otvoreno
   aktivan: false, seg: [], q: {}, obj: [], ploca: null, osZatv: null, poz: ''
@@ -953,7 +953,8 @@ function labPoza(t) {
   // položaj vrha prstiju i orijentacija: os z alata dolje, prsti se zatvaraju po osi x alata ABB-a = (cos EZ, sin EZ, 0)
   var ez = t[4] * Math.PI / 180;
   var zt = new THREE.Vector3(0, -1, 0);
-  var d = g3(Math.cos(ez), Math.sin(ez), 0).normalize();
+  // v07d: os x alata tool0 je (cos EZ, sin EZ, 0); prihvatnica je montirana zakrenuta 180°, pa je os x kandži (tcp) suprotna
+  var d = g3(-Math.cos(ez), -Math.sin(ez), 0).normalize();
   var x, y;
   if (LAB.osZatv === 'x') { x = d; y = zt.clone().cross(x); } else { y = d; x = y.clone().cross(zt); }
   return { p: g3(t[1] / 1000, t[2] / 1000, (t[3] - LAB.PRST) / 1000), x: x, y: y, z: zt };
@@ -1009,16 +1010,17 @@ function labPripremi() {
         q[j] = Math.max(+klizaci[j].min, Math.min(+klizaci[j].max, q[j] + d));
       }
     }
+    if (ok) { fk(q); ok = _x.dot(c.x) > 0.999 && _z.dot(c.z) > 0.999; }  // v07d: mjera greške ne vidi zakret za 180° — provjera smjera osi
     return { q: q, ok: ok };
   }
   function ikPolazno(c, q0) { // prvo iz prethodne točke; ako ne konvergira, iz više polaznih položaja osi 1 i 5 (os 4 uvijek 0°)
     var r = ikOs4Nula(c, q0); if (r.ok) return r;
-    var naj = null;
-    for (var a1 = -150; a1 <= 150; a1 += 30) for (var a5 = 30; a5 <= 90; a5 += 30) {
-      var s = ikOs4Nula(c, [a1, 0, 0, 0, a5, 0]); if (!s.ok) continue;
+    var naj = null, b1 = Math.atan2(-c.p.z, c.p.x) * 180 / Math.PI;   // os 1 prema cilju (KS baze: y = −z u prikazu)
+    [b1, b1 + (b1 > 0 ? -180 : 180)].forEach(function (a1) { [30, 60].forEach(function (a5) { [-180, -90, 0, 90, 180].forEach(function (a6) {
+      var s = ikOs4Nula(c, [a1, 30, 30, 0, a5, a6]); if (!s.ok) return;
       var dm = 0; for (var i = 0; i < 6; i++) dm += Math.abs(s.q[i] - q0[i]);
       if (!naj || dm < naj.dm) naj = { q: s.q, ok: true, dm: dm };
-    }
+    }); }); });
     return naj || r;
   }
   function lanac(t0, t, q0) { // međutočke od t0 do t (položaj i EZ), IK za svaku iz prethodne — isto rješenje (grana) cijelim putem
@@ -1058,14 +1060,10 @@ function labPripremi() {
   Ln('p3'); Gz(true); Ln('p3_gore');
   Jn('p1_gore'); Ln('p1'); Gz(false); Ln('p1_gore');
   seg.push({ tip: 'W', dur: 1.5, red: 'ENDPROC' });
-  // v07c (11. 11. 2026.): os 6 + 180° — na stvarnom robotu flomaster je ondje gdje je u v07b bila sisaljka.
-  // Vrh kandži je na osi prirubnice, pa zakret osi 6 za 180° ne mijenja položaj ni okomitost alata, samo strane alata.
-  // IK se računa kao prije (ista grana), a pomak se doda na kraju; početni položaj robota (sve osi 0°) ostaje.
-  var OS6 = 180;
-  function pomak(q) { var r = q.slice(); r[5] += OS6; return r; }
-  seg.forEach(function (s, i) { if (s.tip !== 'J') return; s.q1 = pomak(s.q1); s.q0 = (i === 0) ? s.q0.slice() : pomak(s.q0); });
-  qa = pomak(qa);
-  Object.keys(LAB.q).forEach(function (k) { LAB.q[k] = pomak(LAB.q[k]); });
+  // v07d (11. 11. 2026.): model v06 ima prihvatnicu montiranu kao stvarni robot (180° prema tPen-u, adapter 19 mm).
+  // IK traži da se kandže zatvaraju po osi x alata tool0 (smjer EZ); zbog montaže je os x prihvatnice suprotna,
+  // pa se os 6 na kraju zakrene za 180° (vrh kandži je na osi prirubnice — položaj i okomitost ostaju).
+  // Provjera: q6 u p1_gore = 13,6°, u p3_gore = −103,6° — isto kao iz robtargeta u kontroleru (conf cf6 = 0 i −2).
   seg[0].q0Pocetak = qa.slice();  // ponavljanje ciklusa kreće iz položaja u kojem je završio
   LAB.seg = seg; LAB.loseIK = lose;
   LAB.obj.forEach(function (o) { o.visible = false; });
