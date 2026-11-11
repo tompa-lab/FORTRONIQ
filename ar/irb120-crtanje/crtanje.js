@@ -67,7 +67,9 @@ function ispis(i, v) { const o = $('os' + (i + 1) + '-out'); if (o) o.textConten
 klizaci.forEach((k, i) => k.addEventListener('input', () => { stani(); const qq = q.slice(); qq[i] = +k.value; postavi(qq); }));
 
 // ---------------- ploča ----------------
-const PL = { w: 500, h: 400, t: 18, r: 420, fi: 0, psi: 0, hd: 150, alfa: 0, hg: 550, nacinNagiba: 'kut' };
+const PL = { w: 500, h: 400, t: 18, r: 420, fi: 0, psi: 0, hd: 150, alfa: 0, hg: 550, nacinNagiba: 'kut', prstiOperater: false };
+// v07e: smjer osi prirubnice za IK — kad su prsti „prema operateru", os prirubnice gleda od gornjeg prema donjem rubu ploče (−V)
+function ciljIK(p, z) { return PL.prstiOperater ? { p, z, x: K.mul(ploca.V, -1) } : { p, z }; }
 const ploca = { grupa: new THREE.Group(), U: null, V: null, Nn: null, R0: null };
 korijen.add(ploca.grupa);
 const matPloca = new THREE.MeshStandardMaterial({ color: 0xfbfbfa, roughness: 0.35, metalness: 0.0 });
@@ -143,6 +145,7 @@ function gradiPlocu() {
     }
   }
   // ispis izračunatih veličina
+  ploca.pod = Math.min(0, ...[[-1, 0], [1, 0], [-1, 1], [1, 1]].map(([a, b]) => tockaNaPloci(o, a * PL.w / 2, (b - 0.5) * PL.h, -PL.t)[2]));   // v07e
   const Cc = K.add(C, K.mul(o.Nn, -PL.t / 2000));
   const hg = PL.hd + PL.h * Math.cos(o.alfa * Math.PI / 180);
   $('pl-info').innerHTML = 'Težište ploče: x = ' + mm(Cc[0]) + ', y = ' + mm(Cc[1]) + ', z = ' + mm(Cc[2]) + ' mm<br>' +
@@ -162,6 +165,11 @@ function pogled(vrsta) {
   let d;
   if (vrsta === 'ploca') d = K.add(K.mul(ploca.Nn, 0.78), K.mul(ploca.U, -0.62));
   else if (vrsta === 'odozgo') d = [0.05, -0.05, 1];
+  else if (vrsta === 'lab') {                                    // v07e: s mjesta operatera (ispred donjeg ruba), kao fotografije iz labosa
+    const P0 = tockaNaPloci(ploca, 0, -PL.h / 2 + 40);
+    const cam = K.add(K.add(P0, K.mul(ploca.V, -0.75)), [0, 0, 0.42]);
+    kamera.position.copy(g3(cam)); upr.target.copy(g3(K.add(tockaNaPloci(ploca, 0, 0), [-0.08, 0.06, 0.12]))); upr.update(); return;
+  }
   else d = K.add(K.mul(ploca.Nn, -0.2), K.mul(ploca.U, 1));
   d = K.unit(d);
   const dist = Math.max(1.55, Math.max(PL.w, PL.h) / 1000 * 2.9);
@@ -214,7 +222,7 @@ function provjeriSudar(rez, o) {
     K.mul(K.add(rez.ish[1], rez.ish[2]), 0.5), K.mul(K.add(rez.ish[2], rez.ish[4]), 0.5)];
   for (const k in AL.tocke_kolizije) tocke.push(K.tockaUj6(rez, AL.tocke_kolizije[k]));
   for (const p of tocke) {
-    if (p[2] < -0.005) return true;                               // ispod plohe na kojoj stoji robot
+    if (p[2] < (ploca.pod || 0) - 0.005) return true;              // ispod plohe na kojoj stoji robot (v07e: ili stola ispod ploče)
     const d = K.sub(p, ploca.R0), w = K.dot(d, ploca.Nn), u = K.dot(d, ploca.U), v = K.dot(d, ploca.V);
     if (w < 0.004 && w > -(PL.t / 1000 + 0.03) && Math.abs(u) < PL.w / 2000 + 0.02 && v > -0.02 && v < PL.h / 1000 + 0.02) return true;
   }
@@ -222,8 +230,8 @@ function provjeriSudar(rez, o) {
 }
 function stanjeTocke(u, vc, q0, alat = ALAT.flomaster) {
   const p = tockaNaPloci(ploca, u, vc), z = K.mul(ploca.Nn, -1);
-  let r = q0 ? K.ik({ p, z }, q0, alat, { iter: 40 }) : null;
-  if (!r || !r.ok) r = K.ikSiroko({ p, z }, alat, q0);
+  let r = q0 ? K.ik(ciljIK(p, z), q0, alat, { iter: 40 }) : null;
+  if (!r || !r.ok) r = K.ikSiroko(ciljIK(p, z), alat, q0);
   if (!r || !r.ok) return { s: STANJE.DOSEG, q: q0 };
   const rez = K.fk(r.q, alat);
   if (provjeriSudar(rez, ploca)) {
@@ -540,8 +548,8 @@ function pripremi() {
   const t0 = performance.now();
   for (let i = 0; i < n; i++) {
     const p = tockaNaPloci(ploca, Pp[i][0], Pp[i][1], Pp[i][2]), z = K.mul(ploca.Nn, -1);
-    let r = q0 ? K.ik({ p, z }, q0, ALAT.flomaster, { iter: 30 }) : null;
-    if ((!r || !r.ok) && (i - zadnjiSiroki > 15 || !q0)) { r = K.ikSiroko({ p, z }, ALAT.flomaster, q0); zadnjiSiroki = i; }
+    let r = q0 ? K.ik(ciljIK(p, z), q0, ALAT.flomaster, { iter: 30 }) : null;
+    if ((!r || !r.ok) && (i - zadnjiSiroki > 15 || !q0)) { r = K.ikSiroko(ciljIK(p, z), ALAT.flomaster, q0); zadnjiSiroki = i; }
     let okk = r && r.ok;
     if (okk && (i % 4 === 0 || !q0) && provjeriSudar(K.fk(r.q, ALAT.flomaster), ploca)) { okk = false; sudara++; }
     if (okk) { q0 = r.q; } else losih++;
@@ -758,6 +766,23 @@ for (const id in POLJA) {
   if (sl) sl.addEventListener('input', () => { el.value = sl.value; promjenaPloce(); });
 }
 document.querySelectorAll('input[name="nagib"]').forEach(r => r.addEventListener('change', () => promjenaPloce()));
+$('prsti-smjer').addEventListener('change', () => { PL.prstiOperater = $('prsti-smjer').value === 'operater'; promjenaPloce(true); });
+// v07e: postav iz laboratorija 11. 11. 2026. — A4 položen poprijeko na stolu desno od robota, prsti prema operateru,
+// ForTroniQ znak 175 × 147 mm na sredini lista (kao nacrtan na stvarnom robotu, modul FTQ_ZNAK_A5).
+// Kut, zakret i udaljenost izračunati iz kontrolera (wFTQ, pNula, tool0) i modela prihvatnice; visina −18 mm je PROCJENA
+// (vrh flomastera 122 mm ispod prirubnice u modelu, prirubnica na Z 103,5 mm u kutu lista).
+const LAB = { 'pl-w': 297, 'pl-h': 210, 'pl-r': 539.5, 'pl-fi': -46.5, 'pl-psi': 136.5, 'pl-hd': -18, 'pl-alfa': 90 };
+function postavLab() {
+  for (const id in LAB) { $(id).value = LAB[id]; const sl = $(id + '-r'); if (sl) sl.value = LAB[id]; }
+  document.querySelector('input[name="nagib"][value="kut"]').checked = true;
+  $('prsti-smjer').value = 'operater'; PL.prstiOperater = true;
+  const zn = document.querySelector('input[name="izvor"][value="znak"]'); if (zn && !zn.checked) { zn.checked = true; zn.dispatchEvent(new Event('change', { bubbles: true })); }
+  $('velicina').value = 98; $('velicina-out').textContent = '98 %'; $('stvarno').checked = false; $('velicina').disabled = false;
+  $('brzina').value = '50';
+  promjenaPloce(true); pogled('lab');
+  setTimeout(() => { if (prog.n) postavi(Array.from(prog.Q.slice(0, 6))); }, 30);   // robot na prvoj točki crteža
+}
+$('postav-lab').addEventListener('click', postavLab);
 $('karta-dosega').addEventListener('change', () => { karta.mesh.visible = $('karta-dosega').checked; if ($('karta-dosega').checked) racunajKartu(); else $('karta-info').textContent = ''; });
 $('omotac').addEventListener('change', () => { if (omotac) omotac.visible = $('omotac').checked; });
 $('stvarno').addEventListener('change', () => { $('velicina').disabled = $('stvarno').checked; });
@@ -780,7 +805,7 @@ ucitajModel(g => {
   promjenaPloce(true);
   ucitajCrtez();
   gradiOmotac();
-  pogled('ploca');
+  if (location.hash === '#lab') postavLab(); else pogled('ploca');          // v07e: #lab otvara postav iz laboratorija
   window.FTQ_SPREMNO = true;
 }, () => { $('ucitavanje').textContent = 'Model se nije mogao učitati. Stranicu otvori preko poslužitelja, ne izravno iz datoteke.'; });
 
@@ -916,4 +941,4 @@ renderer.setAnimationLoop((t, frame) => {
   renderer.render(scena, kamera);
 });
 scena.add(sunce.target);
-window.FTQ_CRT = { korijenXR, xrKorak, get xrStanje() { return xr; }, sidroP0, sidroSad, sidroInv0, korijen, set xrTest(v) { xr = v; }, K, P, PL, ploca, prog, postavi, racunajKartu, pripremi, stanjeTocke, get q() { return q; } };
+window.FTQ_CRT = { kamera, upr, pogled, postavLab, korijenXR, xrKorak, get xrStanje() { return xr; }, sidroP0, sidroSad, sidroInv0, korijen, set xrTest(v) { xr = v; }, K, P, PL, ploca, prog, postavi, racunajKartu, pripremi, stanjeTocke, get q() { return q; } };

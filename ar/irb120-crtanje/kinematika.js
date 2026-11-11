@@ -66,10 +66,12 @@ function rijesi(A, b) {
 }
 
 // IK za položaj vrha alata i smjer njegove osi z (zakret oko osi alata je slobodan)
-// cilj: { p:[3], z:[3] }, q0: početni kutovi; vraća { q, ok, ep (m), ea (rad) }
+// cilj: { p:[3], z:[3], x?:[3] }, q0: početni kutovi; vraća { q, ok, ep (m), ea (rad) }
+// v07e: neobavezni cilj.x = željeni smjer osi prirubnice (os x čvora j6) — tada zakret oko osi alata nije slobodan
+// (npr. prsti prihvatnice prema operateru, kao u laboratoriju 11. 11. 2026.).
 export function ik(cilj, q0, alat, opc = {}) {
   const iter = opc.iter || 60, tolP = opc.tolP || 4e-4, tolA = opc.tolA || 6e-3, wR = opc.wR || 0.25;
-  const q = q0.slice(); let rez, ep = 1, ea = 1;
+  const q = q0.slice(); let rez, ep = 1, ea = 1, ex = 0;   // v07e: ex = zakret oko osi alata prema cilj.x
   for (let it = 0; it < iter; it++) {
     rez = fk(q, alat);
     const z = stupac(rez.R, 2);
@@ -77,15 +79,21 @@ export function ik(cilj, q0, alat, opc = {}) {
     let er = cross(z, cilj.z);
     ep = norm(e); ea = Math.asin(Math.min(1, norm(er)));
     if (dot(z, cilj.z) < 0) ea = Math.PI - ea;
-    if (ep < tolP && ea < tolA) return { q, ok: true, ep, ea };
+    ex = 0;
+    if (cilj.x) {
+      const xa = stupac(rez.j6.R, 0), xp = sub(xa, mul(z, dot(xa, z))), dp = sub(cilj.x, mul(z, dot(cilj.x, z)));
+      if (norm(xp) > 1e-6 && norm(dp) > 1e-6) { const a = unit(xp), b = unit(dp); ex = Math.atan2(dot(cross(a, b), z), dot(a, b)); }
+    }
+    if (ep < tolP && ea < tolA && Math.abs(ex) < tolA * 2) return { q, ok: true, ep, ea, ex };
     if (dot(z, cilj.z) < 0 && norm(er) < 1e-6) er = stupac(rez.R, 0);   // suprotno usmjereno: zakreni
     // projekcija: zakret oko vlastite osi z nije bitan
     const ez = dot(er, z); er = sub(er, mul(z, ez));
+    if (cilj.x) er = add(er, mul(z, Math.max(-0.5, Math.min(0.5, ex))));
     const E = [e[0], e[1], e[2], er[0] * wR, er[1] * wR, er[2] * wR];
     const J = [[], [], [], [], [], []];
     for (let i = 0; i < 6; i++) {
       const w = rez.osi[i], v = cross(w, sub(rez.p, rez.ish[i]));
-      const wp = sub(w, mul(z, dot(w, z)));
+      const wp = cilj.x ? w : sub(w, mul(z, dot(w, z)));
       J[0][i] = v[0]; J[1][i] = v[1]; J[2][i] = v[2];
       J[3][i] = wp[0] * wR; J[4][i] = wp[1] * wR; J[5][i] = wp[2] * wR;
     }
@@ -99,7 +107,7 @@ export function ik(cilj, q0, alat, opc = {}) {
       q[j] = Math.max(GRANICE[j][0], Math.min(GRANICE[j][1], q[j] + d));
     }
   }
-  return { q, ok: false, ep, ea };
+  return { q, ok: false, ep, ea, ex };
 }
 
 // IK s više početnih konfiguracija (za kartu dosega)
@@ -111,7 +119,8 @@ export function ikSiroko(cilj, alat, q0) {
   const a1 = Math.atan2(cilj.p[1], cilj.p[0]) / D2R;
   const sjeme = [];
   if (q0) sjeme.push(q0);
-  for (const q5 of [60, -60, 100, -100]) for (const q4 of [0, 90, -90, 180]) sjeme.push([a1, 10, -10, q4, q5, 0]);
+  const q6s = cilj.x ? [0, 90, -90, 180] : [0];        // v07e: s cilj.x trebaju i polazišta osi 6
+  for (const q5 of [60, -60, 100, -100]) for (const q4 of [0, 90, -90, 180]) for (const q6 of q6s) sjeme.push([a1, 10, -10, q4, q5, q6]);
   let naj = null;
   for (const s of sjeme) {
     const s1 = s.slice(); s1[0] = Math.max(-165, Math.min(165, s1[0]));
