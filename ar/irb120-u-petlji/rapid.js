@@ -717,6 +717,7 @@ export function gkodURapid(txt, o) {
   const greske = [];
   let g = provjeriImeRapid(o.modul); if (g) greske.push('Modul: ' + g);
   g = provjeriImeRapid(o.prefiks); if (g) greske.push('Prefiks rutina: ' + g);
+  else if (o.prefiks.length > 27) greske.push('Prefiks rutina smije imati najviše 27 znakova (ime rutine s _Nula ili _Pisi ne smije prijeći 32).');
   const rNula = o.prefiks + '_Nula', rPisi = o.prefiks + '_Pisi';
   // imena brzina: vPr_* kao u datoteci s robota; uz drugi prefiks v<prefiks>_* da se CONST ne sudare s već učitanim modulom
   const vp = o.prefiks.toUpperCase() === 'FTQ' ? 'vPr' : 'v' + o.prefiks;
@@ -776,7 +777,7 @@ export function gkodURapid(txt, o) {
     '    ConfL\\Off;',
     '    SingArea\\Wrist;',
     '    IF pNula.trans.x = 0 AND pNula.trans.y = 0 AND pNula.trans.z = 0 THEN',
-    '      TPWrite "FTQ: pNula nije naucena (' + rNula + ', Modify Position).";',
+    '      TPWrite "pNula nije naucena: ' + rNula + ' -> Modify Position";',
     '      EXIT;',
     '    ENDIF',
     '    TPWrite "FTQ proba: ' + n + ' pomaka, zProba = "\\Num:=zProba;',
