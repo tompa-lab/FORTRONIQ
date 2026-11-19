@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="robots" content="noindex">
+<title>Robot s mobitelom — položaj (ARCore) v02</title>
+<style>
+  :root{--bg:#0f1418;--panel:#182028;--line:#2a3642;--txt:#e6edf3;--mut:#8b9aa8;--acc:#ff7a1a;--ok:#3fb950;--bad:#f85149;--warn:#d29922}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  header{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  header h1{font-size:16px;margin:0 auto 0 0}
+  .pill{font-size:12px;padding:3px 8px;border-radius:99px;background:var(--line);color:var(--mut)}
+  .pill.ok{background:#12361f;color:var(--ok)} .pill.bad{background:#3d1416;color:var(--bad)} .pill.warn{background:#3a2c0b;color:var(--warn)}
+  main{padding:10px 12px;display:grid;gap:10px;max-width:720px;margin:0 auto}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:0 0 8px}
+  button{font:inherit;color:var(--txt);background:#24303b;border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+  button.pri{background:var(--acc);border-color:var(--acc);color:#111;font-weight:600}
+  button:disabled{opacity:.45}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-variant-numeric:tabular-nums}
+  .kv b{color:var(--mut);font-weight:500}
+  .big{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .note{color:var(--mut);font-size:13px}
+  ol{margin:6px 0 0 18px;padding:0} li{margin:3px 0}
+  #plot{width:100%;aspect-ratio:1/1;background:#0b1014;border-radius:8px;display:block;touch-action:none}
+  #log{height:110px;overflow:auto;background:#0b1014;border-radius:8px;padding:6px;font:12px/1.35 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}
+  footer{color:var(--mut);font-size:12px;text-align:center;padding:14px}
+  /* u AR načinu: korijen prekrivanja je proziran da se vidi kamera */
+  body.ar{background:transparent}
+  body.ar #upute, body.ar footer{display:none}
+  body.ar header{background:rgba(15,20,24,.78)}
+  body.ar section{background:rgba(15,20,24,.78)}
+  body.ar #plot{background:rgba(11,16,20,.6)}
+  body.ar #overlay{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  body.ar #plot{max-width:60vh;margin:0 auto}
+</style>
+</head>
+<body>
+<div id="overlay">
+<header>
+  <h1>Robot s mobitelom — položaj (ARCore)</h1>
+  <span id="stXR" class="pill">WebXR: —</span>
+  <span id="stTr" class="pill">Praćenje: —</span>
+</header>
+<main>
+
+<section id="upute">
+  <h2>Proba bez robota</h2>
+  <ol>
+    <li>Mobitel stavi u držač na robotu (nagib oko 45°, stražnja kamera gleda pod ispred robota).</li>
+    <li>Stisni <b>Pokreni praćenje</b>. Ako Android zatraži <i>Google Play usluge za AR</i>, instaliraj ih i vrati se.</li>
+    <li>Prvih nekoliko sekundi polako pomiči robota rukom lijevo-desno da kamera „uhvati“ pod.</li>
+    <li>Stisni <b>Nuliraj početak</b>, pa robota rukom (gurajući po podu) provezi kvadrat, npr. 2 × 2 pločice (60 × 60 cm), i vrati ga točno na početno mjesto i u početni smjer.</li>
+    <li>Na kraju pogledaj <b>Udaljenost od početka</b> (idealno 0) i <b>Smjer</b> (idealno 0° ili ±360°). Stisni <b>Završi</b>, pa <b>Preuzmi CSV</b>.</li>
+  </ol>
+  <p class="note">Podloga s uzorkom (pločice, fuge, tepih) prati se bolje od jednolično sjajne. Jako svjetlo ili mrak smetaju.</p>
+</section>
+
+<section>
+  <h2>1. Praćenje</h2>
+  <div class="row">
+    <button class="pri" id="btnStart">Pokreni praćenje</button>
+    <button id="btnZero" disabled>Nuliraj početak</button>
+    <button id="btnEnd" disabled>Završi</button>
+    <button id="btnCsv" disabled>Preuzmi CSV</button>
+  </div>
+</section>
+
+<section>
+  <h2>2. Položaj robota (od početka)</h2>
+  <div class="grid3">
+    <div><div class="note">X naprijed</div><div class="big" id="vX">—</div><div class="note">cm</div></div>
+    <div><div class="note">Y lijevo</div><div class="big" id="vY">—</div><div class="note">cm</div></div>
+    <div><div class="note">Smjer (ulijevo +)</div><div class="big" id="vH">—</div><div class="note">°</div></div>
+  </div>
+  <div class="kv" style="margin-top:8px">
+    <b>Udaljenost od početka</b><span id="vD">—</span>
+    <b>Prijeđeni put</b><span id="vL">—</span>
+    <b>Visina kamere (promjena)</b><span id="vZ">—</span>
+    <b>Nagib kamere</b><span id="vT">—</span>
+    <b>Uzoraka</b><span id="vN">0</span>
+  </div>
+</section>
+
+<section>
+  <h2>3. Putanja (pogled odozgo, mreža 10 cm)</h2>
+  <canvas id="plot" width="600" height="600"></canvas>
+  <p class="note">Narančasti trokut = robot i njegov smjer; zeleni krug = početak. Crvene točke = mjesta gdje je praćenje bilo izgubljeno.</p>
+</section>
+
+<section>
+  <h2>4. Zapis</h2>
+  <div id="log"></div>
+</section>
+
+</main>
+<footer>ForTroniQ d.o.o. — prototip v02 · dr.sc. Tomislav Pavlic, mag.ing.mech., Krunoslav Kušec, mag.ing.mech., Alen Britvić, bacc.ing.mech.</footer>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const DEG = 180 / Math.PI;
+
+function log(t, cls){
+  const d = document.createElement('div');
+  d.textContent = new Date().toLocaleTimeString('hr-HR',{hour12:false}) + '  ' + t;
+  if (cls) d.style.color = cls;
+  const L = $('log'); L.appendChild(d);
+  while (L.childNodes.length > 200) L.removeChild(L.firstChild);
+  L.scrollTop = L.scrollHeight;
+}
+function pill(id, cls, txt){ const p = $(id); p.className = 'pill ' + cls; p.textContent = txt; }
+
+// ---------- podrška ----------
+let supported = false;
+(async () => {
+  if (!window.isSecureContext){ pill('stXR','bad','WebXR: treba HTTPS'); log('Stranica nije na HTTPS adresi.', 'var(--bad)'); return; }
+  if (!navigator.xr){ pill('stXR','bad','WebXR: nema'); log('Preglednik nema WebXR. Na Androidu koristi Chrome.', 'var(--bad)'); return; }
+  try {
+    supported = await navigator.xr.isSessionSupported('immersive-ar');
+  } catch(e){ supported = false; }
+  if (supported) pill('stXR','ok','WebXR AR: da');
+  else { pill('stXR','bad','WebXR AR: ne'); log('Ovaj uređaj ili preglednik ne podržava AR sesiju (ARCore).', 'var(--bad)'); }
+})();
+
+// ---------- matematika ----------
+function rotate(q, v){ // q = {x,y,z,w}, v = [x,y,z]
+  const x = v[0], y = v[1], z = v[2];
+  const ix =  q.w*x + q.y*z - q.z*y;
+  const iy =  q.w*y + q.z*x - q.x*z;
+  const iz =  q.w*z + q.x*y - q.y*x;
+  const iw = -q.x*x - q.y*y - q.z*z;
+  return [
+    ix*q.w + iw*-q.x + iy*-q.z - iz*-q.y,
+    iy*q.w + iw*-q.y + iz*-q.x - ix*-q.z,
+    iz*q.w + iw*-q.z + ix*-q.y - iy*-q.x
+  ];
+}
+// WebXR: y gore, kamera gleda u -z. Smjer robota = vodoravna projekcija smjera gledanja kamere.
+function yawOf(q){
+  const f = rotate(q, [0, 0, -1]);
+  let hx = f[0], hz = f[2];
+  if (Math.hypot(hx, hz) < 0.2){ const u = rotate(q, [0, 1, 0]); hx = u[0]; hz = u[2]; } // kamera gleda gotovo okomito dolje
+  return Math.atan2(-hx, -hz); // ulijevo (suprotno od kazaljke gledano odozgo) = pozitivno
+}
+function tiltOf(q){ const f = rotate(q, [0, 0, -1]); return Math.asin(Math.max(-1, Math.min(1, -f[1]))) * DEG; } // ° ispod vodoravnog
+function fmt(v, d){ const t = v.toFixed(d); return /^-0[.,]?0*$/.test(t) ? t.slice(1) : t; }
+function wrap(a){ while (a > Math.PI) a -= 2*Math.PI; while (a < -Math.PI) a += 2*Math.PI; return a; }
+
+// ---------- stanje ----------
+let gl = null, glLayer = null, frames = 0;
+let session = null, refSpace = null, origin = null, lastYaw = null, yawAcc = 0;
+let pts = [], lost = [], pathLen = 0, lastPt = null, t0 = 0, wasLost = false;
+let lastPushYaw = 0;
+
+function setOrigin(pose){
+  const p = pose.transform.position, q = pose.transform.orientation;
+  const th = yawOf(q);
+  origin = { x: p.x, y: p.y, z: p.z, th: th };
+  lastYaw = th; yawAcc = 0;
+  pts = []; lost = []; pathLen = 0; lastPt = null; t0 = performance.now(); lastPushYaw = 0;
+  log('Početak postavljen.', 'var(--ok)');
+}
+function toRobot(p){ // svijet → koordinate robota na početku (X naprijed, Y lijevo), u metrima
+  const dx = p.x - origin.x, dz = p.z - origin.z, th = origin.th;
+  const fx = -Math.sin(th), fz = -Math.cos(th);   // naprijed na početku
+  const lx = -Math.cos(th), lz =  Math.sin(th);   // lijevo na početku
+  return [dx*fx + dz*fz, dx*lx + dz*lz];
+}
+
+let zeroReq = false;
+function onFrame(time, frame){
+  if (!session) return;
+  session.requestAnimationFrame(onFrame);
+  frames++;
+  if (gl && glLayer){ gl.bindFramebuffer(gl.FRAMEBUFFER, glLayer.framebuffer); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); }
+  const pose = frame.getViewerPose(refSpace);
+  if (!pose){ if (!wasLost){ pill('stTr','bad','Praćenje: izgubljeno'); wasLost = true; if (lastPt) lost.push(lastPt.slice()); } return; }
+  const q = pose.transform.orientation;
+  if (pose.emulatedPosition){ if (!wasLost){ pill('stTr','warn','Praćenje: samo kut'); wasLost = true; if (lastPt) lost.push(lastPt.slice()); } }
+  else if (wasLost || $('stTr').textContent.indexOf('dobro') < 0){ pill('stTr','ok','Praćenje: dobro'); wasLost = false; }
+  if (!origin || zeroReq){ setOrigin(pose); zeroReq = false; }
+  const th = yawOf(q);
+  yawAcc += wrap(th - lastYaw); lastYaw = th;
+  const r = toRobot(pose.transform.position);
+  if (lastPt){ const d = Math.hypot(r[0]-lastPt[0], r[1]-lastPt[1]); if (d > 0.003 && !pose.emulatedPosition){ pathLen += d; } }
+  if (!lastPt || Math.hypot(r[0]-lastPt[0], r[1]-lastPt[1]) > 0.005 || Math.abs(yawAcc - lastPushYaw) > 0.017){
+    lastPushYaw = yawAcc;
+    pts.push([ (performance.now()-t0)/1000, r[0], r[1], yawAcc, pose.transform.position.y - origin.y, pose.emulatedPosition ? 0 : 1 ]);
+    if (pts.length > 20000) pts.shift();
+    lastPt = r;
+  }
+  show(r, pose);
+}
+
+let lastShow = 0;
+function show(r, pose){
+  const now = performance.now(); if (now - lastShow < 100) return; lastShow = now;
+  $('vX').textContent = fmt(r[0]*100, 1);
+  $('vY').textContent = fmt(r[1]*100, 1);
+  $('vH').textContent = fmt(yawAcc*DEG, 1);
+  $('vD').textContent = (Math.hypot(r[0], r[1])*100).toFixed(1) + ' cm';
+  $('vL').textContent = (pathLen*100).toFixed(1) + ' cm';
+  $('vZ').textContent = ((pose.transform.position.y - origin.y)*100).toFixed(1) + ' cm';
+  $('vT').textContent = tiltOf(pose.transform.orientation).toFixed(0) + '° ispod vodoravnog';
+  $('vN').textContent = pts.length;
+  draw(r);
+}
+
+// ---------- crtanje ----------
+function draw(cur){
+  const c = $('plot'), g = c.getContext('2d'), W = c.width, H = c.height;
+  g.clearRect(0,0,W,H);
+  let ext = 0.3;
+  for (const p of pts) ext = Math.max(ext, Math.abs(p[1]), Math.abs(p[2]));
+  ext *= 1.15;
+  const s = (W/2) / ext; // px po metru
+  const X = y => W/2 - y*s, Y = x => H/2 - x*s; // Y lijevo → lijevo na slici, X naprijed → gore
+  g.strokeStyle = '#1d2731'; g.lineWidth = 1;
+  const step = 0.1;
+  for (let v = -Math.ceil(ext/step)*step; v <= ext; v += step){
+    g.beginPath(); g.moveTo(X(v), 0); g.lineTo(X(v), H); g.stroke();
+    g.beginPath(); g.moveTo(0, Y(v)); g.lineTo(W, Y(v)); g.stroke();
+  }
+  g.strokeStyle = '#2f3d4a'; g.beginPath(); g.moveTo(X(0),0); g.lineTo(X(0),H); g.moveTo(0,Y(0)); g.lineTo(W,Y(0)); g.stroke();
+  g.fillStyle = '#8b9aa8'; g.font = '20px system-ui'; g.fillText('mreža 10 cm', 10, H-12);
+  if (pts.length > 1){
+    g.strokeStyle = '#7aa2f7'; g.lineWidth = 3; g.beginPath();
+    g.moveTo(X(pts[0][2]), Y(pts[0][1]));
+    for (const p of pts) g.lineTo(X(p[2]), Y(p[1]));
+    g.stroke();
+  }
+  g.fillStyle = '#3fb950'; g.beginPath(); g.arc(X(0), Y(0), 9, 0, 7); g.fill();
+  g.fillStyle = '#f85149'; for (const p of lost){ g.beginPath(); g.arc(X(p[1]), Y(p[0]), 6, 0, 7); g.fill(); }
+  if (cur){
+    const a = yawAcc; // 0 = gore (naprijed), + = ulijevo
+    const cx = X(cur[1]), cy = Y(cur[0]), L = 22;
+    const tip = [cx - Math.sin(a)*L, cy - Math.cos(a)*L];
+    const l = [cx - Math.sin(a+2.5)*L*0.7, cy - Math.cos(a+2.5)*L*0.7];
+    const r = [cx - Math.sin(a-2.5)*L*0.7, cy - Math.cos(a-2.5)*L*0.7];
+    g.fillStyle = '#ff7a1a'; g.beginPath(); g.moveTo(tip[0],tip[1]); g.lineTo(l[0],l[1]); g.lineTo(r[0],r[1]); g.closePath(); g.fill();
+  }
+}
+draw(null);
+
+// ---------- sesija ----------
+async function start(){
+  if (!navigator.xr){ log('Nema WebXR-a.', 'var(--bad)'); return; }
+  try {
+    session = await navigator.xr.requestSession('immersive-ar', {
+      requiredFeatures: ['local'],
+      optionalFeatures: ['dom-overlay'],
+      domOverlay: { root: $('overlay') }
+    });
+  } catch(e){ log('AR sesija nije pokrenuta: ' + (e && e.message ? e.message : e), 'var(--bad)'); session = null; return; }
+  document.body.classList.add('ar');
+  const ov = session.domOverlayState ? session.domOverlayState.type : 'nema';
+  log('AR sesija pokrenuta (prekrivanje: ' + ov + ').', 'var(--ok)');
+  if (ov === 'nema') log('Prikaz uživo tijekom sesije nije dostupan; rezultat se vidi nakon „Završi“ (tipka Natrag).', 'var(--warn)');
+  session.addEventListener('end', () => {
+    session = null; gl = null; glLayer = null; document.body.classList.remove('ar');
+    pill('stTr','','Praćenje: —');
+    $('btnStart').disabled = false; $('btnZero').disabled = true; $('btnEnd').disabled = true;
+    $('btnCsv').disabled = pts.length === 0;
+    summary();
+  });
+  // Chrome šalje AR okvire stranici tek kad sesija ima sloj za iscrtavanje (WebGL).
+  try {
+    const cv = document.createElement('canvas');
+    gl = cv.getContext('webgl', { xrCompatible: true, alpha: true }) || cv.getContext('webgl2', { xrCompatible: true, alpha: true });
+    if (gl && gl.makeXRCompatible){ try { await gl.makeXRCompatible(); } catch(e){ log('makeXRCompatible: ' + e.message, 'var(--warn)'); } }
+    glLayer = new XRWebGLLayer(session, gl, { alpha: true });
+    await session.updateRenderState({ baseLayer: glLayer });
+  } catch(e){ log('Sloj za iscrtavanje nije postavljen: ' + (e && e.message ? e.message : e), 'var(--bad)'); }
+  refSpace = await session.requestReferenceSpace('local');
+  origin = null; zeroReq = false; wasLost = false; frames = 0;
+  setTimeout(() => { if (session && frames === 0) log('AR okviri ne stižu ni nakon 3 s. Pošalji snimku ovog zapisa.', 'var(--bad)'); else if (session) log('AR okviri stižu (' + frames + ' u 3 s).', 'var(--ok)'); }, 3000);
+  $('btnStart').disabled = true; $('btnZero').disabled = false; $('btnEnd').disabled = false; $('btnCsv').disabled = true;
+  session.requestAnimationFrame(onFrame);
+}
+function summary(){
+  if (!pts.length) return;
+  const p = pts[pts.length-1];
+  log('Kraj: X ' + fmt(p[1]*100, 1) + ' cm, Y ' + fmt(p[2]*100, 1) + ' cm, udaljenost od početka ' + (Math.hypot(p[1],p[2])*100).toFixed(1) + ' cm, smjer ' + (yawAcc*DEG).toFixed(1) + '°, put ' + (pathLen*100).toFixed(1) + ' cm, gubitaka praćenja ' + lost.length + '.', 'var(--ok)');
+  draw([p[1], p[2]]);
+}
+$('btnStart').onclick = start;
+$('btnZero').onclick = () => { zeroReq = true; };
+$('btnEnd').onclick = () => { if (session) session.end(); };
+$('btnCsv').onclick = () => {
+  const rows = ['t_s;X_cm;Y_cm;smjer_deg;dz_cm;pracenje'];
+  for (const p of pts) rows.push([p[0].toFixed(3), (p[1]*100).toFixed(2), (p[2]*100).toFixed(2), (p[3]*DEG).toFixed(2), (p[4]*100).toFixed(2), p[5]].join(';').replace(/\./g, ','));
+  const blob = new Blob([rows.join('\r\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'robot-polozaj_' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  log('CSV preuzet (' + pts.length + ' redaka).');
+};
+
+log('Stranica spremna. Stisni „Pokreni praćenje“.');
+})();
+</script>
+</body>
+</html>
