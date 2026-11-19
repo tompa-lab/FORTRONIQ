@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="robots" content="noindex">
+<title>Robot s mobitelom — vožnja v02</title>
+<style>
+  :root{--bg:#0f1418;--panel:#182028;--line:#2a3642;--txt:#e6edf3;--mut:#8b9aa8;--acc:#ff7a1a;--ok:#3fb950;--bad:#f85149;--warn:#d29922}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-user-select:none;user-select:none}
+  header{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  header h1{font-size:16px;margin:0 auto 0 0}
+  .pill{font-size:12px;padding:3px 8px;border-radius:99px;background:var(--line);color:var(--mut)}
+  .pill.ok{background:#12361f;color:var(--ok)} .pill.bad{background:#3d1416;color:var(--bad)} .pill.warn{background:#3a2c0b;color:var(--warn)}
+  main{padding:10px 12px;display:grid;gap:10px;max-width:720px;margin:0 auto}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:0 0 8px}
+  button{font:inherit;color:var(--txt);background:#24303b;border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+  button:active{transform:translateY(1px)}
+  button.pri{background:var(--acc);border-color:var(--acc);color:#111;font-weight:600}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #stop{width:100%;min-height:64px;font-size:22px;font-weight:800;background:var(--bad);border-color:var(--bad);color:#fff}
+  #joyWrap{display:flex;justify-content:center}
+  #joy{touch-action:none;background:#11181e;border-radius:50%;border:1px solid var(--line)}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-variant-numeric:tabular-nums}
+  .kv b{color:var(--mut);font-weight:500}
+  .big{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+  label{display:flex;gap:6px;align-items:center}
+  input[type=range]{width:100%}
+  input[type=number]{width:76px;font:inherit;background:#11181e;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px}
+  select{font:inherit;background:#11181e;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px}
+  #log{height:150px;overflow:auto;background:#0b1014;border-radius:8px;padding:6px;font:12px/1.35 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;-webkit-user-select:text;user-select:text}
+  .note{color:var(--mut);font-size:13px}
+  .warnbox{border-color:var(--warn)}
+  table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+  td,th{border-bottom:1px solid var(--line);padding:4px;text-align:left;font-size:13px}
+  footer{color:var(--mut);font-size:12px;text-align:center;padding:14px}
+  details summary{cursor:pointer;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Robot s mobitelom — vožnja</h1>
+  <span id="stSer" class="pill bad">USB: nije spojeno</span>
+  <span id="stGyr" class="pill">Žiroskop: —</span>
+</header>
+<main>
+
+<section class="warnbox" id="sup" hidden>
+  <h2>Upozorenje</h2>
+  <div id="supTxt" class="note"></div>
+</section>
+
+<section>
+  <h2>1. Spajanje</h2>
+  <div class="row">
+    <button class="pri" id="btnCon">Spoji robota (USB)</button>
+    <button id="btnDis">Odspoji</button>
+    <button id="btnEn">enable</button>
+    <button id="btnDisEn">disable</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <label>Veza <select id="conType">
+      <option value="auto">automatski (Android: WebUSB, računalo: Web Serial)</option>
+      <option value="usb">WebUSB</option>
+      <option value="serial">Web Serial</option>
+    </select></label>
+  </div>
+  <p class="note">Prvu probu radi s podignutim kotačima. Robot se napaja iz mobitela; nakon ponovnog spajanja stranica sama šalje <code>enable</code>. Na Androidu prije spajanja zatvori Serial USB Terminal; kad Android ponudi tu aplikaciju, odaberi <i>Odustani</i>.</p>
+</section>
+
+<section>
+  <button id="stop">STOP</button>
+</section>
+
+<section>
+  <h2>2. Vožnja (Pioneer: v i ω)</h2>
+  <div id="joyWrap"><canvas id="joy" width="260" height="260"></canvas></div>
+  <div class="grid2" style="margin-top:8px">
+    <div><div class="note">v zadano</div><div class="big" id="vOut">0</div><div class="note">mm/s</div></div>
+    <div><div class="note">ω zadano / izlaz</div><div class="big" id="wOut">0</div><div class="note">°/s (pozitivno = ulijevo)</div></div>
+  </div>
+  <div style="margin-top:8px">
+    <label>v<sub>max</sub> <input type="range" id="vMax" min="80" max="340" step="10" value="220"><span id="vMaxT">220</span> mm/s</label>
+    <label>ω<sub>max</sub> <input type="range" id="wMax" min="30" max="300" step="10" value="120"><span id="wMaxT">120</span> °/s</label>
+  </div>
+  <div class="row" style="margin-top:6px">
+    <button id="tStraight">Probni pravac 3 s</button>
+    <button id="tTurn">Okret 180° (žiroskop)</button>
+  </div>
+</section>
+
+<section>
+  <h2>3. Kotači</h2>
+  <table>
+    <tr><th></th><th>Lijevi (M2)</th><th>Desni (M1)</th></tr>
+    <tr><td>Brzina zadana</td><td id="vL">0</td><td id="vR">0</td></tr>
+    <tr><td>Naredba %</td><td id="pL">0</td><td id="pR">0</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>4. Žiroskop mobitela (ispravak smjera)</h2>
+  <div class="row">
+    <label><input type="checkbox" id="gyOn" checked> ispravak uključen</label>
+    <button id="gyCal">Kalibriraj mirovanje (2 s)</button>
+    <button id="gyZero">Nuliraj smjer</button>
+  </div>
+  <div class="kv" style="margin-top:8px">
+    <b>Kutna brzina</b><span id="gyRate">—</span>
+    <b>Smjer (integrirano)</b><span id="gyHead">—</span>
+    <b>Pomak nule</b><span id="gyBias">0</span>
+  </div>
+  <details style="margin-top:8px"><summary>Postavke osi i pojačanja</summary>
+    <div class="row" style="margin-top:8px">
+      <label>Os <select id="gyAxis">
+        <option value="gamma">gamma — mobitel uspravno (portret)</option>
+        <option value="alpha">alpha — mobitel položen na robotu</option>
+        <option value="beta">beta — mobitel uspravno, položeno (pejzaž)</option>
+      </select></label>
+      <label><input type="checkbox" id="gyInv"> obrni predznak</label>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <label>K<sub>h</sub> (držanje smjera) <input type="number" id="kH" value="1.5" step="0.1"> 1/s</label>
+      <label>K<sub>p</sub> (kutna brzina) <input type="number" id="kP" value="0.3" step="0.05"></label>
+    </div>
+    <p class="note">Provjera predznaka: okreni robota rukom ulijevo — „Kutna brzina" mora biti pozitivna. Ako nije, označi „obrni predznak".</p>
+  </details>
+</section>
+
+<section>
+  <h2>5. Lidari</h2>
+  <div class="grid2">
+    <div><div class="note">Lidar 1 (0x181)</div><div class="big" id="d1">—</div><div class="note">mm</div></div>
+    <div><div class="note">Lidar 2 (0x183, pretpostavka)</div><div class="big" id="d2">—</div><div class="note">mm</div></div>
+  </div>
+  <div class="row" style="margin-top:6px">
+    <button id="l1s">lid 1 start</button><button id="l1x">lid 1 stop</button>
+    <button id="l2s">lid 2 start</button><button id="l2x">lid 2 stop</button>
+  </div>
+</section>
+
+<section>
+  <h2>6. Kalibracija i raspored motora</h2>
+  <details><summary>Tablica postotak → brzina (kotači u zraku, 19. 11. 2026.)</summary>
+    <table style="margin-top:6px">
+      <tr><th></th><th>Lijevi (M2)</th><th>Desni (M1)</th></tr>
+      <tr><td>na 70 % (mm/s)</td><td><input type="number" id="cL70" value="108"></td><td><input type="number" id="cR70" value="170"></td></tr>
+      <tr><td>na 100 % (mm/s)</td><td><input type="number" id="cL100" value="325"></td><td><input type="number" id="cR100" value="346"></td></tr>
+    </table>
+    <div class="row" style="margin-top:6px">
+      <label>Najmanja naredba <input type="number" id="pMin" value="70"> %</label>
+      <label>Udarac <input type="number" id="kickMs" value="150"> ms</label>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <label>Lijevi = M<input type="number" id="mL" value="2" min="1" max="4" style="width:52px"></label>
+      <label>Desni = M<input type="number" id="mR" value="1" min="1" max="4" style="width:52px"></label>
+      <label><input type="checkbox" id="fwdNeg" checked> naprijed = negativno</label>
+    </div>
+    <p class="note">Geometrija: kotač Ø55 mm, razmak kotača b = 110 mm. v<sub>L</sub> = v − ω·b/2, v<sub>R</sub> = v + ω·b/2.</p>
+  </details>
+</section>
+
+<section>
+  <h2>7. Zapis</h2>
+  <div class="row" style="margin-bottom:6px">
+    <label><input type="checkbox" id="hideCan" checked> sakrij CAN poruke</label>
+    <input id="cmd" placeholder="naredba, npr. status" style="flex:1;min-width:140px;font:inherit;background:#11181e;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:8px">
+    <button id="send">Pošalji</button>
+  </div>
+  <div id="log"></div>
+</section>
+
+</main>
+<footer>ForTroniQ d.o.o. — prototip v02 · dr.sc. Tomislav Pavlic, mag.ing.mech., Krunoslav Kušec, mag.ing.mech., Alen Britvić, bacc.ing.mech.</footer>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const B = 110; // mm, razmak kotača
+const LOOP_MS = 100;
+
+// ---------- zapis ----------
+const logEl = $('log');
+function log(t, cls){
+  const line = document.createElement('div');
+  line.textContent = new Date().toLocaleTimeString('hr-HR',{hour12:false}) + '  ' + t;
+  if (cls) line.style.color = cls;
+  logEl.appendChild(line);
+  while (logEl.childNodes.length > 300) logEl.removeChild(logEl.firstChild);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+function warn(msg){ $('sup').hidden = false; $('supTxt').innerHTML += '<p>'+msg+'</p>'; }
+
+// ---------- podrška ----------
+const inFrame = (() => { try { return window.self !== window.top; } catch(e){ return true; } })();
+const isAndroid = /Android/i.test(navigator.userAgent);
+const hasUsb = 'usb' in navigator, hasSerial = 'serial' in navigator;
+if (!window.isSecureContext) warn('Stranica nije otvorena preko sigurne veze (HTTPS). USB i senzori rade samo na HTTPS adresi.');
+if (!hasUsb && !hasSerial) warn('Ovaj preglednik nema ni WebUSB ni Web Serial. Otvori stranicu u Chromeu (Android ili računalo).');
+if (inFrame) warn('Stranica je otvorena unutar okvira (npr. u Claudeu). U okviru su USB i senzori pokreta obično blokirani — otvori je izravno u Chromeu.');
+
+// ---------- veza s robotom: WebUSB (Android) ili Web Serial (računalo) ----------
+// Android: Web Serial zasad vidi samo Bluetooth, pa se USB CDC uređaj otvara preko WebUSB-a
+// i stranica sama radi CDC-ACM (SET_LINE_CODING, DTR/RTS, bulk in/out).
+// Windows: CDC sučelje drži sustavni upravljački program, pa tamo ide Web Serial.
+let tx = null, connected = false, usbDev = null, usbReading = false, port = null, reader = null, keepReading = false;
+const enc = new TextEncoder();
+let lastMot = {}; // motor -> zadnja poslana vrijednost
+let wq = Promise.resolve();
+function send(cmd){
+  if (!tx) return Promise.resolve();
+  const bytes = enc.encode(cmd + '\r\n');
+  log('> ' + cmd, '#7aa2f7');
+  const t = tx;
+  wq = wq.then(() => t.write(bytes)).catch(e => log('Greška slanja: ' + e.message, 'var(--bad)'));
+  return wq;
+}
+function setSer(ok, txt){ const s=$('stSer'); s.textContent='USB: '+txt; s.className='pill '+(ok?'ok':'bad'); }
+function hex4(n){ return '0x' + ('0000' + n.toString(16).toUpperCase()).slice(-4); }
+
+// zajedničko slaganje redaka
+const dec = new TextDecoder();
+let rxBuf = '';
+function onChunk(u8){
+  rxBuf += dec.decode(u8, { stream:true });
+  let i;
+  while ((i = rxBuf.search(/\r?\n/)) >= 0){
+    const line = rxBuf.slice(0, i).trim(); rxBuf = rxBuf.slice(i+1);
+    if (line) onLine(line);
+  }
+  if (rxBuf.length > 4096) rxBuf = '';
+}
+function lost(why){
+  if (!connected && !tx) return;
+  connected = false; tx = null; usbReading = false; keepReading = false;
+  prog = null; joy.reset();
+  setSer(false, 'prekinuto');
+  log('Veza prekinuta' + (why ? ': ' + why : '') + '. Nakon ponovnog spajanja robot treba opet enable (stranica ga šalje sama).', 'var(--bad)');
+}
+function whichTransport(){
+  const v = $('conType').value;
+  if (v === 'usb' || v === 'serial') return v;
+  if (isAndroid && hasUsb) return 'usb';
+  if (hasSerial) return 'serial';
+  return hasUsb ? 'usb' : null;
+}
+
+async function openWebUsb(){
+  const dev = await navigator.usb.requestDevice({ filters: [ { vendorId: 0x0483 }, { classCode: 0x02 }, { classCode: 0x0A } ] });
+  await dev.open();
+  if (dev.configuration === null) await dev.selectConfiguration(1);
+  let ctrl = null, data = null, epIn = null, epOut = null, pkt = 64;
+  for (const itf of dev.configuration.interfaces){
+    const alt = itf.alternates[0];
+    if (alt.interfaceClass === 0x02 && ctrl === null) ctrl = itf.interfaceNumber;
+    if (alt.interfaceClass === 0x0A && data === null){
+      data = itf.interfaceNumber;
+      for (const ep of alt.endpoints){
+        if (ep.type !== 'bulk') continue;
+        if (ep.direction === 'in'){ epIn = ep.endpointNumber; pkt = ep.packetSize || 64; } else epOut = ep.endpointNumber;
+      }
+    }
+  }
+  if (data === null || epIn === null || epOut === null){ try { await dev.close(); } catch(e){} throw new Error('uređaj nema CDC podatkovno sučelje'); }
+  if (ctrl !== null){ try { await dev.claimInterface(ctrl); } catch(e){ log('Upravljačko CDC sučelje nije preuzeto (' + e.message + ') — nastavljam.', 'var(--warn)'); } }
+  try { await dev.claimInterface(data); }
+  catch(e){ try { await dev.close(); } catch(_){} throw new Error('sučelje je zauzeto (' + e.message + '). Zatvori Serial USB Terminal (Prisilno zaustavi) i spoji ponovno.'); }
+  const ci = ctrl !== null ? ctrl : data;
+  const baud = 115200;
+  const lc = new Uint8Array([baud & 255, (baud >> 8) & 255, (baud >> 16) & 255, (baud >> 24) & 255, 0, 0, 8]);
+  try { await dev.controlTransferOut({ requestType:'class', recipient:'interface', request:0x20, value:0, index:ci }, lc); }
+  catch(e){ log('SET_LINE_CODING: ' + e.message + ' (za virtualni COM obično nebitno)', 'var(--warn)'); }
+  try { await dev.controlTransferOut({ requestType:'class', recipient:'interface', request:0x22, value:0x03, index:ci }); }
+  catch(e){ log('DTR/RTS: ' + e.message, 'var(--warn)'); }
+  usbDev = dev; usbReading = true;
+  log('WebUSB: ' + (dev.manufacturerName || '') + ' ' + (dev.productName || '') + ' · VID ' + hex4(dev.vendorId) + ' PID ' + hex4(dev.productId) + ' · sučelja ctrl=' + ctrl + ' data=' + data + ' · EP in ' + epIn + ' out ' + epOut, 'var(--ok)');
+  (async () => {
+    while (usbReading && usbDev === dev){
+      try {
+        const r = await dev.transferIn(epIn, Math.max(512, pkt));
+        if (r.status === 'ok' && r.data && r.data.byteLength) onChunk(new Uint8Array(r.data.buffer, r.data.byteOffset, r.data.byteLength));
+        else if (r.status === 'stall') await dev.clearHalt('in', epIn);
+      } catch(e){ if (usbReading && usbDev === dev) lost(e.message); break; }
+    }
+  })();
+  return {
+    kind: 'WebUSB',
+    write: async u8 => { const r = await dev.transferOut(epOut, u8); if (r.status !== 'ok') throw new Error('transferOut ' + r.status); },
+    close: async () => {
+      usbReading = false; usbDev = null;
+      try { await dev.controlTransferOut({ requestType:'class', recipient:'interface', request:0x22, value:0x00, index:ci }); } catch(e){}
+      try { await dev.releaseInterface(data); } catch(e){}
+      try { if (ctrl !== null) await dev.releaseInterface(ctrl); } catch(e){}
+      try { await dev.close(); } catch(e){}
+    }
+  };
+}
+
+async function openWebSerial(){
+  port = await navigator.serial.requestPort();
+  await port.open({ baudRate: 115200 });
+  try { const inf = port.getInfo(); if (inf.usbVendorId != null) log('Web Serial: VID ' + hex4(inf.usbVendorId) + ' PID ' + hex4(inf.usbProductId), 'var(--ok)'); } catch(e){}
+  const writer = port.writable.getWriter();
+  const p = port;
+  keepReading = true;
+  (async () => {
+    while (p.readable && keepReading && port === p){
+      reader = p.readable.getReader();
+      try {
+        while (true){ const { value, done } = await reader.read(); if (done) break; if (value) onChunk(value); }
+      } catch(e){ if (keepReading && port === p) lost(e.message); keepReading = false; }
+      finally { try { reader.releaseLock(); } catch(e){} }
+    }
+  })();
+  return {
+    kind: 'Web Serial',
+    write: u8 => writer.write(u8),
+    close: async () => {
+      keepReading = false;
+      try { if (reader) await reader.cancel(); } catch(e){}
+      try { writer.releaseLock(); } catch(e){}
+      try { await p.close(); } catch(e){}
+      port = null;
+    }
+  };
+}
+
+async function connect(){
+  if (tx){ log('Već spojeno (' + tx.kind + ').'); return; }
+  const kind = whichTransport();
+  if (!kind){ log('Nema ni WebUSB ni Web Seriala u ovom pregledniku.', 'var(--bad)'); return; }
+  try {
+    const t = kind === 'usb' ? await openWebUsb() : await openWebSerial();
+    tx = t; connected = true; rxBuf = ''; lastMot = {}; stopped = true;
+    setSer(true, 'spojeno · ' + t.kind);
+    log('Spojeno preko ' + t.kind + '.', 'var(--ok)');
+    setTimeout(() => send('enable'), 300);
+  } catch(e){
+    if (e && e.name === 'NotFoundError') log('Nije odabran uređaj' + (kind === 'serial' && isAndroid ? ' — na Androidu odaberi vezu WebUSB.' : '.'), 'var(--warn)');
+    else log('Spajanje nije uspjelo: ' + (e && e.message ? e.message : e), 'var(--bad)');
+    setSer(false, 'nije spojeno');
+  }
+}
+async function disconnect(){
+  try { await hardStop(); } catch(e){}
+  const t = tx; tx = null; connected = false;
+  if (t){ try { await t.close(); } catch(e){} }
+  setSer(false, 'nije spojeno'); log('Odspojeno.');
+}
+if (hasUsb) navigator.usb.addEventListener('disconnect', ev => { if (usbDev && ev.device === usbDev){ usbDev = null; lost('robot odspojen (USB)'); } });
+if (hasSerial) navigator.serial.addEventListener('disconnect', ev => { if (port && ev.target === port){ port = null; lost('robot odspojen (USB)'); } });
+
+const canRe = /CAN RX STD ([0-9A-F]+) 3 13 ([0-9A-F]{2}) ([0-9A-F]{2})/i;
+function onLine(line){
+  const m = line.match(canRe);
+  if (m){
+    const id = m[1].toUpperCase(), d = parseInt(m[3],16)*256 + parseInt(m[2],16);
+    if (id === '181') $('d1').textContent = d;
+    else if (id === '183') $('d2').textContent = d;
+    if ($('hideCan').checked) return;
+  } else if (/^CAN RX/.test(line) && $('hideCan').checked) return;
+  log(line, /^ERR/.test(line) ? 'var(--bad)' : (/^OK/.test(line) ? 'var(--ok)' : null));
+}
+
+// ---------- žiroskop ----------
+let gyRaw = 0, gyBias = 0, gyHave = false, heading = 0, lastGyT = null;
+let calibrating = false, calSum = 0, calN = 0;
+function gyroRate(){ // °/s, pozitivno = ulijevo (CCW gledano odozgo)
+  let r = gyRaw - gyBias; if ($('gyInv').checked) r = -r; return r;
+}
+window.addEventListener('devicemotion', ev => {
+  const rr = ev.rotationRate; if (!rr) return;
+  const v = rr[$('gyAxis').value];
+  if (v == null) return;
+  gyHave = true; gyRaw = v;
+  const t = performance.now();
+  if (lastGyT != null){ const dt = Math.min(0.1, (t - lastGyT)/1000); heading += gyroRate() * dt; }
+  lastGyT = t;
+  if (calibrating){ calSum += v; calN++; }
+});
+setTimeout(() => { const s=$('stGyr'); if (gyHave){ s.textContent='Žiroskop: radi'; s.className='pill ok'; } else { s.textContent='Žiroskop: nema podataka'; s.className='pill warn'; } }, 1500);
+$('gyCal').onclick = () => {
+  calibrating = true; calSum = 0; calN = 0; log('Kalibracija žiroskopa — ne miči robota 2 s…');
+  setTimeout(() => { calibrating = false; if (calN){ gyBias = calSum/calN; heading = 0; $('gyBias').textContent = gyBias.toFixed(3)+' °/s'; log('Pomak nule: '+gyBias.toFixed(3)+' °/s ('+calN+' uzoraka)', 'var(--ok)'); } else log('Nema podataka žiroskopa.', 'var(--bad)'); }, 2000);
+};
+$('gyZero').onclick = () => { heading = 0; };
+
+// ---------- džojstik ----------
+const joy = (() => {
+  const c = $('joy'), g = c.getContext('2d'); const R = c.width/2, knob = 34;
+  let x = 0, y = 0, active = false, pid = null;
+  function draw(){
+    g.clearRect(0,0,c.width,c.height);
+    g.strokeStyle = '#2a3642'; g.lineWidth = 2;
+    g.beginPath(); g.arc(R,R,R-4,0,7); g.stroke();
+    g.beginPath(); g.moveTo(R,8); g.lineTo(R,c.height-8); g.moveTo(8,R); g.lineTo(c.width-8,R); g.stroke();
+    g.fillStyle = '#8b9aa8'; g.font = '12px system-ui'; g.textAlign='center';
+    g.fillText('naprijed', R, 22); g.fillText('natrag', R, c.height-12);
+    g.fillStyle = active ? '#ff7a1a' : '#3a4a58';
+    g.beginPath(); g.arc(R + x*(R-knob), R - y*(R-knob), knob, 0, 7); g.fill();
+  }
+  function set(ev){
+    const r = c.getBoundingClientRect();
+    let dx = (ev.clientX - r.left - r.width/2) / (r.width/2 - knob*r.width/c.width);
+    let dy = -(ev.clientY - r.top - r.height/2) / (r.height/2 - knob*r.height/c.height);
+    const m = Math.hypot(dx,dy); if (m > 1){ dx/=m; dy/=m; }
+    x = dx; y = dy; draw();
+  }
+  c.addEventListener('pointerdown', e => { active = true; pid = e.pointerId; c.setPointerCapture(pid); set(e); });
+  c.addEventListener('pointermove', e => { if (active && e.pointerId === pid) set(e); });
+  const up = e => { if (e.pointerId !== pid) return; active = false; x = 0; y = 0; draw(); };
+  c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up); c.addEventListener('lostpointercapture', up);
+  draw();
+  return { get x(){return x;}, get y(){return y;}, get active(){return active;}, reset(){ active=false; x=0; y=0; draw(); } };
+})();
+
+// ---------- preslikavanje brzina → postotak ----------
+function pctFor(vmm, side){
+  const v70 = +$(side==='L'?'cL70':'cR70').value, v100 = +$(side==='L'?'cL100':'cR100').value;
+  const pMin = +$('pMin').value;
+  const a = Math.abs(vmm);
+  if (a < 0.5*v70) return 0;          // premalo — kotač stoji
+  let p;
+  if (a <= v70) p = pMin;             // ispod kalibrirane točke — najmanja naredba
+  else p = 70 + (a - v70) * 30 / Math.max(1, v100 - v70);
+  p = Math.max(pMin, Math.min(100, Math.round(p)));
+  return Math.sign(vmm) * p;
+}
+
+// ---------- probni programi ----------
+let prog = null; // {type, t0, h0}
+$('tStraight').onclick = () => { heading = 0; prog = { type:'straight', t0: performance.now() }; log('Probni pravac 3 s'); };
+$('tTurn').onclick = () => { if (!gyHave){ log('Okret 180° treba žiroskop.', 'var(--bad)'); return; } prog = { type:'turn', h0: heading, t0: performance.now() }; log('Okret 180°'); };
+
+// ---------- glavna petlja ----------
+let holding = false, hTarget = 0, wasMoving = {L:false, R:false}, kickUntil = {L:0, R:0};
+let lastSentAt = 0, stopped = true;
+
+async function hardStop(){
+  prog = null; joy.reset(); holding = false;
+  wasMoving = {L:false,R:false}; lastMot = {};
+  if (connected){ await send('stop'); }
+  stopped = true;
+}
+$('stop').onclick = hardStop;
+
+function tick(){
+  const vMax = +$('vMax').value, wMax = +$('wMax').value;
+  $('vMaxT').textContent = vMax; $('wMaxT').textContent = wMax;
+
+  // ulaz
+  let v = joy.y * vMax, w = -joy.x * wMax; // ω pozitivno = ulijevo
+  const now = performance.now();
+  if (prog){
+    if (prog.type === 'straight'){ v = Math.min(200, vMax); w = 0; if (now - prog.t0 > 3000){ prog = null; hardStop(); log('Pravac gotov. Smjer na kraju: '+heading.toFixed(1)+'°'); return; } }
+    if (prog.type === 'turn'){ v = 0; const done = heading - prog.h0; w = Math.min(90, wMax); if (done >= 180 || now - prog.t0 > 8000){ const r = done; prog = null; hardStop(); log('Okret gotov: '+r.toFixed(1)+'° po žiroskopu'); return; } }
+  }
+
+  // ispravak žiroskopom
+  let wOut = w;
+  const rate = gyHave ? gyroRate() : 0;
+  if ($('gyOn').checked && gyHave && (Math.abs(v) > 1 || Math.abs(w) > 1)){
+    if (Math.abs(w) < 2 && Math.abs(v) > 1){
+      if (!holding){ holding = true; hTarget = heading; }
+      wOut = (+$('kH').value) * (hTarget - heading);
+    } else {
+      holding = false;
+      wOut = w + (+$('kP').value) * (w - rate);
+    }
+    wOut = Math.max(-1.5*wMax, Math.min(1.5*wMax, wOut));
+  } else holding = false;
+
+  // kinematika
+  const wr = wOut * Math.PI / 180;
+  const vL = v - wr * B/2, vR = v + wr * B/2;
+  let pL = pctFor(vL, 'L'), pR = pctFor(vR, 'R');
+
+  // udarac pri pokretanju
+  const kick = +$('kickMs').value;
+  for (const [s, p] of [['L', pL], ['R', pR]]){
+    if (p !== 0 && !wasMoving[s]) kickUntil[s] = now + kick;
+    wasMoving[s] = p !== 0;
+  }
+  if (now < kickUntil.L && pL !== 0) pL = Math.sign(pL)*100;
+  if (now < kickUntil.R && pR !== 0) pR = Math.sign(pR)*100;
+
+  // prikaz
+  $('vOut').textContent = Math.round(v);
+  $('wOut').textContent = Math.round(w) + ' / ' + Math.round(wOut);
+  $('vL').textContent = Math.round(vL) + ' mm/s'; $('vR').textContent = Math.round(vR) + ' mm/s';
+  $('pL').textContent = pL; $('pR').textContent = pR;
+  $('gyRate').textContent = gyHave ? rate.toFixed(1)+' °/s' : '—';
+  $('gyHead').textContent = gyHave ? heading.toFixed(1)+' °' : '—';
+
+  // slanje
+  if (!connected) return;
+  const sgn = $('fwdNeg').checked ? -1 : 1;
+  const mL = +$('mL').value, mR = +$('mR').value;
+  const out = { [mL]: sgn*pL, [mR]: sgn*pR };
+  const moving = pL !== 0 || pR !== 0;
+  if (!moving){
+    if (!stopped){ send('stop'); stopped = true; lastMot = {}; }
+    return;
+  }
+  stopped = false;
+  const keep = now - lastSentAt > 500;
+  for (const m of [mL, mR]){
+    if (keep || lastMot[m] === undefined || Math.abs(out[m] - lastMot[m]) >= 2){
+      send('mot ' + m + ' ' + out[m]); lastMot[m] = out[m];
+    }
+  }
+  if (keep) lastSentAt = now;
+}
+setInterval(tick, LOOP_MS);
+
+// ---------- sigurnost ----------
+document.addEventListener('visibilitychange', () => { if (document.hidden) hardStop(); });
+window.addEventListener('pagehide', () => { hardStop(); });
+window.addEventListener('blur', () => { if (joy.active) hardStop(); });
+
+// ---------- gumbi ----------
+$('btnCon').onclick = connect;
+$('btnDis').onclick = disconnect;
+$('btnEn').onclick = () => send('enable');
+$('btnDisEn').onclick = async () => { await hardStop(); send('disable'); };
+$('l1s').onclick = () => send('lid 1 start'); $('l1x').onclick = () => send('lid 1 stop');
+$('l2s').onclick = () => send('lid 2 start'); $('l2x').onclick = () => send('lid 2 stop');
+$('send').onclick = () => { const c = $('cmd').value.trim(); if (c){ send(c); $('cmd').value=''; } };
+$('cmd').addEventListener('keydown', e => { if (e.key === 'Enter') $('send').click(); });
+
+// ---------- zapamti postavke (samo ovaj preglednik) ----------
+const keys = ['conType','vMax','wMax','gyAxis','gyInv','gyOn','kH','kP','cL70','cR70','cL100','cR100','pMin','kickMs','mL','mR','fwdNeg','hideCan'];
+try {
+  const s = JSON.parse(localStorage.getItem('robot-voznja-v02') || localStorage.getItem('robot-voznja-v01') || '{}');
+  for (const k of keys) if (k in s){ const el=$(k); if (el.type==='checkbox') el.checked = s[k]; else el.value = s[k]; }
+} catch(e){}
+function save(){ try { const s={}; for (const k of keys){ const el=$(k); s[k] = el.type==='checkbox' ? el.checked : el.value; } localStorage.setItem('robot-voznja-v02', JSON.stringify(s)); } catch(e){} }
+for (const k of keys) $(k).addEventListener('change', save);
+
+log('Stranica spremna. 1) Spoji robota  2) Kalibriraj žiroskop  3) Vozi.');
+})();
+</script>
+</body>
+</html>
